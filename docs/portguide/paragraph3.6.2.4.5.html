@@ -1,0 +1,88 @@
+<HEAD>
+<TITLE><b> sfor2c_array</b></TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=727 HREF=paragraph3.6.2.4.4.html><IMG SRC="/icons/previous.png"></A> <A NAME=729 HREF=subsubsection3.6.2.4.html><IMG SRC="/icons/up.png"></A>  <A NAME=725 HREF=paragraph3.6.2.4.6.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=728 HREF=paragraph3.6.2.4.4.html><b> sfor2c</b></A>  <b>Up:</b> <A NAME=730 HREF=subsubsection3.6.2.4.html>Fortran String Conversion Routines</A>  <b>Next:</b> <A NAME=726 HREF=paragraph3.6.2.4.6.html><b> sfor2len</b></A> <P>
+ <H4><b> sfor2c_array</b></H4>
+<P>
+<PRE><TT>
+sfor2c_array(c_string, max_length, nelements, for_string, argptr, nargs,
+             argno, strno);
+</TT></PRE>
+<P>
+This routine converts a Fortran string array to a standard C null-terminated
+array of strings.  The returned C string array is a two-dimensional array of
+characters, <em> not</em> an array of pointers to strings.  The Fortran string
+should be declared as a single-dimensional array of CHARACTER*n in the calling
+routine.
+<P>
+This routine is somewhat unusual in that it actually allocates the memory
+for the C string for you.  You pass in the address of a character pointer,
+not the address of a buffer for the characters.  <b> sfor2c_array</b> calls
+<tt> malloc()</tt> to allocate the required memory, and returns the address of
+that memory in the pointer.  It is your responsibility to call <tt> free()</tt>
+to free up that memory when you are done with it.
+<P>
+<b> Arguments:</b>
+<UL>
+<P>
+<LI> C_STRING: pointer to string array, output
+<P>
+C_STRING is the address of a pointer that will be filled in to point at the
+string array.  The returned array will be a two-dimensional array of characters,
+not an array of pointers to strings.  Each string will have its own null
+terminator.
+<P>
+This routine actually allocates the memory for the C string for you.
+C_STRING is the address of a character pointer, not the address of a
+buffer for the characters.  <b> sfor2c_array</b> calls <tt> malloc()</tt> to
+allocate the required memory, and returns the address of that memory in
+C_STRING.  It is your responsibility to call <tt> free()</tt> to free up that
+memory when you are done with it.
+<P>
+The inner dimension of the array is returned via the MAX_LENGTH parameter.
+Since you don't know this size at compile time, you can't access the strings
+like a normal two-dimensional array.  It is easy enough to do your own
+addressing, however.  For example:
+<P>
+<PRE><TT>
+char *array;
+int maxlen=0;
+...
+sfor2c\_array(&amp;array, &amp;maxlen, ...);
+...
+process_string(array+(i*maxlen));       /* to get at the i'th string */
+</TT></PRE>
+<P>
+<LI> MAX_LENGTH: integer, input/output
+<P>
+On input, MAX_LENGTH is the alternate maximum length of each Fortran string.
+Normally the maximum length is obtained from the input Fortran string array
+itself (the ``n'' in a CHARACTER*n declaration).  If MAX_LENGTH is passed in
+as 0, then this natural length is used.  MAX_LENGTH is an alternate maximum
+string length in case one is provided as a parameter to the routine.  The
+actual maximum Fortran length used is the minimum of the passed in MAX_LENGTH
+(if not 0) and the natural Fortran string length.  MAX_LENGTH should almost
+always be passed in as 0, as it makes little sense to override the natural
+Fortran string length, especially on an array.  However, it is possible,
+and might be useful in some unusual cases.
+<P>
+On output, MAX_LENGTH returns the size of the inner dimension of the C string
+array that was allocated by <b> sfor2c_array</b>.  To access the i'th string
+in the array, simply add i*maxlen to the returned array pointer.
+<P>
+<LI> NELEMENTS: integer, input
+<P>
+NELEMENTS is the number of strings in the array to convert.
+<P>
+<LI> FOR_STRING, ARGPTR, NARGS, ARGNO, STRNO
+<P>
+See the ``Common Features'' section above.
+<P>
+</UL>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

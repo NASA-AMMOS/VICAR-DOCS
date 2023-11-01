@@ -1,0 +1,45 @@
+<HEAD>
+<TITLE>Variable Arguments</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=344 HREF=section3.4.html><IMG SRC="/icons/previous.png"></A> <A NAME=346 HREF=section3.4.html><IMG SRC="/icons/up.png"></A>  <A NAME=342 HREF=subsection3.4.2.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=345 HREF=section3.4.html>Portability Constraints</A>  <b>Up:</b> <A NAME=347 HREF=section3.4.html>Portability Constraints</A>  <b>Next:</b> <A NAME=343 HREF=subsection3.4.2.html>Data Types</A> <P>
+ <H2>Variable Arguments</H2>
+<A NAME=vararg><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+On most machines, there is no way for a subroutine to tell how many
+arguments are actually passed into it at run time.  For that reason,
+routines that have optional arguments are not allowed.  Optional arguments
+are quite common in VMS VICAR because the VAX is one of the few machines that
+passes the number of arguments to a subroutine.  These subroutines and
+the programs that call them will all have to be changed.  The preferred
+solution is to give all arguments on every call to a subroutine.  An
+alternate solution is to have several subroutine names, each with a
+different number of arguments.  That should only be done in very unusual
+circumstances, however.
+<P>
+There is a standard way to do variable arguments in C, and that is using the
+&lt;varargs&gt; interface (see any C reference for details).  That is the way
+<tt> printf()</tt> is done, for example.  The VICAR Run-Time Library uses this
+mechanism to handle the ``keyword'',``value'' style of optional arguments.  The
+key to &lt;varargs&gt; is that the subroutine must be able to tell how many and
+what type of arguments are passed in by looking at the previous arguments.  For
+example, <tt> printf()</tt> knows what arguments to expect by examining the format
+string.  The RTL knows what type of argument to expect by the keyword, but it
+has to know how many arguments to expect.  This is handled by adding a
+terminator as the last keyword in the argument list.  See
+Section <A HREF=section3.5.html#rtlcallconv><IMG SRC="/icons/cross-ref.png"></A>, RTL Calling Conventions, for details.  VICAR
+application code may use the &lt;varargs&gt; interface if absolutely required;
+however, it should generally be avoided.
+<P>
+There is no portable way at all to do variable arguments in Fortran.  Fortran
+can call &lt;varargs&gt; routines (such as the RTL), but routines that accept
+variable arguments cannot be written in Fortran.  In addition, code should
+not be written that accepts variable arguments from a Fortran routine.  The
+RTL does this, but it uses some special tricks that are difficult to port.
+VICAR application code should not use these tricks.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

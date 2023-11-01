@@ -1,0 +1,229 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--
+This document was converted from RTF source: 
+By rtftohtml 4.17
+See http://www.sunpack.com/RTF
+Filename:WORD Ram Disk:RTL_Manual.rtf
+Application Directory:Data Disk:r2h4
+Subject:
+Author:Larry Bolef
+Operator:Larry Bolef
+Document Comments:
+Version Comments:
+Comments:
+Keywords:
+Translation Date:06/05/1999
+Translation Time:08:02:16
+Translation Platform:MacOS
+Number of Output files:59
+This File:WORD Ram Disk:RTL_Manual-2_1.html
+SplitDepth=2
+SkipNavPanel=0
+SkipLeadingToc=0
+SkipTrailingToc=1
+GenContents=1
+GenFrames=0
+GenIndex=0
+-->
+<HEAD lang="en"><META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<TITLE>2.1	General VICAR conventions </TITLE>
+</HEAD>
+
+<BODY ><DIV ALIGN="LEFT"><A HREF="RTL_Manual-Programm.html">Up</A> | 
+<A HREF="RTL_Manual-Programm.html">Previous</A> | 
+<A HREF="RTL_Manual-2_2.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+<HR>
+
+
+<a name="Heading15"></a><a name="_Toc425047494"></a><a name="_Toc425048049"></a><a name="_Toc425750573"></a><a name="_Toc453201384"></a><A NAME="Heading15"></A><H2 ALIGN="LEFT">
+2.1	General
+VICAR conventions 
+</H2>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>Portability</B>.
+All VICAR software runs on all platforms that MIPL supports. 
+<LI><FONT FACE="Symbol">	</FONT><B>Separate
+FORTRAN and C Interfaces
+</B>.
+All subroutines have separate FORTRAN and C calling sequences, with different
+names. Subroutines call only the appropriate language interface. 
+<LI><FONT FACE="Symbol">	</FONT><B>Status
+return. 
+</B>The
+status code is the function return. If automatic error checking is on (via 
+<B>x/zveaction</B>
+or one of the &#8220;*_ACT&#8221; key words), then status return may be ignored. 
+<LI><FONT FACE="Symbol">	</FONT><B>Pass
+by value. 
+</B>All
+input values to the RTL are passed by value as in standard C, rather than by
+reference. Output variables or arrays are passed by reference. Check to remove
+&#8220;
+<TT><FONT FACE="Courier">&amp;</FONT></TT>
+&#8220;'s before input arguments. 
+<LI><FONT FACE="Symbol">	</FONT><B>Data
+Formats and I/O
+</B>.
+<UL>
+<LI><FONT FACE="Symbol">	</FONT>Applications
+read files written in any host representation. See 
+<A HREF="RTL_Manual-1_3.html#Heading6">1.3.1</A>
+<A HREF="RTL_Manual-1_3.html#Heading6">VICAR File Representations</A>.<LI><FONT FACE="Symbol">	</FONT>Applications
+write files in the native host representations of the machine on which they are
+currently running. See 
+<A HREF="RTL_Manual-1_3.html#Heading6">1.3.1</A>
+<A HREF="RTL_Manual-1_3.html#Heading6">VICAR File Representations</A>.<LI><FONT FACE="Symbol">	</FONT>Programs
+reading binary labels read any host format, and convert to native format before
+using. See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>
+and 
+<A HREF="RTL_Manual-1_7.html#Heading10">1.7</A>
+<A HREF="RTL_Manual-1_7.html#Heading10">Using Binary Labels</A>.</UL></UL><P ALIGN="LEFT"></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>Data
+Format Translation.
+</B>
+Do not write your own pixel data type or host representation conversion
+routines. The routine x/zvtrans is the standard way to translate data between
+different host representations and pixel data types in VICAR. See 
+<A HREF="RTL_Manual-1_3.html#Heading6">VICAR File Representations</A>
+(page 9).
+<LI><FONT FACE="Symbol">	</FONT><B>Do
+not use EQUIVALENCE
+</B>
+for data type conversion in FORTRAN. Use the 
+<TT><FONT FACE="Courier">INT2BYTE</FONT></TT>
+or 
+<TT><FONT FACE="Courier">BYTE2INT
+</FONT></TT>routines.
+See 
+<A HREF="RTL_Manual-2_7.html#Heading44">2.7.2</A>
+<A HREF="RTL_Manual-2_7.html#Heading44">No EQUIVALENCE for Type Conversion</A>
+(page 37).
+<LI><FONT FACE="Symbol">	</FONT><B>Pixel
+Sizes. 
+</B>Do
+not assume the size in bytes of a pixel or other data; it may be different on
+other machines. Use one of the 
+<B>x/zvpixsize</B>
+routines, or 
+<TT><FONT FACE="Courier">size
+of
+</FONT></TT>
+in C, to determine the size of a data element. See 
+<A HREF="RTL_Manual-1_5.html#Heading8">1.5</A>
+<A HREF="RTL_Manual-1_5.html#Heading8">Pixel Type Declarations</A>.<LI><FONT FACE="Symbol">	</FONT><B>Name
+Registries. 
+</B>Every
+property name or BLTYPE name used is entered into the appropriate name
+registry. See 
+<A HREF="RTL_Manual-4_1.html#_Ref424721848">4.1.2.1</A>
+<A HREF="RTL_Manual-4_1.html#_Ref424721848">Using Property Labels</A>
+and 
+<A HREF="RTL_Manual-1_7.html#Heading12">1.7.2</A>
+<A HREF="RTL_Manual-1_7.html#Heading12">Programming and Binary Labels</A>.<LI><FONT FACE="Symbol">	</FONT><B>Operating
+System Calls. 
+</B>All
+OS-specific code is eliminated or isolated, and should be written in C if
+possible. See 
+<A HREF="RTL_Manual-2_7.html#Heading49">2.7.6</A>
+<A HREF="RTL_Manual-2_7.html#Heading49">VMS-Specific Code</A>.<LI><FONT FACE="Symbol">	</FONT><B>Conditional
+Compilation. 
+</B>Conditional
+compilation statements to handle machine dependencies use names of specific
+features that are defined in standard include files based on the machine type.
+Feature dependencies are defined only in
+<I>
+</I><TT><FONT FACE="Courier">x/zvmaininc.h
+</FONT></TT>or
+<TT><FONT FACE="Courier">vmachdep.h</FONT></TT>.
+Symbols VMS_OS and UNIX_OS distinguish between VMS and UNIX operating systems. 
+<LI><FONT FACE="Symbol">	</FONT><B>No
+Terminal I/O. 
+</B>VICAR
+applications may not write directly to the terminal (e. g. stdout). Use 
+<B>x/zvmessage</B>
+instead.
+<LI><FONT FACE="Symbol">	</FONT><B>ANSI
+C. 
+</B>Function
+prototype include files use 
+<TT><FONT FACE="Courier">#ifndef</FONT></TT>
+wrappers, _NO_PROTO, and extern &#8220;C&#8221; declarations. FORTRAN bridge
+routines do not use prototypes or the prototype form of declaration.
+<LI><FONT FACE="Symbol">	</FONT><B>FORTRAN
+77 standard. 
+</B>All
+FORTRAN code conforms to the ANSI FORTRAN -77 standard, with the exception of
+the allowed extensions listed in the reference. See 
+<A HREF="RTL_Manual-2_7.html#Heading48">2.7.5</A>
+<A HREF="RTL_Manual-2_7.html#Heading48">VMS FORTRAN Extensions</A>.
+<LI><FONT FACE="Symbol">	</FONT><B>FORTRAN
+Strings. 
+</B>All
+FORTRAN-callable subroutines written in C use the RTL string conversion
+routines ( 
+<B>sfor2c</B>
+<I>et
+al
+</I>)
+to handle CHARACTER*n arguments. See 
+<A HREF="RTL_Manual-2_6.html#_Ref393876585">2.6.4</A>
+<A HREF="RTL_Manual-2_6.html#_Ref393876585">Passing Strings</A>.<LI><FONT FACE="Symbol">	</FONT><B>vimake.
+</B>VICAR
+applications use imakefiles compatible with vimake to create their build files.
+<LI><FONT FACE="Symbol">	</FONT><B>vpack.
+</B>VICAR
+applications are packed into a COM file using the vpack command.
+<a name="Heading16"></a><a name="_Toc425047495"></a><a name="_Toc425048050"></a><a name="_Toc425750574"></a><a name="Heading20"></a><a name="_Toc425047498"></a><a name="_Toc425048053"></a><a name="_Toc425329677"></a><a name="_Toc425750577"></a><LI><FONT FACE="Symbol">	</FONT><B>Optional
+Arguments
+</B>
+</UL><BLOCKQUOTE>
+There
+are two types of RTL routines: those that take a constant number of arguments,
+and those that take optional arguments of the form &#8220;key word&#8221;,
+&#8221;value&#8221;, &#8220;key word&#8221;,&#8221; value&#8221;, etc.
+<BR>
+<I>All</I>
+routines that accept keyword-value pairs, whether or not the pairs are used in
+any particular call, must have an argument list terminator. The terminator is a
+language-dependent argument at the end of the argument list, where the next key
+word would be if it existed. 
+<BR>
+In
+FORTRAN, the terminator is a single blank in quotes at the end of the argument
+list:
+</BLOCKQUOTE>
+<PRE>call xvopen(unit, status, 'op', 'write','open_act','sa',' ') 
+call xvread(unit, buffer, status, 'line', 1, ' ') 
+call xvclose(unit, status, '')</PRE><BLOCKQUOTE>
+In
+C, the terminator is a 0 or NULL argument ( 
+<I>not</I>
+a blank):
+</BLOCKQUOTE>
+<PRE>status = zvopen(unit, &#8220;op&#8221;, &#8220;write&#8221;, &#8220;open_act&#8221;, &#8220;sa&#8221;, 0); 
+status = zvread(unit, buffer, &#8220;line&#8221;, 1, 0); 
+status = zvclose(unit, 0);</PRE><BLOCKQUOTE>
+Certain
+RTL routines used to take pure optional arguments (not keyword/value), but that
+practice is not portable and is now obsolete.
+</BLOCKQUOTE>
+<HR>
+
+<DIV ALIGN="LEFT"><A HREF="RTL_Manual-Programm.html">Up</A> | 
+<A HREF="RTL_Manual-Programm.html">Previous</A> | 
+<A HREF="RTL_Manual-2_2.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+</BODY>
+
+</HTML>

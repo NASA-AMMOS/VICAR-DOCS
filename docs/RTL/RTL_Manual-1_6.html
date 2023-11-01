@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--
+This document was converted from RTF source: 
+By rtftohtml 4.17
+See http://www.sunpack.com/RTF
+Filename:WORD Ram Disk:RTL_Manual.rtf
+Application Directory:Data Disk:r2h4
+Subject:
+Author:Larry Bolef
+Operator:Larry Bolef
+Document Comments:
+Version Comments:
+Comments:
+Keywords:
+Translation Date:06/05/1999
+Translation Time:08:02:11
+Translation Platform:MacOS
+Number of Output files:59
+This File:WORD Ram Disk:RTL_Manual-1_6.html
+SplitDepth=2
+SkipNavPanel=0
+SkipLeadingToc=0
+SkipTrailingToc=1
+GenContents=1
+GenFrames=0
+GenIndex=0
+-->
+<HEAD lang="en"><META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<TITLE>1.6	Converting Data Types &amp; Hosts </TITLE>
+</HEAD>
+
+<BODY ><DIV ALIGN="LEFT"><A HREF="RTL_Manual-Introduc.html">Up</A> | 
+<A HREF="RTL_Manual-1_5.html">Previous</A> | 
+<A HREF="RTL_Manual-1_7.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+<HR>
+
+
+<a name="Heading9"></a><a name="_Toc425047488"></a><a name="_Toc425048043"></a><a name="_Toc425750567"></a><a name="_Toc453201378"></a><A NAME="Heading9"></A><H2 ALIGN="LEFT">
+1.6	Converting
+Data Types &amp; Hosts 
+</H2>
+<BLOCKQUOTE>
+This
+section describes how to convert data between different data types and hosts,
+when the RTL does not do it for you. Most of the time, the RTL will take care
+of any data type and host conversions automatically. There are times, however,
+when you will need to do your own conversions. 
+<BR>
+The
+translation routines have two parts: the setup routines, and the actual
+translation routine. The setup routines must be called first, to create a
+user-supplied buffer that describes the translation. The translation routine
+may then be called as many times as necessary to do the actual translation. 
+<BR>
+It
+is important to have as many translation buffers active at the same time as
+needed. They can be created first, then used when needed in the program. This
+is illustrated in the example below. 
+<BR>
+There
+is only one setup routine internally, which requires the data type, integer
+format, and real format for both the source and the destination. Since it is
+unwieldy to specify all six parameters every time something needs translating,
+there are five setup routines that provide part of the information for you.
+They are all simply syntactic sugar for the internal setup routine. These five
+are 
+<B>x/zvtrans_set</B>,
+<B>x/zvtrans_in</B>,
+<B>x/zvtrans_inu</B>,
+<B>x/zvtrans_inb</B>,
+and 
+<B>x/zvtrans_out</B>.
+See 
+<A HREF="RTL_Manual-Translat.html#_Ref394140865">Translation Routines</A>.<BR>
+Where
+do these six parameters come from? Either the source or the destination will be
+in the native host representation, so only the foreign machine need be
+specified. For 
+<B>x/ztvtrans_set</B>,
+both source and destination are the local machine. The information for the
+foreign machine will usually come from the label of the file being read. This
+is made easier by the 
+<B>x/zvtrans_inu</B>
+routine. For binary labels (which may be from a different host type than the
+image),
+<B>
+x/zvtrans_inb
+</B>
+can be used to get the binary label host information.
+<BR>
+You
+may make use of the 
+<B>x/zvhost</B>
+routine to get the INTFMT and REALFMT for a machine, given the type of machine.
+This allows the user to specify that the file be written in a foreign format.
+Although this is not the usual mode of operation for VICAR, it is allowed. An
+example should help to clarify things. A file is being read which contains a
+structure of mixed data type. The structure needs to be converted to native
+format so it can be processed. The structure could come from the binary label
+of the file, or it could be the data in an old-style IBIS file. It doesn't even
+have to be a VICAR file  the translation routines don't care. The code below is
+partially C code and partially pseudocode:
+</BLOCKQUOTE>
+<PRE>/* Structure format:  An int followed by two reals and an array of 8 shorts */
+
+struct {
+   int type;
+   float coord[2];
+   short int values[8];
+} data;
+unsigned char *old_ptr;
+static int short_conv[12], int_conv[12], real_conv[12]; /* Translation bufs */
+static int short_size, int_size, real_size;    /* Pixel sizes for each type */
+
+{    /* Begin here */
+
+   char intfmt[20], realfmt[20];
+   unsigned char input_buf[100];
+
+   zveaction("sa", "");                        /* abort on error */
+
+   /*** Determine INTFMT and REALFMT, possibly via zvhost. ***/
+   /*** For a VICAR file, zvtrans_inu may be used instead. ***/
+   /*** For binary labels, zvtrans_inb may be used.        ***/
+
+/* Now set up the translation buffers. */
+
+   zvtrans_in(short_conv, "HALF", "HALF", intfmt, realfmt);
+   zvtrans_in(int_conv,   "FULL", "FULL", intfmt, realfmt);
+   zvtrans_in(real_conv,  "REAL", "REAL", intfmt, realfmt);
+
+/* Get pixel sizes in the input file for each type */
+
+   zvpixsize(&amp;short_size, "HALF", intfmt, realfmt);
+   zvpixsize(&amp;int_size,   "FULL", intfmt, realfmt);
+   zvpixsize(&amp;real_size,  "REAL", intfmt, realfmt);
+
+/* The following could be in a read loop if desired. */
+
+   /*** Now the buffers are set up.  Read the data into input_buf. ***/
+
+   old_ptr = input_buf;
+
+   zvtrans(int_conv, old_ptr, &amp;data.type, 1);           /* One integer */
+   old_ptr += int_size;
+   zvtrans(real_conv, old_ptr, data.coord, 2);          /* Two reals */
+   old_ptr += real_size*2;
+   zvtrans(short_conv, old_ptr, data.values, 8);        /* 8 shorts */
+   old_ptr += short_size*8;
+
+}    /* That's all!  The data has been translated. */</PRE>
+<HR>
+
+<DIV ALIGN="LEFT"><A HREF="RTL_Manual-Introduc.html">Up</A> | 
+<A HREF="RTL_Manual-1_5.html">Previous</A> | 
+<A HREF="RTL_Manual-1_7.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+</BODY>
+
+</HTML>

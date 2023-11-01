@@ -1,0 +1,84 @@
+<HEAD>
+<TITLE>Build Flag Macros</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=1131 HREF=paragraph3.13.1.2.4.html><IMG SRC="/icons/previous.png"></A> <A NAME=1133 HREF=subsubsection3.13.1.2.html><IMG SRC="/icons/up.png"></A>  <A NAME=1129 HREF=paragraph3.13.1.2.6.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=1132 HREF=paragraph3.13.1.2.4.html>Languages Used Macros</A>  <b>Up:</b> <A NAME=1134 HREF=subsubsection3.13.1.2.html>Valid <tt> vimake</tt> Commands</A>  <b>Next:</b> <A NAME=1130 HREF=paragraph3.13.1.2.6.html>Module Class Macros</A> <P>
+ <H4>Build Flag Macros</H4>
+<P>
+<UL>
+<P>
+<LI> FTN_STRING - This flag, if defined, indicates that one or more of the
+Fortran string conversion routines are called by any routine in the program
+unit.  It is valid for types PROGRAM and SUBROUTINE.  The Fortran string
+routines are <b> sc2for</b>, <b> sc2for_array</b>, <b> sfor2c</b>,
+<b> sfor2c_array</b>, <b> sfor2len</b>, and <b> sfor2ptr</b>.  They are available
+only from C.  Some machines (notably a Sun-4) require that modules using these
+routines be compiled with a lower level of optimization.  If none of the
+string conversion routines are called, then do not define this flag.
+Technically, the flag must be defined if a C routine merely accepts a Fortran
+string, even if a subroutine ultimately calls the conversion routine.
+However, the same routine normally accepts the string and calls the conversion
+routine.
+<P>
+<LI> C_OPTIONS  - The argument  defines extra options that are to
+be given to the C compiler.  If no options are needed, do not define C_OPTIONS.
+It is valid only in conjunction with the USES_C or USES_ANSI_C flags.  The
+argument  may be in any format the C compiler allows, and may include
+spaces.  There is no translation performed on the options, so they are
+machine dependent.  C_OPTIONS is intended for program development use only.
+A program or subroutine should rarely if ever be delivered with C_OPTIONS
+defined.  If it is, the C_OPTIONS must be defined in a machine-dependent
+conditional.
+<P>
+<LI> FORTRAN_OPTIONS  - The argument  defines extra options that are
+to be given to the Fortran compiler.  If no options are needed, do not define
+FORTRAN_OPTIONS.  It is valid only in conjunction with the USES_FORTRAN flag.
+The argument  may be in any format the Fortran compiler allows, and may
+include spaces.  There is no translation performed on the options, so they
+are machine dependent.  FORTRAN_OPTIONS is intended for program development
+use only.  A program or subroutine should rarely if ever be delivered with
+FORTRAN_OPTIONS defined.  If it is, the FORTRAN_OPTIONS must be defined in
+a machine-dependent conditional.
+<P>
+<LI> LINK_OPTIONS  - The argument  defines extra options that are to
+be given to the linker.  If no options are needed, do not define LINK_OPTIONS.
+It is valid only for type PROGRAM.  The argument  may be in any format
+the linker allows, and may include spaces.  There is no translation performed
+on the options, so they are machine dependent.  Under VMS, the options are
+placed after any <tt> vimake</tt>-generated options; under Unix the options are
+placed at the beginning of the command line.  LINK_OPTIONS is intended for
+program development use only.  A program or subroutine should rarely if ever
+be delivered with LINK_OPTIONS defined.  If it is, the LINK_OPTIONS must be
+defined in a machine-dependent conditional.
+<P>
+<LI> DEBUG - This flag, if defined, causes the makefile to be built for
+debugging.  It is valid for PROGRAMs and SUBROUTINEs only.  It is not needed
+under VMS, or on some versions of Unix (like the Sun).  It is only needed
+for certain varieties of Unix that do not have conditional macros in their
+versions of <tt> make</tt>.  For these machines, you must set DEBUG in the
+imakefile, and rerun <tt> vimake</tt>, to build a program for the debugger.  For
+Unix machines that do have conditional macros, you can simply use the ``debug''
+target in the standard generated makefile, so the DEBUG flag is not needed.
+For VMS, you can use the ``DEBUG'' secondary option in the standard build file,
+so again the DEBUG flag is not needed.  A program or subroutine should never
+be delivered with DEBUG defined.
+<P>
+<LI> PROFILE - This flag, if defined, causes the makefile to be built for
+profiling.  It is valid for PROGRAMs and SUBROUTINEs only.  It is not needed
+under VMS, or on some versions of Unix (like the Sun).  It is only needed
+for certain varieties of Unix that do not have conditional macros in their
+versions of <tt> make</tt>.  For these machines, you must set PROFILE in the
+imakefile, and rerun <tt> vimake</tt>, to build a program for the profiler.  For
+Unix machines that do have conditional macros, you can simply use the
+``profile'' target in the standard generated makefile, so the PROFILE flag is
+not needed.  For VMS, you can use the ``PROFILE'' secondary option in the
+standard build file, so again the PROFILE flag is not needed.  A program or
+subroutine should never be delivered with PROFILE defined.
+<P>
+</UL>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

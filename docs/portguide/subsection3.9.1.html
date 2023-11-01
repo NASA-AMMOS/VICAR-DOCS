@@ -1,0 +1,49 @@
+<HEAD>
+<TITLE>RTL Differences</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=896 HREF=section3.9.html><IMG SRC="/icons/previous.png"></A> <A NAME=898 HREF=section3.9.html><IMG SRC="/icons/up.png"></A>  <A NAME=894 HREF=subsection3.9.2.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=897 HREF=section3.9.html>Porting Fortran</A>  <b>Up:</b> <A NAME=899 HREF=section3.9.html>Porting Fortran</A>  <b>Next:</b> <A NAME=895 HREF=subsection3.9.2.html>Include Files</A> <P>
+ <H2>RTL Differences</H2>
+<A NAME=rtldiff><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+When porting a Fortran application, most of the RTL routine calls will need
+to be modified slightly, due to the need for an argument list terminator and
+the elimination of optional arguments.  A portable application must use the
+new rules below when calling the RTL.  Although following the old calling
+conventions instead will work under VMS, they will work <em> only</em> under
+VMS.  To be portable, the new conventions must be used.
+<P>
+The new RTL calling sequence is described in detail in
+Section <A HREF=section3.5.html#rtlcallconv><IMG SRC="/icons/cross-ref.png"></A>, RTL Calling Conventions.  As a reminder, the
+highlights are listed again below.
+<P>
+<UL>
+<P>
+<LI> Terminator.  All RTL routines with keyword-value pairs of optional
+arguments must have a terminator in the argument list, even if none of the
+optional arguments are used.
+<P>
+<LI> Character strings.  All strings input to the RTL must be CHARACTER*n
+variables or constants.  Formerly, BYTE or LOGICAL*1 arrays were allowed in
+RTL arguments, but no longer.  BYTE and LOGICAL*1 do not have a string length
+indication, and there is no way for the routine to tell whether the argument
+is a CHARACTER*n (which does have a length), or a byte array.  Since the
+length is required, BYTE and LOGICAL*1 no longer work.  This applies both
+to string arguments and to keywords in the keyword-value pairs, since they
+are strings also.  The change to CHARACTER*n is going to be most troublesome
+with the output routines <b> xvmessage</b> and <b> qprint</b>, since they
+are often called with BYTE arrays.  See Section <A HREF=subsection3.9.5.html#rdwrtftnstr><IMG SRC="/icons/cross-ref.png"></A>, READ &amp;
+WRITE to Strings, below, for details on new methods of doing string output.
+<P>
+<LI> Optional arguments.  Pure optional arguments are not allowed.  Most
+routines require all arguments to be specified, but a few have had some
+removed.  See Table <A HREF=subsection3.5.2.html#varargs><IMG SRC="/icons/cross-ref.png"></A> for a list of all the optional argument
+routines.
+<P>
+</UL>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

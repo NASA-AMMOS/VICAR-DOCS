@@ -1,0 +1,67 @@
+<HEAD>
+<TITLE><b> x</b>/<b>  zvip</b></TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=544 HREF=subsubsection3.6.2.1.html><IMG SRC="/icons/previous.png"></A> <A NAME=546 HREF=subsubsection3.6.2.1.html><IMG SRC="/icons/up.png"></A>  <A NAME=542 HREF=paragraph3.6.2.1.2.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=545 HREF=subsubsection3.6.2.1.html>Parameter Routines</A>  <b>Up:</b> <A NAME=547 HREF=subsubsection3.6.2.1.html>Parameter Routines</A>  <b>Next:</b> <A NAME=543 HREF=paragraph3.6.2.1.2.html><b> x</b>/<b>  zviparmd</b></A> <P>
+ <H4><b> x</b>/<b>  zvip</b></H4>
+<P>
+<PRE><TT>
+call xvip(name, value, count)
+status = zvip(name, value, count);
+</TT></PRE>
+<P>
+Interactive version of <b> x</b>/<b>  zvp</b>; abbreviated version of <b> x</b>/<b>  zviparm</b>.  Returns
+the value(s) of the given interactive parameter, and the number of values.
+<P>
+<b> Arguments:</b>
+<UL>
+<P>
+<LI> NAME: string, input
+<P>
+NAME is the name of the interactive parameter to get values from.
+<P>
+<LI> VALUE: parameter-value-array, output
+<P>
+The value of the parameter is returned in the VALUE array.  The type of the
+value depends on the type of the parameter, which is either INTEGER, STRING,
+or REAL (single-precision).
+<P>
+Note that there is no provision for providing a string length under C.
+Therefore, <b> zvip</b> should <em> not</em> be used for a string array.  It is
+okay for a single string value, but if you want to get a multi-valued string,
+use <b> zviparm</b> instead.  If you do get a multivalued string with
+<b> zvip</b>, it is returned in the <b> zvsptr</b> packed format, which is
+obsolete and should not be used.  Under Fortran, this restriction does not
+apply, since the string length for each element can be obtained from the
+string itself.
+<P>
+There is no way to specify the size of the value buffer, so make sure it
+is big enough to handle the maximum count allowed in the PDF.
+<P>
+<LI> COUNT: integer, output
+<P>
+The number of values in the parameter is returned in COUNT.
+<P>
+Warning:  In <b> xvp</b>, the value of COUNT is set to 0 if the parameter has
+been defaulted.  This is actually a design flaw, but has been retained for
+compatibility.  The other three routines, <b> zvp</b>, <b> xvip</b>, and
+<b> zvip</b>, do not have this flaw.  Being new routines, they can be done
+correctly without compatibility problems.  The COUNT parameter returns the
+actual number of parameters in the VALUE parameter, whether they are defaults
+or not.  However, the variant behavior of <b> xvp</b> is likely to cause some
+confusion.  Do not depend on this behavior in <b> xvp</b>, as it may change to
+be consistent in the future.  If you are using <b> xvp</b>, either construct
+the PDF such that this problem won't matter, or use <b> xvpcnt</b> to get the
+actual count.  This is a design flaw for two reasons:  With the count returned
+as 0, there is no way to know if there is anything valid in the VALUE parameter,
+so it becomes useless.  Second, the default flag should never be used; it is
+maintained for compatibility purposes only.  The count of the parameter should
+be used instead.
+<P>
+</UL>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

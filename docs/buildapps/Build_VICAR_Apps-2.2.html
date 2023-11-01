@@ -1,0 +1,723 @@
+<HTML><HEAD>
+<!-- This document was created from RTF source by rtftohtml version 3.9.3 -->
+<TITLE>Introduction - 2.2 Valid vimake Commands </TITLE></HEAD>
+<BODY BACKGROUND="" BGCOLOR="#FFFFFF" TEXT="#000000">
+<A HREF="Build_VICAR_Apps-2.1.html"> Prev </A>
+|<A HREF="Build_VICAR_Apps-2.3.html"> Next </A>
+|<A HREF="Build_VICAR_Apps-2.html"> Up </A>
+|<A HREF="Build_VICAR_Apps.html"> Title </A>
+|<A HREF="Build_VICAR_Apps-Contents.html"> Contents </A>
+<hr size=4>
+<H2>
+2.2 Valid vimake Commands </H2>
+<UL>
+<LI><A HREF="#Heading5">2.2.1 Module Type Macros </A>
+<LI><A HREF="#Heading6">2.2.2 Name List Macros </A>
+<LI><A HREF="#Heading7">2.2.3 Main Language Macros </A>
+<LI><A HREF="#Heading8">2.2.4 Languages Used Macros </A>
+<LI><A HREF="#Heading9">2.2.5 Build Flag Macros </A>
+<LI><A HREF="#Heading10">2.2.6 Program Class Macros </A>
+<LI><A HREF="#Heading11">2.2.7 Subroutine Class Macros</A>
+<LI><A HREF="#Heading12">2.2.8 Documentation Macros </A>
+<LI><A HREF="#Heading13">2.2.9 Library Macros </A>
+</UL>
+<hr size=4>
+<blockquote>This Section lists all the valid vimake macros. Although the order
+doesn't matter to vimake (since they are all preprocessor defines), you should
+keep entries in the order presented here for consistency. </blockquote><p>There
+are nine broad classes of macros, which are listed in separate sections below. 
+<a name="Heading25"></a><a name="_Toc429910612"></a></p>
+
+<h3>
+<A NAME="Heading5">2.2.1 Module Type Macros </A></h3>
+
+<blockquote>These
+macros define the type of the module. One and only one of these macros must
+appear. Note: Do not use a tab between the macro and the name on any of these;
+use only spaces. <tt>make</tt> can be quite sensitive about tab characters in
+the module type names. </blockquote><ul>
+<li>	<b>PROGRAM</b> <i>x</i>- This imakefile produces an executable program.
+"<i>x"</i> specifies the name of the program. By convention, the name of the
+COM file minus ".com".<br><br>
+<li>	<b>SUBROUTINE</b> <i>x</i>- This imakefile produces a subroutine or
+subroutine package. The value<i> x</i> specifies the name of the subroutine, or
+of the collection of subroutines. By convention, the name of the COM file minus
+".com".<br><br>
+<li>	<b>PROCEDURE</b> <i>x</i> - Specifies that this imakefile is for a TCL
+procedure. "<i>x"</i> specifies the name of the procedure. By convention, the
+name of the COM file minus ".com".</ul><blockquote>Only one of PROGRAM,
+SUBROUTINE, and PROCEDURE may be defined.
+<a name="Heading26"></a><a name="_Toc429910613"></a></blockquote>
+<h3>
+<A NAME="Heading6">2.2.2 Name List Macros </A></h3>
+
+<blockquote>These
+macros list the files used in the imakefile. MODULE_LIST must always be given
+for anything other than PROCEDURE. Others are optional. </blockquote><ul>
+<li>	<b>MODULE_LIST </b><i>l</i> - Specifies the list of source code modules.
+The argument <i>l</i> is a space-separated list of filenames, including the
+extensions. The extensions must match the language types in the supplied USES
+macros. All files must be in the current directory, i.e. no path names. The
+MODULE_LIST is used to specify the modules to compile, link, put in the
+library, and clean (delete after the build). </ul><blockquote>Although some of
+those functions can be overridden with other lists, normally only MODULE_LIST
+will be used. MODULE_LIST must be defined. MODULE_LIST can only handle about
+150 to 200 characters (2. 5 lines) worth of filenames. The limit is lower on
+VMS than on UNIX.<br><br>
+If you have more files than MODULE _LIST can handle by itself, use the list
+extension macros MODULE_LIST2, MODULE_LIST3, and MODULE_LIST4. Define
+MODULE_LIST in any case; the extensions are also used if present. They should
+be used in order. Each of the extensions can handle about 200 characters. If
+you need more than three extensions, contact the VICAR system programmer to add
+more extensions. </blockquote><ul>
+<li>	<b>MODULE_LIST2</b> <i>l</i> - The first extension for MODULE_LIST. See
+MODULE_LIST. <br><br>
+<li>	<b>MODULE_LIST3</b> <i>l</i> - The second extension for MODULE_LIST if
+MODULE_LIST2 fills up. See MODULE_LIST.<br><br>
+<li>	<b>MODULE_LIST4</b> <i>l</i> - The third extension for MODULE_LIST if
+MODULE_LIST3 fills up. See MODULE_LIST. <br><br>
+<li>	<b>INCLUDE_LIST</b> <i>l</i> - The argument <i>l</i> is a space-separated
+list of local include files, if any. All includes delivered with the .COM file
+must be listed here, with the appropriate filename
+extensions.</ul><blockquote>If there are no local includes, then do not define
+INCLUDE_LIST. System includes, or includes from SUBLIB, should not be in the
+list. This list is used for the source cleaning operation and makefile
+dependencies. </blockquote><ul>
+<li>	<b>INCLUDE_LIST2</b> <i>l</i> - The first extension for INCLUDE_LIST. See
+INCLUDE_LIST. <br><br>
+<li>	<b>INCLUDE_LIST3</b> <i>l</i> - The second extension for INCLUDE_LIST if
+INCLUDE_LIST2 fills up. See INCLUDE_LIST.<br><br>
+<li>	<b>INCLUDE_LIST4</b> <i>l</i> - The third extension for INCLUDE_LIST if
+INCLUDE_LIST3 fills up. See INCLUDE_LIST. <br><br>
+<li>	<b>FTNINC_LIST</b> <i>l</i> - The argument <i>l</i> is a space-separated
+list of FORTRAN system and SUBLIB includes used in the FORTRAN modules, if any.
+All FORTRAN system and SUBLIB includes must be listed here, <i>without</i>
+filename extensions.</ul><blockquote>If there are no FORTRAN system or SUBLIB
+includes, then do not define FTNINC_LIST. This list is used to create logical
+names or symbolic links to the includes before the compile step.
+</blockquote><ul>
+<li>	<b>CLEAN_LIST</b> <i>l</i>  - The argument <i>l</i>is a space-separated
+list of object files to delete (clean) after a compile. If not given, this list
+defaults to the value for MODULE_LIST, so CLEAN_OBJ_LIST should be rarely
+used.</ul><blockquote>The names in CLEAN_OBJ_LIST must have <i>source code</i>
+filename extensions. vimake will convert them to standard object module names
+automatically. CLEAN_OBJ_LIST may be extended with CLEAN_OBJ_LIST2,
+CLEAN_OBJ_LIST3, and CLEAN_OBJ_LIST4 in the same way as MODULE_LIST. See
+MODULE_LIST for details. </blockquote><ul>
+<li>	<b>CLEAN_OBJ_LIST2</b> <i>l</i> - The first extension for CLEAN_OBJ_LIST.
+See CLEAN_OBJ_LIST. <br><br>
+<li>	<b>CLEAN_OBJ_LIST3</b> <i>l</i> - The second extension for CLEAN_OBJ_LIST
+if CLEAN_OBJ_-LIST2 fills up. See CLEAN_OBJ_LIST. <br><br>
+<li>	<b>CLEAN_OBJ_LIST4</b> <i>l</i> - The third extension for CLEAN_OBJ_LIST
+if CLEAN_OBJ_LIST3 fills up. See CLEAN_OBJ_LIST. <br><br>
+<li>	<b>CLEAN_SRC_LIST</b> <i>l</i> - The argument <i>l</i> is a
+space-separated list of source code to delete during a clean-source operation.
+This happens during system builds. Since the source code just came from the COM
+file, it does not need to be kept after the build. If not given, this list
+defaults to the value for MODULE_LIST, so CLEAN_SRC_LIST should rarely if ever
+be used. CLEAN_SRC_LIST may be extended with CLEAN_SRC_LIST2, CLEAN_SRC_LIST3,
+and CLEAN_SRC_LIST4 in the same way as MODULE_LIST. See MODULE_LIST for
+details. <br><br>
+<li>	<b>CLEAN_SRC_LIST2</b> <i>l</i> - The first extension for CLEAN_SRC_LIST
+if it is too big. See CLEAN_SRC_LIST. <br><br>
+<li>	<b>CLEAN_SRC_LIST3</b> <i>l</i> - The second extension for CLEAN_SRC_LIST
+if CLEAN_SRC_LIST2 fills up. See CLEAN_SRC_LIST. <br><br>
+<li>	<b>CLEAN_SRC_LIST4</b> <i>l</i> - The third extension for CLEAN_SRC_LIST
+if CLEAN_SRC_LIST3 fills up. See CLEAN_SRC_LIST. <br><br>
+<li>	<b>CLEAN_OTHER_LIST</b> <i>l</i> - The argument <i>l</i> is a
+space-separated list of other files to clean during a clean-source operation.
+After a clean-source is performed, only the files needed to execute the program
+(usually the program itself and the PDF) and the original .COM file should
+still exist in the directory.</ul><blockquote>If any files are unpacked or
+created during the build process that are used only during the build process
+and that not covered by MODULE_LIST or INCLUDE_LIST (or automatically deleted
+as the .bld, .make, and .imakefiles are), then they should be listed in
+CLEAN_OTHER_LIST.<br><br>
+These files are typically source code files that are used only on other
+machines, if MODULE_LIST or INCLUDE_LIST are defined conditionally. If there
+are no extra files (the usual case), then do not define CLEAN_OTHER_LIST. There
+are currently no extension macros defined for CLEAN_OTHER_LIST.
+</blockquote><ul>
+<li>	<b>LINK_LIST</b> <i>l</i> - The argument <i>l</i> is a space-separated
+list of object code modules to link, in the order they will appear in the link
+statement. It is only valid for type PROGRAM. The object code modules must have
+a ".o" extension, even for VMS (it is converted to ".obj"
+automatically).</ul><blockquote>If not given, this list defaults to the value
+for MODULE_LIST (which is automatically converted to object-name format), so
+LINK_LIST should rarely be used. LINK_LIST may be extended with LINK_LIST2,
+LINK_LIST3, and LINK_LIST4 in the same way as MODULE_LIST. See MODULE_LIST for
+details. </blockquote><ul>
+<li>	<b>LINK_LIST2</b> <i>l</i> - The first extension for LINK_LIST. See
+LINK_LIST. <br><br>
+<li>	<b>LINK_LIST3</b> <i>l</i> - The second extension for LINK_LIST if
+LINK_LIST2 fills up. See LINK_LIST. <br><br>
+<li>	<b>LINK_LIST4</b> <i>l</i> - The third extension for LINK_LIST if
+LINK_LIST3 fills up. See LINK_LIST. <br><br>
+<li>	<b>LIB_LIST</b> <i>l</i> - The argument <i>l</i> is a space-separated list
+of object code modules to put in the object code library. It is only valid for
+type SUBROUTINE. The object code modules must have a ".o" extension, even for
+VMS (it is converted to ".obj" automatically). If not given, this list defaults
+to the value for MODULE_LIST (which is automatically converted to object-name
+format), so LIB_LIST should rarely be used. LIB_LIST may be extended with
+LIB_LIST2,LIB_LIST3, and LIB_LIST4 in the same way as MODULE_LIST. See
+MODULE_LIST for details. <br><br>
+<li>	<b>LIB_LIST2</b> <i>l</i> - The first extension for LIB_LIST. See
+LIB_LIST. <br><br>
+<li>	<b>LIB_LIST3</b> <i>l</i> - The second extension for LIB_LIST if LIB_LIST2
+fills up. See LIB_LIST. <br><br>
+<li>	<b>LIB_LIST4</b> <i>l</i> - The third extension for LIB_LIST if LIB_LIST3
+fills up. See LIB_LIST. <br><br>
+<li>	<b>SCRIPT_LIST</b> - List of script files (and extensions). Similar to
+LINK_LIST, in that it is derived from MODULE_LIST normally and SCRIPT_LIST is
+an override. </ul><blockquote>SCRIPT_LIST is not implemented on VMS though, so
+it should not be set by the user (i.e. use MODULE_LIST). Scripts are "built"
+depending on the type of script, often nothing but a chmod +x is done to them,
+but it depends on the script type. They're all listed in various USES_x below.
+Scripts should only be defined for type PROCEDURE (as opposed to PROGRAM or
+SUBROUTINE). Note that if a PROCEDURE has no MODULE_LIST, it automatically gets
+"PROCEDURE.pdf" where PROCEDURE is the name defined in the PROCEDURE #define.
+This is for backwards compatibility. So for example, pdf procedure imake's
+should now #define MODULE_LIST x.pdf and also #define USES_PDF.
+</blockquote><ul>
+<li>	<b>SCRIPT_LIST2</b> - <i>l</i> - The first extension for SCRIPT_LIST. See
+SCRIPT_LIST.<br><br>
+<li>	<b>SCRIPT_LIST3</b> - <i>l</i> - The second extension for SCRIPT_LIST if
+SCRIPT_LIST2 fills up. See SCRIPT_LIST. <br><br>
+<li>	<b>SCRIPT_LIST4</b> - <i>l</i> - The third extension for SCRIPT_LIST if
+SCRIPT_LIST3 fills up. See SCRIPT_LIST. <br><br>
+<li>	<b>SYMBOL_LIST</b> - Optional list of symbols which should be externally
+visible in the shared library. The SYMBOL_LIST elements should be defined using
+the SYMBOL and FSYMBOL macros:</ul>
+
+<pre>
+#define SYMBOL_LIST SYMBOL(zvzinit) SYMBOL(zzinit) \<br><br>SYMBOL(zvpinit) SYMBOL(zv_rtl_init) SYMBOL(sc2for) SYMBOL(sc2for_array)\<br><br>SYMBOL(sfor2c) SYMBOL(sfor2c_array) SYMBOL(sfor2len) SYMBOL(sfor2ptr) \<br><br>FSYMBOL(abend) SYMBOL(zabend) FSYMBOL(qprint) SYMBOL(zqprint) \<br><br>FSYMBOL(xladd) SYMBOL(zladd) FSYMBOL(xldel) SYMBOL(zldel) \<br><br>...
+</pre>
+<blockquote>Where
+SYMBOL defines a C symbol, and FSYMBOL defines a Fortran-callable symbol
+(underscores are added where necessary). See for example librtl.com or
+librtlf.com in rtl, or for a smaller one, script_glue.com in gui/prog.
+<a name="Heading27"></a><a name="_Toc429910614"></a></blockquote>
+<h3>
+<A NAME="Heading7">2.2.3 Main Language Macros </A></h3>
+
+<blockquote>These
+macros define the language of the main program. One and only one of these must
+be present for type PROGRAM. They are not needed for any other type.
+</blockquote><ul>
+<li>	<b>MAIN_LANG_C</b> - If defined, the main program is written in C. Valid
+only for type PROGRAM. The main program is defined as the <tt>main44()</tt>
+subroutine for most VICAR programs, or <tt>main()</tt> if the program doesn't
+use the standard VICAR startup routines. For programs, one and only one of
+MAIN_LANG_C, MAIN_LANG_C_PLUS_PLUS and MAIN_LANG_ FORTRAN must be defined. Use
+MAIN_LANG_C for C++, K&amp;R C and ANSI C. <br><br>
+<li>	<b>MAIN_LANG_C_PLUS_PLUS</b> - Main language is C++, similar to
+MAIN_LANG_C.<br><br>
+<li>	<b> MAIN_ LANG_FORTRAN </b>- If defined, the main program is written in
+FORTRAN. The main program is defined as the <tt>main44</tt> subroutine for most
+VICAR programs, or the <tt>main</tt> subroutine if the program doesn't use the
+standard VICAR startup routines. For programs, one and only one of MAIN_LANG_C
+and MAIN_LANG_ FORTRAN must be defined. 
+<a name="Heading28"></a><a name="_Toc429910615"></a></ul>
+<h3>
+<A NAME="Heading8">2.2.4 Languages Used Macros </A></h3>
+
+<blockquote>These
+macros define which languages are used by source files in this imakefile. All
+the "USES_*" macros indicate that the named language is used in MODULE_LIST;
+the extension indicates which language it is (e.g. .cc is C++, .c is C, .csh is
+C-shell, etc.).</blockquote><ul>
+<li>	<b>USES_ANSI_C</b> - If defined, at least one source module is written in
+ANSI- standard C, as opposed to the older Kernighan and Ritchie (K&amp;R) C.
+Most VICAR code is currently written in K&amp;R C, although it is recommended
+that new code be written in ANSI C.</ul><blockquote>USES_ANSI_C may or may not
+accept non-ANSI constructs, depending on the machine implementation, but it
+should generate warnings if non-ANSI constructs are used. USES_ANSI_C is valid
+for types PROGRAM and SUBROUTINE. If any C code is to be compiled, either
+USES_C or USES_ANSI_C must be defined, but not both.<br><br>
+Only one version of C may be used at a time, so all of the C modules in the
+imakefile must be either ANSI or K&amp;R C. All C source modules must have a
+filename extension of ". c". Any number of other USES flags may be defined, if
+needed. All C modules have the RTL and TAE include files available. Other
+include directories can included via the LIB macros or the class macros (R2LIB,
+P2_SUBLIB, etc.). main programs written in ANSI C still use the MAIN_LANG_C
+macro. </blockquote><ul>
+<li>	<b>USES_BASH</b> - Bourne-again shell scripts. Renames from x.bash to x
+and chmod +x's. Unix only.<br><br>
+<li>	<b>USES_C</b> - At least one source module is written in C, using
+Kernighan and Ritchie (K&amp;R) C, as opposed to ANSI C. Most VICAR code is
+written using K&amp;R C, so be the flag used most often. USES_C may or may not
+accept some ANS I code, depending on the machine, but if there is any conflict
+then the K&amp;R interpretation will be used.</ul><blockquote>USES_C is valid
+for types PROGRAM and SUBROUTINE. If any C code is to be compiled, either
+USES_C or USES_ANSI_C must be defined, but not both. Only one version of C may
+be used at a time, so all of the C modules in the imakefile must be either ANSI
+or K&amp;R C. All C source modules must have a filename extension of ".c". Any
+number of other USES flags may be defined, if needed. All C modules have the
+RTL and TAE include files available. Other include directories can be included
+via the LIB macros or the class macros(R2LIB, P2_SUBLIB, etc.).
+</blockquote><ul>
+<li>	<b>USES_CSH</b> - C-shell scripts. Renames from x.csh to x and chmod +x's.
+Unix only.<br><br>
+<li>	<b>USES_C_PLUS_PLUS</b> - At least one source module is written in C++.
+All C++ source modules must have a filename extension of ".cc".<br><br>
+<li>	<b>USES_DCL </b>- Renames the file from x.dcl to x.com on VMS only.
+Ignored on Unix. Note that DCL scripts must be delivered with ".dcl" extension
+to distinguish them from vpack's .com files, but the build renames them so they
+are runnable.<br><br>
+<li>	<b>USES_EXTRACT</b> - Used in librtlf only. It indicates that MODULE_LIST
+contains EXTRACT or EXTRACT_TAE macros. These pull individual *.o's out of a
+library (as opposed to the whole library), and are useful for generating shared
+libraries, where you want to include a specific *.o but not the whole library.
+The syntax is EXTRACT(module, libname) where module is the name of the module
+to extract (with the .o), and libname is the name of the library to extract
+from (without the "lib" part). For example:</ul>
+
+<pre>
+#define MODULE_LIST EXTRACT(xvzinit.o,rtl) \ EXTRACT_TAE(xqgenbr.o,tae) EXTRACT_TAE(xqtaskbr.o,tae)
+</pre>
+<blockquote>The
+only difference between EXTRACT and EXTRACT_TAE is that EXTRACT looks for its
+library in $V2OLB (v2$olb), while EXTRACT_TAE looks in $TAELIB
+($taelib).</blockquote><ul>
+<li>	<b>USES_ FORTRAN </b>- If defined, at least one source module is written
+in FORTRAN. It is valid for types PROGRAM and SUBROUTINE. If any FORTRAN code
+is to be compiled, USES_ FORTRAN must be defined. All FORTRAN source modules
+must have a filename extension of ". f". Any number of USES flags may be
+defined, if needed. <br><br>
+<li>	<b>USES_KSH</b> - Korn-shell scripts. Renames from x.ksh to x and chmod
++x's. Unix only.<br><br>
+<li>	<b>USES_MACRO</b> - If defined, at least one source module is written in
+VAX Macro. It is valid for types PROGRAM and SUBROUTINE. If any VAX Macro code
+is to be assembled, USES_MACRO must be defined.</ul><blockquote>VAX Macro code
+is not portable, so in a portable application a portable version of the same
+function must be available. Typically, MODULE_LIST will be defined differently
+for the VMS and UNIX versions (see the examples in the previous Section). All
+VAX Macro source modules must have a filename extension of ".mar". Any number
+of USES flags may be defined, if needed. </blockquote><ul>
+<li>	<b>USES_PDF</b> - PDF scripts, filename extensin of ".pdf". Does nothing
+with them (at least at the moment, future enhancement might automatically run
+the pdf-&gt;html help converter, or something like that).<br><br>
+<li>	<b>USES_PERL</b> - Perl scripts. On Unix, renames x.perl or x.pl to x and
+chmod +x's. Does nothing on VMS, i.e. VMS works with Perl scripts but the build
+doesn't do anything to them (no renames).<br><br>
+<li>	<b>USES_SH</b> - Bourne-shell scripts. Renames from x.sh to x and chmod
++x's. Unix only.<br><br>
+<li>	<b>USES_TCL_TK</b> - Tcl/Tk scripts, with extension ".tcl". Runs
+"auto_mkindex" in the directory, which generates the index file that tcl needs
+to find the scripts. This should work on VMS too, but this compile step is not
+yet implemented.<br><br>
+<li>	<b>USES_VFC</b> - If defined, at least one source module is written in the
+VFC array processor language. It is valid for types PROGRAM and SUBROUTINE. If
+any VFC code is to be compiled, USES_VFC must be defined.</ul><blockquote>At
+the present time, VFC code is not portable, so in a portable application a
+portable version of the same function must be available. Typically, MODULE_LIST
+will be defined differently for the VMS and UNIX versions. All VFC source
+modules must have a filename extension of ".vfc". Any number of USES flags may
+be defined, if needed. 
+<a name="Heading29"></a><a name="_Toc429910616"></a></blockquote>
+<h3>
+<A NAME="Heading9">2.2.5 Build Flag Macros </A></h3>
+
+<blockquote>These
+macros set up various flags for the compilation or link steps. Define them as
+needed. </blockquote><ul>
+<li>	<b>FTN_STRING</b> - If defined,  indicates that one or more of the FORTRAN
+string conversion routines are called by any routine in the program unit. It is
+valid for types PROGRAM and SUBROUTINE. The FORTRAN string routines are
+<b>sc2for</b>, <b>sc2for_array</b>, <b>sfor2c</b>, <b>sfor2c_array</b>,
+<b>sfor2len</b>, and <b>sfor2ptr</b> .</ul><blockquote>They are available only
+from C. Some operating systems (notably Sun-4) require that modules using these
+routines be compiled with a lower level of optimization. If none of the string
+conversion routines are called, then do not define this flag. FTN_STRING must
+be defined if a C routine merely accepts a FORTRAN string, even if a subroutine
+ultimately calls the conversion routine. The same routine normally accepts the
+string and calls the conversion routine. </blockquote><ul>
+<li>	<b>C_ OPTIONS</b> <i>x</i> -The argument <i>x</i> defines extra options
+that are to be given to the C compiler. If no options are needed, do not define
+C_ OPTIONS. It is valid only in conjunction with the USES_C or USES_ANSI_C
+flags. The argument <i>x</i> may be in any format the C compiler allows, and
+may include spaces. There is no translation performed on the options, so they
+are machine dependent.</ul><blockquote>C_ OPTIONS is intended for program
+development use only. A program or subroutine should not be delivered with C_
+OPTIONS defined. If it is, the C_OPTIONS must be defined in a machine-dependent
+conditional. </blockquote><ul>
+<li>	<b>CCC_TEMPLATES</b> - Flag indicating that the module uses C++ templates.
+For VMS only, you need a #pragma in the source file to indicate template
+instantiation, which must be in one and only one module that uses a particular
+template instantiation (you should use a symbol such as TEMPLATE_PRAGMA_NEEDED
+instead of checking for VMS specifically):</ul>
+
+<pre>
+#pragma define_template SL_List&lt;SptParamBase *&gt;
+</pre>
+<blockquote>The
+template's .h file should include the .cc file for VMS and AXP_UNIX.
+Appropriate symbols have not yet been defined system wide; contact the VICAR
+System Programmer for assistance if you need to use this.</blockquote><ul>
+<li>	<b>FORTRAN_OPTIONS</b> <i>x</i> - The argument<i> x</i> defines extra
+options that are to be given to the FORTRAN compiler. If no options are needed,
+do not define FORTRAN_OPTIONS. It is valid only in conjunction with the
+USES_FORTRAN flag. The argument <i>x</i> may be in any format the FORTRAN
+compiler allows, and may include spaces. There is no translation performed on
+the options, so they are machine dependent.</ul><blockquote>FORTRAN_OPTIONS is
+intended for program development use only. A program or subroutine not be
+delivered with FORTRAN_OPTIONS defined. If it is, the FORTRAN_OPTIONS must be
+defined in a machine-dependent conditional. </blockquote><ul>
+<li>	<b>LINK_OPTIONS</b> <i>x</i> - The argument <i>x</i> defines extra options
+that are to be given to the linker. If no options are needed, do not define
+LINK_ OPTIONS. The argument <i>x</i> maybe in any format the linker allows, and
+may include spaces. There is no translation performed on the options, so they
+are machine dependent.</ul><blockquote>Under VMS, the options are placed after
+any vimake-generated options; under UNIX the options are placed at the
+beginning of the command line. LINK_ OPTIONS is intended for program
+development use only. A program or subroutine should not be delivered with
+LINK_ OPTIONS defined. If it is, the LINK_ OPTIONS must be defined in a
+machine-dependent conditional.</blockquote><ul>
+<li>	<b>DEBUG</b> - If defined, causes the makefile to be built for debugging.
+It is valid for PROGRAMs and SUBROUTINEs only. It is not needed under VMS, or
+on some versions of UNIX (like the Sun). It is only needed for certain
+varieties of UNIX (though you can use it on any system) that do not have
+conditional macros in their versions of <tt>make</tt>. For these machines,  set
+DEBUG in the imakefile, and rerun vimake, to build a program for the
+debugger.</ul><blockquote>For UNIX machines that do have conditional macros,
+simply use the "debug" target in the standard generated makefile; the DEBUG
+flag is not needed. For VMS, you can use the "DEBUG" secondary option in the
+standard build file, so the DEBUG flag is not needed. A program or subroutine
+should never be delivered with DEBUG defined. </blockquote><ul>
+<li>	<b>PROFILE</b> - If defined, causes the makefile to be built for
+profiling. It is valid for PROGRAMs and SUBROUTINEs only. It is not needed
+under VMS, or on some versions of UNIX (like the Sun). It is only needed for
+certain varieties of UNIX (though you can use it on any system) that do not
+have conditional macros in their versions of<tt> make</tt>. For these machines,
+set PROFILE in the imakefile, and rerun vimake, to build a program for the
+profiler.</ul><blockquote>For UNIX machines that do have conditional macros,
+you can simply use the "profile" target in the standard generated makefile, so
+the PROFILE flag is not needed. For VMS, you can use the "PROFILE" secondary
+option in the standard build file, so the PROFILE flag is not needed. A program
+or subroutine should never be delivered with PROFILE defined. 
+<a name="Heading30"></a></blockquote><ul>
+<li>	<b>SHARED_LIBRARY</b> - Instructs vimake to build a shared library,
+instead of a normal program. Should be used with type PROGRAM.
+<a name="_Toc429910617"></a></ul>
+<h3>
+<A NAME="Heading10">2.2.6 Program Class Macros </A></h3>
+
+<blockquote>These
+macros define what class the program is in. Valid for type PROGRAM only. They
+specify how to link the library for PROGRAM. One (and only one) of these must
+be defined.</blockquote><ul>
+<li>	<b>MPFLIB</b> - Mars Pathfinder application. Like R2LIB for MPF
+programs.<br><br>
+<li>	<b>R1LIB</b> - Class 1 VICAR application, makes the class 1 SUBLIB
+includes available to the C compiler.<br><br>
+<li>	<b>GUILIB</b> - GUI application.<br><br>
+<li>	<b>R2LIB</b> - Class 2 VICAR application, makes the class 1 and 2 SUBLIB
+includes available to the C compiler.<br><br>
+<li>	<b>R3LIB</b> - Class 3 VICAR application, makes the class 1, 2 and 3
+SUBLIB includes available to the C compiler.<br><br>
+<li>	<b>HWLIB</b> - HW application, specific to the Mars '96 project, makes the
+HW includes available to the C compiler.<br><br>
+<li>	<b>TEST</b> - Test application.
+<a name="_Toc429910618"></a></ul>
+<h3>
+<A NAME="Heading11">2.2.7 Subroutine Class Macros</A></h3>
+
+<blockquote>These
+macros define what class the subroutine is in. Valid for type SUBROUTINE only.
+They specify how to link the library for SUBROUTINE. One (and only one) of
+these must be defined.</blockquote><ul>
+<li>	<b>MPF_SUBLIB</b> - Mars Pathfinder application. Like P2_SUBLIB for MPF
+subroutines.<br><br>
+<li>	<b>P1_SUBLIB</b> - Class 1 portable VICAR subroutine, makes the class 1
+SUBLIB includes available to the compiler.<br><br>
+<li>	<b>P2_SUBLIB</b> - Class 2 portable VICAR subroutine, makes the class 1
+and 2 SUBLIB includes available to the compiler.<br><br>
+<li>	<b>P3_SUBLIB</b> - Class 3 portable VICAR subroutine, makes the class 1, 2
+and 3 SUBLIB includes available to the compiler.<br><br>
+<li>	<b>GUI_SUBLIB</b> - Like P2_SUBLIB but for gui/gui sub-library. (the GUI
+has four sub-libraries: gui, base, client, and server).<br><br>
+<li>	<b>HW_SUBLIB</b> - HW subroutines, specific to the Mars '96 project, make
+the HW includes available to the compiler.<br><br>
+<li>	<b>OLD_SUBLIB</b> - Class 2 <i>unportable</i> VMS-specific VICAR
+subroutine. The subroutine may not be used with any portable
+applications.<br><br>
+<li>	<b>OLD_SUBLIB3</b> - Obsolete. Class 3 <i>unportable</i> VMS-specific
+VICAR subroutine. The subroutine may not be used with any portable
+applications.<br><br>
+<li>	<b>SAGE_BASE_SUBLIB</b> - Like P2_SUBLIB but for SAGE/SAGE sub-library.
+(SAGE has three sub-libraries: gui, base, client, and server).<br><br>
+<li>	<b>SAGE_CLIENT_SUBLIB</b> - Like P2_SUBLIB but for SAGE/SAGE sub-library.
+(SAGE has three sub-libraries: gui, base, client, and server).<br><br>
+<li>	<b>SAGE_SERVER_SUBLIB</b> - Like P2_SUBLIB but for SAGE/SAGE sub-library.
+(SAGE has three sub-libraries: gui, base, client, and server).<br><br>
+<li>	<b>TLM_COMMON_SUBLIB</b> - Uses the telemetry /sub directory.<br><br>
+<li>	<b>TLM_GLL_SUBLIB</b> - Uses the telemetry GLL specific  directory.<br><br>
+<li>	<b>TLM_RPC_SUBLIB</b> - RPC subroutine for the telemetry subsystem. Uses
+the idl compiler.
+<a name="Heading31"></a><a name="_Toc429910619"></a></ul>
+<h3>
+<A NAME="Heading12">2.2.8 Documentation Macros </A></h3>
+
+<blockquote>These
+macros describe documentation that must be built. Use them if needed.
+</blockquote><ul>
+<li>	<b>TAE_ERRMSG</b> <i>x</i> - The value <i>x</i> is the name of the TAE
+error message file, if present, without extension. This file provides help on
+error messages generated by the program, and is called a "doc" file by the
+application packer program.</ul><blockquote>The file must be named according t
+o standard TAE conventions: " <i>name</i> fac.msg", where <i>name</i> is the
+facility part of the message key (the part before the "-"), usually the name of
+the program. The value <i>x</i> must not include the ".msg" extension. So,
+TAE_ERRMSG might be set to "sffac" or "bidrsfac". The message files are built
+with the TAE program <tt>msgbld</tt>. 
+<a name="Heading32"></a><a name="_Toc429910620"></a></blockquote>
+<h3>
+<A NAME="Heading13">2.2.9 Library Macros </A></h3>
+
+<blockquote>These
+macros define the libraries needed for the compile and link steps. LIB_*'s
+specify how to link the library for PROGRAM, and where to find include files to
+both PROGRAM and SUBROUTINE. Almost all PROGRAMs and some SUBROUTINEs will
+define several. Define as many as are needed. They are not useful for type
+PROCEDURE. LOCAL_LIBRARY is special so it is listed first; the others are in
+alphabetical order. <br><br>
+See<A HREF="http://rushmore.JPL.NASA.GOV/install/externalsoftware_old.html" TARGET="_top">http://rushmore.JPL.NASA.GOV/install/externalsoftware_old.html</A>
+ for a list of external software packages (below) with infomation about
+each.</blockquote><ul>
+<li>	<b>LOCAL_INCLUDE</b> - Allow -I to be manually specified in imake file.
+Should be used only for testing, NEVER in a delivery. Similar to LOCAL_LIBRARY
+(below).<br><br>
+<li>	<b>LOCAL_LIBRARY</b><i>x</i> - The argument <i>x</i> defines the name of
+the local library to use. It is defined in a system-specific manner, so it will
+have to be #if'd based on the operating system. The default if LOCAL_LIBRARY is
+not defined (the normal case) is "sublib.olb" for VMS and "sublib.a" for UNIX.
+LOCAL_LIBRARY is used differently for PROGRAMs and
+SUBROUTINEs.</ul><blockquote>For SUBROUTINEs, LOCAL_LIBRARY is the name of the
+object library that the modules are inserted into during a non-system build
+(system builds go directly to the appropriate system library). This is
+typically used during development and debugging.<br><br>
+For PROGRAMs, LOCAL_LIBRARY is the name of the object library included in the
+link statement when the LIB_LOCAL flag is set. It is used only during
+development and debugging. A program or subroutine is never delivered with
+LOCAL_LIBRARY defined, since the program or subroutine must build in
+directories other than yours. LOCAL_LIBRARY is provided merely as a convenience
+during program development. </blockquote><ul>
+<li>	<b>LIB_ACE_WRAPPERS</b> - ACE external library,<br><br>
+<li>	<b>LIB_CANDELA</b> - Candela external library. Proprietary, for Sun4
+only.<br><br>
+<li>	<b>LIB_C_NOSHR</b> - Normally the program is automatically linked to the C
+run-time library as a shared library or a VMS shareable image, and no flag need
+be given. The C_NOSHR flag, if defined, links the C run-time library as a
+standard link library instead.<br><br>
+<li>	<b>LIB_C3JPEG</b> - Obsolete. Library for the C Cubed JPEG decompression
+board. LIB_C3JPEG also makes the C3JPEG library includes available to the C
+compiler.</ul><blockquote>LIB_C3JPEG is not available on all platforms.
+Currently, it is available only on Sun-4 platforms, as the library is
+hardware-dependent. If the library is not available (specified by the
+C3JPEG_AVAIL_OS flag defined in xvmaininc.h), then the LIB_C3JPEG flag is
+ignored.</blockquote><ul>
+<li>	<b>LIB_CPLT</b> - Obsolete. Common Plotting Package library. The Common
+Plotting Package is currently available under VMS only.<br><br>
+<li>	<b>LIB_CURSES</b> - CURSES package, a set of subroutines for handling
+navigation on a terminal screen using the cursor.<br><br>
+<li>	<b>LIB_DALI</b> - GEM external library.<br><br>
+<li>	<b>LIB_DD_PLUS_PLUS</b> - DD++ external library.<br><br>
+<li>	<b>LIB_DTR</b> - Obsolete. VMS Datatrieve database shareable image. The
+DTR library is available under VMS only. <br><br>
+<li>	<b>LIB_ FORTRAN </b>- FORTRAN run-time library. This flag should <i>only
+</i>be used if MAIN_LANG_C is set; the FORTRAN library is included
+automatically for MAIN_LANG_ FORTRAN .</ul><blockquote>The LIB_ FORTRAN flag is
+needed when linking a C main program to a subroutine written in FORTRAN that
+uses I/O statements (such as WRITE to a string). This subroutine may be hidden
+in a library such as P2SUB, so if you get unexplained link errors, you may need
+this flag.<br><br>
+The FORTRAN library is automatically included under VMS (flag is ignored), so
+you will not know if you need it unless you link the program on a UNIX
+system</blockquote><ul>
+<li>	<b>LIB_FPS</b> - Obsolete. FPS routines for the VMS array processor. The
+FPS library is currently available under VMS only. <br><br>
+<li>	<b>LIB_HWSUB</b> - portable HW (Mars '94/'96 specific) subroutine library.
+This flag also makes HW includes available to the C compiler. <br><br>
+<li>	<b>LIB_HWSUB_DEBUG</b> - debuggable version of the portable HW (Mars
+'94/'96 specific) subroutine library. A program should not be delivered with
+HWSUB_DEBUG. For program development and maintenance only.</ul><blockquote>The
+HWSUB_DEBUG library has not yet been implemented. This flag also makes the HW
+includes available to the C compiler.</blockquote><ul>
+<li><b>	LIB_KERBEROS </b>- Kerberos Version 4 libraries. This flag should be
+defined for programs that define the LIB_MDMS, and use the MDMS DBMS Query
+Interface libary (QI).<br><br>
+<li>	<b>LIB_KERBEROS5</b> - Kerberos Version 5 libraries. This flag should be
+defined for programs that use FEI version 3.<br><br>
+<li>	<b>LIB_LOCAL</b> - Local library defined in LOCAL_LIBRARY (or the default
+local library). It is valid only for type PROGRAM. A program should never be
+delivered with LIB_LOCAL defined, since the program must link in directories
+other than yours. LIB_LOCAL is provided merely as a convenience during program
+development. <br><br>
+<li>	<b>LIB_MATH77</b> - MATH77 mathematics subroutine library. <br><br>
+<li>	<b>LIB_MATRACOMP</b> - Obsolete. Matra compression library. This library
+is proprietary code supplied by Matra for use with the Mars '96
+project.</ul><blockquote>LIB_MATRACOMP is currently available only on Sun-4
+platforms. If the library is not available, then the LIB_MATRACOMP flag is
+ignored. As a temporary measure, the C3JPEG_AVAIL_OS flag defined in
+xvmaininc.h may be used to determine availability of the Matra software. This
+will change in the future (when linkgroups for subroutines are implemented), so
+if you use C3JPEG_AVAIL_OS for the Matra library, put in a comment marking this
+usage as temporary. </blockquote><ul>
+<li>	<b>LIB_MDMS</b> - MDMS (Multimission Data Management Subsystem) client
+library. This flag also makes the MDMS includes available to the C
+compiler.<br><br>
+<li>	<b>LIB_MDMS_FEI</b> - MDMS FEI (File Exchange Interface) library. This
+flag also makes the FEI includes available to the C compiler. LIB_MDMS_FEI may
+be used from type SUBROUTINE for this purpose. <br><br>
+<li>	<b>LIB_MDMS_FEI_3</b> - File Exchange Interface (FEI) client library.
+Currently, you must also define LIB_KERBEROS5, and LIB_PTHREAD to use the FEI_3
+library.<br><br>
+<li>	<b>LIB_MOTIFAPP</b> - The MotifApp library.<br><br>
+<li>	<b>LIB_MOTIF</b> - X-windows and Motif libraries, specifically X11, Xt,
+and Xm. This flag also makes the X and Motif includes available to the C
+compiler. <br><br>
+<li>	<b>LIB_MPFSUB</b> - Mars Pathfinder library.<br><br>
+<li>	<b>LIB_MPFSUB_DEBUG</b> - Mars Pathfinder debug library. Not implemented
+under UNIX.<br><br>
+<li>	<b>LIB_NETWORK</b> - network support libraries, including RPC's (Remote
+Procedure Calls) and sockets. This flag also makes the network includes
+available to the C compiler. </ul><blockquote>Currently, the Multinet network
+support libraries for VMS require a different include syntax. For example,
+instead of "rpc/rpc.h" the syntax would simply be "rpc.h". A conditional
+compile should take care of this. It is hoped that this difference will be
+resolved in the future. </blockquote><ul>
+<li>	<b>LIB_ NETWORK</b>_<b>NOSHR</b> - non-shareable version of the network
+support libraries. It is otherwise identical to LIB_NETWORK. LIB_NETWORK_NOSHR
+is needed if the PVM libraries are used. <br><br>
+<li>	<b>LIB_NIMSCAL</b> - NIMS calibration library. The NIMS calibration
+library is currently available under VMS only. <br><br>
+<li>	<b>LIB_PDS</b> - Current PDS (Planetary Data System) label library,
+including lablib3 and OAL. <br><br>
+<li>	<b>LIB_PDS_LABEL</b> - Deprecated. Old PDS (Planetary Data System) label
+library.<br><br>
+<li>	<b>LIB_PVM</b> - PVM (Parallel Virtual Machine) library. This flag also
+makes the PVM includes available to the C compiler.<br><br>
+<li>	<b>LIB_P1SUB</b> - portable class 1 SUBLIB library. This flag also makes
+the class 1 SUBLIB includes available to the C compiler. <br><br>
+<li>	<b>LIB_P1SUB_DEBUG</b> - debuggable version of the portable class 1 SUBLIB
+library. A program should never be delivered with P1SUB_DEBUG, as it is
+intended for program development and maintenance only .</ul><blockquote>The
+P1SUB_DEBUG library has not yet been implemented. This flag also makes the
+class 1 SUBLIB includes available to the C compiler.</blockquote><ul>
+<li>	<b>LIB_P2SUB</b> - portable SUBLIB library. If you link toP2SUB, you may
+<i>not</i> link to S2 or S3. This flag also makes the class 2 SUBLIB includes
+available to the C compiler.<br><br>
+<li>	<b>LIB_P2SUB_DEBUG</b> - debuggable version of the portable SUBLIB
+library. If you link to P2SUB_DEBUG, you may <i>not</i> link to S2 or S3. A
+program should never be delivered with P2SUB_DEBUG, as it is intended for
+program development and maintenance only .</ul><blockquote>The P2SUB_DEBUG
+library has not yet been implemented. This flag also makes the class 2 SUBLIB
+includes available to the C compiler.</blockquote><ul>
+<li>	<b>LIB_P3SUB</b> - portable class 3 SUBLIB library. If you link to P3SUB,
+you may <i>not</i> link to S2 or S3. This flag also makes the class 3SUBLIB
+includes available to the C compiler.<br><br>
+<li>	<b>LIB_P3SUB_DEBUG</b> - debuggable version of the class 3 portable SUBLIB
+library. If you link to P3SUB_DEBUG, you may <i>not</i> link to S2 or S3. A
+program should never be delivered with P3SUB_DEBUG, as it is intended for
+program development and maintenance only .</ul><blockquote>The P3SUB_DEBUG
+library has not yet been implemented. This flag also makes the class 3 SUBLIB
+includes available to the C compiler.</blockquote><ul>
+<li>	<b>LIB_PTHREAD</b> - POSIX thread library. This library is available
+beginning with Solaris 2.5, IRIX 6.2 with a special patch, and HPUX
+11.x.<br><br>
+<li>	<b>LIB_RDM</b> - Obsolete. RDM library. RDM is currently available under
+VMS only, where it links as a shareable image. <br><br>
+<li>	<b>LIB_ROGUEWAVE</b> - Tools.h++ version 6.1 class library from Roguewave
+Inc. (http://www.roguewave.com/products/tools/tools.html). Contains over 140
+classes, including dates, times, strings, sets, bags, B-Trees, sorted
+collections, linked lists, queues, stacks, collection, internationalization,
+streaming and an interface to the Standard C++ Library.<br><br>
+<li>	<b>LIB_RTL</b> - VICAR Run-Time Library. For both VMS and most Unix
+platforms. If a  shared library isn't available on a Unix platform, the
+non-shared version will be used.<br><br>
+<li>	<b>LIB_RTL_DEBUG</b> - debuggable version of the VICAR Run-Time Library. A
+program should never be delivered with RTL_DEBUG. It is used for program
+development and maintenance only. <br><br>
+<li>	<b>LIB_RTL_NOSHR</b> - VICAR Run-Time Library as a standard link library,
+as opposed to a shared library or a VMS shareable image. Statically links (to
+.a/.olb) rather than dynamically linking to the shared library (.so/.exe). RTL
+is preferred over RTL_NOSHR. <br><br>
+<li>	<b>LIB_SAGE_BASE</b> - gui/base sub-library<br><br>
+<li>	<b>LIB_SAGE_BASE_DEBUG</b> - gui/base debug sub-library<br><br>
+<li>	<b>LIB_SAGE_CLIENT</b> - gui/client sub-library<br><br>
+<li>	<b>LIB_SAGE_CLIENT_DEBUG</b> - gui/client debug sub-library<br><br>
+<li>	<b>LIB_SAGE_SERVER</b> - gui/server sub-library<br><br>
+<li>	<b>LIB_SAGE_SERVER_DEBUG</b> - gui/server debug sub-library<br><br>
+<li>	<b>LIB_SIMBAD - </b>SIMBAD external library.<br><br>
+<li>	<b>LIB_SYBASE_NOSHR</b> - Non-shareable form of SYBASE lib.<br><br>
+<li>	<b>LIB_SPICE</b> - SPICE subroutine library. <br><br>
+<li>	<b>LIB_SYBASE</b> - Sybase database client library. This flag also makes
+the Sybase includes available to the C compiler. LIB_SYBASE may be used from
+type SUBROUTINE for this purpose. <br><br>
+<li>	<b>LIB_S2</b> - Obsolete. Old, unportable, VMS-specific SUBLIB library. S2
+is available under VMS only. If you link to S2, you may <i>not</i> link to
+P2SUB or P3SUB. <br><br>
+<li>	<b>LIB_S2_DEBUG</b> - Obsolete. debuggable version of the old, unportable,
+VMS-specific SUBLIB library. Valid only for type PROGRAM. S2_DEBUG is available
+under VMS only. If you link toS2_DEBUG, you may <i>not</i> link to P2SUB or
+P3SUB. A program should never be delivered with S2_DEBUG, as it is intended for
+program development and maintenance only. The S2_DEBUG library has not yet been
+implemented. <br><br>
+<li>	<b>LIB_S3</b> - Obsolete. Old, unportable, VMS-specific class 3 SUBLIB
+library. Valid for type PROGRAM. S3 is available under VMS only. If you link to
+S3, you may <i>not</i> link toP2SUB or P3SUB. <br><br>
+<li>	<b>LIB_S3_DEBUG</b> - Obsolete. Debuggable version of the old, unportable,
+VMS-specific class 3 SUBLIB library. S3_DEBUG is available under VMS only. If
+you link to S3_DEBUG, you may <i>not</i> link to P2SUB or P3SUB. A program
+should not be delivered with S3_DEBUG, as it is intended for program
+development and maintenance only. The S3_DEBUG library has not yet been
+implemented. <br><br>
+<li>	<b>LIB_TAE</b> - TAE object library. Under VMS it links TAE as a shareable
+image. Some versions of UNIX support shared libraries, so TAE links to the TAE
+shared library. <br><br>
+<li>	<b>LIB_TAE_NOSHR</b> - TAE object library as a standard link library, as
+opposed to a shared library or a VMS shareable image. TAE is preferred over
+TAE_NOSHR. <br><br>
+<li>	<b>LIB_TCL_TK</b> - Tcl/Tk library. (not to be confused with TAE's
+TCL!)<br><br>
+<li>	<b>LIB_THREAD</b> - Solaris thread library. Valid on Solaris 2.x
+only.<br><br>
+<li>	<b>LIB_TIFF</b> - TIFF external library. Also links to geotiff and
+zlib.<br><br>
+<li>	<b>LIB_TLM_COMMON</b> - Telemetry  common library.<br><br>
+<li>	<b>LIB_TLM_GLL</b> - Telemetry GLL specific library.<br><br>
+<li>	<b>LIB_TLM_GLL_SUBLIB</b> - Telemetry GLL specific subroutine
+library.<br><br>
+<li>	<b>LIB_TLM_RPC_CLIENT</b> - Telemetry RPC client library.<br><br>
+<li>	<b>LIB_TLM_RPC_SERVER</b> - Telemetry RPC server library.<br><br>
+<li>	<b>LIB_VRDI</b> - Virtual Raster Display Interface (VRDI) library. Under
+VMS it links the VRDI as a shareable image. Some versions of UNIX support
+shared libraries, so VRDI will link to the VRDI shared library when it is
+implemented. This flag also makes the VRDI includes available to the C
+compiler. LIB_VRDI may be used from type SUBROUTINE for this purpose. <br><br>
+<li>	<b>LIB_VRDI_DEBUG</b> - debuggable version of the VRDI library. A program
+should never be delivered with VRDI_DEBUG; it is intended for program
+development and maintenance only. This flag also makes the VRDI includes
+available to the C compiler. LIB_VRDI_DEBUG may be used from type SUBROUTINE
+for this purpose. <br><br>
+<li>	<b>LIB_VRDI_NOSHR</b> - VRDI as a standard link library, as opposed to a
+shared library or a VMS shareable image. VRDI is preferred over VRDI_NOSHR.
+This flag also makes the VRDI includes available to the C compiler.
+LIB_VRDI_NOSHR may be used from type SUBROUTINE for this purpose. <br><br>
+<li>	<b>LIB_XEXT</b> - Xext library, part of X-windows ("extensions")<br><br>
+<li>	<b>LIB_XMU</b> - Xmu library, part of X-windows ("miscellaneous
+utilities")<br><br>
+<li>	<b>LIB_XPM</b> - X Pixmap library<br><br>
+<li>	<b>LIB_XRT_3D</b> - 3D Graph. Proprietary widget set from the KL
+Group.<br><br>
+<li>	<b>LIB_XRT_GRAPH</b> - XRT graph. Proprietary widget set from the KL
+Group.<br><br>
+<li>	<b>LIB_XRT_TABLE</b> - Table (spreadsheet-like). Proprietary widget set
+from the KL Group.
+<a name="_Ref393878982"></a><a name="_Toc429910621"></a></ul><P><hr size=4>
+<A HREF="Build_VICAR_Apps-2.1.html"> Prev </A>
+|<A HREF="Build_VICAR_Apps-2.3.html"> Next </A>
+|<A HREF="Build_VICAR_Apps-2.html"> Up </A>
+|<A HREF="Build_VICAR_Apps.html"> Title </A>
+|<A HREF="Build_VICAR_Apps-Contents.html"> Contents </A>
+</body></html>

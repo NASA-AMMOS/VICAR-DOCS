@@ -1,0 +1,2101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--
+This document was converted from RTF source: 
+By rtftohtml 4.17
+See http://www.sunpack.com/RTF
+Filename:WORD Ram Disk:RTL_Manual.rtf
+Application Directory:Data Disk:r2h4
+Subject:
+Author:Larry Bolef
+Operator:Larry Bolef
+Document Comments:
+Version Comments:
+Comments:
+Keywords:
+Translation Date:06/05/1999
+Translation Time:08:02:39
+Translation Platform:MacOS
+Number of Output files:59
+This File:WORD Ram Disk:RTL_Manual-3_2.html
+SplitDepth=2
+SkipNavPanel=0
+SkipLeadingToc=0
+SkipTrailingToc=1
+GenContents=1
+GenFrames=0
+GenIndex=0
+-->
+<HEAD lang="en"><META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<TITLE>3.2	Image I/O API </TITLE>
+</HEAD>
+
+<BODY ><DIV ALIGN="LEFT"><A HREF="RTL_Manual-Image.html">Up</A> | 
+<A HREF="RTL_Manual-3_1.html">Previous</A> | 
+<A HREF="RTL_Manual-Label.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+<HR>
+
+<UL>
+<A HREF="#Heading45">3.2.1	x/zvadd&#8212;Add information to control block </A><BR>
+<A HREF="#Heading46">3.2.2	x/zvclose&#8212;Close a file</A><BR>
+<A HREF="#Heading47">3.2.3	x/zveaction&#8212;Set the default error handling action </A><BR>
+<A HREF="#Heading48">3.2.4	x/zvget&#8212;Retrieve control block information </A><BR>
+<A HREF="#Heading49">3.2.5	x/zvopen&#8212;Open a file </A><BR>
+<A HREF="#Heading50">3.2.6	x/zvread&#8212;Read a line </A><BR>
+<A HREF="#Heading51">3.2.7	x/zvsignal&#8212;Signal an error </A><BR>
+<A HREF="#Heading52">3.2.8	x/zvunit&#8212;Assign a unit number to a file </A><BR>
+<A HREF="#Heading53">3.2.9	x/zvwrit&#8212;Write an image line </A><BR>
+</UL>
+
+<a name="Heading53"></a><a name="_Toc425047516"></a><a name="_Toc425048071"></a><a name="_Toc453201410"></a><A NAME="Heading44"></A><H2 ALIGN="LEFT">
+3.2	Image
+I/O API 
+</H2>
+<P ALIGN="LEFT">The
+nine routines for image I/O (line I/O and array I/O) are described below. A
+description of the optional arguments follows each subroutine description. 
+<a name="Heading54"></a><a name="_Toc425047517"></a><a name="_Toc425048072"></a><a name="_Toc425329689"></a><a name="Image"></a><a name="_Toc453201411"></a></P>
+<A NAME="Heading45"></A><H3 ALIGN="LEFT">
+3.2.1	x/zvadd&#8212;Add
+information to control block 
+</H3>
+
+<PRE>call xvadd(unit, status, &lt;optionals&gt;, ' ')
+status = zvadd(unit, &lt;optionals&gt;, 0);</PRE><P ALIGN="LEFT"><B>x/zvadd</B>
+updates the internal control block information describing the file associated
+with UNIT. Each item of information is identified by a key word and is followed
+by a value which holds the update information. The keyword-value pairs are
+optional and may be entered in any order. To process the file,
+<B>
+x/zvadd
+</B>
+must be called before opening (with 
+<B>x/zvopen</B>)
+the file. 
+</P><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+input, integer 
+<BR>Unit
+number of file from 
+<B>x/zvunit</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer 
+<BR>Error
+status code. A value of one indicates success. The error codes are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">10</A>
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>.
+See also the optional arguments OPEN_ACT, IO_ACT, LAB_ACT, and ERR_ACT. 
+</UL><P ALIGN="LEFT"><B>Optional
+arguments:
+</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>U_NL:</B>
+input, integer 
+<BR>Indicates
+that the Executive is to create an output file capable of holding NL lines. If
+the file associated with the unit number already exists but is too small, it
+will be enlarged. 
+<LI><FONT FACE="Symbol">	</FONT><B>U_NS:</B>
+input, integer 
+<BR>As
+in NL but for samples. 
+<LI><FONT FACE="Symbol">	</FONT><B>U_NB:</B>
+input, integer 
+<BR>As
+in NL but for bands. 
+<LI><FONT FACE="Symbol">	</FONT><B>U_NBB:</B>
+input, integer 
+<BR>For
+output files, indicates the number of bytes of binary prefix that will precede
+each image line. The binary prefix will be stored in an area before each image
+line. It will be hidden from subsequent programs unless the program opens the
+file with a COND value that includes BINARY. Subsequent reads of a file with
+COND including BINARY will return the binary prefix to each line ahead of the
+line in the read buffer. An output file with a non-zero U_NBB will expect the
+binary prefix to precede the image line in the 
+<B>x/zvwrit</B>
+buffer. For input files U_NBB is ignored. Defaults to 0. 
+<LI><FONT FACE="Symbol">	</FONT><B>U_NLB:</B>
+input, integer 
+<BR>For
+output files, indicates the number of lines of binary header information that
+is to precede the image lines in an image file. The image I/O subsystem will
+expect these lines to be written with 
+<B>x/zvwrit</B>
+prior to the writing of the image lines. The image header will remain hidden
+from subsequent programs unless those programs open the file with a value of
+COND that includes the substring, BINARY. For input files, 
+<B>U_NLB</B>
+is ignored. Defaults to 0. 
+<LI><FONT FACE="Symbol">	</FONT><B>U_N1,
+U_N2, U_N3
+</B>:
+input, integers 
+<BR>Indicate
+that the Executive is to ensure that the output file will have the dimensions
+specified by the values associated with the respective arguments. U_N1 refers
+to the first file dimension, U_N2 the second, and U_N3 the third. These
+arguments are useful for the program which does not care about the file
+organization, and simply wants to deal with records and pixels. The relation
+between these arguments and the normal NL, NS, NB arguments are as follows:
+</UL><DIV ALIGN="CENTER"><TABLE BORDER>
+<TR VALIGN="TOP">
+<TD WIDTH=46 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">ORG</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">N1</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">N2</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">N3</FONT></TT></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=46 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">BSQ</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">NS</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">NL</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">NB</FONT></TT></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=46 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">BIL</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">NS</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">NB</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">NL</FONT></TT></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=46 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">BIP</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">NB</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">NS</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">NL</FONT></TT></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<P ALIGN="CENTER">Table
+10: File Organization
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>U_ORG:</B>
+input, string 
+<BR>Indicates
+the file organization that the programmer expects or desires for the file. The
+acceptable organizations are band sequential, band interleaved by pixel, and
+band interleaved by line. The respective values that represent these states
+are, 'BSQ', 'BI P', and 'BIL'. If the file is being created by the 
+<B>x/zvopen</B>,
+then the indicated organization will become the new file organization. If the
+file is an existing file that is not to be deleted and created again, then the
+Executive will check the indicated organization against that of the existing
+file. If they are not the same then an error condition will be raised. If the
+image file has less than three dimensions, this argument will be ignored. 
+<LI><FONT FACE="Symbol">	</FONT>U_DIM:
+input, integer
+<BR>Number
+of dimensions of dimensions the file has. Current default if U_DIM not
+specified is 3. 4 is permitted but not supported.
+<LI><FONT FACE="Symbol">	</FONT><B>METHOD</B>:
+input, string 
+<BR>Indicates
+the access method for the file.
+<BR>Valid
+values are 'SEQ' (sequential) or 'RANDOM'. The default is 'SEQ'. 'SEQ' and
+'RANDOM' only effect the internal buffering used by the executive; if the
+method is 'SEQ', then a larger buffer will be used for I/O, resulting in more
+efficient processing. If 'RANDOM' is given, a smaller buffer will be used to
+avoid reading unnecessary data.
+</UL><P ALIGN="LEFT">If
+the file is a tape file, an error condition will be raised if 'RANDOM' is
+specified. The specification of 'RANDOM' for a file with OP equal to 'WRITE' is
+equivalent to 'SEQ'. 
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>OP</B>:
+input, string 
+<BR>Indicates
+the intended operation. Valid values are 'READ', 'WRITE', and 'UPDATE'. Default
+is 'READ'. 
+<B>Output
+files must have OP equal to WRITE. 
+</B><LI><FONT FACE="Symbol">	</FONT><B>OPEN_ACT:</B>
+input, string 
+<BR>Indicates
+the action to be taken by the Executive when an error condition is raised as a
+result of the open. A valid string may contain one or more of three characters
+in any order, 'A', 'U', 'S'. The presence of each character has the following
+meanings:
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>A</B>:
+an error will cause an immediate program abort. Otherwise, the routine will
+return an error number in STATUS. 
+<LI><FONT FACE="Symbol">	</FONT><B>U</B>:
+an error will cause the string that the user has specified with the OPEN_MES
+optional to be printed. 
+<LI><FONT FACE="Symbol">	</FONT><B>S</B>:
+an error will cause a system message to be printed. 
+</UL></UL><P ALIGN="LEFT">The
+three values are independent. Thus 'SA' will cause a system message to be
+printed and the program to abort if an error occurs. If OPEN_ACT consists only
+of blanks, an error will cause the 
+<B>x/zvopen</B>
+to return an error number in STATUS. Default is the action specified with 
+<B>x/zveaction</B>.
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>IO_ACT:</B>
+input, string 
+<BR>As
+in OPEN_ACT but for
+<B>
+x/zvread
+</B>
+and 
+<B>x/zvwrit</B>.
+Default is specified with 
+<B>x/zveaction</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>LAB_ACT:</B>
+input, string 
+<BR>Specified
+as is OPEN_ACT, LAB_ACT defines a default error action to be taken by the XL
+routines. It can be overridden in a call to an XL routine with the ERR_ACT
+optional. The message given if a 'U' is given is specified by LAB_MESS. The
+default for LAB_ACT is given by 
+<B>x/zveaction</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>CLOS_ACT:</B>
+input, string 
+<BR>Indicates
+an action to be taken when the file is closed. If the string contains one of
+the substrings listed below, the corresponding action will be taken. More than
+one action may be specified. 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT>DELETE:
+Causes the file to be deleted. Default is to retain the file. 
+<LI><FONT FACE="Symbol">	</FONT>FREE:
+Frees up the unit number so it can be used again. If this action is specified,
+then the file can no longer be accessed using this unit number. If you want to
+access the file again, x/zvunit must be called again. Since there are a limited
+number of unit slots available, FREE is most useful when processing large
+numbers of files. It allows VICAR to re-use this unit slot. If FREE is not
+specified (the default), then the file may be opened again via x/zvopen without
+calling x/zvunit, but VICAR cannot assign this unit number to another file. 
+</UL><LI><FONT FACE="Symbol">	</FONT><B>FORMAT</B>:
+output, string, maximum length 32 
+<BR>The
+format of the pixel in an existing file. Possibilities are BYTE, HALF, FULL,
+REAL, DOUB, COMP. WORD and COMPLEX are equivalent to HALF and COMP, but are
+non-standard. 
+<LI><FONT FACE="Symbol">	</FONT><B>O_FORMAT:</B>
+input, string 
+<BR>For
+input files this argument is ignored. For output files, O_FORMAT becomes the
+format of the output file. Valid values are 'BYTE', 'HALF', 'FULL', 'REAL',
+'DOUB', and 'COMP'. 'WORD' and 'COMPLEX' are equivalent to 'HALF' and 'COMP',
+respectively, but for consistency are no longer to be used. The Executive will
+ensure that the output pixels have the indicated FORMAT by converting if
+necessary. A related argument is U_FORMAT which is the format of the pixels
+returned or passed to 
+<B>x/zvread</B>
+or 
+<B>x/zvwrit</B>.
+Default is the primary input FORMAT, that is, the format of the pixels in the
+input file.
+<LI><FONT FACE="Symbol">	</FONT><B>U_FORMAT:</B>
+input, string 
+<BR>Indicates
+the format of pixels in the buffer returned by 
+<B>x/zvread</B>
+or the format of the pixels the program will pass to 
+<B>x/zvwrit</B>.
+If for input files U_FORMAT is not equal to the input file format, then VICAR
+will convert. On output, if U_FORMAT is not equal to O_FORMAT then VICAR will
+convert. Default for input files is the input file format; for output files, it
+is the primary input U_FORMAT.
+<LI><FONT FACE="Symbol">	</FONT><B>I_FORMAT:</B>
+input, string, maximum length 8 
+<BR>If
+an input file is unlabeled and does not have the default pixel format of
+'BYTE', then this optional may be used to set the proper format; valid values
+are ' BYTE', 'HALF', 'FULL','REAL', 'DOUB', and 'COMP'. 'WORD' and 'COMPLEX'
+are equivalent to 'HALF' and 'COMP', respectively, but for consistency should
+no longer be used.
+<LI><FONT FACE="Symbol">	</FONT><B>OPEN_MES:</B>
+input, string, maximum length 132 
+<BR>OPEN_MES
+holds the user message that is issued when the OPEN_ACT argument contains the
+substring 'U' and an error occurs. Default is specified by 
+<B>x/zveaction</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>IO_MESS:</B>
+input, string, maximum length 132 
+<BR>Holds
+the user message that is issued under certain settings of the IO_ACT argument
+when I/O errors occur. Default is specified by 
+<B>x/zveaction</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>LAB_MESS:</B>
+input, string, maximum length 132 
+<BR>Holds
+the user message that is issued when the ERR_ACT optional is not given to an XL
+routine, and the LAB_ACT optional contains the substring 'U'. Default is
+specified by 
+<B>x/zveaction</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>TYPE</B>:
+input, string, maximum length 8 
+<BR>With
+this argument, the programmer can designate the type of the output file
+desired. If the file already exists the Executive will alter any file name and
+label items that indicate the file type. On input, the file will be checked for
+type. If a mismatch occurs between the TYPE argument and the actual file type,
+an error status condition will be raised. Currently supported values are: 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT>IMAGE:
+The file contains image data. 
+<LI><FONT FACE="Symbol">	</FONT>PARM:
+The file contains parameters for input to a program via the PARAMS parameter on
+the command line. 
+<LI><FONT FACE="Symbol">	</FONT>PARAM:
+Same as PARM, but an older file type. 
+<LI><FONT FACE="Symbol">	</FONT>GRAPH1:
+The file is an IBIS Graphics-1 file. 
+<LI><FONT FACE="Symbol">	</FONT>GRAPH2:
+The file is an IBIS Graphics-2 file. 
+<LI><FONT FACE="Symbol">	</FONT>GRAPH3:
+The file is an IBIS Graphics-3 file. 
+<LI><FONT FACE="Symbol">	</FONT>TABULAR:
+The file is an IBIS Tabular file. 
+</UL></UL><P ALIGN="LEFT"></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>COND</B>:
+input, string, maximum length 132 
+<BR>If
+the string is null or contains only blanks, this argument will have no effect.
+If the string contains one of the substrings listed below, the indicated
+condition will be set for the specified file. 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>NOLABELS</B>:
+Indicates that no label processing will be done for the file. 
+<LI><FONT FACE="Symbol">	</FONT><B>NOBLOCK</B>:
+Indicates that if the file is an output file (OP=WRITE), the file will not be
+blocked (RECSIZE=BUFSIZ). 
+<LI><FONT FACE="Symbol">	</FONT><B>BINARY:
+</B>indicates
+that the binary prefix and binary header, if they exist, will be unhidden to
+the program (see U_NLB and U_NBB) 
+<LI><FONT FACE="Symbol">	</FONT><B>VARREC</B>:
+Indicates that the file is a tape containing variable length records. NOLABELS
+and NOBLOCK must also be specified with this argument. 
+</UL></UL><P ALIGN="LEFT">The
+string may contain more than one substring, such as 'COND', 'NOBLOCK NOLABELS'.
+Default is to label and block files and hide the binary areas of the file. 
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>U_FILE:</B>
+input, integer 
+<BR>Used
+to specify the file number to be accessed on a tape. If U_FILE = 0, the tape
+advances to the next file (the default). If U_FILE &gt; 0, the tape is moved to
+the absolute file number given. U_FILE may not be less than zero. The first
+file on a tape is file number one; thus if U_FILE = 1, the tape will be rewound. 
+<LI><FONT FACE="Symbol">	</FONT><B>HOST,
+string: 
+</B>The
+type of computer used to generate the image. The value for HOST appears in the
+system image label. It is used only for documentation; the RTL uses the INTFMT
+and REALFMT label items to determine the representation of the pixels in the
+file. HOST will default to the type of computer the program is running on, so
+it normally will not be needed. It is used to write a file in a host format
+other than the native one. While this is not recommended (the general rule is
+read anything, write native format), it is allowed. See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>,
+for more information. New values for HOST will appear every time the RTL is
+ported to a new machine, so no checking is done on the string. However, the
+currently accepted values and what they represent, are listed. See 
+<A HREF="RTL_Manual-1_4.html#_Ref393618344">Table 1: Valid VICAR HOST Labels and Machine Types</A>
+.
+In addition, the following values are also accepted: 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT>NATIVE:
+The host type of the currently running machine 
+<LI><FONT FACE="Symbol">	</FONT>LOCAL:
+Same as NATIVE 
+</UL></UL><P ALIGN="LEFT"></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>INTFMT,
+string
+</B>:
+The format used to represent integers in the file. INTFMT, REALFMT, and HOST
+should all match, so if you change one please change all three. INTFMT is a
+system label item in the image used by the RTL to automatically convert data
+read in, via 
+<B>x/zvread,
+</B>to
+the native integer representation. It defaults to the representation of the
+machine the program is running on, so it only needs to be set when writing in a
+non-native format. If you are reading a file in such a way that the RTL does 
+<I>not</I>
+automatically convert datatypes, such as Array I/O or CONVERT OFF,  pay
+attention to the INTFMT label (via
+<B>
+x/zvget
+</B>)
+and use the 
+<B>x/zvtrans</B>
+representation (for binary labels see BINTFMT below). See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>,
+for more information. The valid values of INTFMT may change as the RTL is
+ported to new machines. However, the currently valid values are listed. See 
+<A HREF="RTL_Manual-1_4.html#_Ref393618329">Table 2: Valid VICAR Integer Formats</A>.
+In addition, the following values are also accepted: 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT>NATIVE:
+The host type of the currently running machine 
+<LI><FONT FACE="Symbol">	</FONT>LOCAL:
+Same as NATIVE 
+</UL></UL><P ALIGN="LEFT"></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>REALFMT,
+string
+</B>
+:The format used to represent floating point numbers in the file. INTFMT,
+REALFMT, and HOST should all match, so if you change one please change all
+three. REALFMT is a system label item in the image used by the RTL to
+automatically convert data read in, via 
+<B>x/zvread</B>,
+to the native floating point representation. It defaults to the representation
+of the machine the program is running on, so it only need s to be set when
+writing in a non-native format. If you are reading a file in such a way that
+the RTL does 
+<I>not
+a
+</I>utomatically
+convert data types, such as Array I/O or CONVERT OFF,  pay attention to the
+REALFMT label (via 
+<B>x/zvget</B>)
+and use the 
+<B>x/zvtrans</B>
+family of routines to translate to the native representation (for binary labels
+see INTFMT below). See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>,
+for more information. The valid values of REALFMT may change as the RTL is
+ported to new machines. However, the currently valid values are listed. See 
+<A HREF="RTL_Manual-1_4.html#_Ref393618311">Table 3: Valid VICAR Real Number Formats</A>.
+In addition, the following values are also accepted: 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>NATIVE</B>:
+The host type of the currently running machine 
+<LI><FONT FACE="Symbol">	</FONT><B>LOCAL</B>:
+Same as NATIVE 
+</UL></UL><P ALIGN="LEFT"></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>BHOST,
+string
+</B>:
+The type of computer used to generate the binary labels. The value for BHOST
+appears in the system image label. It is used only for documentation; the RTL
+uses the BINTFMT and INTFMT label items to determine the representation of the
+binary labels in the file. For input (or update) files, the BHOST optional is
+used if the INTFMT label is not present in the file (if neither are present it
+defaults to VAX-VMS). For output files, the BHOST optional is used if is OFF
+(if not present the file's BHOST comes from the primary input, or defaults to
+VAX-VMS). If is ON, the BHOST optional is ignored since the file's INTFMT gets
+set to the native host. See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>,
+for more information. The valid values for BHOST are exactly the same as for
+HOST above (including NATIVE and LOCAL). 
+<LI><FONT FACE="Symbol">	</FONT><B>BINTFMT,
+string
+</B>:
+The format used to represent integers in the binary label. BINTFMT, BREALFMT,
+and BHOST should all match, so if you change one change all three. BINTFMT is a
+system label item in the image made available by the RTL to help applications
+to convert binary labels read or written to the file. For input (or update)
+files, the BINTFMT optional is used if the BINTFMT label is not present in the
+file (if neither are present it defaults to the integer format for VAX-VMS).
+For output files, the BINTFMT optional is used if is OFF (if not present the
+file's BINTFMT comes from the primary input, or defaults to the integer format
+for VAX-VMS). If is ON, the BINTFMT optional is ignored since the file's
+BINTFMT gets set to the native host integer format. See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>,
+for more information. Applications using binary labels should pay close
+attention to BINTFMT, as they are responsible for doing their own data format
+conversions. 
+</UL><P ALIGN="LEFT">The
+valid values for BINTFMT are exactly the same as for INTFMT above (including
+NATIVE and LOCAL). 
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>BREALFMT,
+string
+</B>:
+The format used to represent real numbers in the binary label. BREALFMT,
+BINTFMT, and BHOST should all match, so if you change one change all three.
+INTFMT is a system label item in the image made available by the RTL to help
+applications to convert binary labels read or written to the file. For input
+(or update) files, the BREALFMT optional is used if the BREALFMT label is not
+present in the file (if neither are present it defaults to the floating-point
+format for VAX-VMS). For output files, the BREALFMT optional is used if is OFF
+(if not present the file's INTFMT comes from the primary input, or defaults to
+the floating-point format for VAX-VMS). If is ON, the BREALFMT optional is
+ignored since the file's BREALFMT is set to the native host floating-point
+format. See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>,
+for more information. Applications using binary labels should pay close
+attention to BREALFMT, as they are responsible for doing their own data format
+conversions. 
+<BR>The
+valid values for BREALFMT are exactly the same as for REALFMT above (including
+NATIVE and LOCAL). 
+<LI><FONT FACE="Symbol">	</FONT><B>BLTYPE,
+string: 
+</B>The
+type of the binary label
+<B>.
+</B>The
+value for BLTYPE appears in the system image label. This is not type in the
+sense of datatype, but is a string identifying the kind of binary label in the
+file. The RTL does not do any interpretation or checking of BLTYPE. It is
+intended mainly for documentation, so people looking at the image will know
+what kind of binary label is present. It may also be used by application
+programs to make sure they can process the given type of binary label, or to
+make sure it is processed correctly. For input (or update) files, the BLTYPE
+optional is used if the BLTYPE label is not present in the file (not that
+&#8220;used&#8221; in this sense means only being made available to 
+<B>x/zvget</B>).
+For output files, the BLTYPE optional is used for the BLTYPE system label of
+the file (regardless of the setting). If the optional is not present, the
+file's BLTYPE comes from the primary input. See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>,
+for more information. The valid values of BLTYPE are maintained in a name
+registry, so that all possible kinds of binary labels can be documented in one
+place. Although the RTL does no checking on the given name, only names that are
+registered should be used in BLTYPE. See 
+<A HREF="RTL_Manual-1_7.html#Heading12">1.7.2</A>
+<A HREF="RTL_Manual-1_7.html#Heading12">Programming and Binary Labels</A>,
+for more details. 
+<LI><FONT FACE="Symbol">	</FONT><B>CONVERT</B>,
+string:  The valid values for CONVERT are ON and OFF. The default is ON.
+Normally, the RTL will automatically convert pixels that are read from a file
+to the native host representation, and to the data type specified in U_FORMAT.
+</UL><P ALIGN="LEFT">Setting
+CONVERT to OFF turns off both of these conversions, giving you the bit patterns
+that are in the file directly. When writing a file, host conversion is possible
+(although not normally used), but the U_FORMAT data type conversion is normally
+performed. Setting CONVERT to OFF turns off both of these conversions as well,
+writing the bit patterns that are in memory directly to the file.
+</P><P ALIGN="LEFT">Note:
+ Be careful!  If you turn CONVERT OFF, you are responsible for doing your own
+data type conversions. Any given program should be able to read files written
+on any machine, so if you turn off CONVERT you should make use of the
+<B>
+x/ztvtrans
+</B>
+family of routines. See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>,
+for details.
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>BIN_CVT</B>,
+string:  The valid values for BIN_CVT are ON and OFF. The default is OFF.
+BIN_CVT is used to inform the RTL whether or not you will be converting binary
+labels to the native host representation. If BIN_CVT is ON, then the host
+formats in the output file (BHOST, BINTFMT, and BREALFMT) will be set to the
+native machine's host formats. This will be the standard case for applications
+that know how to interpret the binary label. Since the binary label type is
+known, the application can convert the data to the native format before writing
+the file.
+</UL><P ALIGN="LEFT">If
+the application does not know the binary label type, however (such as a
+general-purpose application), then it cannot convert the host format. In this
+case, set BIN_CVT to OFF. This means the output file will receive the binary
+label host types of the primary input file, defaulting to VAX-VMS if not
+available. The general-purpose application may then simply transfer the binary
+labels over to the output file without re-formatting them. The BHOST, BINTFMT,
+and BREALFMT optional arguments will override this setting, but if BIN_CVT is
+OFF (they are ignored if BIN_CVT is on). BIN_CVT is ignored for input files. See 
+<A HREF="RTL_Manual-1_7.html#Heading12">1.7.2</A>
+<A HREF="RTL_Manual-1_7.html#Heading12">Programming and Binary Labels</A>,
+for more details.
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>UPD_HIST</B>,
+string: The valid values for UPD_HIST are ON and OFF. Default is OFF. UPD_HIST
+controls whether or not to write a history label when the file is opened in
+UPDATE mode. If it is ON, a label is written; if OFF (the default), no label is
+written. UPD_HIST is only used in UPDATE mode, not in READ or WRITE. In WRITE
+mode, a history label is always created). 
+<a name="Heading55"></a><a name="_Toc425047518"></a><a name="_Toc425048073"></a><a name="_Toc425329690"></a><a name="_Toc453201412"></a></UL><A NAME="Heading46"></A><H3 ALIGN="LEFT">
+3.2.2	x/zvclose&#8212;Close
+a file
+</H3>
+
+<PRE>call xvclose(unit, status, &lt;optionals&gt;, ' ')
+status = zvclose(unit, &lt;optionals&gt;, 0);</PRE><BLOCKQUOTE>
+<B>x/zvclose</B>
+will close an open image file. The use of 
+<B>x/zvclose</B>
+is required in an application program. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+input, integer 
+<BR>Unit
+number of file from 
+<B>x/zvunit</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer 
+<BR>Error
+status code. A value of one indicates success. See the optional arguments
+OPEN_ACT, and IO_ACT under
+<B>
+x/zvopen
+</B>.
+</UL><P ALIGN="LEFT"><B>Optional
+arguments:
+</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>CLOS_ACT:</B>
+input, string, maximum length 132 
+<BR>Indicates
+an action to be taken when the file is closed. If the string contains one of
+the substrings listed below, the corresponding action will be taken. More than
+one action may be specified. 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>DELETE</B>:
+Causes the file to be deleted. Default is to retain the file. 
+<LI><FONT FACE="Symbol">	</FONT><B>FREE</B>:
+Frees up the unit number so it can be used again. If this action is specified,
+then the file can no longer be accessed using this unit number. If you want to
+access the file again, x/zvunit must be called again. Since there are a limited
+number of unit slots available, FREE is most useful when processing large
+numbers of files. It allows VICAR to re-use this unit slot. If FREE is not
+specified (the default), then the file may be opened again via 
+<B>x/zvopen</B>
+without calling 
+<B>x/zvunit</B>,
+but VICAR cannot assign this unit number to another file. 
+<a name="Heading56"></a><a name="_Toc425047519"></a><a name="_Toc425048074"></a><a name="_Toc425329691"></a><a name="_Toc453201413"></a></UL></UL><A NAME="Heading47"></A><H3 ALIGN="LEFT">
+3.2.3	x/zveaction&#8212;Set
+the default error handling action 
+</H3>
+<P ALIGN="LEFT">call
+xveaction (action, message) 
+<BR>status
+= zveaction (action, message) 
+</P>
+<BLOCKQUOTE>
+<B>x/zveaction</B>
+sets the default error handling action for the entire VICAR job. It is used as
+a default for all the error handling optionals such as OPEN_ACT, IO_ACT,
+LAB_ACT, and ERR_ACT, and it is used directly by routines that do not have
+their own independent error action arguments. 
+<BR>
+The
+default if 
+<B>x/zveaction</B>
+is not called is a null string for both the action and the message. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>ACTION</B>:
+input, string, maximum length 8 
+<BR>Indicates
+the action to be taken by the Executive when an error condition is raised. A
+valid string may contain one or more of three characters in any order, 'A',
+'U', 'S'. The presence of each character has the following meanings: 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>A:
+</B>an
+error will cause an immediate program abort.
+<B>
+</B>Otherwise,
+the routine will return an error number in a status variable (if available). 
+<LI><FONT FACE="Symbol">	</FONT><B>U</B>:
+an error will cause the string that is specified with the MESSAGE argument to
+be printed. 
+<LI><FONT FACE="Symbol">	</FONT><B>S</B>:
+an error will cause a system message to be printed. 
+</UL></UL><P ALIGN="LEFT">The
+three values are independent of each other. Thus 'SA' will cause a system
+message to be printed and the program to abort if an error occurs. If ACTION
+consists only of blanks, or if 
+<B>x/zveaction</B>
+has never been called, an error will cause the Executive to return an error
+number in a status variable (if one is available on the particular subroutine
+that had the error). 
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>MESSAGE</B>:
+input, string, maximum length 132 
+<BR>MESSAGE
+holds the user message that is issued when the ACTION argument contains the
+substring 'U' and an error occurs. Even if ACTION is overridden by a action
+optional (such as OPEN_ACT), the message specified by this argument may still
+be used if the optional contains the substring 'U', unless,, it is overridden
+by the corresponding message optional (such as OPEN_MES). 
+<a name="Heading57"></a><a name="_Toc425047520"></a><a name="_Toc425048075"></a><a name="_Toc425329692"></a><LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer 
+<BR>Error
+status code. A value of one indicates success. See the optional arguments
+OPEN_ACT, and IO_ACT under
+<B>
+x/zvopen
+</B>.
+<a name="_Toc453201414"></a></UL><A NAME="Heading48"></A><H3 ALIGN="LEFT">
+3.2.4	x/zvget&#8212;Retrieve
+control block information 
+</H3>
+
+<PRE>call xvget(unit, status, &lt;optionals&gt;, ' ')
+status = zvget(unit, &lt;optionals&gt;, 0);</PRE><BLOCKQUOTE>
+<B>x/zvget</B>
+permits the programmer to request file information stored in the executive's
+internal control block associated with a unit number. The item of information
+is identified by an input key word field. The information is returned by 
+<B>x/zvget</B>
+in the variable following the key word argument. The keyword-value pairs are
+optional and may be entered pairwise in any order. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+input, integer 
+<BR>Unit
+number of file from 
+<B>x/zvunit</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer 
+<BR>Error
+status code. A value of one indicates success. See the optional arguments
+OPEN_ACT and IO_ACT under
+<B>
+x/zvopen
+</B>.
+</UL><P ALIGN="LEFT"><B>Optional
+arguments:
+</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>FORMAT</B>:
+output, string, maximum length 32 
+<BR>The
+format of the pixel in an existing file. Possibilities are BYTE, HALF, FULL,
+REAL, DOUB, COMP. WORD and COMPLEX are equivalent to HALF and COMP, but are
+non-standard. 
+<LI><FONT FACE="Symbol">	</FONT><B>NL</B>:
+output, integer 
+<BR>The
+number of lines in the image 
+<LI><FONT FACE="Symbol">	</FONT><B>NS</B>:
+output, integer 
+<BR>The
+number of samples in the image. 
+<LI><FONT FACE="Symbol">	</FONT><B>NB</B>:
+output, integer 
+<BR>The
+number of bands in the image. 
+<LI><FONT FACE="Symbol">	</FONT><B>N1,
+N2, or N3
+</B>:
+output, integer 
+<BR>The
+number of pixels in the first, second and third dimensions of the image. The
+values returned refer to the physical dimensions of the file and are
+independent of file organization. 
+<LI><FONT FACE="Symbol">	</FONT><B>DIM</B>:
+output, integer 
+<BR>The
+dimension of the image. Valid values are 2 or 3. Currently, all new files
+created by the executive have a DIM of 3. If DIM is 3 and NB is 1, then the
+file effectively has a DIM of 2. 
+<LI><FONT FACE="Symbol">	</FONT><B>ORG</B>:
+output, string, maximum length 32 
+<BR>The
+file organization; organizations may be: BSQ (band sequential), BIP (band
+interleaved by pixel), or BIL (band interleaved by line). 
+<LI><FONT FACE="Symbol">	</FONT><B>NAME</B>:
+output, string, maximum length 132.
+<BR>The
+host system file name. For a display, the display id is returned. 
+<LI><FONT FACE="Symbol">	</FONT><B>TYPE</B>:
+output, string, maximum length 32 
+<BR>The
+type of file. Currently supported values are: 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>IMAGE</B>:
+The file contains image data.
+<B>
+</B><LI><FONT FACE="Symbol">	</FONT><B>PARM</B>:
+The file contains parameters for input to a program via the PARAMS parameter on
+the command line. 
+<LI><FONT FACE="Symbol">	</FONT><B>PARAM</B>:
+Same as PARM, but an older file type. 
+<LI><FONT FACE="Symbol">	</FONT><B>GRAPH1</B>:
+The file is an IBIS Graphics-1 file. 
+<LI><FONT FACE="Symbol">	</FONT><B>GRAPH2</B>:
+The file is an IBIS Graphics-2 file. 
+<LI><FONT FACE="Symbol">	</FONT><B>GRAPH3</B>:
+The file is an IBIS Graphics-3 file. 
+<LI><FONT FACE="Symbol">	</FONT><B>TABULAR</B>:
+The file is an IBIS Tabular file. 
+</UL></UL><P ALIGN="LEFT"></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>PIX_SIZE:</B>
+output, integer 
+<BR>The
+size of a pixel in bytes. 
+<LI><FONT FACE="Symbol">	</FONT><B>BUFSIZ</B>:
+output, integer 
+<BR>The
+size of the internal buffer being used for the I/O operations. If the file is a
+tape, BUFSIZ will be equivalent to the block size of the tape in bytes. 
+<LI><FONT FACE="Symbol">	</FONT><B>RECSIZE</B>:
+output, integer 
+<BR>The
+record size in bytes. Equal to PIX_SIZE x N1. 
+<LI><FONT FACE="Symbol">	</FONT><B>VARSIZE</B>:
+output, integer 
+<BR>The
+record size of the last read for variable length records. VARSIZE is only valid
+if COND VARREC was given in 
+<B>x/zvopen</B>
+or 
+<B>x/zvadd</B>.
+If VARREC was not specified, the value of VARSIZE is undefined. 
+<LI><FONT FACE="Symbol">	</FONT><B>FLAGS:
+</B>output,
+integer 
+<BR>FLAGS
+is an integer whose bits represent various attributes of the unit in question.
+To test a value in FLAGS, perform a bit-wise AND with it. For example, in the C
+language you could test to see if a file is open with the code 
+</UL>
+<PRE>int flags;
+
+xvget(&amp;unit, &amp;stat, "FLAGS", &amp;flags);
+if (flags &amp; OPEN) {. . .</PRE><P ALIGN="LEFT">The
+various flags listed here are predefined for applications written in C. Only
+the names should be used, to protect against changes in future versions of the
+executive. 
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>OPEN</B>
+indicates that the unit has already been opened by 
+<B>x/zvopen</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>NO_LABELS</B>
+indicates that the file was opened with the COND, NOLABELS option. 
+<LI><FONT FACE="Symbol">	</FONT><B>LABELS_MODIFIED</B>
+indicates that the label I/O routines have been called, modifying the image
+label. 
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT_TAPE</B>
+indicates that the unit is a tape file. 
+<LI><FONT FACE="Symbol">	</FONT><B>DATA_WRITTEN</B>
+indicates that the first logical data record was written. For internal use only. 
+<LI><FONT FACE="Symbol">	</FONT><B>NOBLOCK</B>
+indicates that COND, NOBLOCK was specified at open time, and that tapes will be
+unblocked (one logical record per physical record). 
+<LI><FONT FACE="Symbol">	</FONT><B>BINARY
+</B>indicates
+that COND, BINARY was specified at open time, causing binary labels, if
+present, to be available to the application. 
+<LI><FONT FACE="Symbol">	</FONT><B>VARREC
+</B>indicates
+that COND, VARREC was specified at open time, allowing variable length records
+on a tape. 
+<LI><FONT FACE="Symbol">	</FONT><B>SEQUENTIAL_DEVICE</B>
+indicates that the device only allows sequential access, such as a magnetic
+tape. 
+<LI><FONT FACE="Symbol">	</FONT><B>HOST,
+string: 
+</B>The
+type of computer used to generate the image. The value for HOST appears in the
+system image label. It is used only for documentation; the RTL uses the INTFMT
+and REALFMT label items to determine the representation of the pixels in the
+file. HOST will default to the type of computer the program is running on, so
+it normally will not be needed. It is used to write a file in a host format
+other than the native one. While this is not recommended (the general rule is
+read anything, write native format), it is allowed. See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>,
+for more information. New values for HOST will appear every time the RTL is
+ported to a new machine, so no checking is done on the string. However, the
+currently accepted values, and what they represent, are listed. See 
+<A HREF="RTL_Manual-1_4.html#_Ref393618344">Table 1: Valid VICAR HOST Labels and Machine Types</A>.
+In addition, the following values are also accepted: 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>NATIVE</B>:
+The host type of the currently running machine 
+<LI><FONT FACE="Symbol">	</FONT><B>LOCAL</B>:
+Same as NATIVE 
+</UL></UL><P ALIGN="LEFT"></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>INTFMT,
+string
+</B>:
+The format used to represent integers in the file. INTFMT, REALFMT, and HOST
+should all match, so if you change one please change all three. INTFMT is a
+system label item in the image used by the RTL to automatically convert data
+read in, via 
+<B>x/zvread,
+</B>to
+the native integer representation. It defaults to the representation of the
+machine the program is running on, so it only needs to be set when writing in a
+non-native format. If you are reading a file in such a way that the RTL does 
+<I>not</I>
+automatically convert datatypes, such as Array I/O or CONVERT OFF,  pay
+attention to the INTFMT label (via
+<B>
+x/zvget
+</B>)
+and use the 
+<B>x/zvtrans</B>
+representation (for binary labels see BINTFMT below). See 
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>
+(page 9), for more information. The valid values of INTFMT may change as the
+RTL is ported to new machines. However, the currently valid values are listed.
+See 
+<A HREF="RTL_Manual-1_4.html#_Ref393618329">Table 2: Valid VICAR Integer Formats</A>.
+In addition, the following values are also accepted: 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>NATIVE</B>:
+The host type of the currently running machine 
+<LI><FONT FACE="Symbol">	</FONT><B>LOCAL</B>:
+Same as NATIVE 
+</UL></UL><P ALIGN="LEFT"></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>REALFMT,
+string
+</B>
+:The format used to represent floating point numbers in the file. INTFMT,
+REALFMT, and HOST should all match, so if you change one please change all
+three. REALFMT is a system label item in the image used by the RTL to
+automatically convert data read in, via 
+<B>x/zvread</B>,
+to the native floating point representation. It defaults to the representation
+of the machine the program is running on, so it only need s to be set when
+writing in a non-native format. If you are reading a file in such a way that
+the RTL does 
+<I>not
+a
+</I>utomatically
+convert data types, such as Array I/O or CONVERT OFF,  pay attention to the
+REALFMT label (via 
+<B>x/zvget</B>)
+and use the 
+<B>x/zvtrans</B>
+family of routines to translate to the native representation (for binary labels
+see INTFMT below). See 
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>
+(page 9), for more information. The valid values of REALFMT may change as the
+RTL is ported to new machines. However, the currently valid values are listed.
+See 
+<A HREF="RTL_Manual-1_4.html#_Ref393618329">Table 2: Valid VICAR Integer Formats</A>.
+In addition, the following values are also accepted: 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>NATIVE</B>:
+The host type of the currently running machine 
+<LI><FONT FACE="Symbol">	</FONT><B>LOCAL</B>:
+Same as NATIVE 
+</UL></UL><P ALIGN="LEFT"></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>BHOST,
+string
+</B>:
+The type of computer used to generate the binary labels. The value for BHOST
+appears in the system image label. It is used only for documentation; the RTL
+uses the BINTFMT and INTFMT label items to determine the representation of the
+binary labels in the file. For input (or update) files, the BHOST optional is
+used if the INTFMT label is not present in the file (if neither are present it
+defaults to VAX-VMS). For output files, the BHOST optional is used if is OFF
+(if not present the file's BHOST comes from the primary input, or defaults to
+VAX-VMS). If is ON, the BHOST optional is ignored since the file's INTFMT gets
+set to the native host. See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>,
+for more information. The valid values for BHOST are exactly the same as for
+HOST above (including NATIVE and LOCAL). 
+<a name="Heading58"></a><a name="_Toc425047521"></a><a name="_Toc425048076"></a><a name="_Toc425329693"></a><LI><FONT FACE="Symbol">	</FONT><B>BINTFMT,
+string
+</B>:
+The format used to represent integers in the binary label. BINTFMT, BREALFMT,
+and BHOST should all match, so if you change one change all three. BINTFMT is a
+system label item in the image made available by the RTL to help applications
+to convert binary labels read or written to the file. For input (or update)
+files, the BINTFMT optional is used if the BINTFMT label is not present in the
+file (if neither are present it defaults to the integer format for VAX-VMS).
+For output files, the BINTFMT optional is used if is OFF (if not present the
+file's BINTFMT comes from the primary input, or defaults to the integer format
+for VAX-VMS). If is ON, the BINTFMT optional is ignored since the file's
+BINTFMT gets set to the native host integer format. See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>,
+for more information. Applications using binary labels should pay close
+attention to BINTFMT, as they are responsible for doing their own data format
+conversions. 
+</UL><P ALIGN="LEFT">The
+valid values for BINTFMT are exactly the same as for INTFMT (including NATIVE
+and LOCAL). 
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>BLTYPE,
+string: 
+</B>The
+type of the binary label
+<B>.
+</B>The
+value for BLTYPE appears in the system image label. This is not type in the
+sense of datatype, but is a string identifying the kind of binary label in the
+file. The RTL does not do any interpretation or checking of BLTYPE. It is
+intended mainly for documentation, so people looking at the image will know
+what kind of binary label is present. It may also be used by application
+programs to make sure they can process the given type of binary label, or to
+make sure it is processed correctly. For input (or update) files, the BLTYPE
+optional is used if the BLTYPE label is not present in the file (not that
+&#8220;used&#8221; in this sense means only being made available to 
+<B>x/zvget</B>).
+For output files, the BLTYPE optional is used for the BLTYPE system label of
+the file (regardless of the setting). If the optional is not present, the
+file's BLTYPE comes from the primary input. See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>,
+for more information. The valid values of BLTYPE are maintained in a name
+registry, so that all possible kinds of binary labels can be documented in one
+place. Although the RTL does no checking on the given name, only names that are
+registered should be used in BLTYPE. See 
+<A HREF="RTL_Manual-1_7.html#Heading12">1.7.2</A>
+<A HREF="RTL_Manual-1_7.html#Heading12">Programming and Binary Labels</A>,
+for more details. 
+<LI><FONT FACE="Symbol">	</FONT><B>BREALFMT,
+string
+</B>:
+The format used to represent real numbers in the binary label. BREALFMT,
+BINTFMT, and BHOST should all match, so if you change one change all three.
+INTFMT is a system label item in the image made available by the RTL to help
+applications to convert binary labels read or written to the file. For input
+(or update) files, the BREALFMT optional is used if the BREALFMT label is not
+present in the file (if neither are present it defaults to the floating-point
+format for VAX-VMS). For output files, the BREALFMT optional is used if is OFF
+(if not present the file's INTFMT comes from the primary input, or defaults to
+the floating-point format for VAX-VMS). If is ON, the BREALFMT optional is
+ignored since the file's BREALFMT is set to the native host floating-point
+format. See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>,
+for more information. Applications using binary labels should pay close
+attention to BREALFMT, as they are responsible for doing their own data format
+conversions. 
+<BR>The
+valid values for BREALFMT are exactly the same as for REALFMT(including NATIVE
+and LOCAL). 
+<LI><FONT FACE="Symbol">	</FONT><B>IMG_REC:
+output, integer
+</B><BR>The
+number of the last record read or written using x/zvread and x/zvwrit. In BSQ
+this is the last line.
+<LI><FONT FACE="Symbol">	</FONT><B>UPD_HIST</B>,
+string: The valid values for UPD_HIST are ON and OFF. Default is OFF. UPD_HIST
+controls whether or not to write a history label when the file is opened in
+UPDATE mode. If it is ON, a label is written; if OFF (the default), no label is
+written. UPD_HIST is only used in UPDATE mode, not in READ or WRITE. In WRITE
+mode, a history label is always created). 
+<a name="_Toc453201415"></a></UL><A NAME="Heading49"></A><H3 ALIGN="LEFT">
+3.2.5	x/zvopen&#8212;Open
+a file 
+</H3>
+
+<PRE>call xvopen(unit, status, &lt;optionals&gt;, ' ')
+status = zvopen(unit, &lt;optionals&gt;, 0);</PRE><BLOCKQUOTE>
+<B>x/zvopen</B>
+prepares the file for I/O processing. If the file is an input file, it verifies
+the file's existence and the existence and form of its label. 
+<BR>
+For
+output files, 
+<B>x/zvopen</B>
+will ensure that the file is the right size, that being either the size
+indicated by the programmer on the call to 
+<B>x/zvopen</B>,
+the size field for the file, or the input file, in that order. If the file does
+not exist,
+<B>
+x/zvopen
+</B>
+will create it. If the file exists but is too small, 
+<B>x/zvopen</B>
+will expand it. If the file is a tape file, it will be positioned to the
+desired file. 
+<BR>
+For
+all output files, 
+<B>x/zvopen</B>
+will create, unless the programmer negates this default function, an output
+label for the file. 
+<BR>
+A
+call to 
+<B>x/zvopen</B>
+is required before I/O processing can take place on the file. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+input, integer 
+<BR>Unit
+number of file from 
+<B>x/zvunit</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer 
+<BR>Error
+status code. A value of one indicates success. The error codes are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">10</A>
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>
+.
+See also the optional arguments OPEN_ACT, IO_ACT, LAB_ACT, and ERR_ACT. 
+</UL><P ALIGN="LEFT"><B>Optional
+arguments:
+</B>
+<a name="Heading60"></a><a name="_Toc425047522"></a><a name="_Toc425048077"></a><a name="_Toc425329694"></a><a name="Heading59"></a><a name="_Toc423243870"></a></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>U_NL:</B>
+input, integer 
+<BR>Indicates
+that the Executive is to create an output file capable of holding NL lines. If
+the file associated with the unit number already exists but is too small, it
+will be enlarged. 
+<LI><FONT FACE="Symbol">	</FONT><B>U_NS:</B>
+input, integer 
+<BR>As
+in NL but for samples. 
+<LI><FONT FACE="Symbol">	</FONT><B>U_NB:</B>
+input, integer 
+<BR>As
+in NL but for bands. 
+<LI><FONT FACE="Symbol">	</FONT><B>U_NBB:</B>
+input, integer 
+<BR>For
+output files, indicates the number of bytes of binary prefix that will precede
+each image line. The binary prefix will be stored in an area before each image
+line. It will be hidden from subsequent programs unless the program opens the
+file with a COND value that includes BINARY. Subsequent reads of a file with
+COND including BINARY will return the binary prefix to each line ahead of the
+line in the read buffer. An output file with a non-zero U_NBB will expect the
+binary prefix to precede the image line in the 
+<B>x/zvwrit</B>
+buffer. For input files U_NBB is ignored. Defaults to 0. 
+<LI><FONT FACE="Symbol">	</FONT><B>U_NLB:</B>
+input, integer 
+<BR>For
+output files, indicates the number of lines of binary header information that
+is to precede the image lines in an image file. The image I/O subsystem will
+expect these lines to be written with 
+<B>x/zvwrit</B>
+prior to the writing of the image lines. The image header will remain hidden
+from subsequent programs unless those programs open the file with a value of
+COND that includes the substring, BINARY. For input files, 
+<B>U_NLB</B>
+is ignored. Defaults to 0. 
+<LI><FONT FACE="Symbol">	</FONT><B>U_N1,
+U_N2, U_N3
+</B>:
+input, integers 
+<BR>Indicate
+that the Executive is to ensure that the output file will have the dimensions
+specified by the values associated with the respective arguments. U_N1 refers
+to the first file dimension, U_N2 the second, and U_N3 the third. These
+arguments are useful for the program which does not care about the file
+organization, and simply wants to deal with records and pixels. The relation
+between these arguments and the normal NL, NS, NB arguments are as follows:
+</UL><DIV ALIGN="CENTER"><TABLE BORDER>
+<TR VALIGN="TOP">
+<TD WIDTH=46 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">ORG</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">N1</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">N2</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">N3</FONT></TT></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=46 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">BSQ</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">NS</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">NL</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">NB</FONT></TT></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=46 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">BIL</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">NS</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">NB</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">NL</FONT></TT></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=46 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">BIP</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">NB</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">NS</FONT></TT></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">NL</FONT></TT></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<P ALIGN="CENTER">Table
+11: File Organization
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>ADDRESS</B>
+output, pointer (integer for FORTRAN) 
+<BR>ADDRESS
+is a special argument which instructs the executive to cause the image file to
+be treated as an array of memory, and returns to the program the address of the
+beginning of the image data. The program may then use this address to
+manipulate the image data. No calls to 
+<B>x/zvread</B>
+or 
+<B>x/zvwrit</B>
+are needed, although they will still function. See the examples Section for
+details of how to use this argument in FORTRAN and C. 
+<B>Note:</B>
+There is a VMS memory management flaw that occasionally surfaces when using the
+ADDRESS optional. If you are opening and closing very large array I/O files,
+you might get a VASFULL (Virtual Address Space Full) error message, even though
+there should be plenty of virtual memory left. If this happens (and you're
+programming in C), try doing a large malloc () immediately followed by a free
+() call for the same memory area before opening any array I/O files. It is best
+to put the calls at the top of the program. This solution sounds like a
+no-operation, and from the programmer's point of view it is, but it causes VMS
+to do things that get around the problem. The amount of memory you allocate
+should enough to cover all dynamic memory allocated by your program, plus about
+100K or so. Try a megabyte to start with, and adjust it upwards or downwards as
+needed. 
+<BR><B>Example:</B>
+</UL>
+<PRE>free (malloc (1024*1024)); /* Fix Virtual Address Space Full error */ </PRE><UL>
+<LI><FONT FACE="Symbol">	</FONT><B>U_ORG:</B>
+input, string 
+<BR>Indicates
+the file organization that the programmer expects or desires for the file. The
+acceptable organizations are band sequential, band interleaved by pixel, and
+band interleaved by line. The respective values that represent these states
+are, 'BSQ', 'BI P', and 'BIL'. If the file is being created by the 
+<B>x/zvopen</B>,
+then the indicated organization will become the new file organization. If the
+file is an existing file that is not to be deleted and created again, then the
+Executive will check the indicated organization against that of the existing
+file. If they are not the same then an error condition will be raised. If the
+image file has less than three dimensions, this argument will be ignored. 
+<LI><FONT FACE="Symbol">	</FONT>U_DIM:
+input, integer
+<BR>Number
+of dimensions of dimensions the file has. Current default if U_DIM not
+specified is 3. 4 is permitted but not supported.
+<LI><FONT FACE="Symbol">	</FONT><B>METHOD</B>:
+input, string 
+</UL><P ALIGN="LEFT">Indicates
+the access method for the file. Valid values are 'SEQ' (sequential) or
+'RANDOM'. The default is 'SEQ'. 'SEQ' and 'RANDOM' only effect the internal
+buffering used by the executive; if the method is 'SEQ', then a larger buffer
+will be used for I/O, resulting in more efficient processing. If 'RANDOM' is
+given, a smaller buffer will be used to avoid reading unnecessary data. 
+</P><P ALIGN="LEFT">If
+the file is a tape file, an error condition will be raised if 'RANDOM' is
+specified. The specification of 'RANDOM' for a file with OP equal to 'WRITE' is
+equivalent to 'SEQ'. 
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>OP</B>:
+input, string 
+<BR>Indicates
+the intended operation. Valid values are 'READ', 'WRITE', and 'UPDATE'. Default
+is 'READ'. 
+<B>Output
+files must have OP equal to WRITE. 
+</B><LI><FONT FACE="Symbol">	</FONT><B>OPEN_ACT:</B>
+input, string 
+<BR>Indicates
+the action to be taken by the Executive when an error condition is raised as a
+result of the open. A valid string may contain one or more of three characters
+in any order, 'A', 'U', 'S'. The presence of each character has the following
+meanings:
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>A</B>:
+an error will cause an immediate program abort. Otherwise, the routine will
+return an error number in STATUS. 
+<LI><FONT FACE="Symbol">	</FONT><B>U</B>:
+an error will cause the string that the user has specified with the OPEN_MES
+optional to be printed. 
+<LI><FONT FACE="Symbol">	</FONT><B>S</B>:
+an error will cause a system message to be printed. 
+</UL></UL><P ALIGN="LEFT">The
+three values are independent. Thus 'SA' will cause a system message to be
+printed and the program to abort if an error occurs. If OPEN_ACT consists only
+of blanks, an error will cause the 
+<B>x/zvopen</B>
+to return an error number in STATUS. Default is the action specified with 
+<B>x/zveaction</B>.
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>IO_ACT:</B>
+input, string 
+<BR>As
+in OPEN_ACT but for
+<B>
+x/zvread
+</B>
+and 
+<B>x/zvwrit</B>.
+Default is specified with 
+<B>x/zveaction</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>LAB_ACT:</B>
+input, string 
+<BR>Specified
+as is OPEN_ACT, LAB_ACT defines a default error action to be taken by the XL
+routines. It can be overridden in a call to an XL routine with the ERR_ACT
+optional. The message given if a 'U' is given is specified by LAB_MESS. The
+default for LAB_ACT is given by 
+<B>x/zveaction</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>CLOS_ACT:</B>
+input, string 
+<BR>Indicates
+an action to be taken when the file is closed. If the string contains one of
+the substrings listed below, the corresponding action will be taken. More than
+one action may be specified. 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT>DELETE:
+Causes the file to be deleted. Default is to retain the file. 
+<LI><FONT FACE="Symbol">	</FONT>FREE:
+Frees up the unit number so it can be used again. If this action is specified,
+then the file can no longer be accessed using this unit number. If you want to
+access the file again, x/zvunit must be called again. Since there are a limited
+number of unit slots available, FREE is most useful when processing large
+numbers of files. It allows VICAR to re-use this unit slot. If FREE is not
+specified (the default), then the file may be opened again via x/zvopen without
+calling x/zvunit, but VICAR cannot assign this unit number to another file. 
+</UL></UL><P ALIGN="LEFT"></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>O_FORMAT:</B>
+input, string 
+<BR>For
+input files this argument is ignored. For output files, O_FORMAT becomes the
+format of the output file. Valid values are 'BYTE', 'HALF', 'FULL', 'REAL',
+'DOUB', and 'COMP'. 'WORD' and 'COMPLEX' are equivalent to 'HALF' and 'COMP',
+respectively, but for consistency are no longer to be used. The Executive will
+ensure that the output pixels have the indicated FORMAT by converting if
+necessary. A related argument is U_FORMAT which is the format of the pixels
+returned or passed to 
+<B>x/zvread</B>
+or 
+<B>x/zvwrit</B>.
+Default is the primary input FORMAT, that is, the format of the pixels in the
+input file.
+<LI><FONT FACE="Symbol">	</FONT><B>U_FORMAT:</B>
+input, string 
+<BR>Indicates
+the format of pixels in the buffer returned by 
+<B>x/zvread</B>
+or the format of the pixels the program will pass to 
+<B>x/zvwrit</B>.
+If for input files U_FORMAT is not equal to the input file format, then VICAR
+will convert. On output, if U_FORMAT is not equal to O_FORMAT then VICAR will
+convert. Default for input files is the input file format; for output files, it
+is the primary input U_FORMAT.
+<LI><FONT FACE="Symbol">	</FONT><B>I_FORMAT:</B>
+input, string, maximum length 8 
+<BR>If
+an input file is unlabeled and does not have the default pixel format of
+'BYTE', then this optional may be used to set the proper format; valid values
+are ' BYTE', 'HALF', 'FULL','REAL', 'DOUB', and 'COMP'. 'WORD' and 'COMPLEX'
+are equivalent to 'HALF' and 'COMP', respectively, but for consistency should
+no longer be used.
+<LI><FONT FACE="Symbol">	</FONT><B>OPEN_MES:</B>
+input, string, maximum length 132 
+<BR>OPEN_MES
+holds the user message that is issued when the OPEN_ACT argument contains the
+substring 'U' and an error occurs. Default is specified by 
+<B>x/zveaction</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>IO_MESS:</B>
+input, string, maximum length 132 
+<BR>Holds
+the user message that is issued under certain settings of the IO_ACT argument
+when I/O errors occur. Default is specified by 
+<B>x/zveaction</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>LAB_MESS:</B>
+input, string, maximum length 132 
+<BR>Holds
+the user message that is issued when the ERR_ACT optional is not given to an XL
+routine, and the LAB_ACT optional contains the substring 'U'. Default is
+specified by 
+<B>x/zveaction</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>TYPE</B>:
+input, string, maximum length 8 
+<BR>With
+this argument, the programmer can designate the type of the output file
+desired. If the file already exists the Executive will alter any file name and
+label items that indicate the file type. On input, the file will be checked for
+type. If a mismatch occurs between the TYPE argument and the actual file type,
+an error status condition will be raised. Currently supported values are: 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT>IMAGE:
+The file contains image data. 
+<LI><FONT FACE="Symbol">	</FONT>PARM:
+The file contains parameters for input to a program via the PARAMS parameter on
+the command line. 
+<LI><FONT FACE="Symbol">	</FONT>PARAM:
+Same as PARM, but an older file type. 
+<LI><FONT FACE="Symbol">	</FONT>GRAPH1:
+The file is an IBIS Graphics-1 file. 
+<LI><FONT FACE="Symbol">	</FONT>GRAPH2:
+The file is an IBIS Graphics-2 file. 
+<LI><FONT FACE="Symbol">	</FONT>GRAPH3:
+The file is an IBIS Graphics-3 file. 
+<LI><FONT FACE="Symbol">	</FONT>TABULAR:
+The file is an IBIS Tabular file. 
+</UL></UL><P ALIGN="LEFT"></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>COND</B>:
+input, string, maximum length 132 
+<BR>If
+the string is null or contains only blanks, this argument will have no effect.
+If the string contains one of the substrings listed below, the indicated
+condition will be set for the specified file. 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>NOLABELS</B>:
+Indicates that no label processing will be done for the file. 
+<LI><FONT FACE="Symbol">	</FONT><B>NOBLOCK</B>:
+Indicates that if the file is an output file (OP=WRITE), the file will not be
+blocked (RECSIZE=BUFSIZ). 
+<LI><FONT FACE="Symbol">	</FONT><B>BINARY:
+</B>indicates
+that the binary prefix and binary header, if they exist, will be unhidden to
+the program (see U_NLB and U_NBB) 
+<LI><FONT FACE="Symbol">	</FONT><B>VARREC</B>:
+Indicates that the file is a tape containing variable length records. NOLABELS
+and NOBLOCK must also be specified with this argument. 
+</UL></UL><P ALIGN="LEFT">The
+string may contain more than one substring, such as 'COND', 'NOBLOCK NOLABELS'.
+Default is to label and block files and hide the binary areas of the file. 
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>U_FILE:</B>
+input, integer 
+<BR>Used
+to specify the file number to be accessed on a tape. If U_FILE = 0, the tape
+advances to the next file (the default). If U_FILE &gt; 0, the tape is moved to
+the absolute file number given. U_FILE may not be less than zero. The first
+file on a tape is file number one; thus if U_FILE = 1, the tape will be rewound. 
+<LI><FONT FACE="Symbol">	</FONT><B>HOST,
+string: 
+</B>The
+type of computer used to generate the image. The value for HOST appears in the
+system image label. It is used only for documentation; the RTL uses the INTFMT
+and REALFMT label items to determine the representation of the pixels in the
+file. HOST will default to the type of computer the program is running on, so
+it normally will not be needed. It is used to write a file in a host format
+other than the native one. While this is not recommended (the general rule is
+read anything, write native format), it is allowed. See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>,
+for more information. New values for HOST will appear every time the RTL is
+ported to a new machine, so no checking is done on the string. However, the
+currently accepted values and what they represent, are listed. See 
+<A HREF="RTL_Manual-1_4.html#_Ref393618344">Table 1: Valid VICAR HOST Labels and Machine Types</A>
+.
+In addition, the following values are also accepted: 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT>NATIVE:
+The host type of the currently running machine 
+<LI><FONT FACE="Symbol">	</FONT>LOCAL:
+Same as NATIVE 
+</UL></UL><P ALIGN="LEFT"></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>INTFMT,
+string
+</B>:
+The format used to represent integers in the file. INTFMT, REALFMT, and HOST
+should all match, so if you change one please change all three. INTFMT is a
+system label item in the image used by the RTL to automatically convert data
+read in, via 
+<B>x/zvread,
+</B>to
+the native integer representation. It defaults to the representation of the
+machine the program is running on, so it only needs to be set when writing in a
+non-native format. If you are reading a file in such a way that the RTL does 
+<I>not</I>
+automatically convert datatypes, such as Array I/O or CONVERT OFF,  pay
+attention to the INTFMT label (via
+<B>
+x/zvget
+</B>)
+and use the 
+<B>x/zvtrans</B>
+representation (for binary labels see BINTFMT below). See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>,
+for more information. The valid values of INTFMT may change as the RTL is
+ported to new machines. However, the currently valid values are listed. See 
+<A HREF="RTL_Manual-1_4.html#_Ref393618329">Table 2: Valid VICAR Integer Formats</A>.
+In addition, the following values are also accepted: 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT>NATIVE:
+The host type of the currently running machine 
+<LI><FONT FACE="Symbol">	</FONT>LOCAL:
+Same as NATIVE 
+</UL></UL><P ALIGN="LEFT"></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>REALFMT,
+string
+</B>
+:The format used to represent floating point numbers in the file. INTFMT,
+REALFMT, and HOST should all match, so if you change one please change all
+three. REALFMT is a system label item in the image used by the RTL to
+automatically convert data read in, via 
+<B>x/zvread</B>,
+to the native floating point representation. It defaults to the representation
+of the machine the program is running on, so it only need s to be set when
+writing in a non-native format. If you are reading a file in such a way that
+the RTL does 
+<I>not
+a
+</I>utomatically
+convert data types, such as Array I/O or CONVERT OFF,  pay attention to the
+REALFMT label (via 
+<B>x/zvget</B>)
+and use the 
+<B>x/zvtrans</B>
+family of routines to translate to the native representation (for binary labels
+see INTFMT below). See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>,
+for more information. The valid values of REALFMT may change as the RTL is
+ported to new machines. However, the currently valid values are listed. See 
+<A HREF="RTL_Manual-1_4.html#_Ref393618311">Table 3: Valid VICAR Real Number Formats</A>.
+In addition, the following values are also accepted: 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>NATIVE</B>:
+The host type of the currently running machine 
+<LI><FONT FACE="Symbol">	</FONT><B>LOCAL</B>:
+Same as NATIVE 
+</UL></UL><P ALIGN="LEFT"></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>BHOST,
+string
+</B>:
+The type of computer used to generate the binary labels. The value for BHOST
+appears in the system image label. It is used only for documentation; the RTL
+uses the BINTFMT and INTFMT label items to determine the representation of the
+binary labels in the file. For input (or update) files, the BHOST optional is
+used if the INTFMT label is not present in the file (if neither are present it
+defaults to VAX-VMS). For output files, the BHOST optional is used if is OFF
+(if not present the file's BHOST comes from the primary input, or defaults to
+VAX-VMS). If is ON, the BHOST optional is ignored since the file's INTFMT gets
+set to the native host. See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>,
+for more information. The valid values for BHOST are exactly the same as for
+HOST above (including NATIVE and LOCAL). 
+<LI><FONT FACE="Symbol">	</FONT><B>BINTFMT,
+string
+</B>:
+The format used to represent integers in the binary label. BINTFMT, BREALFMT,
+and BHOST should all match, so if you change one change all three. BINTFMT is a
+system label item in the image made available by the RTL to help applications
+to convert binary labels read or written to the file. For input (or update)
+files, the BINTFMT optional is used if the BINTFMT label is not present in the
+file (if neither are present it defaults to the integer format for VAX-VMS).
+For output files, the BINTFMT optional is used if is OFF (if not present the
+file's BINTFMT comes from the primary input, or defaults to the integer format
+for VAX-VMS). If is ON, the BINTFMT optional is ignored since the file's
+BINTFMT gets set to the native host integer format. See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>,
+for more information. Applications using binary labels should pay close
+attention to BINTFMT, as they are responsible for doing their own data format
+conversions. 
+</UL><P ALIGN="LEFT">The
+valid values for BINTFMT are exactly the same as for INTFMT above (including
+NATIVE and LOCAL). 
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>BREALFMT,
+string
+</B>:
+The format used to represent real numbers in the binary label. BREALFMT,
+BINTFMT, and BHOST should all match, so if you change one change all three.
+INTFMT is a system label item in the image made available by the RTL to help
+applications to convert binary labels read or written to the file. For input
+(or update) files, the BREALFMT optional is used if the BREALFMT label is not
+present in the file (if neither are present it defaults to the floating-point
+format for VAX-VMS). For output files, the BREALFMT optional is used if is OFF
+(if not present the file's INTFMT comes from the primary input, or defaults to
+the floating-point format for VAX-VMS). If is ON, the BREALFMT optional is
+ignored since the file's BREALFMT is set to the native host floating-point
+format. See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>,
+for more information. Applications using binary labels should pay close
+attention to BREALFMT, as they are responsible for doing their own data format
+conversions. 
+<BR>The
+valid values for BREALFMT are exactly the same as for REALFMT above (including
+NATIVE and LOCAL). 
+<LI><FONT FACE="Symbol">	</FONT><B>BLTYPE,
+string: 
+</B>The
+type of the binary label
+<B>.
+</B>The
+value for BLTYPE appears in the system image label. This is not type in the
+sense of datatype, but is a string identifying the kind of binary label in the
+file. The RTL does not do any interpretation or checking of BLTYPE. It is
+intended mainly for documentation, so people looking at the image will know
+what kind of binary label is present. It may also be used by application
+programs to make sure they can process the given type of binary label, or to
+make sure it is processed correctly. For input (or update) files, the BLTYPE
+optional is used if the BLTYPE label is not present in the file (not that
+&#8220;used&#8221; in this sense means only being made available to 
+<B>x/zvget</B>).
+For output files, the BLTYPE optional is used for the BLTYPE system label of
+the file (regardless of the setting). If the optional is not present, the
+file's BLTYPE comes from the primary input. See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>,
+for more information. The valid values of BLTYPE are maintained in a name
+registry, so that all possible kinds of binary labels can be documented in one
+place. Although the RTL does no checking on the given name, only names that are
+registered should be used in BLTYPE. See 
+<A HREF="RTL_Manual-1_7.html#Heading12">1.7.2</A>
+<A HREF="RTL_Manual-1_7.html#Heading12">Programming and Binary Labels</A>,
+for more details. 
+<LI><FONT FACE="Symbol">	</FONT><B>CONVERT</B>,
+string:  The valid values for CONVERT are ON and OFF. The default is ON.
+Normally, the RTL will automatically convert pixels that are read from a file
+to the native host representation, and to the data type specified in U_FORMAT.
+</UL><P ALIGN="LEFT">Setting
+CONVERT to OFF turns off both of these conversions, giving you the bit patterns
+that are in the file directly. When writing a file, host conversion is possible
+(although not normally used), but the U_FORMAT data type conversion is normally
+performed. Setting CONVERT to OFF turns off both of these conversions as well,
+writing the bit patterns that are in memory directly to the file.
+</P><P ALIGN="LEFT">Note:
+ Be careful!  If you turn CONVERT OFF, you are responsible for doing your own
+data type conversions. Any given program should be able to read files written
+on any machine, so if you turn off CONVERT you should make use of the
+<B>
+x/ztvtrans
+</B>
+family of routines. See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>,
+for details.
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>BIN_CVT</B>,
+string:  The valid values for BIN_CVT are ON and OFF. The default is OFF.
+BIN_CVT is used to inform the RTL whether or not you will be converting binary
+labels to the native host representation. If BIN_CVT is ON, then the host
+formats in the output file (BHOST, BINTFMT, and BREALFMT) will be set to the
+native machine's host formats. This will be the standard case for applications
+that know how to interpret the binary label. Since the binary label type is
+known, the application can convert the data to the native format before writing
+the file.
+</UL><P ALIGN="LEFT">If
+the application does not know the binary label type, however (such as a
+general-purpose application), then it cannot convert the host format. In this
+case, set BIN_CVT to OFF. This means the output file will receive the binary
+label host types of the primary input file, defaulting to VAX-VMS if not
+available. The general-purpose application may then simply transfer the binary
+labels over to the output file without re-formatting them. The BHOST, BINTFMT,
+and BREALFMT optional arguments will override this setting, but if BIN_CVT is
+OFF (they are ignored if BIN_CVT is on). BIN_CVT is ignored for input files. See 
+<A HREF="RTL_Manual-1_7.html#Heading12">1.7.2</A>
+<A HREF="RTL_Manual-1_7.html#Heading12">Programming and Binary Labels</A>,
+for more details.
+<a name="_Ref425739967"></a></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>UPD_HIST</B>,
+string: The valid values for UPD_HIST are ON and OFF. Default is OFF. UPD_HIST
+controls whether or not to write a history label when the file is opened in
+UPDATE mode. If it is ON, a label is written; if OFF (the default), no label is
+written. UPD_HIST is only used in UPDATE mode, not in READ or WRITE. In WRITE
+mode, a history label is always created). 
+<a name="_Ref453168463"></a><a name="_Ref453168521"></a><a name="_Toc453201416"></a></UL><A NAME="Heading50"></A><H3 ALIGN="LEFT">
+3.2.6	x/zvread&#8212;Rea<a name="vread"></a>d
+a line 
+</H3>
+<P ALIGN="LEFT">call
+xvread(unit, buffer, status, &lt;optionals&gt;, ' ')
+<BR>status
+= zvread(unit, buffer, &lt;optionals&gt;, 0);
+</P>
+<BLOCKQUOTE>
+<B>x/zvread</B>
+will read a single line from the file associated with the UNIT. The data will
+be returned in BUFFER and the status indicator will be returned in STATUS. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+input, integer 
+<BR>Unit
+number of file from 
+<B>x/zvunit</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>BUFFER</B>:
+output, array of anything 
+<BR>Array
+to receive input data. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer 
+<BR>Error
+status code. A value of one indicates success. The error codes are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">10</A>
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>.
+See also the optional arguments OPEN_ACT, IO_ACT, LAB_ACT, and ERR_ACT. 
+</UL><P ALIGN="LEFT"><B>Optional
+arguments:
+</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>LINE</B>:
+input, integer 
+<BR>Indicates
+the starting line for the read. For BSQ images, by default the starting line is
+incremented from its position in the last read until each band is exhausted
+(after NL reads), at which time it resets to the first line for the new band.
+For BIL images, the line number increments after NB reads, and for BIP images
+the line number increments after NS x NB reads. 
+<LI><FONT FACE="Symbol">	</FONT><B>SAMP</B>:
+input, integer 
+<BR>Indicates
+the starting sample (starting pixel in the SAMP dimension) for the read. For
+BSQ and BIL images, the default is 1. For BIP images, the starting sample is
+incremented from the last read by default. 
+<LI><FONT FACE="Symbol">	</FONT><B>BAND</B>:
+input, integer 
+<BR>Indicates
+the starting band for the read. For BIP images, the default is 1. For BIL
+images, the starting band is incremented from the last read by default. For BSQ
+images, the starting band increments when each band is exhausted, that is,
+every NL lines.
+<LI><FONT FACE="Symbol">	</FONT><B>NSAMPS</B>:
+input, integer 
+<BR>Indicates
+the number of samples to be accessed in a single operation. Defaults to the
+number of pixels in an image line if the file organization is BSQ or BIL. Not
+yet available for BIP images. 
+<LI><FONT FACE="Symbol">	</FONT><B>NBANDS</B>:
+input, integer 
+<BR>As
+in NLINES but for the band dimension. Currently only available for a file
+organization of BIP. 
+<LI><FONT FACE="Symbol">	</FONT><B>NLINES</B>:
+input, integer 
+<BR>Indicates
+the number of lines to be accessed in a single operation. Defaults to 1.
+<LI><FONT FACE="Symbol">	</FONT><B>IO_MESS:</B>
+input, string, maximum length 132 
+<BR>Holds
+the user message that is issued under certain settings of the IO_ACT argument
+when I/O errors occur. Default is specified by 
+<B>x/zveaction</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>OP</B>:
+input, string 
+<BR>Indicates
+the intended operation. Valid values are 'READ', 'WRITE', and 'UPDATE'. Default
+is 'READ'. 
+<B>Output
+files must have OP equal to WRITE. 
+</B><LI><FONT FACE="Symbol">	</FONT><B>OPEN_ACT:</B>
+input, string 
+<BR>Indicates
+the action to be taken by the Executive when an error condition is raised as a
+result of the open. A valid string may contain one or more of three characters
+in any order, 'A', 'U', 'S'. The presence of each character has the following
+meanings:
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>A</B>:
+an error will cause an immediate program abort. Otherwise, the routine will
+return an error number in STATUS. 
+<LI><FONT FACE="Symbol">	</FONT><B>U</B>:
+an error will cause the string that the user has specified with the OPEN_MES
+optional to be printed. 
+<LI><FONT FACE="Symbol">	</FONT><B>S</B>:
+an error will cause a system message to be printed. 
+</UL></UL><P ALIGN="LEFT">The
+three values are independent. Thus 'SA' will cause a system message to be
+printed and the program to abort if an error occurs. If OPEN_ACT consists only
+of blanks, an error will cause the 
+<B>x/zvopen</B>
+to return an error number in STATUS. Default is the action specified with 
+<B>x/zveaction</B>.
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>U_FORMAT:</B>
+input, string 
+<BR>Indicates
+the format of pixels in the buffer returned by 
+<B>x/zvread</B>
+or the format of the pixels the program will pass to 
+<B>x/zvwrit</B>.
+If for input files U_FORMAT is not equal to the input file format, then VICAR
+will convert. On output, if U_FORMAT is not equal to O_FORMAT then VICAR will
+convert. Default for input files is the input file format; for output files, it
+is the primary input U_FORMAT.
+<a name="_Toc453201417"></a></UL><A NAME="Heading51"></A><H3 ALIGN="LEFT">
+3.2.7	x/zvsignal&#8212;Signal
+an error 
+</H3>
+
+<PRE>call xvsignal (unit, status, abend_flag) 
+status = zvsignal (unit, status, abend_flag) </PRE><BLOCKQUOTE>
+<B>x/zvsignal</B>
+will signal an error if one has occurred in any of the image I/O routines
+(x/zv...) or label I/O routines (x/zl...). It uses the same internal routines
+that the OPEN_ACT, IO_ACT, LAB_ACT, and ERR_ACT optionals use, so no error
+checking is duplicated.
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+input, integer 
+<BR>The
+unit number of a file. 
+<B>x/zvsignal</B>
+will use this unit number to determine routine in which an error may have
+occured, and if it was a read or write, the line number in the image. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+input, integer 
+<BR>The
+status returned from a previous subroutine call to be checked. 
+<LI><FONT FACE="Symbol">	</FONT><B>ABEND_FLAG:</B>
+input, logical*4 or integer 
+<BR>Flag
+to indicate whether ABEND (abnormal program terminator) should be called to
+terminate execution of the program. If ABEND_FLAG is TRUE (non-zero) and an
+error has occurred,
+<B>
+x/zvsignal
+</B>
+will not return and the program will terminate abnormally. 
+<a name="Heading61"></a><a name="_Toc425047523"></a><a name="_Toc425048078"></a><a name="_Toc425329695"></a><a name="_Toc453201418"></a></UL><A NAME="Heading52"></A><H3 ALIGN="LEFT">
+3.2.8	x/zvunit&#8212;Assign
+a unit number to a file 
+</H3>
+
+<PRE>call xvunit(unit, name, instance, status, &lt;optionals&gt;, ' ')
+status = zvunit(unit, name, instance, &lt;optionals&gt;, 0);</PRE><BLOCKQUOTE>
+<B>x/zvunit</B>
+will return an unused file unit number. The programmer may use this number in
+any of the above routines. This routine must be called to obtain a unit number
+for every file that is to be accessed by the VICAR image and label I/O
+subroutine package. 
+<BR>
+Under
+UNIX, filenames accepted by the RTL (via 
+<B>x/zvunit</B>,
+either the U_NAME optional or the INP or OUT parameters) can contain
+environment variables andusernames. A reference of the form $
+<I>var</I>
+will be replaced with the value of the environment variable 
+<I>var</I>.
+The name of the environment variable (but not the dollar sign) may optionally
+be enclosed in curly braces (${
+<I>var</I>}).
+A tilde (
+<TT><FONT FACE="Courier">~</FONT></TT>)
+followed by a username will be replaced with the home directory of that user. A
+tilde without a username will be replaced with the home directory of the
+current account. Both of these expansions exactly mimic the behavior of the
+C-shell, so they should be familiar to most UNIX users. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+output, integer 
+<BR>An
+unused file unit number that may be used with any of the image I/O routines. 
+<LI><FONT FACE="Symbol">	</FONT><B>NAME</B>:
+input, string, maximum length 32 
+<BR>Indicates
+which file is to be associated with the returned unit number. By convention,
+the string 'INP' denotes the input files, and the string, 'OUT', the output
+files that appear on the command line. If NAME is any other string other than
+'INP' or 'OUT', 
+<B>x/zvunit</B>
+will create a new file for output and return the unit number for that file. The
+size and other attributes of the file will be determined by
+<B>
+x/zvopen
+</B>
+as for any output file asociated with 'OUT'. 
+<LI><FONT FACE="Symbol">	</FONT><B>INSTANCE</B>:
+input, integer 
+<BR>Indicates
+which file of possibly several 'INP' or 'OUT' files is to be selected. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer 
+<BR>Error
+status indicator. A value of one indicates success. Errors are handled in the
+manner specified by
+<B>
+x/zveaction
+</B>.
+</UL><P ALIGN="LEFT"><B>Optional
+arguments:
+</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>U_NAME:</B>
+input, string, maximum length 132 
+<BR>If
+the NAME argument is not 'INP' or 'OUT' then 
+<B>x/zvunit</B>
+will return the unit number of a file not associated with any file name
+appearing on the command line. This argument is used to name that file. It may
+take any form that a command line file name may take. To get back unit numbers
+for more than one file, increment the INSTANCE argument for each file. 
+<a name="Heading62"></a><a name="_Toc425047524"></a><a name="_Toc425048079"></a><a name="_Toc425329696"></a><a name="_Toc453201419"></a></UL><A NAME="Heading53"></A><H3 ALIGN="LEFT">
+3.2.9	x/zvwrit&#8212;Write
+an image line 
+</H3>
+
+<PRE>call xvwrit(unit, buffer, status, &lt;optionals&gt;, ' ')
+status = zvwrit(unit, buffer, &lt;optionals&gt;, 0);</PRE><BLOCKQUOTE>
+<B>x/zvwrit
+</B>will
+write a single line of pixels to the image file associatedwith the UNIT. The
+data will be written from BUFFER and the status indicator will be  returned in
+STATUS. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+input, integer 
+<BR>Unit
+number of file from 
+<B>x/zvunit</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>BUFFER</B>:
+output, array of anything 
+<BR>Array
+containing output data. 
+<a name="Heading82"></a><a name="_Ref396008008"></a><a name="_Ref396008080"></a><a name="_Toc425047525"></a><a name="_Toc425048080"></a></UL><P ALIGN="LEFT"><B>Optional
+arguments:
+</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>LINE</B>:
+input, integer 
+<BR>Indicates
+the starting line for the read. For BSQ images, by default the starting line is
+incremented from its position in the last read until each band is exhausted
+(after NL reads), at which time it resets to the first line for the new band.
+For BIL images, the line number increments after NB reads, and for BIP images
+the line number increments after NS x NB reads. 
+<LI><FONT FACE="Symbol">	</FONT><B>SAMP</B>:
+input, integer 
+<BR>Indicates
+the starting sample (starting pixel in the SAMP dimension) for the read. For
+BSQ and BIL images, the default is 1. For BIP images, the starting sample is
+incremented from the last read by default. 
+<LI><FONT FACE="Symbol">	</FONT><B>BAND</B>:
+input, integer 
+<BR>Indicates
+the starting band for the read. For BIP images, the default is 1. For BIL
+images, the starting band is incremented from the last read by default. For BSQ
+images, the starting band increments when each band is exhausted, that is,
+every NL lines.
+<LI><FONT FACE="Symbol">	</FONT><B>NSAMPS</B>:
+input, integer 
+<BR>Indicates
+the number of samples to be accessed in a single operation. Defaults to the
+number of pixels in an image line if the file organization is BSQ or BIL. Not
+yet available for BIP images. 
+<LI><FONT FACE="Symbol">	</FONT><B>NBANDS</B>:
+input, integer 
+<BR>As
+in NLINES but for the band dimension. Currently only available for a file
+organization of BIP. 
+<LI><FONT FACE="Symbol">	</FONT><B>NLINES</B>:
+input, integer 
+<BR>Indicates
+the number of lines to be accessed in a single operation. Defaults to 1.
+<LI><FONT FACE="Symbol">	</FONT><B>U_NL:</B>
+input, integer 
+<BR>Indicates
+that the Executive is to create an output file capable of holding NL lines. If
+the file associated with the unit number already exists but is too small, it
+will be enlarged. 
+</UL>
+<HR>
+
+<DIV ALIGN="LEFT"><A HREF="RTL_Manual-Image.html">Up</A> | 
+<A HREF="RTL_Manual-3_1.html">Previous</A> | 
+<A HREF="RTL_Manual-Label.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+</BODY>
+
+</HTML>

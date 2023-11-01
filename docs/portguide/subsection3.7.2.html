@@ -1,0 +1,114 @@
+<HEAD>
+<TITLE>VICAR Data Type Labels</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=802 HREF=subsection3.7.1.html><IMG SRC="/icons/previous.png"></A> <A NAME=804 HREF=section3.7.html><IMG SRC="/icons/up.png"></A>  <A NAME=800 HREF=subsection3.7.3.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=803 HREF=subsection3.7.1.html>VICAR File Representations</A>  <b>Up:</b> <A NAME=805 HREF=section3.7.html>Data Types and Host Representations</A>  <b>Next:</b> <A NAME=801 HREF=subsection3.7.3.html>Pixel Type Declarations</A> <P>
+ <H2>VICAR Data Type Labels</H2>
+<P>
+As mentioned above, VICAR uses system label items to keep track of the machine
+type the file (both image and binary label) was written on.  These label
+items are summarized below.  Note that the label items are identical to the
+keywords in Section <A HREF=subsection3.6.1.html#optkeyword><IMG SRC="/icons/cross-ref.png"></A>, New Optional Keywords.
+<P>
+<UL>
+<LI> <b> HOST</b>, string:  The type of computer used to generate the image.
+It is used only for documentation; the RTL uses the INTFMT and REALFMT label
+items to determine the representation of the pixels in the file.  Nevertheless,
+it should be kept consistent with INTFMT and REALFMT.
+<P>
+Table <A HREF=subsection3.7.2.html#hostlabel><IMG SRC="/icons/cross-ref.png"></A> lists the currently valid host labels and the machine
+types they represent.  New values for HOST will appear every time the RTL is
+ported to a new machine, so the table is not necessarily a complete list.
+Programs should not be surprised by values other than the ones listed below
+appearing in the label.
+<P>
+<A NAME=865><IMG SRC="/icons/invis_anchor.png"></A><P><A NAME=hostlabel><IMG SRC="/icons/invis_anchor.png"></A><P>
+<P>
+<LI> <b> INTFMT</b>, string:  The format used to represent integers in the file.
+INTFMT, REALFMT, and HOST should all match, so if you change one please
+change all three.
+<P>
+The valid values of INTFMT may change as the RTL is ported to new machines.
+However, the currently valid values are listed in Table <A HREF=subsection3.7.2.html#intfmtlabel><IMG SRC="/icons/cross-ref.png"></A>.
+<P>
+<A NAME=881><IMG SRC="/icons/invis_anchor.png"></A><P><A NAME=intfmtlabel><IMG SRC="/icons/invis_anchor.png"></A><P>
+<P>
+<LI> <b> REALFMT</b>, string:  The format used to represent floating point
+numbers in the file.  INTFMT, REALFMT, and HOST should all match, so if you
+change one please change all three.
+<P>
+The valid values of REALFMT may change as the RTL is ported to new machines.
+However, the currently valid values are listed in Table <A HREF=subsection3.7.2.html#realfmtlabel><IMG SRC="/icons/cross-ref.png"></A>.
+<P>
+<A NAME=897><IMG SRC="/icons/invis_anchor.png"></A><P><A NAME=realfmtlabel><IMG SRC="/icons/invis_anchor.png"></A><P>
+<P>
+<LI> <b> BHOST</b>, string:  The type of computer used to generate the binary
+label.  It is used only for documentation; the RTL uses the BINTFMT and
+BREALFMT label items to determine the representation of the binary labels in
+the file.  Nevertheless, it should be kept consistent with BINTFMT and BREALFMT.
+<P>
+The valid values of BHOST are exactly the same as for the HOST label item above.
+<P>
+<LI> <b> BINTFMT</b>, string:  The format used to represent integers in the
+binary label.  BINTFMT, BREALFMT, and BHOST should all match, so if you change
+one please change all three.
+<P>
+The valid values of BINTFMT are exactly the same as for the INTFMT label
+item above.
+<P>
+<LI> <b> BREALFMT</b>, string:  The format used to represent floating point
+numbers in the binary label.  BINTFMT, BREALFMT, and BHOST should all match,
+so if you change one please change all three.
+<P>
+The valid values of BREALFMT are exactly the same as for the REALFMT label
+item above.
+<P>
+<LI> <b> BLTYPE</b>, string:  The type of the binary label.  This is not type
+in the sense of data type, but is a string identifying the kind of binary label
+in the file.  The RTL does not do any interpretation or checking of BLTYPE.  It
+is intended mainly for documentation, so people looking at the image will know
+what kind of binary label is present.  It may also be used by application
+programs to make sure they can process the given type of binary label, or to
+make sure it is processed correctly.
+<P>
+The valid values of BLTYPE are maintained in a name registry, so that all
+possible kinds of binary labels can be documented in one place.  Only names
+that are registered should be used in BLTYPE.  See Section <A HREF=subsubsection3.7.6.3.html#bltype><IMG SRC="/icons/cross-ref.png"></A>,
+Binary Label Type, for more details.
+<P>
+</UL>
+<P>
+In addition, one label item is used to specify the data type.  It is not
+new, but is listed here for completeness.  It is unfortunate that the name
+FORMAT is used for the data <em> type</em>, rather than for the host representation
+(which would better be called <em> format</em>), but the names cannot be changed
+for historical reasons.
+<P>
+<UL>
+<LI> FORMAT, string:  The data type of the pixels in the file.  The valid
+values are unlikely to change, unlike the host format labels.  They are:
+<P>
+<DL>
+<DT>BYTE
+<DD>: Single byte, unsigned integer pixel type.
+<DT>HALF
+<DD>: Signed short integer pixel type (often 2 bytes).
+<DT>FULL
+<DD>: Standard size signed integer pixel type (often 4 bytes).
+<DT>REAL
+<DD>: Single precision floating-point pixel type.
+<DT>DOUB
+<DD>: Double precision floating-point pixel type.
+<DT>COMP
+<DD>: Two single precision floating-point numbers representing a complex
+pixel type, in the order (real, imaginary).
+<P>
+ </DL>
+<P>
+</UL>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

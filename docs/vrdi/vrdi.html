@@ -1,0 +1,393 @@
+<HTML>
+<HEAD>
+<TITLE>VRDI User's Reference Guide</TITLE>
+</HEAD>
+
+<BODY>
+<H4>Version 3.1</H4>
+<H4>Multimission Image Processing Laboratory</H4>
+
+<H1>VRDI User's Reference Guide</H1>
+
+<H2>Paul Bartholomew</H2>
+
+<H4>1 January 1990</H4>
+
+<H3>National Aeronautics and Space Administration <BR>
+Jet Propulsion Laboratory</H3>
+
+<H4>California Institute of Technology <BR>
+Pasadena, California 91109 <P>
+
+D-5100</H4>
+
+<HR>
+
+<H2>Contents</H2>
+
+<OL>
+<LI> <A HREF="vrdi.1.html">Introduction</A>
+<LI> <A HREF="vrdi.2.html">VRDI Overview</A>
+	<OL>
+	<LI> <A HREF="vrdi.2.html#2.1">Allocation of Display Hardware</A>
+	<LI> <A HREF="vrdi.2.html#2.2">Workstations</A> 
+	<LI> <A HREF="vrdi.2.html#2.3">Display Devices</A> 
+	<LI> <A HREF="vrdi.2.html#2.4">Coordinate System</A> 
+	<LI> <A HREF="vrdi.2.html#2.5">Image Memory Planes</A> 
+	<LI> <A HREF="vrdi.2.html#2.6">Look-Up Tables</A> 
+	<LI> <A HREF="vrdi.2.html#2.7">Graphics Overlay Plane</A> 
+	<LI> <A HREF="vrdi.2.html#2.8">Cursors</A> 
+	<LI> <A HREF="vrdi.2.html#2.9">Subroutine Naming Convention</A> 
+	<LI> <A HREF="vrdi.2.html#2.10">Subroutine Parameters</A> 
+		<OL>
+		<LI> <A HREF="vrdi.2.html#2.10.1">C Interface</A>
+		<LI> <A HREF="vrdi.2.html#2.10.2">FORTRAN Interface</A>
+		</OL>
+	<LI> <A HREF="vrdi.2.html#2.11">Subroutine Returned Status Codes</A> 
+	<LI> <A HREF="vrdi.2.html#2.12">Text Generation</A> 
+	<LI> <A HREF="vrdi.2.html#2.13">Access Window</A> 
+	<LI> <A HREF="vrdi.2.html#2.14">Display Window</A> 
+	<LI> <A HREF="vrdi.2.html#2.15">Virtual Display Device</A> 
+	</OL>
+<LI> <A HREF="vrdi.3.html">VRDI Application Program Guidelines</A>
+	<OL>
+	<LI> <A HREF="vrdi.3.html#3.1">Never Assume Anything</A>
+	<LI> <A HREF="vrdi.3.html#3.2">Check the Flags</A>
+	<LI> <A HREF="vrdi.3.html#3.3">Allow User Flexibility</A>
+	<LI> <A HREF="vrdi.3.html#3.4">Graphics Plane</A>
+	<LI> <A HREF="vrdi.3.html#3.5">Coordinates</A>
+	</OL>
+<LI> <A HREF="vrdi.4.html">VRDI Routines</A>
+	<OL>
+	<LI> <A HREF="vrdi.4.html#4.1">Alphanumeric Font Generator</A>
+		<OL>
+		<LI> <A HREF="vrdi.4.html#4.1.1">XDACLEAR - Clear
+                     Alphanumeric Font Generator</A>
+		<LI> <A HREF="vrdi.4.html#4.1.2">XDAOFF - Turn Off
+                     Display of Alphanumeric Font Generator</A>
+		<LI> <A HREF="vrdi.4.html#4.1.3">XDAON - Turn On
+                     Display of Alphanumeric Font Generator</A>
+		<LI> <A HREF="vrdi.4.html#4.1.4">XDATEXT - Write Text
+                     to Alphanumeric Font Generator</A>
+		</OL>
+	<LI> <A HREF="vrdi.4.html#4.2">Cursor Routines</A>
+		<OL>
+		<LI> <A HREF="vrdi.4.html#4.2.1">XDCAUTOTRACK - Set
+                     Cursor/Device Tracking</A>
+		<LI> <A HREF="vrdi.4.html#4.2.2">XDCILOCATION - Get
+                     Cursor Location in Image Plane Coordinates</A>
+		<LI> <A HREF="vrdi.4.html#4.2.3">XDCIMP2RAW -
+                     Translate from Image Plane Coordinates to Raw</A>
+		<LI> <A HREF="vrdi.4.html#4.2.4">XDCISET - Set Cursor
+                     Location in Image Plane Coordinates</A>
+		<LI> <A HREF="vrdi.4.html#4.2.5">XDCCOLOR - Set Cursor
+                     Color</A> 
+		<LI> <A HREF="vrdi.4.html#4.2.6">XDCLOCATION - Get
+                     Cursor Location in Raw Coordinates</A>
+		<LI> <A HREF="vrdi.4.html#4.2.7">XDCOFF - Turn Cursor
+                     Off</A> 
+		<LI> <A HREF="vrdi.4.html#4.2.8">XDCON - Turn Cursor
+                     On</A> 
+		<LI> <A HREF="vrdi.4.html#4.2.9">XDCRAW2IMP -
+                     Translate from Raw Coordinates to Image Plane</A>
+		<LI> <A HREF="vrdi.4.html#4.2.10">XDCSET - Set Cursor
+                     Location in Raw Coordinates</A>
+		<LI> <A HREF="vrdi.4.html#4.2.11">XDCSHOW - Turn
+                     Cursor On</A>
+		<LI> <A HREF="vrdi.4.html#4.2.12">XDCSIZE - Set Cursor
+                     Size</A> 
+		</OL>
+	<LI> <A HREF="vrdi.4.html#4.3">Device Configuration Routines</A>
+		<OL>
+		<LI> <A HREF="vrdi.4.html#4.3.1">XDDACTIVATE -
+                     Active/deactivate a Device</A>
+		<LI> <A HREF="vrdi.4.html#4.3.2">XDDALLOCATE -
+                     Allocate a Device</A>
+		<LI> <A HREF="vrdi.4.html#4.3.3">XDDCLOSE - Close
+                     Device</A> 
+		<LI> <A HREF="vrdi.4.html#4.3.4">XDDCONFIGURE -
+                     Configure a Device</A>
+		<LI> <A HREF="vrdi.4.html#4.3.5">XDDFREE - Free
+                     (Deallocate) a Device</A>
+		<LI> <A HREF="vrdi.4.html#4.3.6">XDDINFO - Get Device
+                     Information</A> 
+		<LI> <A HREF="vrdi.4.html#4.3.7">XDDMOVE - Move Window
+                     Device</A> 
+		<LI> <A HREF="vrdi.4.html#4.3.8">XDDNAME - Get Device
+                     Name</A> 
+		<LI> <A HREF="vrdi.4.html#4.3.9">XDDNAMEDUNIT - Get
+                     Device Unit Number</A>
+		<LI> <A HREF="vrdi.4.html#4.3.10">XDDOPCLS - Open or
+                     Iconify a Window Device</A>
+		<LI> <A HREF="vrdi.4.html#4.3.11">XDDOPEN - Open a
+                     Device</A> 
+		<LI> <A HREF="vrdi.4.html#4.3.12">XDDRESIZE - Resize a
+                     Window Device</A>
+		<LI> <A HREF="vrdi.4.html#4.3.13">XDDSMARTOPEN - Open
+                     a Device</A>
+		<LI> <A HREF="vrdi.4.html#4.3.14">XDDUNIT - Assign
+                     Device Unit Number</A>
+		<LI> <A HREF="vrdi.4.html#4.3.15">XDDUNITNAMES - Get
+                     Device Names</A>
+		</OL>
+	<LI> <A HREF="vrdi.4.html#4.4">Error Handling Routines</A>
+		<OL>
+		<LI> <A HREF="vrdi.4.html#4.4.1">XDEACTION - Set Error
+                     Action</A> 
+		<LI> <A HREF="vrdi.4.html#4.4.2">XDELEVEL - Get Error
+                     Security Level</A>
+		<LI> <A HREF="vrdi.4.html#4.4.3">XDESIGNAL - Display a
+                     System Error Message</A>
+		</OL>
+	<LI> <A HREF="vrdi.4.html#4.5">Flag Routines</A>
+		<OL>
+		<LI> <A HREF="vrdi.4.html#4.5.1">XDFCONFIG - Check
+                     Device Configuration Flag</A>
+		<LI> <A HREF="vrdi.4.html#4.5.2">XDFGLUT - Check
+                     Graphics Look-Up Table Flag</A>
+		<LI> <A HREF="vrdi.4.html#4.5.3">XDFIMAGE - Check
+                     Image Memory Plane Flag</A>
+		<LI> <A HREF="vrdi.4.html#4.5.4">XDFLUT - Check
+                     Look-Up Table Flag</A>
+		<LI> <A HREF="vrdi.4.html#4.5.5">XDFREGISTER - Select
+                     Group of Flags</A>
+		</OL>
+	<LI> <A HREF="vrdi.4.html#4.6">Graphics Overlay Plane Routines</A>
+		<OL>
+		<LI> <A HREF="vrdi.4.html#4.6.1">XDGCOLOR - Get DN
+                     Value Corresponding to Named Color</A>
+		<LI> <A HREF="vrdi.4.html#4.6.2">XDGCONNECT - Connect
+                     Image Plane to Graphics LUT</A>
+		<LI> <A HREF="vrdi.4.html#4.6.3">XDGLCONSTANT - Set
+                     Graphics Look-up Table to a Constant</A>
+		<LI> <A HREF="vrdi.4.html#4.6.4">XDGLINIT - Initialize
+                     Graphics Look-up Table</A>
+		<LI> <A HREF="vrdi.4.html#4.6.5">XDGLREAD - Read
+                     Graphics Look-up Table</A>
+		<LI> <A HREF="vrdi.4.html#4.6.6">XDGLWRITE - Write
+                     Graphics Look-up Table</A>
+		<LI> <A HREF="vrdi.4.html#4.6.7">XDGOFF - Turn Off the
+                     Graphics Overlay</A>
+		<LI> <A HREF="vrdi.4.html#4.6.8">XDGON - Turn On the
+                     Graphics Overlay</A>
+		<LI> <A HREF="vrdi.4.html#4.6.9">XDGRGB - Get DN Value
+                     Corresponding to Given RGB Triplet</A>
+		</OL>
+	<LI> <A HREF="vrdi.4.html#4.7">Image Memory Plane Routines</A>
+		<OL>
+		<LI> <A HREF="vrdi.4.html#4.7.1">XDIAREAFILL - Fill an
+                     Area with a Constant Value</A>
+		<LI> <A HREF="vrdi.4.html#4.7.2">XDIAWLOCATION - Get
+                     Access Window Location</A>
+		<LI> <A HREF="vrdi.4.html#4.7.3">XDIAWREAD - Read from
+                     Image Plane Access Window</A>
+		<LI> <A HREF="vrdi.4.html#4.7.4">XDIAWSET - Set Access
+                     Window Location</A>
+		<LI> <A HREF="vrdi.4.html#4.7.5">XDIAWWRITE - Write to
+		     Image Plane Access Window</A>
+		<LI> <A HREF="vrdi.4.html#4.7.6">XDICIRCLE - Draw a
+		     Circle</A> 
+		<LI> <A HREF="vrdi.4.html#4.7.7">XDIDWLOCATION - Get
+		     Display Window Location</A>
+		<LI> <A HREF="vrdi.4.html#4.7.8">XDIDWSET - Set
+		     Display Window Location</A>
+		<LI> <A HREF="vrdi.4.html#4.7.9">XDIFILL - Fill Image
+		     Plane with a Constant</A>
+		<LI> <A HREF="vrdi.4.html#4.7.10">XDIHISTOGRAM -
+		     Collect a Histogram for an Image Plane</A>
+		<LI> <A HREF="vrdi.4.html#4.7.11">XDIIARITHMETIC -
+		     Perform an Arithmetic Operation</A>
+		<LI> <A HREF="vrdi.4.html#4.7.12">XDIICOPY - Copy from
+		     One Image Plane to Another</A>
+		<LI> <A HREF="vrdi.4.html#4.7.13">XDIILOGICAL -
+		     Perform a Logical Operation</A>
+		<LI> <A HREF="vrdi.4.html#4.7.14">XDIISHIFT - Logical
+		     Bit Shift of Image Plane</A>
+		<LI> <A HREF="vrdi.4.html#4.7.15">XDILINEREAD - Read a
+		     Line from an Image Plane</A>
+		<LI> <A HREF="vrdi.4.html#4.7.16">XDILINEWRITE - Write
+		     a Line to an Image Plane</A>
+		<LI> <A HREF="vrdi.4.html#4.7.17">XDIMAWWRITE -
+		     XDIAWWRITE - with Mask</A>
+		<LI> <A HREF="vrdi.4.html#4.7.18">XDIMCIRCLE -
+		     XDICIRCLE with Mask</A>
+		<LI> <A HREF="vrdi.4.html#4.7.19">XDIMFILL - XDIFILL
+		     with Mask</A>
+		<LI> <A HREF="vrdi.4.html#4.7.20">XDIMLINEWRITE -
+		     XDILINEWRITE with Mask</A>
+		<LI> <A HREF="vrdi.4.html#4.7.21">XDIMPIXELWRITE -
+		     Masked XDIPIXELWRITE</A>
+		<LI> <A HREF="vrdi.4.html#4.7.22">XDIMPOLYLINE -
+		     XDIPOLYLINE with Mask</A> 
+		<LI> <A HREF="vrdi.4.html#4.7.23">XDIPIXELREAD - Read
+		     Pixel from Image Plane</A>
+		<LI> <A HREF="vrdi.4.html#4.7.24">XDIPIXELWRITE -
+		     Write a Pixel to an Image Plane</A>
+		<LI> <A HREF="vrdi.4.html#4.7.25">XDIPOLYLINE - Draw a
+		     Series of Vectors</A>
+		<LI> <A HREF="vrdi.4.html#4.7.26">XDIROTATE - Rotate
+		     an Image Plane</A>
+		<LI> <A HREF="vrdi.4.html#4.7.27">XDIZOOM - Set Zoom
+		     for an Image Plane</A>
+		</OL>
+	<LI> <A HREF="vrdi.4.html#4.8">LUT Routines</A>
+		<OL>
+		<LI> <A HREF="vrdi.4.html#4.8.1">XDLCONNECT - Connect
+		     Image Plane to Look-up Table</A>
+		<LI> <A HREF="vrdi.4.html#4.8.2">XDLRAMP - Set Look-up
+		     Table to a Linear Ramp</A>
+		<LI> <A HREF="vrdi.4.html#4.8.3">XDLREAD - Read
+		     Look-up Table</A>
+		<LI> <A HREF="vrdi.4.html#4.8.4">XDLWRITE - Write
+		     Look-up Table</A>
+		</OL>
+	<LI> <A HREF="vrdi.4.html#4.9">Device Status Routines</A>
+		<OL>
+		<LI> <A HREF="vrdi.4.html#4.9.1">XDSBYPASS - Get
+		     Look-Up Table Bypass Status</A>
+		<LI> <A HREF="vrdi.4.html#4.9.2">XDSDWLINE - Get Upper
+		     Left Corner Line Number For Image Plane</A>
+		<LI> <A HREF="vrdi.4.html#4.9.3">XDSDWSAMP - Get Upper
+		     Left Corner Sample Number For Image Plane</A>
+		<LI> <A HREF="vrdi.4.html#4.9.4">XDSGBYPASS - Get
+		     Graphics Look-Up Table Bypass Status</A>
+		<LI> <A HREF="vrdi.4.html#4.9.5">XDSGRAPH - Get Image
+		     Plane Connected to the Graphics Plane</A>
+		<LI> <A HREF="vrdi.4.html#4.9.6">XDSGSECTION - Get
+		     Section Number of the Graphics LUT in Use</A>
+		<LI> <A HREF="vrdi.4.html#4.9.7">XDSIMP - Get Image
+		     Plane Number</A>
+		<LI> <A HREF="vrdi.4.html#4.9.8">XDSMODE - Get Video
+		     Display Mode</A>
+		<LI> <A HREF="vrdi.4.html#4.9.9">XDSNL - Get Number of
+		     Lines in the Image Planes</A>
+		<LI> <A HREF="vrdi.4.html#4.9.10">XDSNS - Get Number
+		     of Samples in the Image Planes</A>
+		<LI> <A HREF="vrdi.4.html#4.9.11">XDSSECTION - Get
+		     Look-Up Table Section Number</A>
+		<LI> <A HREF="vrdi.4.html#4.9.12">XDSVNL - Get Number
+		     of Lines On Video Screen</A>
+		<LI> <A HREF="vrdi.4.html#4.9.13">XDSVNS - Get Number
+		     of Samples on Video Screen</A>
+		<LI> <A HREF="vrdi.4.html#4.9.14">XDSZOOM - Get
+		     Hardware Zoom Factor For Image Plane</A>
+		</OL>
+	<LI> <A HREF="vrdi.4.html#4.10">Text Generation Routines</A>
+		<OL>
+		<LI> <A HREF="vrdi.4.html#4.10.1">XDTCOLOR - Set Font
+		     Color and Precision</A>
+		<LI> <A HREF="vrdi.4.html#4.10.2">XDTFONT - Set Font
+		     Style</A> 
+		<LI> <A HREF="vrdi.4.html#4.10.3">XDTLENGTH - Get
+		     Length of a String</A>
+		<LI> <A HREF="vrdi.4.html#4.10.4">XDTMASK - Set Text
+		     Mask</A> 
+		<LI> <A HREF="vrdi.4.html#4.10.5">XDTROTATE - Set Font
+		     Rotation</A> 
+		<LI> <A HREF="vrdi.4.html#4.10.6">XDTSIZE - Set Font
+		     Height and Scaling</A>
+		<LI> <A HREF="vrdi.4.html#4.10.7">XDTTEXT - Write
+		     Text</A> 
+		</OL>
+	<LI> <A HREF="vrdi.4.html#4.11">Interactive IO Device Routines</A>
+		<OL>
+		<LI> <A HREF="vrdi.4.html#4.11.1">XDX2D - Get
+		     Two-Dimensional User Input</A>
+		<LI> <A HREF="vrdi.4.html#4.11.2">XDXSWITCH - Get User
+		     Input from Switch Box</A>
+		</OL>
+	</OL>
+</OL>
+
+<H3>Appendices:</H3> <P>
+
+<OL>
+<LI TYPE=A> <A HREF="vrdi.A.html">VRDI Error Messages</A>
+	<OL>
+	<LI> <A HREF="vrdi.A.html#A.1">Warning Messages</A>
+	<LI> <A HREF="vrdi.A.html#A.2">Error Messages</A>
+	<LI> <A HREF="vrdi.A.html#A.3">Fatal Messages</A>
+	<LI> <A HREF="vrdi.A.html#A.4">VRDI Error Codes</A>
+	</OL>
+<LI> <A HREF="vrdi.B.html">XDDINFO Configuration Information</A>
+<LI> <A HREF="vrdi.C.html">Notes on Supported Display Devices</A>
+	<OL>
+	<LI> <A HREF="vrdi.C.html#C.1">Gould DeAnza IP-8500, Low
+	     Resolution</A> 
+	<LI> <A HREF="vrdi.C.html#C.2">Gould DeAnza IP-8500, High
+	     Resolution</A> 
+	<LI> <A HREF="vrdi.C.html#C.3">Gould DeAnza IP-9000</A>
+	<LI> <A HREF="vrdi.C.html#C.4">International Imaging Systems
+	     IVAS</A> 
+	<LI> <A HREF="vrdi.C.html#C.5">Ramtek RM-9460</A>
+	<LI> <A HREF="vrdi.C.html#C.6">ADAGE Graphics System</A>
+	</OL>
+<LI> <A HREF="vrdi.D.html">Hardware Selection Criteria</A>
+	<OL>
+	<LI> <A HREF="vrdi.D.html#D.1">Control Registers</A>
+	<LI> <A HREF="vrdi.D.html#D.2">LUT/DACs</A>
+	<LI> <A HREF="vrdi.D.html#D.3">Graphics Overlay</A>
+	<LI> <A HREF="vrdi.D.html#D.4">Image Memory Planes</A>
+	<LI> <A HREF="vrdi.D.html#D.5">Cursor</A>
+	<LI> <A HREF="vrdi.D.html#D.6">Alphanumeric Font Generator</A>
+	<LI> <A HREF="vrdi.D.html#D.7">Interactice IO Devices</A>
+	<LI> <A HREF="vrdi.D.html#D.8">Special Hardware</A>
+	<LI> <A HREF="vrdi.D.html#D.9">Other Considerations</A>
+	</OL>
+<LI> <A HREF="vrdi.E.html">Fonts Available on MIPL System</A>
+	<OL>
+	<LI> <A HREF="vrdi.E.html#E.1">Standard Fonts</A>
+	<LI> <A HREF="vrdi.E.html#E.2">Special and Combination Fonts</A>
+	<LI> <A HREF="vrdi.E.html#E.3">Description of Some Special
+	     Fonts</A> 
+		<OL>
+		<LI> <A HREF="vrdi.E.html#E.3.1">Font 102:
+		     Cartographic Special Characters</A>
+		<LI> <A HREF="vrdi.E.html#E.3.2">Font 105: Simplex
+		     Roman Special Character, Geometry, Cards and
+		     Weather Symbols</A> 
+		<LI> <A HREF="vrdi.E.html#E.3.3">Font 106: Circuit and
+		     Map Symbols</A>
+		<LI> <A HREF="vrdi.E.html#E.3.4">Font 107: Circles and
+		     Highway Signs</A>
+		<LI> <A HREF="vrdi.E.html#E.3.5">Font 111: Math
+		     Symbols (Normal Size)</A>
+		<LI> <A HREF="vrdi.E.html#E.3.6">Font 114: Complex
+		     Roman Special Characters and Astrology</A>
+		<LI> <A HREF="vrdi.E.html#E.3.7">Font 115: Zodiac and
+		     Music Symbols</A>
+		<LI> <A HREF="vrdi.E.html#E.3.8">Font 116: Math
+		     Symbols (Large Size)</A>
+		<LI> <A HREF="vrdi.E.html#E.3.9">Font 119: Duplex
+		     Roman and Complex Script Special Characters</A>
+		<LI> <A HREF="vrdi.E.html#E.3.10">Font 124: Triplex
+                     Roman and Italic Special Characters</A>
+		<LI> <A HREF="vrdi.E.html#E.3.11">Font 129: Gothic
+                     Special Characters</A>
+		</OL>
+	</OL>
+<LI> <A HREF="vrdi.F.html">Creating User Defined Text Fonts</A>
+	<OL>
+	<LI> <A HREF="vrdi.F.html#F.1">History</A>
+	<LI> <A HREF="vrdi.F.html#F.2">User Defined Fonts</A>
+	<LI> <A HREF="vrdi.F.html#F.3">Defining Characters</A>
+	<LI> <A HREF="vrdi.F.html#F.4">Font File Description</A>
+	</OL>
+<LI> <A HREF="vrdi.G.html">Sample Application Programs</A>
+ 	<OL>
+	<LI> <A HREF="vrdi.G.html#G.1">Non-Interactive Sample Program</A>
+	<LI> <A HREF="vrdi.G.html#G.2">Simple Interactive Sample Program</A>
+	<LI> <A HREF="vrdi.G.html#G.3">Better Interactive Sample Program</A>
+	</OL>
+</OL>
+
+<HR>
+
+<EM>HTML formatting by <A
+HREF="mailto:Elizabeth.Duxbury@jpl.nasa.gov">
+Elizabeth.Duxbury@jpl.nasa.gov</A>.</EM> <BR>
+<EM>Last modified May 15, 1995.</EM>
+
+</BODY>
+</HTML>
+

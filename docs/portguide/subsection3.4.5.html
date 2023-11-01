@@ -1,0 +1,66 @@
+<HEAD>
+<TITLE>Subroutine Names</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=366 HREF=subsection3.4.4.html><IMG SRC="/icons/previous.png"></A> <A NAME=368 HREF=section3.4.html><IMG SRC="/icons/up.png"></A>  <IMG SRC="/icons/next.png">  <b>Previous:</b> <A NAME=367 HREF=subsection3.4.4.html>Mixed-Language Interface</A>  <b>Up:</b> <A NAME=369 HREF=section3.4.html>Portability Constraints</A>  <P>
+ <H2>Subroutine Names</H2>
+<A NAME=portsubname><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+Given that separate Fortran and C-callable subroutines are needed, is there
+any way of using the same subroutine name for both?  Unfortunately, the
+answer is no.  On many Unix machines, such as Suns and DECstations, the
+Fortran compiler automatically adds an underscore (``_'') to the end of
+every external symbol either defined or referenced.  This is transparent
+if you are using only Fortran, but becomes an issue when mixing with C.
+For example, if your C-callable routine is named <tt> xyz()</tt>, the
+Fortran-callable routine (in C) must be named <tt> xyz_()</tt> in order for
+the Fortran routine to call it.
+<P>
+If adding an underscore was universally accepted, then the same routine
+name could be used for both the Fortran and C interfaces.  The Fortran
+binding would simply append an underscore.  However, this is not the case.
+Several machines, notably the VAX and the HP 700 series, do not append
+an underscore and so use the same name for both Fortran and C.  To
+accomodate these machines, there must be a different name for the Fortran
+and C versions of subroutines.  For example, the RTL uses the convention
+of starting the name with ``<tt> x</tt>'' for Fortran (e.g. <b> xvread</b>,
+<b> xlget</b>) and starting the name with ``<tt> z</tt>'' for C (e.g. <b> zvread</b>,
+<b> zlget</b>).  There has been no firm naming convention established for the
+VICAR subroutine library.  Many subroutines prepend a ``<tt> z</tt>'' to the
+name, similar to the RTL.  Others use a mixed-case/underscore convention,
+for example <tt> mpLabelRead</tt> or <tt> IBISColumnWrite</tt> for C and
+<tt> mp_label_read</tt> or <tt> ibis_column_write</tt> for Fortran.  Use
+whatever seems appropriate when creating a new subroutine.
+<P>
+You may be wondering how to append the underscore.  There is a macro
+provided to do this for you in C, called FTN_NAME in ``ftnbridge.h''.
+See Section <A HREF=subsection3.11.2.html#mixnamesub><IMG SRC="/icons/cross-ref.png"></A>, Naming Subroutines, for details.
+<P>
+The naming problem provides another incentive for having separate Fortran
+and C interfaces in the first place.  Imagine a subroutine written in Fortran,
+named ``<tt> xyz</tt>''.  Since some machines add an underscore, the C compiler
+will see the routine name as ``<tt> xyz_</tt>''.  In order to call this routine,
+the application programmer would have to add an underscore after the routine
+name, which would not be portable, or use a macro, which would be
+terribly inconvenient.  The application programmer would have to know
+whether a routine was written in Fortran or C to know whether or not to
+use the macro.  If the subroutine was converted to the other language at
+some point, all the calls in all the applications would have to be changed,
+which would be a nightmare.  To solve this problem, the burden is placed
+on the subroutine writer.  The application programmer merely calls the
+subroutine; the subroutine is then responsible for taking care of language
+differences.  In this case, there would be a bridge routine named <tt> zyz()</tt>,
+written in C, that would in turn call the Fortran routine <tt> xyz()</tt> using
+the FTN_NAME macro after converting the arguments appropriately.
+<P>
+Since a Fortran subroutine called from C must have a separate bridge
+routine anyway, it makes sense to require <em> all</em> subroutines to have a
+separate bridge routine, with a different name.  Besides solving the
+problems listed above, it allows much more freedom in choosing a calling
+sequence that makes sense for each language.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

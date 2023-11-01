@@ -1,0 +1,85 @@
+<HEAD>
+<TITLE>Separate Host Types</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=833 HREF=subsection3.7.6.html><IMG SRC="/icons/previous.png"></A> <A NAME=835 HREF=subsection3.7.6.html><IMG SRC="/icons/up.png"></A>  <A NAME=831 HREF=subsubsection3.7.6.2.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=834 HREF=subsection3.7.6.html>Dealing with Binary Labels</A>  <b>Up:</b> <A NAME=836 HREF=subsection3.7.6.html>Dealing with Binary Labels</A>  <b>Next:</b> <A NAME=832 HREF=subsubsection3.7.6.2.html>Using Binary Labels</A> <P>
+ <H3>Separate Host Types</H3>
+<A NAME=sephosttype><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+The solution to the binary label problem is to have <em> separate</em> host
+formats for the image and the binary label.  The system labels HOST, INTFMT,
+and REALFMT describe the host formats for the image, while the system labels
+BHOST, BINTFMT, and BREALFMT describe the host formats for the binary labels.
+<P>
+This of course means that it is possible to generate files that have data
+in two different host formats: one for the image itself and one for the binary
+labels.  This is not particularly desirable, but there is no practical way
+around it.  As long as applications make sure they use the binary label host
+formats while accessing the binary labels, there won't be a problem.
+However, it does place a heavy burden on application programmers to make sure
+they access binary labels correctly.
+<P>
+In the best of all worlds, all application programs that use a particular kind
+of binary label would be ported at once.  That way, when one of the programs
+starts writing data in Sun format, for example, all the other programs will
+be able to read it.  However, this is not always practical.  Some applications
+will be converted before others, and if a program writes a binary label in a
+non-VAX format, it will not be read correctly by an unported program.  For
+this reason, the implementors responsible for some kinds of binary labels may
+choose to keep them in VAX format, at least temporarily, regardless of the
+machine they were run on.  This way, unported programs can still access the
+data correctly.  Image data doesn't have this problem because of the automatic
+RTL conversion.
+<P>
+Doing this violates the general rule of read anything, write native, since
+the applications are writing in VAX (possibly a non-native) format, but it
+is justifiable in some cases.  Binary labels are typically small, so this
+does not impose much performance penalty.  However, <em> all portable programs
+must be able to read any host binary label format</em>, even if the decision is
+made to always write the binary labels in VAX format.  The reasons for this
+have more to do with system integrity than anything else.  Eventually, after
+everything is ported, the decision may be made to start writing the binary
+labels in the native format, which will simplify the code that writes them
+considerably.  It would be ridiculous to keep things in VAX format when
+everything is running on a Unix machine.  If all the programs already read
+any format, then there will not be a problem when the switchover is made.
+If a program was not coded to read any format, then it would read incorrect
+data after the switch.
+<P>
+An alternative to forcing VAX format would be to port all the programs that
+read the binary labels first.  Only after all the readers are ported would
+the porting of the programs that write the binary labels begin.  This way,
+you are assured of all applications being able to read the binary labels at
+all times, since everything that could use them would be able to read a foreign
+format before a file in that format was ever generated.
+<P>
+Note that this problem of timing the porting of programs applies not only to
+programs that use binary labels, but also to programs that use a file for
+anything other than image pixel data.  Some files currently in use in VICAR,
+like statistics files and old-style IBIS files, contain several different data
+types but are stored using the structure of a VICAR image file.  Like binary
+labels, the RTL cannot convert the data in these files, so the application
+must do it.  The issues discussed above, regarding always writing in VAX
+format and porting the read programs first, apply to these files as well.
+<P>
+One additional thing to watch out for with binary labels is when using UPDATE
+mode to change a file in place (i.e. modifying the file directly rather than
+copying it).  In this case, the file is not converted to native format, since
+it is being modified in-place.  The application must write out any binary
+label updates in the format of the file, or it must read and re-write the
+entire binary label in a native format.  The same is of course true for image
+data, but the RTL handles the conversion automatically.
+<P>
+It is highly recommended that a set of subroutines be written for each type
+of binary label to read/write/update that label.  If all applications used
+this set of subroutines, then it wouldn't matter what format the binary labels
+were kept in.  The subroutines would be able to adapt and hide the details from
+the application program.  If changes were made to the binary labels, or even
+if they were converted to property labels, the only code that would need to
+change would be the subroutines that access them.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

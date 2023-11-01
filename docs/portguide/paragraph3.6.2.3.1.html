@@ -1,0 +1,118 @@
+<HEAD>
+<TITLE><b> x</b>/<b>  zlpinfo</b></TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=644 HREF=subsubsection3.6.2.3.html><IMG SRC="/icons/previous.png"></A> <A NAME=646 HREF=subsubsection3.6.2.3.html><IMG SRC="/icons/up.png"></A>  <A NAME=642 HREF=paragraph3.6.2.3.2.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=645 HREF=subsubsection3.6.2.3.html>Miscellaneous Routines</A>  <b>Up:</b> <A NAME=647 HREF=subsubsection3.6.2.3.html>Miscellaneous Routines</A>  <b>Next:</b> <A NAME=643 HREF=paragraph3.6.2.3.2.html><b> x</b>/<b>  zmove</b></A> <P>
+ <H4><b> x</b>/<b>  zlpinfo</b></H4>
+<P>
+<PRE><TT>
+call xlpinfo(unit, properties, nprop, status, &lt;optionals&gt;, ' ')
+status = zlpinfo(unit, properties, nprop, &lt;optionals&gt;, 0);
+</TT></PRE>
+<P>
+Returns the names of property subsets in the given file.  Property labels
+are broken up into subsets, each with a property name.  This routine returns
+a list of all property names in the file specified by UNIT, which must be
+open.  This routine is identical to <b> x</b>/<b>  zlhinfo</b>, except that it returns
+property names instead of task names and instances.
+<P>
+<b> Arguments:</b>
+<UL>
+<P>
+<LI> UNIT: integer, input
+<P>
+UNIT is the unit number of an open file.  The property names in the property
+label of this file are returned.
+<P>
+<LI> PROPERTIES: output, string array
+<P>
+PROPERTIES is a string array that gets the list of property names.  When
+<b> zlpinfo</b> is called from C, the size of each string in the array is given
+by the ULEN optional argument (which is required from C).  There is no
+8-character default as there is in <b> zlhinfo</b>.  From Fortran, ULEN is
+optional, since the string length is obtained from the array itself (which
+must of course be a CHARACTER*n array).  Since property names can be up to
+32 characters, you should declare a Fortran array to be at least CHARACTER*32,
+and a C array should be at least 33 characters long (one additional character
+for the null terminator).  The number of strings in the array is specified by
+the NPROP argument.
+<P>
+<LI> NPROP: input/output, integer
+<P>
+On input, NPROP is the major dimension (maximum number of strings) in
+PROPERTIES.  On output, it returns the number of properties returned in
+PROPERTIES.  If there are more properties than the input NPROP allows, then
+the returned NPROP will be the same as the input since the maximum number
+of properties are returned.  If you want the total number of properties in
+the label, regardless of the size of your supplied buffer, use the NRET
+optional argument.
+<P>
+<LI> STATUS: integer, output
+<P>
+The returned status value.  It is an argument in Fortran and the function
+return value in C.  Any value other than SUCCESS indicates that the routine
+failed for some reason, and the returned values may not be valid.
+<P>
+</UL>
+<P>
+<b> Optional Arguments:</b>
+<UL>
+<P>
+<LI> ERR_ACT: input, string
+<P>
+Indicates the action to be taken by the RTL when an error occurs in this
+routine.  A valid string may contain one or more of the characters listed
+below, in any order.
+<P>
+<DL>
+<DT>A
+<DD>: Abort the program on error; otherwise the routine returns with STATUS
+set.
+<DT>U
+<DD>: Print the string specified in ERR_MESS if an error occurs.
+<DT>S
+<DD>: Print a system error message describing the error.
+<P>
+ </DL>
+<P>
+The three values are independent of each other.  Thus, ``SA'' will cause a
+system error message to be printed and the program to abort if an error
+occurs.  If ERR_ACT is empty or contains only blanks, no action will be
+taken on error, and the error code will be returned in STATUS.
+<P>
+If ERR_ACT is not specified, then the action defaults to the value of the
+LAB_ACT optional to <b> x</b>/<b>  zvopen</b>.  The default for LAB_ACT is specified by
+<b> x</b>/<b>  zveaction</b>.
+<P>
+<LI> ERR_MESS: input, string
+<P>
+Specifies the user message to be printed when an error occurs as directed
+by ERR_ACT.
+<P>
+Note that if the ERR_ACT option is not specified, and the LAB_ACT option
+given to <b> x</b>/<b>  zvopen</b> specifies that a message be printed, the message given by
+LAB_ACT, <em> not</em> ERR_MESS, is printed.
+<P>
+<LI> NRET, output, integer
+<P>
+NRET returns the total number of properties in the label.  This can differ
+from the NPROP argument if the buffer provided was too small.  NPROP returns
+the number actually in the buffer, while NRET returns the total number
+available.
+<P>
+<LI> ULEN, input, integer
+<P>
+ULEN specifies the length of each element in the PROPERTIES array.  ULEN is
+required on <b> zlpinfo</b> when called from C to define the inner dimension
+of the array.  Make sure to leave space for the null terminator, so ULEN
+should be at least 33.  From Fortran, ULEN is optional.  If it is not given,
+the string length will be picked up from the string array itself.  The
+CHARACTER*n variable should be at least 32 characters.
+<P>
+</UL>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

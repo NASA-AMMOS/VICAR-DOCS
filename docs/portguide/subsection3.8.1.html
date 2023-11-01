@@ -1,0 +1,49 @@
+<HEAD>
+<TITLE>RTL Differences</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=859 HREF=section3.8.html><IMG SRC="/icons/previous.png"></A> <A NAME=861 HREF=section3.8.html><IMG SRC="/icons/up.png"></A>  <A NAME=857 HREF=subsection3.8.2.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=860 HREF=section3.8.html>Porting C</A>  <b>Up:</b> <A NAME=862 HREF=section3.8.html>Porting C</A>  <b>Next:</b> <A NAME=858 HREF=subsection3.8.2.html>Include Files</A> <P>
+ <H2>RTL Differences</H2>
+<P>
+When porting a C application, all of the RTL routine calls will need to be
+changed, due to the addition of the C-language interface.  A portable
+application <em> must</em> use the C-language interface.  Although using the
+old Fortran interface will work under VMS, it works <em> only</em> under VMS.
+A C application using the Fortran interface simply will not work on any other
+machine.
+<P>
+The new RTL calling sequence is described in detail in
+Section <A HREF=section3.5.html#rtlcallconv><IMG SRC="/icons/cross-ref.png"></A>, RTL Calling Conventions.  As a reminder, the
+highlights are listed again below.
+<P>
+<UL>
+<P>
+<LI> Name change.  The routine names for the C-language interface start with
+a ``<tt> z</tt>'' instead of an ``<tt> x</tt>''.  So, <b> xvopen</b> becomes
+<b> zvopen</b>.
+<P>
+<LI> Terminator.  All RTL routines with keyword-value pairs of optional
+arguments must have a terminator in the argument list, even if none of the
+optional arguments are used.
+<P>
+<LI> Pass by value.  All input values to the RTL are passed by value in the
+standard C way, rather than being passed by reference.  Any output variables
+or arrays are, of course, still passed by reference.  Practically, this means
+taking out a bunch of ``&amp;'''s before the arguments.
+<P>
+<LI> Status return.  The status code is now the function return, rather than
+being an argument.  If automatic error checking is on (via <b> zveaction</b>
+or one of the ``*_ACT'' keywords), then the status return can be ignored.
+<P>
+<LI> Optional arguments.  Pure optional arguments are not allowed.  Most
+routines require all arguments to be specified, but a few have had some
+removed.  See Table <A HREF=subsection3.5.2.html#varargs><IMG SRC="/icons/cross-ref.png"></A> for a list of all the former optional
+argument routines.
+<P>
+</UL>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--
+This document was converted from RTF source: 
+By rtftohtml 4.17
+See http://www.sunpack.com/RTF
+Filename:WORD Ram Disk:RTL_Manual.rtf
+Application Directory:Data Disk:r2h4
+Subject:
+Author:Larry Bolef
+Operator:Larry Bolef
+Document Comments:
+Version Comments:
+Comments:
+Keywords:
+Translation Date:06/05/1999
+Translation Time:08:02:04
+Translation Platform:MacOS
+Number of Output files:59
+This File:WORD Ram Disk:RTL_Manual-1_3.html
+SplitDepth=2
+SkipNavPanel=0
+SkipLeadingToc=0
+SkipTrailingToc=1
+GenContents=1
+GenFrames=0
+GenIndex=0
+-->
+<HEAD lang="en"><META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<TITLE>1.3	Data Types and Host Representations </TITLE>
+</HEAD>
+
+<BODY ><DIV ALIGN="LEFT"><A HREF="RTL_Manual-Introduc.html">Up</A> | 
+<A HREF="RTL_Manual-1_2.html">Previous</A> | 
+<A HREF="RTL_Manual-1_4.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+<HR>
+
+<UL>
+<A HREF="#Heading5">1.3.1	VICAR File Representations </A><BR>
+</UL>
+
+<a name="Heading5"></a><a name="_Toc425047483"></a><a name="_Toc425048038"></a><a name="_Toc425750562"></a><a name="_Toc453201373"></a><A NAME="Heading4"></A><H2 ALIGN="LEFT">
+1.3	Data
+Types and Host Representations 
+</H2>
+<BLOCKQUOTE>
+Different
+host computers have different ways of representing data internally. Some
+machines are &#8220;big-endian&#8221;, meaning the high-order byte of an
+integer is stored first in memory, while others are
+&#8220;little-endian&#8221;, meaning the low-order byte is stored first .
+<BR>
+Data
+that are to be transferred between these machines must be byte-swapped. Most
+machines use the IEEE floating point standard, but DIGITAL VAXes and Alphas
+running the VMS operating system have their own standard. Some of the
+IEEE-format machines are byte-swapped relative to each other. Data transferred
+between these machines must be converted as well. 
+<a name="Heading6"></a><a name="_Toc425047484"></a><a name="_Toc425048039"></a><a name="_Toc425329671"></a><a name="_Toc425750563"></a><a name="_Toc453201374"></a></BLOCKQUOTE><A NAME="Heading5"></A><H3 ALIGN="LEFT">
+1.3.1	VICAR
+File Representations 
+</H3>
+<BLOCKQUOTE>
+Conversion
+among hosts would be greatly simplified if all data were stored in ASCII
+instead of binary. However, that is inefficient in both time and space for
+image data. Image data must be stored in a binary representation. The question
+is, which one?
+<BR>
+A
+standard, canonical representation could be chosen, such as Sun format:
+big-endian, IEEE floating point. That would simplify the file format, but would
+lead to inefficient operation on other machines with different formats. Doing
+processing locally on a VAX, every pixel would be converted to Sun format every
+time it got read in or written out for every processing step. There wouldn't be
+enough coffee in the world to keep you awake while waiting. Due to the huge
+quantity of existing images written in VAX format, the canonical representation
+would have to be VAX format, which is not desirable in the long run. 
+<BR>
+Since
+most processing is done locally on one machine, and transfers between machine
+architectures are comparatively less frequent, the solution is to use the
+native format of whatever machine you are running on, and to identify that
+machine in the image label. That way, local operations are done efficiently,
+and conversion is done only when switching machines. 
+<BR>
+Applications
+<I>must</I>
+be able to do data format translations automatically. In order to ease the
+burden, the following conventions have been adopted:
+</BLOCKQUOTE><UL>
+<LI><FONT FACE="Symbol">	</FONT>Applications
+shall be able to read files from any host representation. 
+<LI><FONT FACE="Symbol">	</FONT>Applications
+shall normally write files in the native host representation of the machine on
+which they are currently running. 
+</UL><BLOCKQUOTE>
+Placing
+the burden only on reading greatly simplifies the writing, while still insuring
+that the translations will take place in all cases. Some special-purpose
+applications may choose to write in a non-native format on occasion; however, 
+<I>all
+applications must be able to read all formats, without exception
+</I>.
+<BR>
+The
+Run-Time Library relieves most of this burden. When the standard I/O routines
+are called (
+<B>x/zvread</B>
+and 
+<B>x/zvwrit</B>),
+the translations as stated above are performed automatically for the image
+data. The application merely calls 
+<B>x/zvread</B>
+and it receives the data in the native format, ready for processing. It calls 
+<B>x/zvwrit</B>,
+and the data is written out in the native format (which is what the buffer is
+in). 
+<BR>
+There
+are three cases where applications will have to do their own conversion:
+</BLOCKQUOTE><UL>
+<LI><FONT FACE="Symbol">	</FONT>Binary
+labels: both headers and prefixes must be converted. See 
+<A HREF="RTL_Manual-1_7.html#Heading10">Using Binary Labels</A>.<LI><FONT FACE="Symbol">	</FONT>Array
+I/O: Any program using Array I/O will get the data as it exists in the file,
+without any translation. Applications using Array I/O are responsible for doing
+their own data format translations on the data they read.
+<LI><FONT FACE="Symbol">	</FONT>Convert
+OFF: It is possible for an application to turn off the RTL's automatic
+conversion. This should not normally be done, but is available for special
+cases. If this option is selected, the application must do its own translation. 
+</UL><BLOCKQUOTE>
+The
+<B>x/zvtrans</B>
+family of RTL routines are used to translate. Do 
+<I>not</I>
+attempt to write your own data format conversion routines, even if you think
+it's only byte-swapping. Although at the present time byte-swapping is the only
+integer conversion, this may not always be the case. Other integer
+representations exist, such as one's-complement and sign-magnitude, that can
+not be translated by a simple byte swap. By having only one set of conversion
+routines, porting to a new platform with a different data format is easier. 
+<B>x/zvtrans</B>
+translations are standardized, and thoroughly debugged. They are coded to be
+efficient, especially for simple byte-swapping. 
+</BLOCKQUOTE>
+<HR>
+
+<DIV ALIGN="LEFT"><A HREF="RTL_Manual-Introduc.html">Up</A> | 
+<A HREF="RTL_Manual-1_2.html">Previous</A> | 
+<A HREF="RTL_Manual-1_4.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+</BODY>
+
+</HTML>

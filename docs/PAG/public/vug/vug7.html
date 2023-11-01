@@ -1,0 +1,2054 @@
+<Title>VICAR User's Guide</Title>
+<H1>7   The VICAR Image Processing Executive</H1>
+
+<STRONG>Contents</STRONG>
+
+<PRE>
+7.1   <A HREF="#7.1">Introduction to the TAE Command Language (TCL)</A>
+    7.1.1   <A HREF="#7.1.1">TCL Command Line Rules</A>
+	7.1.1.1   <A HREF="#7.1.1.1">Abbreviations</A>
+	7.1.1.2   <A HREF="#7.1.1.2">Line Continuation</A>
+	7.1.1.3   <A HREF="#7.1.1.3">Labels</A>
+	7.1.1.4   <A HREF="#7.1.1.4">Special Characters</A>
+	7.1.1.5   <A HREF="#7.1.1.5">Special VT100 Terminal Keys</A>
+	7.1.1.6   <A HREF="#7.1.1.6">Command Line Editor</A>
+    7.1.2   <A HREF="#7.1.2">Variables</A>
+	7.1.2.1   <A HREF="#7.1.2.1">Local Variables</A>
+	7.1.2.2   <A HREF="#7.1.2.2">Global Variables</A>
+	7.1.2.3   <A HREF="#7.1.2.3">Assignment</A>
+	7.1.2.4   <A HREF="#7.1.2.4">Intrinsic Variables</A>
+	7.1.2.5   <A HREF="#7.1.2.5">Substitution and  Dereferencing</A>
+    7.1.3   <A HREF="#7.1.3">Expressions</A>
+    7.1.4   <A HREF="#7.1.4">Built-In Functions</A>
+    7.1.5   <A HREF="#7.1.5">Error Handling</A>
+7.2   <A HREF="#7.2">VICAR Command Line Structure</A>
+    7.2.1   <A HREF="#7.2.1">Command Line Syntax</A>
+	7.2.1.1   <A HREF="#7.2.1.1">Commands and Proc Names</A>
+	7.2.1.2   <A HREF="#7.2.1.2">Subcommands</A>
+	7.2.1.3   <A HREF="#7.2.1.3">Command Qualifiers</A>
+	7.2.1.4   <A HREF="#7.2.1.4">Parameter List</A>
+	7.2.1.5   <A HREF="#7.2.1.5">Comments</A>
+    7.2.2   <A HREF="#7.2.2">Parameters</A>
+    7.2.3   <A HREF="#7.2.3">Parameter Value Specification</A>
+	7.2.3.1   <A HREF="#7.2.3.1">Parameter_name=value Format</A>
+	7.2.3.2   <A HREF="#7.2.3.2">Keyword Format</A>
+	7.2.3.3   <A HREF="#7.2.3.3">Positional Format</A>
+	7.2.3.4   <A HREF="#7.2.3.4">Parameter Qualifiers</A>
+    7.2.4   <A HREF="#7.2.4">Missing or Invalid Parameter Values</A>
+    7.2.5   <A HREF="#7.2.5">Dynamic Parameters</A>
+7.3   <A HREF="#7.3">Proc Definition Files (PDFs)</A>
+    7.3.1   <A HREF="#7.3.1">Procedure Definition Files (PDFs)</A>
+    7.3.2   <A HREF="#7.3.2">Process Definition Files (PDFs)</A>
+    7.3.3   <A HREF="#7.3.3">Executing a PDF</A>
+    7.3.4   <A HREF="#7.3.4">HELP Files</A>
+    7.3.5   <A HREF="#7.3.5">Global PDFs</A>
+    7.3.6   <A HREF="#7.3.6">Compiled PDFs</A>
+7.4   <A HREF="#7.4">Script Files</A>
+7.5   <A HREF="#7.5">Tape Handling</A>
+7.6   <A HREF="#7.6">Session Logging</A>
+7.7   <A HREF="#7.7">Sample Interactive Session</A>
+</PRE>
+
+Within this section, the major aspects of the VICAR executive are
+covered. Complete detail has not been attempted, but all information
+likely to be commonly required by users has been included.  The major
+concepts being described include command rules and syntax, parameter
+entry, procedure and script file construction, session logging, and
+tape handling. <P>
+
+The new user may be confused the first time through this section,
+since a lot of important information is presented at the same time.
+Some of the earlier examples might be particularly confusing because
+they use concepts that are introduced a little later. The new VICAR
+user should try to understand the basic concepts the first time
+through and not worry about understanding everything. By the end of
+this section, the concepts should all start to make sense. <P>
+
+<A NAME="7.1">
+<H2>7.1	Introduction to the TAE Command Language (TCL)</H2>
+</A>
+
+Communication between the user and VICAR is accomplished through the
+TAE Command Language (TCL).  TCL allows the user to access procs,
+supply parameters to them, and initiate their operation using a single
+command line.  TCL provides the following tools to achieve this: <P>
+
+<UL>
+<LI>local and global variable assignment
+<LI>expression evaluation
+<LI>use of built-in functions
+<LI>macro-level substitution for variables and parameters
+<LI>conditional execution and looping
+</UL>
+
+<A NAME="7.1.1">
+<H3>7.1.1 TCL Command Line Rules</H3>
+</A>
+
+While VICAR GUIs are currently being developed, at the present time
+all user communication to VICAR is accomplished through the use of the
+TCL Command Line.  VICAR functions and procs are invoked by using
+established rules and syntax.  The standard rules governing command
+lines are covered in this section, while syntax is detailed in <A
+HREF="#7.2.1">Section 7.2.1.</A> <P>
+
+<A NAME="7.1.1.1">
+<H4>7.1.1.1 Abbreviations</H4>
+</A>
+
+The user is allowed to use abbreviations for the following cases:
+
+<UL>
+<LI>Intrinsic commands <A
+HREF="vug10.4-10.html#10.4">(Appendix 10.4)</A> 
+<LI>Tutor, Menu and Help commands and subcommands 
+<LI>Names of parameters used in command lines
+</UL>
+
+Proc names, library names and file names may not be abbreviated.<P>
+
+The extent of allowed truncation is governed by one rule: the
+abbreviation must uniquely specify one command or parameter name out
+of all those allowed at the time.   <P>
+
+<EM>Example:</EM>  Abbreviation of parameters.
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>F2 A B FUN="IN1*10." 'HA
+</PRE>
+
+<EM>will work as well as the full command line:</EM> <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>F2 A B FUNCTION="IN1*10." 'HALF
+</PRE>
+
+<A NAME="7.1.1.2">
+<H4>7.1.1.2 Line Continuation</H4>
+</A>
+
+A command line may be continued to a maximum of 2048 characters on
+subsequent lines by ending it with a "+" character.  Lines may not be
+continued within command names, comment fields or parameter values or
+names. <P>
+
+<EM>Example:</EM> Continuation of a command line.
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>FARENC URANUS.RED (A,B,G) +
+    <STRONG>VICAR&gt;+</STRONG> 'AUTO GEOM=3 AREA=(50,50,700,700)
+</PRE>
+
+<STRONG>BEWARE</STRONG> <EM>DCL and USH commands submitted at the
+VICAR prompt follow the above rules (i.e., using the "+" character).
+All those submitted from the VICAR DCL mode or USH mode use the
+standard VMS DCL rule of continuing lines with a "-" character, or the
+UNIX rule of using a "\" character. </EM><P>
+
+<A NAME="7.1.1.3">
+<H4>7.1.1.3 Labels</H4>
+</A>
+
+<STRONG>EXPERT</STRONG> Any command line within VICAR procedures may
+be labelled.  A label is created by prefixing a line with a string of
+characters (which make up the label) and the ">" character.  This
+label may then be referenced by the <CODE>GOTO</CODE> command
+elsewhere in the procedure. <P>
+
+<EM>Example:</EM> Label use in procedures (the label is
+"<CODE>BATCH</CODE>").
+
+<PRE>
+	Procedure
+	Refgbl $RUNTYPE
+	Body
+	IF ($RUNTYPE="BATCH") GOTO BATCH
+	WRITE "ARE WE HAVING FUN YET?"
+	BATCH>TESTPROC (A,B,C)
+	End-proc
+</PRE>
+
+<STRONG>BEWARE</STRONG> <EM>Contrary to normal Fortran programming
+standards, only forward branching is permissible. </EM><P>
+
+<A NAME="7.1.1.4">
+<H4>7.1.1.4 Special Characters</H4>
+</A>
+
+The special characters allowed by TCL and their meanings are listed in
+Table 3-2 of the <CITE>TAE Command Language Programmer's
+Manual</CITE>.  The most useful of those symbols are listed here.
+Only the "&amp;" character retains its meaning when placed within a
+quoted string (a character string bracketed by " " characters). <P>
+
+<PRE>
+    CHARACTER		MEANING				
+
+	!	comment field indicator
+	&	variable substitution flag
+	@	variable dereferencing flag
+	" "	start and end of quoted string
+	|	start or end of qualifier field
+	,	separator used in lists
+	SPACE	general separator
+	?	query for help on last message
+	'	flag for keyword value
+	+	line continuation indicator
+</PRE>
+
+<A NAME="7.1.1.5">
+<H4>7.1.1.5 Special VT100 Terminal Keys</H4>
+</A>
+
+The use of certain special keys has effects that are unique to TCL.
+The most important of these keys are <CODE>ESCAPE</CODE>,
+<CODE>Control-C</CODE>, <CODE>Control-Y</CODE> and
+<CODE>Control-O</CODE>.  Information on the keys used by the Command
+Line Editor and Tutor mode are found in <A HREF="#7.1.1.6">Section
+7.1.1.6</A> and <A HREF="vug10.4-10.html#10.9">Appendix 10.9</A>.  The
+following information describes the VICAR Command mode. <P>
+
+Typing the <CODE>ESCAPE</CODE> key twice (<CODE>ESC</CODE>
+<CODE>ESC</CODE>) serves two functions within VICAR.  When entered
+on any continuation line, it will cancel the entire command.  When
+entered at a prompt from some interactive procedures, the procedure
+will be interrupted.  Options available at this point are
+<CODE>ABORT</CODE>, <CODE>TUTOR</CODE>, and <CODE>EXIT</CODE>.
+<CODE>ABORT</CODE> will terminate the procedure, <CODE>TUTOR</CODE>
+will put VICAR in Tutor mode, and <CODE>EXIT</CODE> will return the
+user to the procedure prompt. <P>
+
+A <CODE>Control-C</CODE> entry will abort a VICAR operation <A
+HREF="vug5.html#5.5">(Section 5.5)</A> and prompt the user for a
+further command.  After appropriate response to the VICAR-INTERRUPT>
+prompt, the user is left in VICAR. <P>
+
+On VMS systems, Control-Y will abort an operation and, in
+addition, will end the VICAR session, lose VICAR dummy names and some
+allocated devices, and return the user to the DCL prompt.  On UNIX
+systems, it will suspend the VICAR session and return the user to the
+shell prompt.  Typing <CODE>fg</CODE> will re-initiate the VICAR
+session. <P>
+
+A <CODE>Control-O</CODE> entry will discontinue all further output to
+the terminal screen from the current proc.  The proc continues to run
+to completion and continues to output to the session log file.  A
+second Control-O entry will again route output to the terminal
+screen. <P>
+
+<A NAME="7.1.1.6">
+<H4>7.1.1.6 Command Line Editor</H4>
+</A>
+
+A command line editor is implemented in VICAR for VT100-compatible
+video terminals.  This editor allows the user to recall previous
+commands and modify the current (or recalled) command.  Commands which
+may be recalled include those issued from within an interactive
+program (IDX being an exception).  The special keys utilized by the
+editor are described in <A HREF="vug10.4-10.html#10.10">Appendix
+10.10</A>. <P>
+
+On VMS systems, the method of line modification (either insertion or
+overstrike) is controlled by that selected under DCL (the <CODE>SET
+TERM</CODE> command).  A <CODE>Control-A</CODE> will toggle between
+the options.  (The insertion mode is the only one available on UNIX
+systems.) <P>
+
+The user may scroll backward and forward among the recallable commands
+with the <CODE>UP ARROW</CODE> and <CODE>DOWN ARROW</CODE> keys.
+<CODE>UP</CODE> gives earlier commands; <CODE>DOWN</CODE> gives
+later. <P>
+
+<STRONG>BEWARE</STRONG> <EM>Restrictions:
+
+<UL>
+<LI>Only the twenty most recently entered commands are recallable. 
+<LI>This feature is not available for commands entered in VICAR's
+DCL or USH modes.
+<LI>Only the first line of multi-line commands may be recalled.
+</UL> </EM>
+
+<A NAME="7.1.2">
+<H3>7.1.2 Variables</H3>
+</A>
+
+TCL allows the definition of named values called variables.  These may
+be assigned values, be the object of substitution or be used in
+expressions.  Variables may be of two distinct scopes: Local or
+Global.  All variables must be defined before use.  The intrinsic
+command <CODE>DISPLAY</CODE> may be used to examine the value of
+variables. (See <A HREF="vug10.4-10.html#DISPLAY">Section 10.4</A>
+for an explanation of the <CODE>DISPLAY</CODE> command.) <P>
+
+<A NAME="7.1.2.1">
+<H4>7.1.2.1 Local Variables</H4>
+</A>
+
+A Local variable may be referenced only within the procedure or
+session in which it was declared.  These variables must be defined
+with the <CODE>LOCAL</CODE> command before use in an interactive
+session or in a procedure. The definition of a Local variable in a
+procedure may be made before or after the <CODE>BODY</CODE>
+statement.  The following characteristics are defined for the
+<CODE>LOCAL</CODE> command: <P>
+
+<PRE>
+<STRONG>NAME</STRONG>	The variable name, maximum of 8 characters.
+
+<STRONG>TYPE</STRONG>	The variable type, limited to the values: INTEGER,
+	REAL, STRING and FILE. 
+
+<STRONG>COUNT</STRONG>	The number of elements in the variable or the range 
+	of valid COUNTs.  A count exceeding 1 creates a 
+	multi-valued variable; a count of 0 implies the 
+	variable is nullable (i.e., not required or may 
+	receive the null value (--) ).  Default is 1.  
+	Max count is 600.
+</PRE>
+
+<EM>Examples:</EM>  Possible <CODE>COUNT</CODE> declarations.
+
+<PRE>
+    COUNT=1	must have one value associated with the 	
+		variable
+
+    COUNT=1:10	may have 1 to 10 values entered, which will be 	
+		called <VAR>variable_name</VAR>(1)...<VAR>variable_name</VAR>(10)
+
+    COUNT=0:1	may have at most 1 value, but need not be 	
+		entered (i.e., COUNT=0 is valid)
+
+<STRONG>INITIAL</STRONG>	The initial value for the variable, consistent with 
+	TYPE, VALID and COUNT. 
+
+<STRONG>VALID</STRONG>	The allowed values or range of values of the variable,
+	consistent with TYPE.
+</PRE>
+
+<EM>Examples:</EM>  Possible <CODE>VALID</CODE> declarations.
+
+<PRE>
+    VALID=4:10		values 4,5,6,7,8,9 or 10 are allowed
+    VALID=(1:4,8:10)	values 1,2,3,4,8,9 or 10 are allowed
+    VALID=(J,S,U,N)	the listed values are allowed
+</PRE>
+
+<EM>Example:</EM>   Declaration of Local Variables
+
+<PRE>
+    Local J TYPE=INTEGER COUNT=0:1 VALID=(5,6,7)
+    Local (L,K) REAL COUNT=1 INITIAL=1.5
+</PRE>
+
+<EM>Example:</EM> Procedure <CODE>COUNTEM</CODE> using a Local
+variable.
+
+<PRE>
+	Procedure
+	Body
+	LOCAL  I  INTEGER  INIT=1 
+	WRITE "Watch me count to 10"
+	LOOP
+		WRITE "&amp;I"
+		LET  I=I+1
+		IF (I>10) BREAK
+	END-LOOP
+	WRITE "How was that?"
+	end-proc
+</PRE>
+
+<EM>Example:</EM>   Running COUNTEM procedure.
+
+<PRE>
+    <STRONG>VICAR&gt;COUNTEM
+    Watch me count to 10
+    1
+    2
+    3
+    4
+    5
+    6
+    7
+    8
+    9
+    10
+    How was that?</STRONG>
+</PRE>
+
+Local variables are deleted when the operation that created them ends
+or they are explicitly deleted with the intrinsic commands
+<CODE>DELETE</CODE> or <CODE>DELETE-LOCALS</CODE>. The
+<CODE>DELETE</CODE> command will delete a single variable, whereas
+<CODE>DELETE-LOCALS</CODE> will delete all the currently defined local
+variables.  <P>
+
+<EM>Syntax: </EM>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>DELETE NAME=<VAR>variable_name</VAR>
+    <STRONG>VICAR&gt;</STRONG>DELETE-LOCALS
+</PRE>
+
+<A NAME="7.1.2.2">
+<H4>7.1.2.2 Global Variables</H4>
+</A>
+
+A Global variable may be accessed from any level of a session for
+which it was defined.  If accessed in a procedure, a
+<CODE>REFGBL</CODE> statement is required unless it is implicitly
+defined by VICAR or used at the interactive level.  Global variables
+are defined by <CODE>PARM</CODE> commands within special Global
+procedures <A HREF="#7.3.5">(Section 7.3.5)</A> or by the
+<CODE>DEFGBL</CODE> command in regular procedures <A
+HREF="#7.3.1">(Section 7.3.1)</A>.  A <CODE>PARM</CODE> command is
+similar in structure to the <CODE>LOCAL</CODE> command and a
+<CODE>DEFGBL</CODE> command has exactly the same structure.  The
+characteristics defined by <CODE>PARM</CODE> commands are outlined in
+<A HREF="#7.2.2">Section 7.2.2</A>.<P>
+
+<EM>Example:</EM> A Global procedure
+
+<PRE>
+	Global		!proc name is CDEF.PDF
+	Parm  	CAT 	STRING  COUNT=1  DEFAULT=GARFIELD +
+ 			VALID=(Garfield, Heathcliff, Sassafras)
+	End-proc
+</PRE>
+
+Execution of the above procedure.
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>cdef cat=sass
+    <STRONG>VICAR&gt;</STRONG>display cat
+	<STRONG>cat="Sassafras"</STRONG>
+</PRE>
+
+<EM>Example:</EM> Use of the <CODE>DEFGBL</CODE> command.
+
+<PRE>
+	procedure		! procedure game
+	body
+	defgbl play	type=string	count=1:2 +
+			valid=("base","volley","ball")
+	refgbl play
+	let play=("base","ball")
+	write "We like to play &amp;play"
+	end-proc
+</PRE>
+
+Execution of the procedure <CODE>game</CODE>:
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>game
+    <STRONG>We like to play (base,ball)</STRONG>
+</PRE>
+
+Like Local variables, Global variables are deleted when the operation
+that created them ends or they are explicitly deleted with the
+intrinsic commands <CODE>DELETE</CODE> or
+<CODE>DELETE-GLOBALS</CODE>. The <CODE>DELETE</CODE> command will
+delete single Global variables, while the <CODE>DELETE-GLOBALS</CODE>
+will delete all those defined in a Global PDF.  <P>
+
+<EM>Syntax:  </EM>
+
+<PRE>
+     <STRONG>VICAR&gt;</STRONG>DELETE NAME=<VAR>variable_name</VAR>
+     <STRONG>VICAR&gt;</STRONG>DELETE-GLOBALS PROC=<VAR>proc_name</VAR>
+</PRE>
+
+Note: Globals may not be of type <CODE>KEYWORD</CODE> <A
+HREF="#7.2.3.2">(Section 7.2.3.2)</A>. <P>
+
+<A NAME="7.1.2.3">
+<H4>7.1.2.3 Assignment</H4>
+</A>
+
+All variables may be assigned values by the use of the
+<CODE>LET</CODE> command.  TCL will not allow values which are
+inconsistent with the defined characteristics.  In addition, the null
+value "--" or the empty string value " " may be assigned, if
+<CODE>COUNT</CODE> includes "0". <P>
+
+<EM>Example:</EM> Change the value of the Global variable
+<CODE>$ECHO</CODE>.
+
+<PRE>
+	Procedure
+	Refgbl $ECHO
+	Body
+	Let $ECHO="YES"
+	COPY myfile.dat newfile.dat
+	End-proc
+</PRE>
+
+In all cases, if the variable definition allows multiple values, each
+value may be individually accessed or assigned by appending the
+element number in parentheses to the variable name.  In addition, the
+element number may be an expression <A HREF="#7.1.3">(Section
+7.1.3)</A>. <P>
+
+<EM>Example:</EM> Possible assignments for a multi-valued parameter.
+
+<PRE>
+    LET OUTOF(3) = "BOUNDS" 
+    LET OUTOF(P+4) = "LUCK"
+</PRE>
+
+<A NAME="7.1.2.4">
+<H4>7.1.2.4 Intrinsic Variables</H4>
+</A>
+
+VICAR maintains implicitly defined local and global variables. In
+certain cases, the user may even be able to change the value of one of
+these intrinsic variables. <P>
+
+<STRONG>EXPERT</STRONG> There are four Intrinsic Local variables
+available to the user.  All Intrinsic Locals may be accessed without
+defining within a procedure; only <CODE>_STDOUT</CODE> is not
+available in batch. <P>
+
+<DL> 
+<DT><CODE><STRONG>_ONFAIL</STRONG></CODE> Multi-valued variable; at
+most two values.  Controls error handling <A HREF="#7.1.5">(Section
+7.1.5).</A>
+
+<DT><CODE><STRONG>_PROC</STRONG></CODE> Contains the name of the
+currently running proc.
+
+<DT><CODE><STRONG>_SUBCMD</STRONG></CODE> Contains the name of the
+currently active subcommand.
+
+<DT><CODE><STRONG>_STDOUT</STRONG></CODE> Multi-valued variable; at
+most two values.
+
+<DD><CODE>_STDOUT(1)</CODE> contains the file or device name to which
+the standard output is directed.  This is normally set to
+"<CODE>SYS$OUTPUT</CODE>", but may be directed to a file or the print
+queue (e.g., "<CODE>SYS$PRINT</CODE>").
+
+<DD><CODE>_STDOUT(2)</CODE> may contain either "<CODE>APPEND</CODE>"
+or "<CODE>CREATE</CODE>", defining whether to add to an existing file
+or create a new one.  The default is <CODE>_STDOUT=("SYS$OUTPUT","
+")</CODE>.
+</DL>
+
+<STRONG>EXPERT</STRONG> Intrinsic globals may be accessed without
+defining on the interactive level, but within a procedure a
+<CODE>REFGBL</CODE> command may be required.  Descriptions of Intrinsic
+Global variables are contained in <A
+HREF="vug10.4-10.html#10.6">Appendix 10.6</A>. <P>
+
+<EM>Example:</EM> Access Intrinsic variables <CODE>$RUNTYPE</CODE> and
+<CODE>_PROC</CODE>.
+
+<PRE>
+	Procedure
+	Refgbl $RUNTYPE
+	Body
+	IF ($RUNTYPE="INTERACTIVE") GOTO INT
+	LOCAL PN STRING
+	LET PN = _PROC
+	WRITE "Proc &amp;PN is invoking TESTPROC"
+	INT&gt;TESTPROC (A,B,C)
+	End-proc
+</PRE>
+
+<A NAME="7.1.2.5">
+<H4>7.1.2.5 Substitution and Dereferencing</H4>
+</A>
+
+<STRONG>EXPERT</STRONG> TCL gives the user the flexibility of creating
+procedures which can both substitute and dereference variables.
+Individual values of a multi-valued variable may not be used for
+substituting or dereferencing. <P>
+
+<STRONG>Substitution</STRONG> <P>
+
+<STRONG>EXPERT</STRONG> Prefixing a variable name with the "&amp;"
+character tells VICAR to replace the "&amp;<VAR>variable_name</VAR>"
+string with the character string that represents the value of the
+variable.  This replacement occurs before command interpretation. <P>
+
+<EM>Example:</EM> Substitution.
+
+<PRE>
+    LET J = 14
+    LET I = "PAWS.DAT"
+    COPY &amp;I F&amp;J SIZE=(100,100,50,50)
+</PRE>
+
+<EM>is interpreted as </EM>
+
+<PRE>
+    COPY PAWS.DAT F14 SIZE=(100,100,50,50)
+</PRE>
+
+<STRONG>BEWARE</STRONG> When substituting variables imbedded in a
+string or word, the variable name itself may require quotes to
+distinguish it from the rest of the string.  This however, becomes a
+problem when substitution is to be performed inside an otherwise
+already quoted string, such as a <CODE>WRITE</CODE> statement.  In
+this case, concatenation into another variable may be necessary. <P>
+
+<STRONG>Dereferencing</STRONG> <P>
+
+<STRONG>EXPERT</STRONG> Prefixing the variable name with the "@"
+character tells VICAR to replace the "@<VAR>variable_name</VAR>"
+string with the value of the variable.  This is like a pointer
+operation and occurs at run time, not before command interpretation.
+This is allowed only in value fields (right of the equal sign).  The
+replacing value must be consistent with the definition of the
+variable.  <P>
+
+<EM>Example:</EM> Dereferencing in a procedure.
+
+<PRE>
+	Procedure	! proc name is GPRC.PDF
+	Parm F INTEGER COUNT=0:1 DEFAULT=--
+	Body
+	LIST OUT SPACE=@F
+	End-proc
+</PRE>
+
+<EM>Execution of the procedure GPRC:</EM>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>GPRC F=10	! acts like: LIST OUT SPACE=10 
+    <STRONG>VICAR&gt;</STRONG>GPRC		! acts like: LIST OUT
+</PRE>
+
+<STRONG>EXPERT</STRONG> The "@" is telling VICAR: "when the value of
+<CODE>SPACE</CODE> is needed, use the value of <CODE>F</CODE>".  A
+"--" for <CODE>F</CODE> implies the same for <CODE>SPACE</CODE>, which
+acts like <CODE>SPACE</CODE> was not entered. <P>
+	
+<STRONG>EXPERT</STRONG> Differences between Substitution and
+Dereferencing are detailed in the <CITE>TAE Command Language
+Programmer's Manual</CITE>.  Generally speaking, though, "@" always
+works properly for value fields and "&amp;" may not under certain
+circumstances. <P>
+
+<EM>Example:</EM>  Dereferencing in a procedure.
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>GEN OUT=DATASET&amp;"NAME".IMG
+</PRE>
+
+<A NAME="7.1.3"> 
+<H3>7.1.3 Expressions</H3> 
+</A> 
+
+<STRONG>EXPERT</STRONG> TCL allows various kinds of expressions in
+order to calculate a value from variables, functions and operators.
+Expressions are only allowed in the commands LET, FOR, IF and ELSE-IF,
+and are not allowed in proc invocation commands.  Expressions using
+variables of more than one type are not allowed. <P>
+
+<STRONG>EXPERT</STRONG> The various operators available to the user
+are listed below with the supported expression types.  <P>
+
+<STRONG>Numeric Expression</STRONG>
+
+<PRE>
+		+	addition
+		-	subtraction
+		*	multiplication
+		/	division
+</PRE>
+
+<EM>Example:</EM> Assignment statement.
+
+<PRE>
+    LET X = Y*2
+</PRE>
+
+<STRONG>String Expression</STRONG>
+
+<PRE>
+		//	string concatenation
+</PRE>
+
+<EM>Example:</EM> String concatenation.
+
+<PRE>
+    LET TRUE = "GARFIELD "//"&amp;verb"//" LASAGNE"
+</PRE>
+
+<STRONG>Relational Expression</STRONG>
+
+<PRE>
+		&gt;	greater than
+		&lt;	less than
+		=	equal to
+		&gt;=	greater than or equal to
+		&lt;=	less than or equal to
+		&lt;&gt;	not equal to
+</PRE>
+
+<EM>Example:</EM> A relational expression.
+
+<PRE>
+    IF (WAIST &gt;= 100) GOTO FAST
+</PRE>
+
+<STRONG>Logical Expression</STRONG>
+
+<PRE>
+		AND	logical AND
+		OR	logical OR
+		NOT	logical negation
+</PRE>
+
+<EM>Example:</EM> A conditional statement.
+
+<PRE>
+    IF (day="Monday" and floor="cold") GOTO SLEEPIN
+</PRE>
+
+<A NAME="7.1.4">
+<H3>7.1.4 Built-In Functions</H3>
+</A>
+
+<STRONG>EXPERT</STRONG> TCL supplies user-callable functions that can
+be used in commands and expressions, anywhere a variable name could be
+used.  At run time, the value of the function replaces the function
+call on the command line. <P>
+
+<STRONG>EXPERT</STRONG> Available functions include:
+
+<PRE>
+    Function	    Returned Value				
+
+    $ASFI(jobname)  Returns the current value of $SFI for the
+		    asynchronous job.
+    $ASKEY(jobname) Returns the current value of $SKEY for the
+		    asynchronous job.
+    $COUNT(name)    The number of elements for the variable
+		    named; -1 if variable has no value, 0 if 
+		    variable has null value (--).
+    $FIX(real)	    Truncated real value converted to integer.
+    $FLOAT(integer) Integer value converted to real. 
+    $GLOBAL(name)   1 if variable is a Global, 0 if not. 
+    $PANEL(panelname) Returns the status of existence for the 
+		    named panel.
+    $STRLEN(string) Returns length of specified string. 
+</PRE>
+
+<EM>Example:</EM> Use of the <CODE>$COUNT</CODE> function.
+
+<PRE>
+    LOCAL I INTEGER COUNT=0:4
+    LET I = (1,2,4)
+    LOCAL J INTEGER
+    LET J = $COUNT(I)	!variable J is given the value 3
+</PRE>
+
+<A NAME="7.1.5">
+<H3>7.1.5 Error Handling</H3>
+</A>
+
+<STRONG>EXPERT</STRONG> The Intrinsic Global variable <CODE>$SFI</CODE>
+is the indicator of success or failure of a command.  It is set to
+negative upon failures, or remains positive for successes.  This
+variable may be referenced by procs for error handling.
+Alternatively, the Intrinsic Local variable <CODE>_ONFAIL</CODE> can do
+the error handling for the user.  <CODE>_ONFAIL</CODE> will check the
+<CODE>$SFI</CODE> indicator and take the action specified by the
+user.  <CODE>_ONFAIL</CODE> does not work for errors in intrinsic
+subcommands. <P>
+
+<STRONG>EXPERT</STRONG> <CODE>_ONFAIL(1)</CODE> is set by the user to
+the command which shall be executed in the event of command failure.
+<CODE>_ONFAIL(2)</CODE> is set by the user to the command which shall
+be executed upon <CODE>ABORT</CODE> after <CODE>CONTROL-C</CODE> by
+the user. <P>
+
+<STRONG>EXPERT</STRONG> The legal values of <CODE>_ONFAIL</CODE> are defined
+below.<P>
+
+<PRE>
+    "RETURN"	  The proc gets terminated and error indicators 
+		  are passed back up through the chain of 
+		  invoking procs.
+
+    "BREAK"	  Control passes to the first command outside
+		  the loop containing the failed command.
+
+    "CONTINUE"	  Error has no effect, proc execution continues.
+
+    "GOTO label"  Control passes to command indicated by 
+		  "label".
+
+    "NEXT"	  Control passes to first command of current 
+		  loop.
+
+    "STOP"	  The proc and its invoking procs terminate.
+</PRE>
+
+<STRONG>EXPERT</STRONG> The default value is
+<CODE>_ONFAIL=("RETURN","RETURN")</CODE>.<P>
+
+<EM>Example:</EM> Equivalent <CODE>_ONFAIL</CODE> statements.
+
+<PRE>
+    LET _ONFAIL="CONTINUE"
+    LET _ONFAIL(1)="CONTINUE"
+</PRE>
+
+<EM>Example:</EM> <CODE>_ONFAIL</CODE> use in a loop.
+
+<PRE>
+    LET _ONFAIL="GOTO ERROR"
+    LOOP
+	COPY IN/&amp;F X
+	MASKV X Y.&amp;F
+	NEXT
+	ERROR&gt;WRITE "WARNING: FILE &amp;F FAILED"
+    END-LOOP
+</PRE>
+
+<EM>If any of the steps in the loop fails, a warning message is
+written and the loop continues to the next iteration.</EM> <P>
+
+<A NAME="7.2">
+<H2>7.2	VICAR Command Line Structure</H2>
+</A>
+
+The VICAR command is a string containing information that controls
+VICAR's execution.   Executing a command line requires proper syntax.
+This section will describe the command line structure in detail. <P>
+
+<A NAME="7.2.1">
+<H3>7.2.1 Command Line Syntax</H3>
+</A>
+
+A full command line consists of five terms:
+
+<UL>
+<LI>an intrinsic command or a proc name
+<LI>a subcommand
+<LI>command qualifiers
+<LI>a parameter list
+<LI>a comment field  
+</UL>
+
+<EM>Syntax:</EM>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG><VAR>name</VAR>[-<VAR>subcommand</VAR>] [|<VAR>qualifiers</VAR>|] +
+    <STRONG>VICAR&gt;+</STRONG> [<VAR>parameter_list</VAR>] [!<VAR>comments</VAR>]
+</PRE>
+
+<A NAME="7.2.1.1">
+<H4>7.2.1.1 Commands and Proc Names</H4>
+</A>
+
+The first component of the command line may be a proc name or one of
+the VICAR intrinsic commands.  See Appendicies <A
+HREF="vug10.1-3.html#10.3">10.3</A> and <A
+HREF="vug10.4-10.html#10.4">10.4</A>, respectively, for lists of
+standard VICAR procs and intrinsic commands. <P>
+
+A proc name invokes a stored Proc Definition File (PDF - <A
+HREF="#7.3">Section 7.3</A>) from a hierarchical search of the VICAR
+libraries (<A HREF="vug5.html#5.1">Section
+5.1</A>). <P>
+
+Intrinsic commands cause the system to perform standard, predefined
+operations.  These allow the user to interact with the VICAR executive
+rather than with application procs.  For instance, the intrinsic
+command <CODE>ENABLE-SCRIPT</CODE> instructs VICAR to execute commands
+stored in a file. <P>
+
+<EM>Example:</EM> Execute intrinsic command <CODE>usage</CODE> after
+running the proc <CODE>gen</CODE>.  (Note: The <CODE>usage</CODE>
+command has not yet been ported to UNIX but will be included in future
+releases.  Also, the following example shows what the output will look
+like for SunOS UNIX; the format will be slightly different for
+Sun/Solaris and VMS operating systems.) <P>
+
+<PRE>
+  <STRONG>VICAR&gt;</STRONG>gen rate.img 10 10
+  <STRONG>Beginning VICAR task gen
+  GEN Version 6
+  GEN task completed</STRONG>
+  <STRONG>VICAR&gt;</STRONG>usage
+<STRONG>
+  Statistic               Session     Last Proc (gen)
+  ---------               -------     ---------
+  Proc Start Time                     Mon Sep 12 15:54:02 1994
+  Block input operations  5           0          
+  Block output operations 0           0          
+  Page Faults(no ph I/O)  24          1          
+  Page Faults(phys I/O)   30          0          
+  System CPU Time         00:00:00.20 00:00:00.00
+  User CPU Time           00:00:00.41 00:00:00.01
+  Connect Time            00:00:16.81 00:00:00.32
+</STRONG></PRE>
+
+Intrinsic commands are run by VICAR in the parent process, not the
+subprocess.  It is possible, therefore, to get the two processes
+confused, as in the following examples. <P>
+
+<EM>Example:</EM> Confuse the parent process and yourself. <P>
+
+<EM>VMS:</EM>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>DCL ASSIGN UD:[USERID] X  !Assign done in subprocess.
+    <STRONG>VICAR&gt;</STRONG>DCL DIR X:*.SCR	    !Dir done in subprocess.
+
+    <STRONG>Directory UD:[USERID]
+	RING.SCR;2	1/3	13-JAN-1987	10:00 
+	Total of 1 file, 1/3 blocks.</STRONG>
+
+    <STRONG>VICAR&gt;</STRONG>ENA-SCR X:RING.SCR    !Ena-scr done in parent process
+				!which didn't know about assign.
+    <STRONG>[TAE-OPNRD] Unable to open script file. VMS/RMS code 
+    99524 stv=2312.</STRONG>
+</PRE>
+
+<EM>UNIX:</EM> In UNIX, the problem is even worse, since each
+<CODE>ush</CODE> command is run in a separate subprocess.  (Assume the
+user is currently in the /home/abc directory.)
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>ush ls /scr/abc
+    ring.scr
+    <STRONG>VICAR&gt;</STRONG>ush setenv OUTDIR /scr/abc  !Setenv done in a 
+				      !subprocess.
+    <STRONG>VICAR&gt;</STRONG>ush ls $OUTDIR              !Lists current directory, 
+    a.img   a.out   b.img   c.img     !since OUTDIR unknown in
+				      !this subprocess.
+    <STRONG>VICAR&gt;</STRONG>ena-scr $OUTDIR/ring.scr    !OUTDIR unknown in the 
+				      !parent process. 
+    <STRONG>[TAE-OPNRD] Unable to open script file. No such file 
+    or directory.</STRONG>
+</PRE>
+
+
+<EM>Example:</EM> Keeping things clear (VMS example). <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>DCL ASSIGN/JOB UD:[USERID] X	!Assign done for all 
+					!processes.
+    <STRONG>VICAR&gt;</STRONG>DCL DIR X:*.SCR		!Dir done in subprocess.
+
+    <STRONG>Directory UD:[USERID] 
+	RING.SCR;2	1/3	13-JAN-1987	10:00 
+	Total of 1 file, 1/3 blocks.</STRONG>
+
+    <STRONG>VICAR&gt;</STRONG>ENA-SCR  X:RING.SCR	!Ena-scr done in parent process
+				!which now knows about assign.
+</PRE>
+
+Under UNIX there is no equivalent of assign/job.  Since each program
+is run in a separate sub-process, the environment variable set with
+<CODE>ush</CODE> will not effect the next command.  The only way to
+set an environment variable for a VICAR session, is to do it
+<EM>before</EM> entering VICAR. <P>
+
+<A NAME="7.2.1.2">
+<H4>7.2.1.2 Subcommands</H4>
+</A>
+
+Some commands and procs may perform several different but related
+functions, each of which requires a different set of parameters.
+These functions are called "subcommands".  A subcommand is specified
+as a suffix to the proc or command name, separated with a hyphen and
+no spaces. <P>
+
+<EM>Example:</EM> Use of a subcommand. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>LABEL-DELETE INP=A.DAT KEYS=STRETCH
+</PRE>
+
+A command may have a default subcommand.  Subcommands of intrinsic
+commands are listed along with the commands in <A
+HREF="vug10.4-10.html">Appendix 10.4</A>.  Subcommands of procs can be
+found by tutoring the proc. <P>
+
+<A NAME="7.2.1.3">
+<H4>7.2.1.3 Command Qualifiers</H4>
+</A>
+
+A VICAR command may have qualifiers which are VICAR-defined parameters
+(not program specific) that specify the environment for command
+execution.  Command qualifiers are optional and may appear in any
+VICAR proc invocation command.  If qualifiers are present, they must
+be listed between vertical bars, "|", immediately after the proc name,
+and must be supplied in standard parameter list format (<A
+HREF="#7.2.1.4">Section 7.2.1.4</A>).  As in any parameter list,
+qualifier values may be specified by position (<A
+HREF="#7.2.3.3">Section 7.2.3.3</A>) or associated with a qualifier
+name (<A HREF="#7.2.3.4"">Section 7.2.3.4</A>).  Qualifier names may
+be abbreviated using the same rules as for parameters (<A
+HREF="#7.2.2">Section 7.2.2</A>). <P>
+
+<EM>Example:</EM> Run the program F2 in Batch.  Note:  Batch mode
+is currently only available on VMS VICAR. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>F2 |RUNTYPE=BATCH| A.DAT B.DAT +
+    <STRONG>VICAR&gt;+</STRONG> (1,1,100,100) FUNCTION="2*IN1" 'HALF
+</PRE>
+
+<A HREF="vug10.4-10.html#10.5">Appendix 10.5</A> lists and briefly
+describes the command qualifiers.  For detailed descriptions, see the
+<CITE>TAE Command Language User's Manual</CITE>. <P>
+
+<A NAME="7.2.1.4">
+<H4>7.2.1.4 Parameter List</H4>
+</A>
+
+A parameter list is a list of zero or more (maximum of 600) values,
+called parameters, (<A HREF="#7.2.2">Section 7.2.2</A>), to be
+provided to a proc or command. <P>
+
+<EM>Syntax:</EM> Parameter list. <P>
+
+<PRE>
+    <VAR>parm-1</VAR>=<VAR>value-1,parm-2=value-2,...,parm-n=value-n</VAR>
+
+	where: 	parm-1		is the first parameter name
+		value-1		is a value to be assigned to the 
+				first parameter
+		etc.
+</PRE>
+
+The parameters within a parameter list may be separated by a comma
+and/or any number of spaces. <P>
+
+<A NAME="7.2.1.5">
+<H4>7.2.1.5 Comments</H4>
+</A>
+
+Comments are introduced by the character "!" and may appear anywhere
+on a line.  Anything that appears after "!" is a comment.  Comments
+are ignored by VICAR. Use the comment character to insert a blank line
+in a series of proc statements or to document a proc. <P>
+
+<EM>Examples:</EM> The use of comments. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>! 
+    <STRONG>VICAR&gt;</STRONG>! Test filtering procedure
+    <STRONG>VICAR&gt;</STRONG>GEN T.DAT 100 100 +	!Generate test image
+    <STRONG>VICAR&gt;+</STRONG> linc=1 sinc=2
+</PRE>
+
+<STRONG>BEWARE</STRONG> <EM>If the line continuation character, "+", is
+used, it must precede the comment character, "!".</EM> <P>
+
+<A NAME="7.2.2">
+<H3>7.2.2 Parameters</H3>
+</A>
+
+Proc parameters are a form of data used to control the specific way a
+proc operates.  Each parameter's attributes are defined in its Proc
+Definition File (PDF - <A HREF="#7.3">Section 7.3</A>) by
+<CODE>PARM</CODE> commands. Parameter attributes specify how the
+parameter value is handled when the proc is invoked.  The
+characteristics specified by the definition are: <P>
+
+<UL>
+<LI>name
+<LI>position on the command line
+<LI>type
+<LI>count (minimum and/or maximum number of values)
+<LI>default value
+<LI>valid values or range of the values
+<LI>if the parameter is a dataset parameter, whether the dataset is an
+input, output or input/output dataset 
+<LI>name of the proc where the parameter qualifiers are defined
+</UL>
+
+A parameter that has no default value is a mandatory parameter.  <P>
+
+The number and type of parameters used on the command line are
+proc-dependent.  They may be separated by blanks or commas.  Parameter
+names and values may be abbreviated provided the parameter can be
+unambiguously identified among all the parameters for the proc. <P>
+
+Parameters may be one of five types:<P>
+
+<STRONG>INTEGER or REAL</STRONG> - A numeric integer or decimal value
+consisting of the characters "+", "-", ".", "0" through "9", and/or
+"e" (the power indicator).  Spaces are not permitted within a numeric
+value.  The null value "--" is allowed.  This type is only for values
+being passed into procs. <P>
+
+<STRONG>STRING</STRONG> - A character string of maximum length 250.
+If any characters listed below appear in the string, the string must
+be surrounded by double quotes, " ".  The empty string " " and the
+null value "--" are allowed.  This type is only for values being
+passed into procs. <P>
+
+<STRONG>KEYWORD</STRONG> - A character string of maximum length 8.
+None of the characters listed below are allowed For more information
+on keywords, see <A HREF="#7.2.3.2">Section 7.2.3.2</A>.  This type is
+only for values being passed into procs. <P>
+
+<STRONG>NAME</STRONG> - A character string which is the name of a
+declared TCL variable.  Values output by procs must be of this
+type. <P>
+
+The characters recognized by TCL which are the subject of the above
+<CODE>STRING</CODE> and <CODE>KEYWORD</CODE> restrictions include: <P>
+
+<PRE>
+	space	!	,	)	(	+
+	'	&gt;	&lt;	|	@	=
+	tab
+</PRE>
+
+<A NAME="7.2.3">
+<H3>7.2.3 Parameter Value Specification</H3>
+</A>
+
+A parameter may be assigned a value in several ways.  The values may
+be defaulted, restored from previously saved values or explicitly
+specified. <P>
+
+Parameters with defined default values will automatically take those
+values if they are not given values any other way. <P>
+
+A set of parameters may be saved and later restored, in the same or a
+later session, using the <CODE>SAVE</CODE> and <CODE>RESTORE</CODE>
+command qualifiers or the <CODE>SAVE</CODE> and <CODE>RESTORE</CODE>
+Tutor commands. <P>
+
+<EM>Example:</EM> Run the program <CODE>TFILT</CODE> with its saved
+parameters.  <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>TFILT |RESTORE=TFILT.PAR|
+</PRE>
+
+Parameter values may be assigned explicitly in any of three formats:
+<P> 
+
+<UL>
+<LI><VAR>parameter_name</VAR>=<VAR>value</VAR>
+<LI>'<VAR>value</VAR> (if <VAR>parameter</VAR> is of type <CODE>KEYWORD</CODE>)
+<LI>position
+</UL>
+
+Parameters defined to have multiple values may be explicitly specified
+by parenthesized lists using commas or blanks as separators.  <P>
+
+<EM>Example:</EM> Specification of multi-valued parameters. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>F2 inp=(a,b,c) out=d.dat size=(1,1,100,100) +
+    <STRONG>VICAR&gt;+ </STRONG>func="2*IN1" 
+</PRE>
+
+<STRONG>BEWARE</STRONG> <EM>The values within multi-valued parameters
+are position-dependent.  VICAR procs expect the sequence to be that
+defined in the PDF for the proc. </EM><P>
+
+<A NAME="7.2.3.1">
+<H4>7.2.3.1 <VAR>Parameter_name</VAR>=<VAR>value</VAR> Format</H4>
+</A>
+
+Parameters may be in any order when specified this way.  If no value
+is given, then the default value is assigned to the parameter. <P>
+
+<EM>Example:</EM> A command line in
+<VAR>parameter_name</VAR>=<VAR>value</VAR> format. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>F2 inp=a.dat out=b.dat size=(1,1,100,100) +
+    <STRONG>VICAR&gt;+</STRONG> format=half function="2*IN1" 
+</PRE>
+
+<A NAME="7.2.3.2">
+<H4>7.2.3.2 Keyword Format</H4>
+</A>
+
+Keyword format is a special case of
+<VAR>parameter_name</VAR>=<VAR>value</VAR> format for
+<CODE>KEYWORD</CODE> type parameters only.  All of the above rules
+still apply, but a single quote, ', replaces the
+<VAR>parameter_name</VAR>= part of the specification.  The ' is
+necessary to distinguish this format from positional format. <P>
+
+<EM>Example:</EM> Specification of keywords. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>F2 inp=a.dat out=b.dat size=(1,1,100,100) +
+    <STRONG>VICAR&gt;+</STRONG> 'half function="2*IN1"
+</PRE>
+
+<A NAME="7.2.3.3">
+<H4>7.2.3.3 Positional Format</H4>
+</A>
+
+The user should be aware that the order in which the proc receives the
+parameters is not necessarily that in which they were specified.  The
+Proc Definition File (PDF) for a specified proc (<A
+HREF="#7.3">Section 7.3</A>) defines the order of the parameters by
+the sequence of the <CODE>PARM</CODE> statements in the PDF. VICAR
+allows the <VAR>parameter_name</VAR>= part of the parameter
+specification to be omitted if the parameters are specified on the
+command line in exactly the same order as they occur in the PDF. This
+order is the same as the order in which the parameters appear in the
+Tutor display. <P>
+
+Because VICAR procs generally have many parameters, whose order would
+be difficult to remember, a convention has been adopted requiring that
+all procs have the same three initial parameters (except for programs
+such as GEN, AL and LIST).  Their order in the program PDF is: <P>
+
+<PRE>
+<STRONG>INP</STRONG>	a defined number of strings specifying input 
+	file or input device names in the PDF
+
+<STRONG>OUT</STRONG>	a defined number of strings specifying output
+	files or output device names in the PDF
+
+<STRONG>SIZE</STRONG> 	four integers specifying:
+
+	starting line
+	starting sample
+	number of lines
+	number of samples
+</PRE>
+
+<EM>Example:</EM> Standard convention for INP, OUT, SIZE. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>F2 a.dat b.dat (1,1,100,100) format=half +
+    <STRONG>VICAR&gt;+</STRONG>function="2*IN1"
+ </PRE>
+
+<STRONG>BEWARE</STRONG> <EM>Once any parameter value is specified
+using an explicit parameter name, all remaining parameters on the
+command line must be specified using explicit parameter names.  In a
+positional parameter list, two successive commas indicate that the
+corresponding parameter's default value is to be used.  There cannot
+be two successive commas after a value has been provided using an
+explicit parameter name.</EM> <P>
+
+<EM>Example:</EM> Correct use of explicit parameter names. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>F2 inp=a.dat out=b.dat size=(1,1,100,100) +
+    <STRONG>VICAR&gt;+</STRONG>format=half function="2*IN1"
+</PRE>
+
+<EM>not</EM> <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>F2 inp=a.dat b.dat (1,1,100,100) format=half +
+    <STRONG>VICAR&gt;+</STRONG>function="2*IN1"
+</PRE>
+
+<A NAME="7.2.3.4">
+<H4>7.2.3.4 Parameter Qualifiers</H4>
+</A>
+
+Parameter qualifiers are like sub-parameters (parameters to the
+parameters). Upon proc invocation, the values of qualifiers to a
+parameter are specified after the parameter value and set between
+vertical bars, "|". <P>
+
+<EM>Syntax:</EM> <P>
+
+<PRE>
+    <VAR>parameter</VAR>=<VAR>value|qual1</VAR>=<VAR>val1,qual2</VAR>=<VAR>val2,...qualn</VAR>=<VAR>valn|</VAR>
+</PRE>
+
+<EM>Example:</EM> Specification of parameter qualifiers. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>IMGCOPY from=file1|bands=(n1,n2),format="BSQ"| +
+    <STRONG>VICAR&gt;+</STRONG> to=file2
+</PRE>
+
+The rules for specifying parameter qualifiers are identical to the
+rules for parameters.  Therefore, parameter qualifier values may be
+entered by position. <P>
+
+<EM>Example:</EM> Specification of positional parameter qualifiers.
+<P> 
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>IMGCOPY file1|(n1,n2), "BSQ"| file2
+</PRE>
+
+<A NAME="7.2.4">
+<H3>7.2.4 Missing or Invalid Parameter Values</H3>
+</A>
+
+Parameter errors occur when a proc is invoked in the following
+cases.<P> 
+
+<UL>
+<LI>Required parameters (those with no defined default) were not supplied
+<LI>The specified values were not consistent with the parameter definition
+<LI>An undefined (or misspelled) parameter name was entered
+</UL>
+
+VICAR issues an error message in these cases and reprompts the user.<P>
+
+<EM>Example:</EM> Sample parameter error message. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>LIST CLIFF.ROT (100,100,10,10) 'SPAXE
+    <STRONG>[TAE-KEYWORD] Undefined keyword "SPAXE".
+    Re-enter the command line or type TUTOR to recover 
+    specified values.</STRONG>
+</PRE>
+
+The user may respond with "Tutor" and enter Tutor mode to respecify
+the missing parameters or obtain help on the parameter in question (<A
+HREF="vug6.html#6.5">Section 6.5</A>). <P>
+
+<A NAME="7.2.5">
+<H3>7.2.5 Dynamic Parameters</H3>
+</A>
+
+An executing proc may prompt the user for parameter entry.  These
+parameters are called Dynamic parameters.  Programs generate such
+requests with special subroutines described in the <CITE>VICAR
+Run-time Library Reference Manual</CITE> and the <CITE>TAE Command
+Language Programmer's Manual</CITE>.  Procedures, both Asynchronous
+and Synchronous may also request parameters through the use of the
+<CODE>GETPAR</CODE> command. <P>
+
+<EM>Example:</EM> Dynamic parameter use in the procedure
+<CODE>CON</CODE>. <P>
+
+<PRE>
+    Procedure	! procedure CON
+    Local  CONST  INTEGER
+    Body
+    GETPAR CONST
+    GEN A.DAT 10 10 IVAL=&amp;CONST LINC=0 SINC=0
+    WRITE "Created A.DAT with all DNs = &amp;CONST"
+    End-proc
+</PRE>
+
+<EM>Example:</EM> Execution of the procedure CON. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>CON 
+    <STRONG>ENTER CONST
+    -&gt;</STRONG>12
+    <STRONG>Beginning VICAR task GEN
+    GEN Version 6
+    GEN task completed
+    Created A.DAT with all DNs = 12</STRONG>
+</PRE>
+
+<A NAME="7.3">
+<H2>7.3	Proc Definition Files (PDFs)</H2>
+</A>
+
+As discussed in <A HREF="vug4.html#4.5">Section 4.5</A>, a proc may be
+either a procedure or a process.  PDFs are text files defining
+parameters for the proc and have a <CODE>.pdf</CODE> file extension.
+For procedures, the PDF also contains VICAR commands to be
+executed. For processes, the PDF has an executable program file
+associated with it to be activated.  In this section, the user will
+become familiar with procedure definition files, process definition
+files, Global PDFs, the execution of PDFs, help files for PDFs, 
+and compiled PDFs. <P>
+
+<STRONG>BEWARE</STRONG> <EM>On UNIX systems, proc names must be in
+lower case letters.  Procs may be called using either lower case
+or upper case characters, but the file itself must have a lower case
+name, or it will not be found by the VICAR executive.</EM> <P>
+
+<A NAME="7.3.1">
+<H3>7.3.1 Procedure Definition Files (PDFs)</H3>
+</A>
+
+A VICAR Procedure Definition File is the method that most users will
+select to join parameter definitions and a series of VICAR commands
+together and selectively control their execution.  A procedure may be
+simple or complex and yet all users, even the most novice user, will
+be able to write one.  <P>
+
+The procedure PDF is comprised of two main parts: the declaration
+section and the body.  The declaration section contains the parameter
+declarations, the Local variable declarations and the Global variable
+references.  The body contains the VICAR commands to be executed. <P>
+
+<EM>Syntax:</EM>  Basic format of a procedure PDF. <P>
+
+<PRE>
+    Procedure   [HELP=<VAR>help_information_location</VAR>]
+    Defcmd  !
+    Refgbl  !This is the declaration section. All entries 
+    Parm    !within this section are optional and they can 
+    .	    !appear in any order so long as they appear 
+    .	    !between the PROCEDURE and BODY commands.
+    Body
+    .	    !This is the body of the PDF.  VICAR commands
+    .	    !should be entered in the order they will be 
+    .	    !executed.
+    End-proc 
+</PRE>
+
+Note: <CODE>PROCEDURE</CODE>, <CODE>BODY</CODE> and
+<CODE>END-PROC</CODE> are all required elements of a procedure. <P>
+
+The easiest method to learn how to write procedure PDFs is to look at
+examples.  The following example is a very simple PDF which creates a
+VICAR label for a dataset, copies that dataset, then performs a linear
+stretch on the copy.  Note that within this PDF there is no
+declaration section. The declaration section is not mandatory and is
+omitted in this case.  <P>
+
+<EM>Example:</EM> A procedure to label and stretch an image. <P>
+
+<PRE>
+	Procedure				!1
+	Body					!2
+	label-create a.raw a.img nl=100 ns=200	!3
+	copy a.img b.img			!4
+	stretch b.img b.str linear=(54,199)	!5
+	End-proc				!6
+
+<STRONG>Line 1</STRONG>	defines that this proc is a procedure.
+<STRONG>Line 2</STRONG>	defines that the body of the procedure follows this 
+	line.
+<STRONG>Line 3</STRONG>	creates a label for a raw image with 100 lines and 200 
+        samples.
+<STRONG>Line 4</STRONG>	executes the VICAR program COPY, creating a second, 
+        identical image.
+<STRONG>Line 5</STRONG>	executes the VICAR program STRETCH, performing a linear
+        stretch from 54 to 199 on the image.
+<STRONG>Line 6</STRONG>	defines that the end of the proc has been reached.
+</PRE>
+
+Additional sample PDFs can be found in <A
+HREF="vug10.11-12.html">Appendix 10.11</A>.  <P>
+
+<A NAME="7.3.2">
+<H3>7.3.2 Process Definition Files (PDFs)</H3>
+</A>
+
+A process is a program of executable code and all programs require a
+process PDF.  A process PDF may specify: <P>
+
+<UL>
+<LI>the process parameters
+<LI>Local variable declarations
+<LI>the Globals referenced by the process
+<LI>the process subcommands
+<LI>the location of the proc's executable program
+<LI>the location of the proc's help text
+</UL>
+
+<EM>Syntax:</EM> A process PDF, conforming to recommended standards.
+<P> 
+
+<PRE>
+	Process [EXECUTE=<VAR>executable_file</VAR> HELP=<VAR>help_location</VAR>]
+	Parm	<VAR>NAME1  description1</VAR>
+	Parm	<VAR>NAME2  description2</VAR>
+		.
+		.
+		.
+	End-proc
+</PRE>
+
+<EM>Example:</EM> Process PDF for VICAR program <CODE>COPY</CODE>. <P>
+
+<PRE>
+    process help=*
+    PARM INP  TYPE=STRING
+    PARM OUT  TYPE=STRING
+    PARM SIZE TYPE=INTEGER COUNT=0:4 DEFAULT=--
+    PARM BANDS TYPE=INTEGER COUNT=0:2 DEFAULT=--
+    PARM SL INTEGER DEFAULT=1
+    PARM SS INTEGER DEFAULT=1
+    PARM SB INTEGER DEFAULT=1
+    PARM NL INTEGER DEFAULT=0
+    PARM NS INTEGER DEFAULT=0
+    PARM NB INTEGER DEFAULT=0
+    PARM FORMAT KEYWORD VALID=(BYTE,HALF,FULL,REAL,DOUB,COMP) +
+		DEFAULT=BYTE
+    PARM INSIZE INTEGER COUNT=0:3 DEFAULT=--
+    PARM ORG KEYWORD VALID=(BSQ,BIL,BIP) DEFAULT=BSQ
+    PARM BLOCK TYPE=KEYWORD VALID=(BLOCK,NOBLOCK) DEFAULT=BLOCK
+    PARM BINARY TYPE=KEYWORD VALID=(BINARY,NOBINARY) +
+		DEFAULT=NOBINARY
+    END-PROC
+    .help
+    Copy is a simple program which can be used to copy all or
+    .
+     (See <A HREF="#7.3.4">Section 7.3.4</A> for further
+      information on Help files.)
+    .
+</PRE>
+
+Additional sample PDFs can be found in <A
+HREF="vug10.11-12.html">Appendix 10.11</A>. <P>
+
+<A NAME="7.3.3">
+<H3>7.3.3 Executing a PDF</H3>
+</A>
+
+If the user is new, or if the PDF is trying something new or tricky,
+the user is advised to run the PDF through the syntax checker (<A
+HREF="vug6.html#6.4">Section 6.4</A>)
+before actually executing the proc on the host system. <P>
+
+Once a PDF has successfully passed through the syntax checker, the
+user is ready to execute the proc. The user must next select the mode
+in which to execute the PDF (Interactive, Asynchronous or Batch). The
+use of the latter two modes has already been explained in Section 5.2.
+If the Interactive mode has been chosen, all the user needs to do is
+enter the proc name and any necessary parameters. <P>
+
+<EM>Example:</EM> Equivalent methods of proc invocation. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>TAPE2DSK
+</PRE>
+
+or <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>TAPE2DSK.PDF
+</PRE>
+
+Whenever a user enters a command, a hierarchical library search (<A
+HREF="vug5.html#5.1">Section 5.1</A>) is initiated for a
+<CODE>.PDF</CODE> file of that name.  If the PDF is not located in any
+of the libraries, the user will be notified that an illegal command
+has been entered. <P>
+
+<A NAME="7.3.4">
+<H3>7.3.4 Help Files</H3>
+</A>
+
+All procs which conform to the recommended standards have a Help file
+associated with them.  Help files contain the information that the
+user will see when Tutor or Help information is requested on a
+specific proc. <P>
+
+<STRONG>EXPERT</STRONG> The typical user will probably not bother to
+write the Help file portion of a procedure PDF since the user designed
+the PDF and will not require any assistance with the proc.  However,
+there are cases when a Help file is useful.  For example, when a
+procedure is very complicated, or when more than one person will be
+using a proc (as in the case of the application programs). <P>
+
+<STRONG>EXPERT</STRONG> Help information on VICAR procs can be written
+in one of two ways: as a separate text file with the name
+<CODE>PROCNAME.HLP</CODE>, or as text appended to the end of the PDF.
+In the second case, the PDF must include on the PROCEDURE or PROCESS
+command line <CODE>HELP=*</CODE>.  In either case, the format of the help
+information is the same. <P>
+ 
+<EM>Syntax:</EM> <P>
+
+<PRE>
+    .TITLE		Title to appear on each Tutor and Help 
+			screen.
+
+    .HELP		Information on the proc itself, 
+			typically including:
+	Purpose		Purpose of the program.
+	Execution	Description of command line used to 
+			execute the program.
+	Features	Special features the user might like to 
+			know about.
+	Examples	Examples showing how the program can be 
+			used.
+	Restrictions	Any special restriction the user should 
+			be aware of.
+	Written by	Programmer who originally wrote the 
+			program.
+	Programmer	Programmer currently responsible for the 
+			program.
+	Revision	Version number and date.
+
+    .LEVEL1		Header to tell VICAR that first level 
+			help on the proc's variables follows.
+    .VARIABLE <VAR>name1</VAR>	Help information on <VAR>name1</VAR> to be 
+			displayed on the Tutor screen.
+    .VARIABLE <VAR>name2</VAR>	Help information on <VAR>name2</VAR> to be 
+			displayed on the Tutor screen.
+
+    .LEVEL2		Header to tell VICAR that second level 
+			or detailed help on the variables 
+			follows.
+    .VARIABLE <VAR>name1</VAR>	Detailed information on name1. This text 
+			is displayed on the "Help PARM" Tutor 
+			command or on the VICAR command: 
+			  HELP-PARM <VAR>parm</VAR>=<VAR>name1</VAR> <VAR>proc</VAR>=<VAR>proc_name</VAR>
+    .VARIABLE <VAR>name2</VAR>	Detailed information on <VAR>name2</VAR>. 
+
+    .END		End of help text.
+</PRE>
+
+See <A HREF="vug10.11-12.html">Appendix
+10.11</A> for examples of Help files. <P>
+
+<STRONG>EXPERT</STRONG> It is possible to get hardcopy printouts of
+the proc's Help section.  For formatted Help, use the
+<CODE>HELP-HARDCOPY</CODE> command to create a disk file which may
+then be printed.  For unformatted Help, print the proc's
+<CODE>.PDF</CODE> file. <P>
+
+<A NAME="7.3.5">
+<H3>7.3.5 Global PDFs</H3>
+</A>
+
+<STRONG>EXPERT</STRONG> A Global proc defines Global variables. It may
+contain references to other Globals and/or declarations of Local
+variables.  The Global PDF starts with "Global" and has no body. <P>
+
+<EM>Syntax:</EM> <P>
+
+<PRE>
+	Global [HELP=<VAR>help_information_location</VAR>]
+	<VAR>definitions of Global variables</VAR>
+	<VAR>declarations of referenced Globals</VAR>
+	<VAR>declarations of Local variables</VAR>
+	End-proc
+</PRE>
+
+<EM>Example:</EM>  Sample Global PDF. <P>
+
+<PRE>
+	Global
+	Parm	DATATYPE    String	Default=" "
+	Parm	RUNSEQ 	    Integer	Default=0
+	Parm	COLTBL	    String	Default="default"
+	Parm	SL	    Integer	Default=1  (null value)
+	Parm	SS	    Integer	Default=1
+	Parm	NL	    Integer	Default=1340
+	Parm	NS	    Integer	Default=3360
+	Parm	RES	    Real	Default=8.
+	Parm	REGION	    String	Default="global"
+	End-proc
+</PRE>
+
+<STRONG>EXPERT</STRONG> Note: Globals may not be of type
+<CODE>KEYWORD</CODE> (<A HREF="#7.2.3.2">Section 7.2.3.2</A>). <P>
+
+<A NAME="7.3.6">
+<H3>7.3.6 Compiled PDFs</H3>
+</A>
+
+<STRONG>WIZARD</STRONG> A compiled PDF is created when the VICAR
+command <CODE>COMPILE</CODE> is run on any process, procedure or
+Global PDF. During compilation, the declaration statements are scanned
+for proper syntax and symbol tables are generated.  Because these
+steps do not have to be repeated during the PDF execution, compiled
+PDFs (with a <CODE>.CPD</CODE> extension) run faster than normal PDFs
+(<CODE>.PDF</CODE>). <P>
+
+<STRONG>WIZARD</STRONG> In order to compile a PDF, the following rules
+must be observed when writing the proc: <P>
+
+<UL>
+<LI>internal procs are not allowed prior to the body
+<LI><CODE>DEFGBL</CODE> statements are not allowed
+<LI>the <CODE>RUNTYPE</CODE> and <CODE>NAME</CODE> fields of
+<CODE>PROCESS</CODE> and <CODE>PROCEDURE</CODE> statements must be
+default  
+<LI>the <CODE>DEFAULT</CODE> field of a parameter statement cannot be
+dereferenced 
+<LI>parameter qualifiers may not be declared
+</UL>
+
+<STRONG>WIZARD</STRONG> Procs are compiled by using the
+<CODE>COMPILE</CODE> command. <P>
+
+<EM>Syntax:</EM> <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>COMPILE INPROC=<VAR>input_pdf</VAR> [OUTPROC=<VAR>compiled_pdf</VAR>]
+</PRE>
+
+<EM>Example:</EM> Compile the proc <CODE>TAXCALC.PDF</CODE>. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>COMPILE inproc=TAXCALC.PDF outproc=TAXCALC.CPD
+</PRE>
+
+<STRONG>WIZARD</STRONG> The execution of a compiled PDF is identical
+to the execution of a normal PDF. If the PDF resides within one of the
+VICAR application libraries,VICAR automatically looks to see if a .CPD
+version of the requested proc exists. If no compiled proc is available
+then the .PDF is executed.  <P>
+
+<EM>Example:</EM> Execute a program which has a compiled PDF. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>BROWSE
+</PRE>
+
+<STRONG>WIZARD</STRONG> In this example, because the compiled PDF
+exists, VICAR automatically executes <CODE>BROWSE.CPD</CODE>. However,
+if the compiled PDF resides within a personal directory, the compiled
+PDF must be explicitly specified unless the library has been
+customized to select compiled PDFs first. <P>
+
+<EM>Example:</EM> Explicitly invoke the compiled version of TAXCALC.
+<P> 
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>TAXCALC.CPD (W2.DAT,INTEREST.DAT) 1040.DONE
+</PRE>
+
+<STRONG>WIZARD</STRONG> Additional information on compiled PDFs can be
+found in the <CITE>TAE Command Language User's Manual</CITE> and the
+<CITE>TAE Command Language Programmer's Manual</CITE>. <P>
+
+<A NAME="7.4">
+<H2>7.4	Script Files</H2>
+</A>
+
+<STRONG>EXPERT</STRONG> A Script file is a text file consisting of
+VICAR commands used primarily for demonstration and test purposes.
+None of the special commands required in a procedure (e.g.,
+<CODE>BODY</CODE>) are included in a script file.  On the other hand,
+no parameters are allowed either. <P>
+
+<EM>Example:</EM> Script file <CODE>LOG.SCR</CODE>  <P>
+
+<PRE>
+    F2 TEST.RED	OUTTEST	FUNC="100.*ALOG10(IN1)"
+    STRETCH OUTTEST STRTEST LINE=(0,150)
+</PRE>
+
+<STRONG>EXPERT</STRONG> A <CODE>SCRIPT</CODE> file can be invoked with
+the intrinsic command <CODE>ENABLE-SCRIPT</CODE>. <P>
+
+<EM>Syntax:</EM> <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>ENABLE-SCRIPT FILE=<VAR>filename</VAR> [COUNT=<VAR>number</VAR>]
+
+    Where:  FILE    is the name of the SCRIPT file to be 
+		    executed.  The file must be of the type 
+		    .SCR in order to be properly executed.
+	    COUNT   The number of times to execute the script 
+		    file.  The default is to execute the file 
+		    once.  COUNT=ZERO causes the file to be 
+		    repeated endlessly until aborted by a host 
+		    interrupt sequence.
+</PRE>
+
+<STRONG>EXPERT</STRONG> The <CODE>ENABLE-SCRIPT</CODE> command causes
+VICAR to use the specified script file for its "interactive" input.
+There is no hierarchy search implemented for script files so the user
+should either be in the directory containing the script file prior to
+entering VICAR, or the user should fully specify the directory and
+filename in the invocation.  In addition, the datasets used by the
+script file must be in the same directory as the script file or the
+directory should be fully specified.  Once invoked, TAE then sequences
+through the script file, echoing each command as it is executed. <P>
+
+<EM>Example:</EM> Script file use in an interactive session. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>ENABLE-SCRIPT LOG.SCR 
+    <STRONG>F2 TEST.RED OUTTEST FUNC="100.*ALOG10(IN1)"
+    Beginning VICAR task F2
+    F2 version 2-04-94
+    F2 using byte table lookup
+    FUNCTION EVALUATED 256 TIMES
+
+    STRETCH OUTTEST STRTEST LINE=(0,150)
+    Beginning VICAR task STRETCH
+    STRETCH version 2-11-93
+
+    *** LINEAR CONTRAST STRETCH MODE ***
+    Linear Stretch:      0 to      0 and    150 to    255
+</STRONG></PRE>
+
+<A NAME="7.5">
+<H2>7.5	Tape Handling</H2>
+</A>
+
+The following section covers tape handling for VICAR under VMS only.
+There is no VICAR tape support under UNIX.  It is suggested that the
+standard operating system utilities such as tar and dd be used for
+accessing tapes.  VMS VICAR support of tape handling may not continue
+in the future, and many applications which have accepted tape inputs
+in the past will no longer do so. <P>
+
+When running under VMS, operations involving magnetic tapes are
+handled within VICAR with the commands <CODE>ALLOC</CODE>,
+<CODE>MOUNT</CODE>, <CODE>REWIND</CODE>, <CODE>DISMOUNT</CODE> and
+<CODE>DEALLOC</CODE> (see <A HREF="vug10.4-10.html#10.4">Section
+10.4</A>).  Both foreign and ANSI labelled tapes are supported, as are
+blocked tapes (those with multiple logical records per physical
+record).  All applications which accept tape inputs require that the
+tapes be previously <CODE>MOUNT</CODE>ed. <P>
+
+The <CODE>ALLOC</CODE> command assigns a symbolic name to the
+allocated device.  All other tape commands use that symbolic name to
+access the device.  In addition, the <CODE>MOUNT</CODE> command uses
+many of the same qualifier names as the <CODE>DCL MOUNT</CODE>
+command.  However, ANSI-labelled tapes are identified by the presence
+of the <CODE>LABEL</CODE> parameter. <P>
+
+The syntax for referencing a particular file on a tape uses the "/"
+character.  The symbolic name of the tape is suffixed by a
+"/<VAR>file_number</VAR>" string. <P>
+
+<EM>Example:</EM> Accessing file 10 on tape IN. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>COPY IN/10 X
+</PRE>
+
+It is not necessary to rewind the tape for VICAR to access the proper
+file number.  VICAR always keeps track of the current file number and
+handles file number regressions properly. <P>
+
+<EM>Example:</EM> Tape processing under VMS. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>ALLOC MT: IN  	!allocates first available 
+				!MT: drive and assigns
+    				!symbolic name IN
+    <STRONG>VICAR&gt;</STRONG>MOUNT IN +		!tape mytape is mounted foreign,
+    <STRONG>VICAR&gt;+</STRONG> comm="mount mytape"	!unblocked and for read
+    <STRONG>VICAR&gt;</STRONG>COPY IN/4 A		!copy file 4 into A
+    <STRONG>VICAR&gt;</STRONG>COPY IN/2 B		!copy file 2 into B
+    <STRONG>VICAR&gt;</STRONG>REWIND IN		!tape is rewound
+    <STRONG>VICAR&gt;</STRONG>DISMOUNT IN		!tape is dismounted
+    <STRONG>VICAR&gt;</STRONG>DEALLOC IN		!device is deallocated
+</PRE>
+
+<STRONG>BEWARE</STRONG> <EM>Device allocations may be performed at any
+time in a VICAR job or session.  However, in practice, jobs should do
+all allocations at the beginning of the job stream, and do them as a
+group.  This is because, in general, the job is started when the
+resources become available, but there is no guarantee that they will
+stay available. </EM><P>
+
+Users may exit VICAR and reenter with confidence that any tape drives
+will remain allocated, mounted and at the same position unless a
+Control-Y was used to exit.  Exiting by Control-Y will lose dummy
+names associated with devices, asynchronous jobs and some allocated
+devices.  Tape drives that had been allocated and mounted will remain
+mounted, but VICAR will know nothing about them.  <P> 
+
+Tape drives allocated within VICAR may be accessed from VICAR's DCL
+mode.  Such access must, of course, be accomplished with DCL tape
+handling commands. <P>
+
+<STRONG>BEWARE</STRONG> <EM>Tape drives allocated within VICAR are not
+available to the user outside VICAR (and vice versa).  This is because
+the VMS process and the VICAR may not share resources. </EM><P>
+
+The general tape handling utility, <CODE>TAPES</CODE>, is not a
+standard VICAR proc and may not be invoked from VICAR.  It may be
+invoked from VICAR DCL mode or from the user's VMS process.  Because
+of the non-standard nature of <CODE>TAPES</CODE>, no VICAR user aids
+are available for it.  However, there is on-line help for
+<CODE>TAPES</CODE> in DCL. <P>
+
+<EM>Syntax:</EM> <P>
+
+<PRE>
+    <STRONG>$</STRONG> HELP TAPES
+</PRE>
+
+Hardcopy help for <CODE>TAPES</CODE> is obtainable using the following
+sequence of DCL commands. <P>
+
+<EM>Syntax:</EM> <P>
+
+<PRE>
+    <STRONG>$</STRONG> HELP/OUT=TAPES.HLP TAPES 
+    <STRONG>$</STRONG> HELP/OUT=TAPES1.HLP TAPES*
+    <STRONG>$</STRONG> PRINT TAPES.HLP, TAPES1.HLP
+</PRE>
+
+Note: "<CODE>/OUT</CODE>" must immediately follow <CODE>HELP</CODE>
+and not <CODE>TAPES</CODE> or <CODE>TAPES*</CODE>.<P>
+
+<A NAME="7.6">
+<H2>7.6	Session Logging</H2>
+</A>
+
+VICAR gives the user the ability to create a log of their interactive
+session activity.  This option is enabled and disabled with the
+<CODE>ENABLE-LOG</CODE> and <CODE>DISABLE-LOG</CODE> commands.  When
+enabled, this option creates or appends to two files called
+<CODE>session.log</CODE> and <CODE>session.tsl</CODE>. The
+<CODE>.log</CODE> file reflects the commands and responses as they
+appear on the standard output, while the <CODE>.tsl</CODE> file
+supplies additional useful information (e.g., a full list of proc
+parameters).  <P>
+
+A new pair of session files is created at the initial
+<CODE>ENABLE-LOG</CODE> command after entry into VICAR. Further
+<CODE>ENABLE-LOG</CODE>s (after <CODE>DISABLE-LOG</CODE>s, of course)
+within a given session will append information to the existing files.
+Once the <CODE>DISABLE-LOG</CODE> option is selected, the files are
+closed and may be accessed, reopened, or printed. <P>
+
+At the current time, there are still some problems with session
+logging on the UNIX system.  In batch log files, items often appear
+out of order, and FORTRAN programs do not appear at all.  In
+interactive sessions, the <CODE>session.log</CODE> file is usually
+correct, but the <CODE>session.tsl</CODE> file can occasionally be out
+of order. <P>
+
+<A NAME="7.7">
+<H2>7.7 Sample Interactive Session</H2>
+</A>
+
+The following example shows a Synchronous or Interactive VICAR
+session.  The commands are all entered from Command mode and perform
+several basic tasks.  The reader may follow this session exactly or
+embellish it as desired for practice. <P>
+
+<PRE>
+<STRONG>$</STRONG> VICAR
+<STRONG>
+
+		Welcome to VICAR
+
+                System Release 12.1
+                Executive Version 5B/16B
+
+
+  --- Type NUT for the New User Tutorial ---
+
+  --- Type MENU for a menu of available applications ---
+</STRONG>
+<STRONG>VICAR&gt;</STRONG>gen a 10 10 ival=2 sinc=0 linc=0
+<STRONG>Beginning VICAR task gen
+GEN Version 6
+GEN task completed</STRONG>
+<STRONG>VICAR&gt;</STRONG>list a
+<STRONG>Beginning VICAR task list
+
+   BYTE     samples are interpreted as   BYTE   data
+ Task:GEN   User:edd   Date_Time:Thu Aug 11 15:05:44 1994
+     Samp     1       3       5       7       9
+   Line
+      1       2   2   2   2   2   2   2   2   2   2
+      2       2   2   2   2   2   2   2   2   2   2
+      3       2   2   2   2   2   2   2   2   2   2
+      4       2   2   2   2   2   2   2   2   2   2
+      5       2   2   2   2   2   2   2   2   2   2
+      6       2   2   2   2   2   2   2   2   2   2
+      7       2   2   2   2   2   2   2   2   2   2
+      8       2   2   2   2   2   2   2   2   2   2
+      9       2   2   2   2   2   2   2   2   2   2
+     10       2   2   2   2   2   2   2   2   2   2</STRONG>
+<STRONG>VICAR&gt;</STRONG>f2 a b.dat func="in1+10"
+<STRONG>Beginning VICAR task f2
+Beginning VICAR task f2
+F2 version 2-04-94
+F2 using byte table lookup
+FUNCTION EVALUATED 256 TIMES</STRONG>
+<STRONG>VICAR&gt;</STRONG>list b.dat
+<STRONG>Beginning VICAR task  LIST
+
+   BYTE     samples are interpreted as   BYTE   data
+ Task:GEN   User:edd   Date_Time:Thu Aug 11 15:05:44 1994
+ Task:F2    User:edd   Date_Time:Thu Aug 11 15:06:16 1994
+     Samp     1       3       5       7       9
+   Line
+      1      12  12  12  12  12  12  12  12  12  12
+      2      12  12  12  12  12  12  12  12  12  12
+      3      12  12  12  12  12  12  12  12  12  12
+      4      12  12  12  12  12  12  12  12  12  12
+      5      12  12  12  12  12  12  12  12  12  12
+      6      12  12  12  12  12  12  12  12  12  12
+      7      12  12  12  12  12  12  12  12  12  12
+      8      12  12  12  12  12  12  12  12  12  12
+      9      12  12  12  12  12  12  12  12  12  12
+     10      12  12  12  12  12  12  12  12  12  12</STRONG>
+<STRONG>VICAR&gt;</STRONG>gen b 10 10 ival=4 sinc=0 linc=0
+<STRONG>Beginning VICAR task gen
+GEN Version 6
+GEN task completed</STRONG>
+<STRONG>VICAR&gt;</STRONG>list b
+<STRONG>Beginning VICAR task list 
+
+   BYTE     samples are interpreted as   BYTE   data
+ Task:GEN   User:edd   Date_Time:Thu Aug 11 15:12:38 1994
+     Samp     1       3       5       7       9
+   Line
+      1       4   4   4   4   4   4   4   4   4   4
+      2       4   4   4   4   4   4   4   4   4   4
+      3       4   4   4   4   4   4   4   4   4   4
+      4       4   4   4   4   4   4   4   4   4   4
+      5       4   4   4   4   4   4   4   4   4   4
+      6       4   4   4   4   4   4   4   4   4   4
+      7       4   4   4   4   4   4   4   4   4   4
+      8       4   4   4   4   4   4   4   4   4   4
+      9       4   4   4   4   4   4   4   4   4   4
+     10       4   4   4   4   4   4   4   4   4   4</STRONG>
+<STRONG>VICAR&gt;</STRONG>f2 (a,b) b.dat func="in1*in2+10" 'half
+<STRONG>Beginning VICAR task f2
+Beginning VICAR task f2
+F2 version 2-04-94
+F2 using hash table lookup
+FUNCTION EVALUATED 2 TIMES</STRONG>
+<STRONG>VICAR&gt;</STRONG>list b.dat (1,1,10,10)
+<STRONG>Beginning VICAR task list
+
+   HALF     samples are interpreted as HALFWORD data
+ Task:GEN   User:edd   Date_Time:Thu Aug 11 15:05:44 1994
+ Task:F2    User:edd   Date_Time:Thu Aug 11 15:23:45 1994
+   Samp   1    2    3    4    5    6    7    8    9   10
+   Line
+    1    18   18   18   18   18   18   18   18   18   18
+    2    18   18   18   18   18   18   18   18   18   18
+    3    18   18   18   18   18   18   18   18   18   18
+    4    18   18   18   18   18   18   18   18   18   18
+    5    18   18   18   18   18   18   18   18   18   18
+    6    18   18   18   18   18   18   18   18   18   18
+    7    18   18   18   18   18   18   18   18   18   18
+    8    18   18   18   18   18   18   18   18   18   18
+    9    18   18   18   18   18   18   18   18   18   18
+   10    18   18   18   18   18   18   18   18   18   18</STRONG>
+<STRONG>VICAR&gt;</STRONG>copy a c
+<STRONG>Beginning VICAR task copy
+ COPY VERSION 12-JUL-1993</STRONG>
+<STRONG>VICAR&gt;</STRONG>list c
+<STRONG>Beginning VICAR task list
+
+   BYTE     samples are interpreted as   BYTE   data
+ Task:GEN    User:edd    Date_Time:Thu Aug 11 15:05:44 1994
+ Task:COPY   User:edd    Date_Time:Thu Aug 11 15:27:50 1994
+     Samp     1       3       5       7       9
+   Line
+      1       2   2   2   2   2   2   2   2   2   2
+      2       2   2   2   2   2   2   2   2   2   2
+      3       2   2   2   2   2   2   2   2   2   2
+      4       2   2   2   2   2   2   2   2   2   2
+      5       2   2   2   2   2   2   2   2   2   2
+      6       2   2   2   2   2   2   2   2   2   2
+      7       2   2   2   2   2   2   2   2   2   2
+      8       2   2   2   2   2   2   2   2   2   2
+      9       2   2   2   2   2   2   2   2   2   2
+     10       2   2   2   2   2   2   2   2   2   2</STRONG>
+<STRONG>VICAR&gt;</STRONG>exit
+<STRONG>%</STRONG>
+</PRE>
+
+<HR>
+<A HREF="vug6.html"><IMG SRC="back.gif"></A>
+<A HREF="vug8.html"><IMG SRC="fwd.gif"></A>
+<P> 
+
+If you wish to return to the Contents page, click <A
+HREF="vugfinal.html#Contents">here</A>.
+
+
+
+

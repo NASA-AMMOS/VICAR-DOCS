@@ -1,0 +1,277 @@
+<Title>VICAR User's Guide</Title>
+<H1>8 Non-Standard Items</H1>
+
+<STRONG>Contents</STRONG>
+
+<PRE>
+8.1   <A HREF="#8.1">Proprietary Software</A>
+8.2   <A HREF="#8.2">Facility-specific Hardware</A>
+8.3   <A HREF="#8.3">VICAR I/O Formats</A>
+    8.3.1   <A HREF="#8.3.1">Input/Output of VICAR Datasets</A>
+    8.3.2   <A HREF="#8.3.2">Output of Non-VICAR Datasets</A>
+    8.3.3   <A HREF="#8.3.3">Input of Non-VICAR Datasets</A>
+</PRE>
+
+The VICAR software set has been designed with transportability in
+mind, and the bulk of the software is truly transportable to other
+machines, including those running UNIX.  However, in order to benefit
+by and utilize certain hardware and proprietary software packages
+apvailable at the MIPS site, a subset of VICAR is facility-specific
+(some is, in fact, machine-specific) and thus non-standard.  This
+subset will not work unless this hardware or software is resident (see
+the system manager for configuration details). <P>
+
+<A NAME="Transportation:Data">
+Transportation of data to or from a VICAR facility is supported in
+either VICAR or non-VICAR format.  A  set of application
+programs are available which convert from VICAR to specific non-VICAR
+formats (e.g., Voyager EDR format), and from specific non-VICAR
+formats (e.g., FITS format) to VICAR format. <P></A>
+
+The purpose of this section is to describe these subsets of VICAR, the
+non-standard items. <P>
+
+<A NAME="8.1">
+<H2>8.1	Proprietary Software</H2>
+</A>
+
+Proprietary software packages utilized by VICAR applications procs are: 
+<UL>
+<LI>the VAX Datatrieve data management system from Digital Equipment
+Corporation 
+<LI>the Floating Point Systems (FPS) array processor library
+<LI>the PRINTRONIX plotting routines from Cerritos Computer Systems
+Incorporated
+<LI>The Sybase data management system from Sybase for UNIX
+<LI>the  Image Display Manager (IDM)
+</Ul>
+
+Specific procs which call or link to this proprietary software are
+listed below and are described in more detail in <A
+HREF="vug10.1-3.html#10.3">Appendix 10.3</A>.
+Asterisks,"*", indicate that the proc will utilize proprietary
+software if it is available, but, if not, will use less efficient but
+non-proprietary software.  Pluses, "+", indicate that the proc will
+utilize proprietary software only in some of its operating modes.  If
+the proc name has no asterisk or plus, it will only be available on
+systems with the specified software.  <P>
+
+<STRONG>Procs which call Datatrieve:</STRONG>
+<PRE>
+AMOS		BADLABELS	BROWSE+		CATARCH		
+CATCD		CATFILM		CATIMAGE 	CATLABEL	
+CATLIST 	CATMRPSO 	CATNIMS 	CATPRODUCTS
+CATRADIO	CATREPORT 	CATSEARCH 	CATSEDR+ 	
+CATSLIST 	CATSPICE 	CDGEN 		DTRTAE 		
+EDRGEN+		EDRVAL+		GALSOS 		GEDREAD+	
+GLLMASK		GLLREQUEST	GPWAUDIO 	LISTSEDR 	
+LISTSEDX	MAP2 		MERGE 		NIMSCMM 	
+NIMSMERGE 	NIMSMERGEX 	PPLOAD 		PWAUDIO		
+PWSMERGE 	SEDRGEN 	SRCH 		SRCHGEN 	
+SSIMERGE 	STOREKDB 	UVF		VEDR+ 
+VGRMASK 	VISIS
+</PRE>
+
+<STRONG>Procs that link to the FPS array processor library:</STRONG>
+<PRE>
+APFLAG 		BROWSE+ 	EIGEN		FFT1* 		
+FFT2*		FILTER*		MGNCORR* 	PICMATCH*
+R 		RCBR* 		RESTORW*	TFILT* 
+WIENER 		XFORM*
+</PRE>
+
+<STRONG>Procs that link to IDM:</STRONG>
+<PRE>
+ANNOT		EXPER		MIDR_ARCH	RDM 
+RDMINIT		VIEW
+</PRE>
+
+<STRONG>Procs which link to Sybase:</STRONG>
+<PRE>
+GLLTELEMPROC
+</PRE>
+
+<STRONG>Procs which link to the CCSI routines:</STRONG>
+<PRE>
+STATPLOT
+</PRE>
+
+
+
+
+<A NAME="8.2">
+<H2>8.2	Facility-specific Hardware</H2>
+</A>
+
+Peripherals at the MIPS site include display processors,
+film recorders, videodisk, array processor, terminals, personal
+computers and plotters.  Procs which are dependent upon specific
+hardware are listed below and are described in more detail in <A
+HREF="vug10.1-3.html#10.3">Appendix 10.3</A>.
+Asterisks,"*", indicate that the proc will utilize proprietary
+hardware if it is available, but, if not, will use less efficient but
+non-proprietary hardware.  If the proc name has no asterisk, it will
+be available only on systems with the specified hardware.   <P>
+
+<PRE>
+Hardware Required	Procs			
+
+
+Array Processor - VAX only
+
+    Floating Point Systems AP120B
+
+		APFLAG, FFT1*, FFT2*, FILTER*, FILTER2*, 
+		PICMATCH, R, TFILT*, WIENER, XFORM*
+
+
+Display Processors - VAX only
+
+    Adage 3000, DeAnza 8500, I2S IVAS and Ramtek RM-9465
+
+	 	AMOS, BROWSE, CCDNOISE*, CCDRECIP*, CCDSLOPE*,
+	 	DISPOUT, IDX, IFFT, IMP, INTERLOC*, LEONARDO, 
+	 	LOGMOS, MGNFIT*, NAV, NAV2, OTF1*, PHOTFIT2*, 
+		PICREG, PLOT3D*, PLOTINT*, PLOTTING*,
+		PLTGRAF*, PLTSYM*, POWER*, QD, QPLOT*, RG*,
+		SARGON, SPAM, STERGEN,TIEPLOT*, UVFMAP*	 
+
+    DeAnza 8500 only
+
+		EDIMAGE, FOOTPRINT
+
+
+Film Recorders 
+
+    Matrix Quality Color Recorder, MDA Colorfire, 
+    MDA Laserfire, KODAK XL7700
+
+		BARNE, PHOTO, WILMA
+
+
+Printers/Plotters - VAX only
+
+    Calcomp 1044, Printronix P300 and P600, Regis- and
+    Tektronix-compatible terminals
+
+		CCDNOISE*, CCDRECIP*, CCDSLOPE*, LEONARDO, 
+		MGNFIT*, OTF1*, PHOTFIT2*, PLOT3D*, PLOTINT*, 
+		PLOTTING*, PLTGRAF*, PLTSYM*, POWER*, QPLOT*, 
+		RG*, TIEPLOT*, UVFMAP*
+
+    Printronix P300 and P600
+
+		STATPLOT
+
+
+PWS Audio Generator (a JPL-built device) - VAX only
+
+		GPWAUDIO, PWAUDIO, PWECHO
+
+</PRE>
+
+<A NAME="8.3">
+<H2>8.3	VICAR I/O Formats</H2>
+</A>
+
+<A NAME="Transportation:Data" /A> Transportation of data to or from a
+VICAR facility is performed using tape media, cd-rom or network
+transfer.  VMS VICAR supports tapes with and without ANSI labels.  The
+tape densities that are supported are 800, 1600 and 6250 on 9 track
+tape.  8mm and 4mm data tapes are also used.  The data transfer is
+accomplished with applications procs. The tape handling commands are
+<CODE>ALLOC</CODE>, <CODE>DEALLOC</CODE>, <CODE>MOUNT</CODE>,
+<CODE>DISMOUNT</CODE> and <CODE>REWIND</CODE>. For UNIX, a simple tar
+command will transfer data to either 8mm or 4mm data tapes.  The
+network can be used to transfer data as long as the VICAR site has an
+anonymous FTP.  <P>
+
+<A NAME="8.3.1">
+<H3>8.3.1 Input/Output of VICAR Datasets</H3>
+</A>
+
+VICAR is able to output data in a format that most other sites can
+handle.  Under VMS, the capability exists to output datasets with or
+without VICAR labels, either blocked (n logical records per physical
+record) or unblocked (1 logical record per physical record).  The
+procs <CODE>LABEL-REMOVE</CODE> or <CODE>COPY</CODE> are generally
+used for this purpose. <P>
+
+<A NAME="8.3.2">
+<H3>8.3.2 Output of Non-VICAR Datasets</H3>
+</A>
+
+Using the VICAR I/O subroutines (see the VICAR Run-time Library
+Reference Manual), it is possible to generate output datasets in any
+format desired.  The programs which currently do this and their output
+formats are described below.  For program descriptions, see <A
+HREF="vug10.1-3.html#10.3">Appendix 10.3</A>. <P>
+
+<PRE>
+PROGRAM		FORMAT	
+
+BIDRSIM		Multimission SAR Processing Lab Basic Image Data
+  		Record 
+EDRGEN		Voyager Experiment Data Record 
+PSCRIPT		Converts VICAR images into a Postscript file
+TAPES		optionally, EBCDIC
+VCOPOUT		ASCII Text
+VMAC		Transfers data between PICT or TIFF format
+		images and IMG files
+VTIFF		Convert between VICAR labeled images and TIFF 
+		format files
+WRISOUT		U.S. Forest Service WRIS exchange format
+</PRE>
+
+<A NAME="8.3.3">
+<H3>8.3.3 Input of Non-VICAR Datasets</H3>
+</A>
+
+Unlabeled tape datasets, blocked or unblocked, can be converted to
+VICAR format using the proc <CODE>CONVIM</CODE> or
+<CODE>LABEL-CREATE</CODE>. However, special purpose programs, called
+logging programs, are often written to extract special information
+from the data, construct special VICAR labels or unpack the data in
+unique ways.  The programs which currently do this and their input
+formats are listed below.  For program descriptions, see <A
+HREF="vug10.1-3.html#10.3">Appendix 10.3</A>. <P>
+
+<PRE>
+PROGRAM		FORMAT	
+
+AFEWCLOG	Air Force Electronic Warfare Center terrain data
+AVHRRLOG	Advanced Very High Resolution Radiometer
+BIDRLOG		Multimission SAR Processing Lab Basic Image Data
+ 		Record
+CONR4FIL	CONVIM'd IBM floating-point files
+CONVIM		General blocked or unblocked tape files
+DEMLOGA		USGS Digital Elevation Model 
+DTTLOG		A National Cartographic Information Center 1x1
+ 		degree Digital Elevation Model
+INTCON		IBM IBIS interface (tabular) files
+SDRLOG		Voyager System Data Record
+SWAPPER		CONVIM'd IBM 16-bit integer files
+TAPES		EBCDIC
+VDEMLOG		Digital Elevation Model
+VEDR		Voyager Experiment Data Record
+VERTSLOG	Landsat 1-3 ERTS
+VFITS2		FITS
+VGLAS0		Goddard Laboratory for Atmospheric Sciences
+VGLLOG		Galileo calibration files
+VGOES		Geostationary Operational Environmental
+		Satellite 
+VGRLOG		Voyager Experiment Data Record
+VMDPIN		Goddard MDP ground control points
+VNEPRF		Naval Environmental Prediction Research Facility 
+VOLOG		Viking Orbiter Experiment Data Record
+VQUIC		ASCII text
+VWRIS		Wild Land Resource Inventory System
+</PRE>
+
+<HR>
+<A HREF="vug7.html"><IMG SRC="back.gif"></A>
+<A HREF="vug9.html"><IMG SRC="fwd.gif"></A>
+<P> 
+
+If you wish to return to the Contents page, click <A
+HREF="vugfinal.html#Contents">here</A>.

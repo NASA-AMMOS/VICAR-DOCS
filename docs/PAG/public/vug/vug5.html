@@ -1,0 +1,818 @@
+<Title>VICAR User's Guide</Title>
+<H1>5	The VICAR Environment</H1>
+
+<STRONG>Contents</STRONG>
+
+<PRE>
+5.1   <A HREF="#5.1">VICAR Libraries</A>
+5.2   <A HREF="#5.2">Processing Modes</A>
+    5.2.1   <A HREF="#5.2.1">Interactive or Synchronous Processing Mode</A>
+	5.2.1.1   <A HREF="#5.2.1.1">VICAR DCL Mode - VMS Systems</A>
+	5.2.1.2   <A HREF="#5.2.1.2">VICAR USH Mode - UNIX Systems</A>
+    5.2.2   <A HREF="#5.2.2">Asynchronous Processing</A>
+	5.2.2.1   <A HREF="#5.2.2.1">Asynchronous Processing - VMS Systems</A>
+	5.2.2.2   <A HREF="#5.2.2.2">"Background" Processing - UNIX Systems</A>
+    5.2.3   <A HREF="#5.2.3">Batch Processing Mode</A>
+	5.2.3.1   <A HREF="#5.2.3.1">Batch Processing - VMS Systems</A>
+	5.2.3.2   <A HREF="#5.2.3.2">Batch Processing - UNIX Systems</A>
+5.3   <A HREF="#5.3">VICAR Use of Subprocesses</A>
+5.4   <A HREF="#5.4">Session Customizing Procedures</A>
+    5.4.1   <A HREF="#5.4.1">Logon Procedures</A>
+    5.4.2   <A HREF="#5.4.2">Logoff Procedures</A>
+5.5   <A HREF="#5.5">Aborting a VICAR Command</A>
+</PRE>
+
+Within the following section, different aspects of the VICAR
+environment will be covered.  The user will be introduced to the VICAR
+Library, processing modes, and subprocesses. The user will learn how
+to customize a VICAR session and abort a VICAR command.  The novice
+user should note that several concepts presented in this section are
+explained in more detail later on in this document. <P>
+
+<A NAME="5.1">
+<H2>5.1	VICAR Libraries</H2>
+</A>
+
+Seven libraries contain the executive, applications and system
+routines within VICAR.  Each library is known by its system-wide
+logical name or environment variable (pointing to a system
+sub-directory). <P>
+
+<PRE>
+<STRONG>  	 LIBRARY 	   	CONTENTS	
+     VMS         UNIX</STRONG>
+    V2$LIB 	$V2LIB		VICAR executive routines  
+    VIDS$LIB	$VIDSLIB	VICAR system routines
+    TAE$UTIL 	$TAEBIN/TAEPLAT	Various system utilities
+    R1LIB 	$R1LIB		Application procs
+    R2LIB 	$R2LIB		Application procs
+    R3LIB 	$R3LIB		Application procs
+    M2LIB	$TAEMENU	Menus
+</PRE><P>
+
+Three libraries are available for application procs so that a facility
+may segregate its procs as it chooses. <P>
+
+VICAR establishes a default search hierarchy containing these seven
+libraries, as well as the user's current default directory.  A change
+of the current default directory after entry into VICAR is not
+reflected in the search hierarchy.  The user may bypass all such
+searches by explicitly prefixing the proc name with the library name
+and a colon (e.g., <CODE>R2LIB:STRETCH</CODE>). <P>
+
+The user may display the currently established search hierarchy at any
+time with the command <CODE>show</CODE> (<A
+HREF="vug10.4-10.html">Appendix 10.4</A>).  The default hierarchy is
+listed below with the search being from top to bottom. <P>
+
+<I>Example:</I> Show user's library hierarchy.  <P>
+
+<CODE>VMS:</CODE> <EM>Note the location of the user's current default
+directory is UD:[USERID].</EM> <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>SHOW
+
+    <STRONG>User Library ($USERLIB): 
+    UD:[USERID]
+
+    Application Libraries ($APLIB):
+    liblst:-cpd
+    liblst:-pdf
+    r3lib:-cpd
+    r3lib:-pdf
+
+    System Library ($SYSLIB):
+    TAEPDF</STRONG>
+
+UNIX:
+
+    <STRONG>VICAR&gt;</STRONG>show
+
+    <STRONG>User Library ($USERLIB):
+    .
+ 
+    Application Libraries ($APLIB): 
+    $V2LIB
+    $VIDSLIB
+    $R1LIB
+    $R2LIB
+    $TAEBIN/$TAEPLAT
+    $R3LIB
+ 
+    System Library ($SYSLIB):
+    $TAEPDF</STRONG>
+</PRE>
+
+<A NAME="5.1.LIBLST">
+On VMS systems, <CODE>liblst</CODE> is a logical name which points to
+all the VICAR libraries. <P>
+</A>
+
+<PRE>
+<I>Example:</I> Show user's library hierarchy.
+
+    <STRONG>VICAR&gt;</STRONG>DCL SHOW LOGICAL LIBLST
+<STRONG>
+    "LIBLST" = "V2$LIB" (LNM$PROCESS_TABLE)
+             = "VIDS$LIB"
+             = "R1LIB"
+             = "R2LIB"
+             = "$TAEUTIL"
+</STRONG></PRE><P>
+
+Within each library, compiled PDFs (file type <CODE>.cpd</CODE>)
+are given preference over slower, uncompiled PDFs (file type
+<CODE>.pdf</CODE>).  Therefore, a program which has a
+<CODE>.cpd</CODE> and a <CODE>.pdf</CODE> will always have its faster
+version chosen.  See <A HREF="vug7.html#7.3.6">Section 7.3.6</A> for
+more information on compiled PDFs. <P>
+
+This default hierarchy is easily altered either with the use of the
+intrinsic command <CODE>setlib</CODE> (<A
+HREF="vug10.4-10.html">Appendix 10.4</A>), or within the user's ULOGON
+procedure (<A HREF="vug5.html#5.4.1">Section 5.4.1</A>). <P>
+
+<I>Example:</I> Place <CODE>starlib: </CODE> in front of the current
+library list and display. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>setlib (starlib:,*)
+    <STRONG>VICAR&gt;</STRONG>show
+<STRONG>
+    User Library ($USERLIB):
+    .
+
+    Application Libraries ($APLIB):
+    starlib:
+    $V2LIB
+    $VIDSLIB
+    $R1LIB
+    $R2LIB
+    $TAEBIN/$TAEPLAT
+    $R3LIB
+
+    System Library ($SYSLIB):
+    TAEPDF
+</STRONG></PRE>
+
+<I>Example:</I> Delete <CODE>starlib:</CODE> from the current library
+list and display. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>setlib-delete starlib:
+    <STRONG>VICAR&gt;</STRONG>show
+<STRONG>
+    User Library ($USERLIB):
+    .
+
+    Application Libraries ($APLIB):
+    $V2LIB
+    $VIDSLIB
+    $R1LIB
+    $R2LIB
+    $TAEBIN/$TAEPLAT
+    $R3LIB
+
+    System Library ($SYSLIB):
+    TAEPDF
+</STRONG></PRE>
+
+<A NAME="5.2">
+<H2>5.2	Processing Modes</H2>
+</A>
+
+The user has several types of processing modes available within VICAR.
+Each mode is described in detail within this section. <P>
+
+<UL>
+<LI>Interactive/Synchronous processing mode
+<LI>Asynchronous processing mode
+<LI>Batch processing mode  
+</UL>
+
+<A NAME="5.2.1" /A>
+<H3>5.2.1 Interactive or Synchronous Processing Mode</H3>
+<P>
+When a user communicates directly with VICAR by means of a terminal,
+and VICAR immediately acknowledges and executes the user's requests,
+the user is in the "interactive processing mode".  Within the
+interactive session the user might use:<P>
+<UL>
+
+<LI>The Tutor mode - to learn more about procs and the parameters
+associated with them (<A HREF="vug6.html#6.2">Section 6.2</A>)  
+<LI>The Menu mode - to select or execute application procs (<A
+HREF="vug6.html#6.3">Section 6.3</A>) <A NAME="Proc:Invocation" /A> 
+<LI>VICAR Command mode - to execute procs or intrinsic commands
+(<A HREF="vug7.html#7.1">Section 7.1</A>) 
+<LI>VICAR DCL or USH mode - to execute DCL or shell commands (see below)
+</UL>
+<P>
+
+<A NAME="5.2.1.1">
+<H4>5.2.1.1 VICAR DCL Mode - VMS Systems</H4>
+</A>
+
+On VMS systems, the user has the ability to execute DCL commands
+without leaving the VICAR environment.  The user can execute a single
+DCL command, or actually enter the DCL mode while still within
+VICAR. <P>
+
+In the first case, the user is able to execute a one line DCL command
+by typing <CODE>DCL</CODE> and the command. <P>
+
+<I>Example:</I> Execute a DCL command from VICAR.<P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>DCL SHOW DEV MTA0
+</PRE>
+
+If the user wanted to do something in DCL that requires more than a
+single command line, a second method is available.  If, for example,
+the user wanted to send a mail message or edit a file,
+<CODE>DCL</CODE> would be typed at the VICAR prompt.  The user would
+then receive a new prompt, <CODE>_$</CODE>, indicating that the DCL
+mode of VICAR had been entered. <P>
+
+<I>Syntax:</I>  Enter VICAR's DCL mode.
+<A NAME="DCL Mode:Entering" /A>
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>DCL
+    <STRONG>_$</STRONG>
+</PRE><P>
+
+Within this mode the user is able to do almost everything that could
+be done in the normal DCL mode.  Some DCL programs may not work in
+VICAR's DCL mode. <P>
+
+The normal VICAR mode can be re-entered by typing <CODE>EXIT</CODE>,
+<CODE>VICAR</CODE> or <CODE>Control-Z</CODE>. <P>
+</A>
+
+<I>Syntax:</I> Return to VICAR from DCL mode.<P>
+
+<PRE>
+    <STRONG>_$</STRONG> EXIT
+    <STRONG>VICAR&gt;</STRONG>
+</PRE><P>
+
+<A NAME="5.2.1.2">
+<H4>5.2.1.2 VICAR USH Mode - UNIX Systems</H4>
+</A>
+
+Similarly, on UNIX systems, the user has the ability to execute UNIX
+shell commands without leaving the VICAR environment by typing
+<CODE>ush</CODE> at the command line.  (USH stands for User SHell.)
+However, <CODE>ush</CODE> should be used much less frequently than
+<CODE>dcl</CODE> is, because in a windowing environment it makes more
+sense to open another window than to suspend VICAR in order to execute
+shell commands.  The <CODE>ush</CODE> command should be used primarily
+in procs rather than interactively. <P>
+
+<I>Example:</I> Execute a USH command from VICAR.<P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>ush df
+</PRE>
+
+<I>Syntax:</I>  Enter VICAR's USH mode.
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>ush
+    <STRONG>%</STRONG>
+</PRE><P>
+
+The 'shell' that is invoked is the command interpreter 'sh' or 'csh'
+as defined by the symbol <CODE>SHELL</CODE> when you logged in.  You
+may redefine the value of <CODE>SHELL</CODE> from 'sh' to 'csh' or
+vice versa before invoking TAE. <P>
+
+The normal VICAR mode can be re-entered by typing
+<CODE>Control-D</CODE>, or <CODE>exit</CODE> at the shell prompt. <P>
+
+<I>Syntax:</I> Return to VICAR from USH mode.<P>
+
+<PRE>
+    <STRONG>%</STRONG> exit
+    <STRONG>VICAR&gt;</STRONG>
+</PRE><P>
+
+<STRONG>BEWARE</STRONG> <I>Changing the default device/directory via
+the shell command <CODE>cd</CODE> while in USH mode or terminating a
+USH command with a backslash (<CODE>\</CODE>) will cause TAE to
+malfunction.</I> <P>
+
+<A NAME="5.2.2">
+<H3>5.2.2 Asynchronous Processing</H3>
+</A>
+
+<STRONG>EXPERT</STRONG> The Asynchronous processing mode allows a user
+to execute a proc in a separate subprocess without interfering with
+the user's current interactive session.  This mode may sometimes be
+preferable to the Batch mode because the separate subprocess runs
+simultaneously with, and at the same priority as, the interactive
+session.  The user's interactive environment is duplicated in the
+asynchronous subprocess, thus relieving the user from having to
+redefine commands and globals. More than one asynchronous job may run
+at the same time.  Once submitted, the job is executed
+immediately. <P>
+
+<STRONG>EXPERT</STRONG> Because asynchronous jobs are executing in a
+separate subprocess, they cannot directly communicate with the user's
+terminal.  However, they may communicate indirectly by requesting
+additional parameter inputs.  See the <CITE>TAE Command Language
+User's Manual</CITE> and <A HREF="vug7.html#7.2.5">Section 7.2.5</A>
+for further information on these "dynamic parameters". <P>
+
+<A NAME="5.2.2.1">
+<H4>5.2.2.1 Asynchronous Processing - VMS Systems</H4>
+</A>
+
+<STRONG>EXPERT</STRONG> For asynchronous jobs run on a VMS system, the
+VICAR runstream information is written into a log file named
+<VAR>PROCNAME</VAR>.TML. <P>
+
+<I>Example:</I> Submit <CODE>TESTGEN.PDF</CODE> as an asynchronous
+job.<P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>TESTGEN|RUNTYPE=ASYNC|
+    <STRONG>[TAE-ASYNCJOB]Asynchronous job 'TESTGEN' initiated.</STRONG>
+</PRE>
+<P>
+The user may check on the status of the job with the intrinsic command
+<CODE>SHOW-ASYNC</CODE>. <P>
+
+<I>Example:</I> Monitor the progress of <CODE>TESTGEN</CODE><P>
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>SHOW-ASYNC
+
+	NAME 	    PROC 	STATE 	SFI 	SKEY
+
+	TESTGEN	    TESTGEN	ACTIVE	0	TESTGEN
+</PRE>
+<P>
+
+<STRONG>BEWARE</STRONG></A> <I>The user should not exit a VICAR
+interactive session while asynchronous jobs are executing.  If this
+happens, all asynchronous jobs will be aborted. </I><P>
+
+<STRONG>BEWARE</STRONG> <I>The user is also advised to avoid using
+tape operations within the Asynchronous mode until a known bug can be
+corrected.  Tape drives can be successfully allocated, mounted,
+written or read.  However, the tapes cannot be successfully dismounted
+and/or remounted within the Asynchronous mode. </I><P> 
+
+<A NAME="5.2.2.2">
+<H4>5.2.2.2 "Background" Processing - UNIX Systems</H4>
+</A>
+
+VICAR running on UNIX systems does not have an "asynchronous mode";
+given that a user can have several windows open at the same time, it
+is usually unnecessary. However, processing jobs in the "background"
+is similar in concept.   <P>
+
+To do this, your proc will need to be submitted from the shell
+prompt. <P> 
+
+<EM>Example:</EM> Submitting a VICAR proc from the shell
+prompt. (Note: this only works on SunOS, not Sun Solaris systems.) <P>
+
+<PRE>
+    <STRONG>%</STRONG> cat test.pdf
+    <STRONG>Procedure	!test
+    Body
+    slogon
+    gen out.img 10 10
+    label-list out.img
+    ush ps
+    End-proc</STRONG>
+    <STRONG>%</STRONG> taetm test &gt; test.log &amp;
+    <STRONG>[1] 9147</STRONG>
+</PRE>
+
+The <CODE>slogon</CODE> statement in the proc after the
+<CODE>Body</CODE> command is necessary if the proc is going to be run
+from the UNIX shell prompt.  However, it may not be present when
+running the proc from the VICAR command line.  The &gt; sign redirects
+the output from the proc to the file <CODE>test.log</CODE>, rather
+than to your screen.  (There is currently a bug in VICAR, such that
+the output is not written to the output file in the correct order.
+This should be fixed in future versions.)  The ampersand (&amp;)
+forces the job into the background.  Typing <CODE>fg</CODE> at the
+prompt will bring the job back into the foreground. <P>
+
+<A NAME="5.2.3">
+<H3>5.2.3 Batch Processing Mode</H3>
+</A>
+
+The user may wish to execute a proc in batch.  Batch processing is
+achieved by means of submitting a file, commonly referred to as a job,
+to a batch queue which will create the proper environment to execute a
+proc.  Upon submitting the file, the user relinquishes control of the
+job to the operating system, thus freeing the terminal and allowing
+the user to continue with other tasks.  The user may check on the
+status of the job with the intrinsic command <CODE>SHOW</CODE>. <P>
+
+
+<STRONG>BEWARE</STRONG> <I>The default directory for a batch job is
+the directory from which the submittal occurred.  If submitted from a
+subdirectory, all file names should be fully qualified because this
+subdirectory may not exist on all disks referred to in the
+job. </I><P>
+
+<A NAME="5.2.3.1">
+<H4>5.2.2.1 Batch Processing - VMS Systems</H4>
+</A>
+
+<STRONG>EXPERT</STRONG> There are several ways to invoke batch
+processing in VICAR on VMS systems.  This section will address the
+VAX/VMS default batch queue, <CODE>SYS$BATCH</CODE>.  If this queue is
+not on the user's system, consult the local system manager for
+information on what is available. <P>
+
+<STRONG>EXPERT</STRONG> One way to create a batch process is to use
+the intrinsic command <CODE>BATCH-SUBMIT</CODE> (<A
+HREF="vug10.4-10.html">Appendix 10.4</A>).  After Tutoring on a
+desired proc and performing a Tutor <CODE>SAVE</CODE> (<A
+HREF="vug10.4-10.html#10.8">Appendix 10.8</A>) on the parameter values
+selected, the user can submit a job with the <CODE>BATCH-SUBMIT</CODE>
+command.  This can be done in a Tutor session on
+<CODE>BATCH-SUBMIT</CODE> or interactively. <P>
+
+<I>Syntax:</I><P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>BATCH-SUBMIT PROC=<VAR>proc_name</VAR> +
+    <STRONG>VICAR&gt;+</STRONG> SAVEFILE=<VAR>savefile_name</VAR> QUEUE=<VAR>queue_name</VAR> +
+    <STRONG>VICAR&gt;+</STRONG> STDOUT=<VAR>output_file</VAR>
+</PRE>
+
+<I>Example:</I> After specifying parameters in Tutor on proc <CODE>GEN</CODE>,
+	submit to batch queue.
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG> BATCH-SUBMIT PROC=GEN.PDF SAVE=GEN.PAR 
+    <STRONG>Job 2038 submitted to queue SYS$BATCH</STRONG>
+</PRE>
+
+<I>later:</I>
+
+<PRE>
+    <STRONG>Job GEN (queue SYS$BATCH, entry 2038) completed</STRONG>
+</PRE><P>
+
+<STRONG>EXPERT</STRONG> Another method for submittim a job is to use
+the command qualifier <CODE>RUNTYPE</CODE> (<A
+HREF="vug7.html#7.2.1.3">Section 7.2.1.3</A>).  Specifying a valid
+<VAR>queue_name</VAR> or <CODE>NORUN</CODE> will produce two different
+submitting techniques.  Specifying <CODE>SYS$BATCH</CODE> as the
+<VAR>queue_name</VAR> causes the job to be automatically placed in
+that queue and executed. <P>
+
+<I>Example:</I> Submit proc <CODE>TESTGEN</CODE> to batch queue
+<CODE>SYS$BATCH</CODE><P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>TESTGEN |RUNTYPE=(BATCH, SYS$BATCH)| 
+    <STRONG>Job 2039 submitted to queue SYS$BATCH</STRONG>
+
+    <STRONG>VICAR&gt;</STRONG>SHOW-BATCH SYS$BATCH 
+    <STRONG>Batch queue MIPL1_SYS$BATCH, on MIPL1::
+
+	Jobname	    Username	Entry	Status
+
+	TESTGEN	     USERID	2039	Executing
+</STRONG></PRE>
+
+<I>later:</I>
+
+<PRE>
+    <STRONG>Job TESTGEN (queue SYS$BATCH, entry 2039) completed</STRONG>
+</PRE>
+
+<STRONG>EXPERT</STRONG> Specifying <CODE>NORUN</CODE> as the
+queue name disables the act of job submittal.  Instead, a job file is
+created containing all commands needed to execute the proc in batch.
+This method allows the user to issue the <CODE>DCL SUBMIT</CODE>
+command with any or all of its associated qualifiers, rather than
+accepting the VICAR defaults. <P>
+
+<I>Example:</I> Create the job file for <CODE>TESTGEN</CODE> proc
+before submitting it. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG> TESTGEN|RUNTYPE=(BATCH,NORUN)|
+    <STRONG>Created batch job file 'TESTGEN.JOB'.</STRONG>
+</PRE>
+
+<STRONG>EXPERT</STRONG> The <CODE>.JOB</CODE> file
+(<CODE>TESTGEN.JOB</CODE> for this example) would then be submitted
+using the <CODE>DCL SUBMIT</CODE> command, unless other provisions
+have been made by the system manager. <P>
+
+<I>Example:</I> Submit <CODE>TESTGEN.JOB</CODE> to
+<CODE>SYS$BATCH</CODE> queue.<P>
+
+<PRE>
+  <STRONG>VICAR&gt;</STRONG>DCL SUBMIT/NOPRINT/NOTIFY TESTGEN.JOB
+  <STRONG>Job TESTGEN (queue SYS$BATCH, entry 2041) started on SYS$BATCH</STRONG>
+</PRE>
+
+<I>later:</I>
+
+<PRE>
+  <STRONG>Job TESTGEN (queue SYS$BATCH, entry 2041) completed</STRONG>
+</PRE>
+
+<STRONG>EXPERT</STRONG> Upon completion of a batch job, the user can
+access a file containing all of the processing information collected
+during the batch job execution.  The log file is located in the
+directory from which the job was submitted, and it is called
+<VAR>PROCNAME</VAR>.LOG (<CODE>TESTGEN.LOG</CODE> for the above
+example). <P>
+
+<STRONG>EXPERT</STRONG> The user may also delete a batch job at any
+time.<P>
+
+<I>Syntax:</I><P>
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>BATCH-DELETE QUEUE=queue_name JOBID=xxx
+</PRE>
+
+<A NAME="5.2.3.2">
+<H4>5.2.3.2 Batch Processing - UNIX Systems</H4>
+</A>
+
+Formal batch processing does not exist on UNIX systems at the current
+time.  However, it is possible to submit a job to run at a later time,
+perhaps when the system load will be lower.  This may be done by
+creating a shell script to initiate your proc.  This shell script is
+submitted as a "batch" job by using the UNIX <CODE>at</CODE> command.
+(The UNIX <CODE>cron</CODE> command could also be used.) <P>
+
+<EM>Example:</EM> Use of the <CODE>at</CODE> command on a SunOS
+system.  (Batch processing doesn't work on Solaris systems currently,
+but when it does, be aware that the <CODE>at</CODE> command has a
+slightly different syntax on those systems.) <P>
+
+<PRE>
+    <STRONG>%</STRONG> cat submit_test.sh
+    <STRONG>#!/bin/sh
+    taetm test</STRONG>
+    <STRONG>%</STRONG> at 23:00 submit_test.sh
+    <STRONG>job 11719 at Tue Aug  9 23:00:00 1994</STRONG>
+</PRE>
+
+(Remember to turn the execution permission for your shell script on
+using the UNIX command <CODE>chmod u+x submit_test.sh</CODE>).  You
+will receive a mail message containing the output from your job when
+it is completed.  As stated above in <A HREF="#5.2.2.2">Section
+5.2.2.2</A>, there is currently a bug in the output files from these
+batch jobs. <P>
+
+<A NAME="5.3"> 
+<H2>5.3 VICAR Use of Subprocesses</H2> 
+</A>
+
+This section is relevant for VMS systems only. <P>
+
+<STRONG>WIZARD</STRONG> The VICAR
+executive makes use of VMS subprocesses to establish environments and
+isolate functions.  This discussion is intended to clarify how a
+user's session is being supported under the VMS operating system. <P>
+
+<STRONG>WIZARD</STRONG> A user logged in under VMS has a process
+associated with the session, e.g., process name <CODE>PRCNM</CODE>.
+Entering the command VICAR starts a VMS subprocess with a process name
+<CODE>PRCNM1</CODE>.  This subprocess is the environment under which
+all VICAR operations are handled.  The VICAR <CODE>EXIT</CODE> command
+returns the user to the parent VMS process and deletes the subprocess
+and all its descendent subprocesses. <P>
+
+<STRONG>WIZARD</STRONG> In the case of a batch job submittal (<A
+HREF="#5.2.3">Section 5.2.3</A>) from VICAR, a separate VMS process is
+initiated.  The name of the submitted procedure PDF is taken as the
+process name of the batch job, e.g., <CODE>MYPDF</CODE>.  When the job
+begins to execute, a subprocess (<CODE>MYPDF1</CODE>) is created as
+the environment from which the VICAR commands are executed.  Both
+process and subprocess, of course, go away at job termination. <P>
+
+<STRONG>WIZARD</STRONG> Asynchronous processes (<A
+HREF="#5.2.2">Section 5.2.2</A>) are handled similarly.  They differ
+from batch jobs in that a subprocess is initiated under which a second
+subprocess is created for the VICAR environment.  The process name of
+the first subprocess is created by concatenating the eight character
+Process ID number of the VMS process with the first four characters of
+the PDF being run and appending a character zero.  Therefore, the
+first subprocess may have a process name like
+<CODE>22058225IMAG0</CODE>.  The second subprocess gets that name with
+a "<CODE>1</CODE>" appended to it. <P>
+
+<STRONG>WIZARD</STRONG> The following diagram illustrates the
+relationships of the VMS processes and subprocesses utilized by
+VICAR. <P>
+
+<IMG SRC="fig.5.3.1.gif"><P>
+
+<STRONG>WIZARD</STRONG> Because of this interesting relationship of
+processes and subprocesses, a user must realize that observing the
+progress of a process with a DCL SHOW SYSTEM command, for instance,
+may be meaningless because most of the action is occurring within one
+or more subprocesses. <P>
+
+<STRONG>WIZARD</STRONG> Normally, actions performed in DCL mode of
+VICAR will take place in the subprocess.  It is possible, however, to
+affect the parent process as well (see <A
+HREF="vug7.html#7.2.1.1">Section 7.2.1.1</A> for more discussion in
+this area).  DCL commands which allow the /JOB qualifier affect both
+the parent and the subprocess when the qualifier is present. <P>
+
+<I>Example:</I> Define and use a logical name for a parent and
+subprocess. <P> 
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>DCL DEFINE/JOB A UD:[USERID]
+    <STRONG>VICAR&gt;</STRONG>ENABLE-SCRIPT A:GEOMIT.SCR
+</PRE>
+
+<A NAME="5.4">
+<H2>5.4	Session-customizing </H2>
+</A>
+
+Logon and logoff procedures are used by VICAR to create the proper
+environment.  VICAR invokes its own logon and logoff system procedures
+upon entering and exiting the system.  The session may be further
+customized by the execution of the user's logon and logoff procedures.
+The creation of the user procedures are explained in the following
+sections.  The examples presented are very useful and might be used as
+a starting point. <P>
+
+<A NAME="5.4.1">
+<H3>5.4.1 Logon Procedures</H3>
+</A>
+
+When the user enters VICAR, the system logon procedure,
+<CODE>slogon</CODE>, is invoked.  <CODE>slogon</CODE> is a
+facility-dependent logon procedure which is normally invisible to the
+interactive user and is typically created and maintained by the system
+manager.  Once VICAR has been invoked, the operating system executes
+this logon procedure and a series of steps are executed in order to
+set up the VICAR environment.  One of the last steps in the startup
+procedure is to examine the user's present directory for a
+<CODE>ulogon.pdf</CODE> and to execute that procedure if it
+exists. <P>
+
+The <CODE>ulogon</CODE> is a procedure typically written and
+maintained by the user in order to customize the initialization of the
+VICAR.  The <CODE>ulogon</CODE> is not a required procedure but most
+users find it very useful.  For example, the <CODE>ulogon</CODE> can
+be used to define the user's VICAR commands, specify the location of
+the directories where the user's application software resides or to
+configure the user's VICAR session.  <P>
+
+<I>Example:</I> ulogon.pdf (A detailed, line-by-line, description can
+be found in <A HREF="vug10.11-12.html#example3">Appendix
+10.11</A>). <P>
+
+<PRE>
+    Procedure
+    Refgbl $PROMPT
+    Refgbl $BECHO
+    Refgbl $ECHO
+    Body
+    ENABLE-LOG
+    DEFCMD SCR "Enable-script"
+    DEFCMD CHK "Syntax check"
+    DEFCMD NOCHK "Syntax nocheck"
+    DEFCMD QUE "ush lpq"
+    LET $ECHO= "YES"
+    LET $BECHO= ("YES","YES")
+    LET $PROMPT="GoGetum"
+    End-proc
+</PRE>
+
+The user may define a VMS logical name to point to a
+<CODE>ulogon</CODE>.  Doing this causes the same <CODE>ulogon</CODE>
+to be executed regardless of the default directory.  At the current
+time, this cannot be done on UNIX systems, and a user must have a copy
+of their <CODE>ulogon.pdf</CODE> in each directory from which they
+wish to run VICAR. <P>
+
+<I>Example:</I> Define a VMS logical name, in user's LOGIN.COM,
+pointing to user's <CODE>ULOGON</CODE>. <P>
+
+<PRE>
+    $DEFINE ULOGON MGN4:[USERID]ULOGON.PDF  
+</PRE>
+
+Alternatively, the user could have a custom <CODE>ulogon</CODE> in
+each directory by not defining the logical name and maintaining
+separate <CODE>ulogon</CODE>s. <P>
+
+<A NAME="5.4.2">
+<H3>5.4.2 Logoff Procedures</H3>
+</A>
+
+The <CODE>slogoff</CODE> is a facility-dependent logoff procedure
+which is activated when the user exits from VICAR.  One of the steps
+in the procedure is to examine the user's current directory for a
+<CODE>ulogoff.pdf</CODE> and to execute that procedure if it
+exists. <P>
+
+The <CODE>ulogoff</CODE> is typically written and maintained by the
+user in order to customize the exiting from the VICAR session.  The
+<CODE>ulogoff</CODE> is not a required procedure but some users find
+it to be very useful for directory maintenance.  For example, the
+<CODE>ulogoff</CODE> can be used to delete unnecessary files from the
+user's directories or to automatically print out the latest version of
+the <CODE>session.log</CODE>. <P>
+
+<I>Example:</I> ulogoff.pdf (A detailed, line-by-line, description can
+be found in <A HREF="vug10.11-12.html#example4">Appendix 10.11</A>)
+<P>
+
+<PRE>
+    Procedure
+    Body
+    DISABLE-LOG
+    ush /bin/rm last.par
+    ush /bin/rm session.tsl
+    ush lpr session.log
+    End-proc
+</PRE>
+
+As with the <CODE>ulogon</CODE> the user should define a VMS logical
+name to point to a <CODE>ulogoff</CODE>. Doing this causes the same
+<CODE>ulogoff</CODE> to be executed regardless of the default
+directory.  (Again, this is not currently possible on UNIX systems.)
+<P>
+
+<I>Example:</I> Define a VMS logical name, in user's LOGIN.COM,
+pointing to user's <CODE>ulogoff</CODE>. <P>
+
+<PRE>
+    $DEFINE ULOGOFF SYS$LOGIN:ULOGOFF.PDF
+</PRE>
+
+Alternatively, the user could have a custom <CODE>ulogoff</CODE> in each
+directory by not defining the logical name and maintaining separate
+<CODE>ulogoff</CODE>s. <P>
+
+<A NAME="5.5">
+<H2>5.5	Aborting a VICAR Command</H2>
+</A>
+
+VICAR provides the user with the ability to interrupt a VICAR
+operation once execution has started. VICAR has defined the key
+sequence <CODE>Control-C</CODE> to activate "proc interrupt mode".
+Upon entering <CODE>Control-C</CODE>, the operation is suspended and
+the user is prompted by the "interrupt prompt" for appropriate
+commands. <P>
+
+<I>Syntax:</I><P>
+
+<PRE>
+    <STRONG>VICAR-INTERRUPT&gt;</STRONG>command
+</PRE>
+
+The user may enter one of the following commands:<P>
+
+<UL>
+<LI>ABORT - This forces termination of the operation and returns the
+user to normal VICAR Command mode
+<LI>CONTINUE - This resumes the operation
+<LI>Other VICAR Intrinsic commands (Appendix 10.4).  
+</UL>
+
+Note: If a synchronous proc is invoked, the following error is
+issued:<P> 
+<PRE>
+    <STRONG>[TAE-NOSYNC] Synchronous procs not available in proc 
+interrupt mode.</STRONG>
+</PRE>
+
+While a proc is interrupted, it is valuable to be able to perform
+Intrinsic commands and then resume the proc.  The commands will take
+effect immediately. <P>
+
+<I>Example:</I> Specify an Intrinsic command and resume a proc.<P>
+
+<PRE>
+    <STRONG>VICAR-INTERRUPT&gt;</STRONG>let $echo="yes"
+    <STRONG>VICAR-INTERRUPT&gt;</STRONG>continue
+</PRE>
+
+<STRONG>BEWARE</STRONG> <CODE>Control-C</CODE> is the only sequence
+defined for "Proc interrupt mode".  Other control characters will have
+very different results.  (See <A HREF="vug7.html#7.1.1.5">Section
+7.1.1.5</A> for more information.) <P>
+
+<HR>
+<A HREF="vug4.html"><IMG SRC="back.gif"></A>
+<A HREF="vug6.html"><IMG SRC="fwd.gif"></A>
+<P> 
+
+If you wish to return to the Contents page, click <A
+HREF="vugfinal.html#Contents">here</A>. 

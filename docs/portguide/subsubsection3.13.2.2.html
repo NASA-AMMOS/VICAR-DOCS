@@ -1,0 +1,68 @@
+<HEAD>
+<TITLE><tt> vunpack</tt></TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=1175 HREF=subsubsection3.13.2.1.html><IMG SRC="/icons/previous.png"></A> <A NAME=1177 HREF=subsection3.13.2.html><IMG SRC="/icons/up.png"></A>  <IMG SRC="/icons/next.png">  <b>Previous:</b> <A NAME=1176 HREF=subsubsection3.13.2.1.html><tt> vpack</tt></A>  <b>Up:</b> <A NAME=1178 HREF=subsection3.13.2.html>Application Packer</A>  <P>
+ <H3><tt> vunpack</tt></H3>
+<P>
+The <tt> vunpack</tt> program does precisely what its name suggests - it unpacks
+files from a COM file created by <tt> vpack</tt>.  Its primary use is on systems
+other than VMS, where the COM file is not self-extracting.  It may of course
+be used under VMS also.
+<P>
+The <tt> vunpack</tt> program accepts a list of parameters as follows:
+<P>
+<PRE><TT>
+vunpack &lt;file.com&gt;  [{source|pdf|imake|build|make|
+                      test|repack|doc|std|system|unpack|all}]
+</TT></PRE>
+<P>
+or
+<P>
+<PRE><TT>
+vunpack &lt;file.com&gt; -f file.1 file.2 file.3
+</TT></PRE>
+<P>
+As in the <tt> vpack</tt> program, if you call the <tt> vunpack</tt> program with
+no parameters, the program will tell you that you made an error and will tell
+you the proper syntax to use.
+<P>
+The first parameter tells <tt> vunpack</tt> which COM file to extract files from,
+and the remaining (optional) parameters tell the program which file(s) to
+extract.  You may extract more than one type of file, if desired, by putting
+more than one type on the command line, separated by spaces.  If no parameters
+other than the COM file name are provided, the program unpacks all the files
+in the COM file.
+<P>
+The <tt> vunpack</tt> program will not automatically compile and link the
+program, but it can extract the imakefile so that you can create the BLD file
+(VMS) or makefile (Unix) which can create the executable for you.  See
+Section <A HREF=subsection3.13.1.html#vimake><IMG SRC="/icons/cross-ref.png"></A>, Vimake, for details.
+<P>
+The <tt> vunpack</tt> program also allows you to extract a list of specified
+files from the COM file.  Instead of unpacking groups of files, by specifying
+``<tt> -f</tt>'' and supplying a list of one or more file names, you can have
+<tt> vunpack</tt> unpack only the file(s) you need.
+<P>
+For example, if only host.c was needed from the view.com file, you would type
+the following:
+<P>
+<PRE><TT>
+vunpack view.com -f host.c
+</TT></PRE>
+<P>
+However, if you need all of the source files and the imakefile from VIEW.COM,
+you would type the following:
+<P>
+<PRE><TT>
+vunpack view.com source imake
+</TT></PRE>
+<P>
+The <tt> vunpack</tt> program will extract files from the COM file and put them
+in the current directory, but it will not alter the COM file in any way.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

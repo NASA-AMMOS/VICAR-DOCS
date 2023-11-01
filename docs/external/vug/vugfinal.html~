@@ -1,0 +1,224 @@
+<Title>VICAR User's Guide</Title>
+<IMG SRC="title.gif"> <P>
+
+<H1>Version 3</H1>
+
+
+<STRONG>
+Elizabeth Duxbury <BR>
+Danika Jensen <P>
+</STRONG>
+
+Oct. 14, 1994 <P>
+
+National Aeronautics and <BR>
+Space Administration <P>
+
+<IMG SRC="jpl.gif"> <BR>
+<STRONG>Jet Propulsion Laboratory</STRONG> <BR>
+California Institute of Technology <BR>
+Pasadena, California 91109 <P>
+
+D-4186 Rev B <P>
+
+<H4>Copyright &#169; 1994, California Institute of Technology.  All
+rights reserved.  U.S. Government sponsorship under NASA Contract
+NAS7-1270 is acknowledged.</H4> 
+
+<HR>
+
+<H2>PREFACE TO VERSION THREE</H2><P>
+
+VICAR is an evolving software system constantly being updated with
+contributions from general users and flight projects.  This makes it
+difficult to keep a document such as this VICAR User's Guide
+up-to-date.  Part of the purpose in putting this latest version
+online is to enable revisions in VICAR to be more quickly reflected
+in this Guide.  <P>
+
+Several significant changes have been made in this version of the
+Guide.  An attempt has been made to keep the current format as similar
+as possible to past versions of the Guide, but for the online version,
+some changes have been made to take advantage of the cross-referencing
+capabilities of the NCSA Mosaic format.  It is hoped that most of
+these changes will be transparent to anyone reading a hardcopy
+version.  An attempt has been made once again to make the Index more
+useful in quickly finding critical information.  <P>
+
+There have also been significant changes to VICAR since Version 3 was
+published. Perhaps most important are those changes due to the
+conversion of VICAR to enable it to run on UNIX systems.  (These
+changes are detailed in <A HREF="vug3.html#3.1.1">Section 3.1.1</A>
+for the benefit of the experienced VMS-VICAR user.)  The content of
+the VICAR applications libraries has changed with the addition of many
+new procs and the deletion of several obsolete or redundant ones.
+Finally, the Menu mode and the New User's Tutorial are undergoing
+significant changes, and have not yet been implemented for UNIX
+VICAR. <P>
+
+This version of the VICAR User's Guide applies to:  <P>
+
+<PRE>
+	VICAR Version 12.1
+		using TAE Version 5B/16B
+		under UNIX Version SunOS 4.1.3 or Solaris 2.3
+	or	under VMS Version 5.4-2
+</PRE>
+
+<H2>ACKNOWLEDGEMENTS</H2>
+
+This Guide would not have been completed if not for the assistance of
+many members of the Image Processing Laboratory.  The authors extend
+special thanks to Ray Bambery, Nevin Bryant, Bob Deen, Sandy Dumarr,
+Greg Earle, Tom Greer, Dave Hodges, Steve Hwan, Sue LaVoie, Alan
+Mazer, Helen Mortensen, Steve Pohorsky, Niles Ritter, Allan Runkle,
+Cesar Vasquez, Lisa Wainio, Mitch White, and Gary Yagi for their
+assistance.  <P>
+
+<HR>
+
+<A NAME="Contents">
+<H2>CONTENTS</H2><P>
+</A>
+<PRE>
+1   <A HREF="vug1.html">Introduction</A>
+    1.1   <A HREF="vug1.html#1.1">Document Purpose</A>
+    1.2   <A HREF="vug1.html#1.2">Document Organization</A>
+    1.3   <A HREF="vug1.html#1.3">Conventions, Acronyms and Terms</A>
+	1.3.1   <A HREF="vug1.html#1.3.1">Conventions</A>
+	1.3.2   <A HREF="vug1.html#1.3.2">Acronyms and Terms</A>
+2   <A HREF="vug2.html">VICAR  Documentation and References</A>
+3   <A HREF="vug3.html">Overview of VICAR</A>
+    3.1   <A HREF="vug3.html#3.1">Background</A>
+	3.1.1	<A HREF="vug3.html#3.1.1">VICAR Changes Under UNIX</A>
+    3.2   <A HREF="vug3.html#3.2">Applications of VICAR</A>
+    3.3   <A HREF="vug3.html#3.3">System Acquisition</A>
+4   <A HREF="vug4.html">BASIC VICAR Concepts</A>
+    4.1   <A HREF="vug4.html#4.1">Entering/Exiting VICAR</A>
+    4.2   <A HREF="vug4.html#4.2">Getting Started</A>
+    4.3   <A HREF="vug4.html#4.3">VICAR Datasets</A>
+	4.3.1   <A HREF="vug4.html#4.3.1">Dataset Names</A>
+	    4.3.1.1   <A HREF="vug4.html#4.3.1.1">Temporary Datasets</A>
+	4.3.2   <A HREF="vug4.html#4.3.2">Dataset Structure</A>
+	4.3.3   <A HREF="vug4.html#4.3.3">Pixel Data Formats</A>
+    4.4   <A HREF="vug4.html#4.4">VICAR  Labels</A>
+	4.4.1   <A HREF="vug4.html#4.4.1">VICAR Label Structure</A>
+    4.5   <A HREF="vug4.html#4.5">Procs</A>
+5   <A HREF="vug5.html">The VICAR Environment</A>
+    5.1   <A HREF="vug5.html#5.1">VICAR Libraries</A>
+    5.2   <A HREF="vug5.html#5.2">Processing Modes</A>
+	5.2.1   <A HREF="vug5.html#5.2.1">Interactive or Synchronous Processing Mode</A>
+	    5.2.1.1   <A HREF="vug5.html#5.2.1.1">VICAR DCL Mode - VMS Systems</A>
+	    5.2.1.2   <A HREF="vug5.html#5.2.1.2">VICAR USH Mode - UNIX Systems</A>
+	5.2.2   <A HREF="vug5.html#5.2.2">Asynchronous Processing</A>
+	    5.2.2.1   <A HREF="vug5.html#5.2.2.1">Asynchronous Processing - VMS Systems</A>
+	    5.2.2.2   <A HREF="vug5.html#5.2.2.2">"Background" Processing - UNIX Systems</A>
+	5.2.3   <A HREF="vug5.html#5.2.3">Batch Processing Mode</A>
+	    5.2.3.1   <A HREF="vug5.html#5.2.3.1">Batch Processing - VMS Systems</A>
+	    5.2.3.2   <A HREF="vug5.html#5.2.3.2">Batch Processing - UNIX Systems</A>
+    5.3   <A HREF="vug5.html#5.3">VICAR Use of Subprocesses</A>
+    5.4   <A HREF="vug5.html#5.4">Session Customizing Procedures</A>
+	5.4.1   <A HREF="vug5.html#5.4.1">Logon Procedures</A>
+	5.4.2   <A HREF="vug5.html#5.4.2">Logoff Procedures</A>
+    5.5   <A HREF="vug5.html#5.5">Aborting a VICAR Command</A>
+6   <A HREF="vug6.html">VICAR User Aids</A>
+    6.1   <A HREF="vug6.html#6.1">VICAR Help</A>
+	6.1.1   <A HREF="vug6.html#6.1.1">HELP Command</A>
+    6.2   <A HREF="vug6.html#6.2">VICAR TUTOR Mode</A>
+	6.2.1   <A HREF="vug6.html#6.2.1">General TUTOR Information</A>
+	6.2.2   <A HREF="vug6.html#6.2.2">TUTOR-SCREEN Mode</A>
+	6.2.3   <A HREF="vug6.html#6.2.3">TUTOR-NOSCREEN Mode</A>
+    6.3   <A HREF="vug6.html#6.3">VICAR MENU Mode</A>
+	6.3.1   <A HREF="vug6.html#6.3.1">General Menu Information</A>
+	6.3.2   <A HREF="vug6.html#6.3.2">The MENUTREE</A>
+	6.3.3   <A HREF="vug6.html#6.3.3">Creating a Menu</A>
+    6.4   <A HREF="vug6.html#6.4">Syntax Checking</A>
+    6.5   <A HREF="vug6.html#"6.5>Message Interpretation</A>
+	6.5.1   <A HREF="vug6.html#6.5.1">General Message Information</A>
+	6.5.2   <A HREF="vug6.html#6.5.2">HELP-MESSAGE</A>
+	6.5.3   <A HREF="vug6.html#6.5.3">"?"</A>
+7   <A HREF="vug7.html">The VICAR Image Processing Executive</A>
+    7.1   <A HREF="vug7.html#7.1">Introduction to the TAE Command Language (TCL)</A>
+	7.1.1   <A HREF="vug7.html#7.1.1">TCL Command Line Rules</A>
+	    7.1.1.1   <A HREF="vug7.html#7.1.1.1">Abbreviations</A>
+	    7.1.1.2   <A HREF="vug7.html#7.1.1.2">Line Continuation</A>
+	    7.1.1.3   <A HREF="vug7.html#7.1.1.3">Labels</A>
+	    7.1.1.4   <A HREF="vug7.html#7.1.1.4">Special Characters</A>
+	    7.1.1.5   <A HREF="vug7.html#7.1.1.5">Special VT100 Terminal Keys</A>
+	    7.1.1.6   <A HREF="vug7.html#7.1.1.6">Command Line Editor</A>
+	7.1.2   <A HREF="vug7.html#7.1.2">Variables</A>
+	    7.1.2.1   <A HREF="vug7.html#7.1.2.1">Local Variables</A>
+	    7.1.2.2   <A HREF="vug7.html#7.1.2.2">Global Variables</A>
+	    7.1.2.3   <A HREF="vug7.html#7.1.2.3">Assignment</A>
+	    7.1.2.4   <A HREF="vug7.html#7.1.2.4">Intrinsic Variables</A>
+	    7.1.2.5   <A HREF="vug7.html#7.1.2.5">Substitution and  Dereferencing</A>
+	7.1.3   <A HREF="vug7.html#7.1.3">Expressions</A>
+	7.1.4   <A HREF="vug7.html#7.1.4">Built-In Functions</A>
+	7.1.5   <A HREF="vug7.html#7.1.5">Error Handling</A>
+    7.2   <A HREF="vug7.html#7.2">VICAR Command Line Structure</A>
+	7.2.1   <A HREF="vug7.html#7.2.1">Command Line Syntax</A>
+	    7.2.1.1   <A HREF="vug7.html#7.2.1.1">Commands and Proc Names</A>
+	    7.2.1.2   <A HREF="vug7.html#7.2.1.2">Subcommands</A>
+	    7.2.1.3   <A HREF="vug7.html#7.2.1.3">Command Qualifiers</A>
+	    7.2.1.4   <A HREF="vug7.html#7.2.1.4">Parameter List</A>
+	    7.2.1.5   <A HREF="vug7.html#7.2.1.5">Comments</A>
+	7.2.2   <A HREF="vug7.html#7.2.2">Parameters</A>
+	7.2.3   <A HREF="vug7.html#7.2.3">Parameter Value Specification</A>
+	    7.2.3.1   <A HREF="vug7.html#7.2.3.1">Parameter_name=value Format</A>
+	    7.2.3.2   <A HREF="vug7.html#7.2.3.2">Keyword Format</A>
+	    7.2.3.3   <A HREF="vug7.html#7.2.3.3">Positional Format</A>
+	    7.2.3.4   <A HREF="vug7.html#7.2.3.4">Parameter Qualifiers</A>
+	7.2.4   <A HREF="vug7.html#7.2.4">Missing or Invalid Parameter Values</A>
+	7.2.5   <A HREF="vug7.html#7.2.5">Dynamic Parameters</A>
+    7.3   <A HREF="vug7.html#7.3">Proc Definition Files (PDFs)</A>
+	7.3.1   <A HREF="vug7.html#7.3.1">Procedure Definition Files (PDFs)</A>
+	7.3.2   <A HREF="vug7.html#7.3.2">Process Definition Files (PDFs)</A>
+	7.3.3   <A HREF="vug7.html#"7.3.3>Executing a PDF</A>
+	7.3.4   <A HREF="vug7.html#7.3.4">HELP Files</A>
+	7.3.5   <A HREF="vug7.html#7.3.5">Global PDFs</A>
+	7.3.6   <A HREF="vug7.html#7.3.6">Compiled PDFs</A>
+    7.4   <A HREF="vug7.html#7.4">Script Files</A>
+    7.5   <A HREF="vug7.html#7.5">Tape Handling</A>
+    7.6   <A HREF="vug7.html#7.6">Session Logging</A>
+    7.7   <A HREF="vug7.html#7.7">Sample Interactive Session</A>
+8   <A HREF="vug8.html">Non-Standard Items</A>
+    8.1   <A HREF="vug8.html#8.1">Proprietary Software</A>
+    8.2   <A HREF="vug8.html#8.2">Facility-specific Hardware</A>
+    8.3   <A HREF="vug8.html#8.3">VICAR I/O Formats</A>
+	8.3.1   <A HREF="vug8.html#8.3.1">Input/Output of VICAR Datasets</A>
+	8.3.2   <A HREF="vug8.html#8.3.2">Output of Non-VICAR Datasets</A>
+	8.3.3   <A HREF="vug8.html#8.3.3">Input of Non-VICAR Datasets</A>
+9   <A HREF="vug9.html">Advanced VICAR Concepts</A>
+    9.1   <A HREF="vug9.html#9.1">Dataset Structure</A>
+    9.2   <A HREF="vug9.html#9.2">VICAR Label Structure</A>
+10  <A HREF="vug10.1-3.html">Appendix</A>
+    10.1   <A HREF="vug10.1-3.html#10.1">VICAR Proc Function Definitions</A>
+    10.2   <A HREF="vug10.1-3.html#10.2">Classification of VICAR Procs by Function</A>
+    10.3   <A HREF="vug10.1-3.html#10.3">Standard VICAR Procs and their Functions</A>
+    10.4   <A HREF="vug10.4-10.html#10.4">VICAR Intrinsic Commands</A>
+    10.5   <A HREF="vug10.4-10.html#10.5">VICAR Command Qualifiers</A>
+    10.6   <A HREF="vug10.4-10.html#10.6">VICAR Intrinsic Global Variables</A>
+    10.7   <A HREF="vug10.4-10.html#10.7">MENU Mode User Operations</A>
+    10.8   <A HREF="vug10.4-10.html#10.8">TUTOR Mode User Operations</A>
+    10.9   <A HREF="vug10.4-10.html#10.9">TUTOR Mode Line Editing Keys</A>
+    10.10  <A HREF="vug10.4-10.html#10.10">Command Line Editing Keys</A>
+    10.11  <A HREF="vug10.11-12.html">Examples of Proc Definition Files (PDFs)</A>
+    10.12  <A HREF="vug10.11-12.html#10.12">Examples of VICAR Labels</A>
+    10.13  <A HREF="vug10.13.html">VICAR Message Explanations</A>
+    10.14  <A HREF="vug10.14.html">The VICAR New User's Tutorial</A>
+	10.14.1   <A HREF="vug10.14.html#10.14.1">New User Tutorial Listing</A>
+11  <A HREF="vug11.html">Index</A>
+</PRE>
+
+<HR>
+<A HREF="vug1.html"><IMG SRC="fwd.gif"></A>
+<P> 
+
+<EM>Version 3 of the VICAR User's Guide is an update of previous
+versions, and the authors relied heavily on those earlier versions for
+its content.  The authors of Version 2 of the Guide are Susan LaVoie,
+Doug Alexander, Charles Avis, Helen Mortensen, Carol Stanley, and Lisa
+Wainio.  The writing and HTML formatting of Version 3 were done by
+Elizabeth.D.Duxbury@jpl.nasa.gov and Danika.Jensen@jpl.nasa.gov.
+Last modified October 12, 1994.</EM>
+

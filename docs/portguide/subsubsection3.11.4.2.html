@@ -1,0 +1,74 @@
+<HEAD>
+<TITLE>Accepting C Strings in Fortran</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=994 HREF=subsubsection3.11.4.1.html><IMG SRC="/icons/previous.png"></A> <A NAME=996 HREF=subsection3.11.4.html><IMG SRC="/icons/up.png"></A>  <IMG SRC="/icons/next.png">  <b>Previous:</b> <A NAME=995 HREF=subsubsection3.11.4.1.html>Accepting Fortran Strings in C</A>  <b>Up:</b> <A NAME=997 HREF=subsection3.11.4.html>Passing Strings</A>  <P>
+ <H3>Accepting C Strings in Fortran</H3>
+<P>
+The easiest way to accept C strings in a Fortran subroutine is to write the
+subroutine in C instead.  It is possible to accept C strings by doing a
+two-stage bridge routine.  The first stage, written in C, handles the
+FTN_NAME part of the transfer, and passes the string and its length as
+arguments to the second bridge.  The second bridge, written in Fortran,
+accepts the strings as BYTE arrays and uses the SUBLIB routine <tt> mvlc</tt> and
+the passed-in length to convert them to Fortran strings, which may then be
+passed to the Fortran main subroutine.  To get strings out, the reverse
+procedure is used.  The Fortran bridge uses <tt> mvcl</tt> to write a BYTE array,
+then passes that and the length back to the C bridge, which puts a null
+terminator on the string and returns it to the C caller.
+<P>
+Examples of this type of bridge are the SPICE bridge routines, in the files
+ZSPBRI.COM and XSPBRI.COM.  One of the bridges, for <tt> bodvar</tt>, is presented
+below.  First is the C-callable first bridge.
+<P>
+<PRE><TT>
+void zbodvar(body, item, dim, values)
+<P>
+int body;
+char *item;
+int *dim;
+double *values;
+{
+   int i;
+   i=strlen(item);
+<P>
+   FTN_NAME(xbodvar) (&amp;body, item, &amp;i, dim, values);
+}
+</TT></PRE>
+<P>
+This first bridge simply takes the length of the string parameter, and passes
+it along with the string pointer to the second-stage bridge.  It also takes
+care of the scalar and array argument conversion, and the FTN_NAME macro.
+The second bridge is not intended to be called by anything except the first
+bridge.
+<P>
+<PRE><TT>
+      subroutine xbodvar(body, item, i, dim, values)
+<P>
+      integer body
+      byte item(1)
+      integer i
+      integer dim
+      double precision values(*)
+      character*80 text
+<P>
+      text=' '
+      if (i.gt.80) call xvmessage('xbodvar, string too long',' ')
+<P>
+C     Transformation to Fortran-string
+      call mvlc(item, text, i)
+<P>
+      call bodvar(body, text, dim, values)
+<P>
+      return
+</TT></PRE>
+<P>
+This second bridge converts the C string (passed as a BYTE array) and the
+length into a Fortran CHARACTER*n variable, which is then passed into the
+real <tt> bodvar</tt> routine (which is the Fortran-callable version).
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

@@ -1,0 +1,2689 @@
+<Title>VICAR User's Guide - Appendix 13</Title>
+<H2>10.13 VICAR Message Explanations</H2>
+
+The list of error messages is kept in $TAEHELP/msg/taefac.msg on UNIX
+machines, and VICSYS:[VICAR121.TAE52_VAX-VMS.HELP.TM]TAEFAC.MSG on VAX
+machines. This appendix contains the VICAR error and information
+messages listed, by key, in alphabetical order. If the user receives a
+message not listed here, further information may be obtained by typing
+"<CODE>?</CODE>" or by using the <CODE>help-message</CODE> command
+(Sections <A HREF="vug6.html#6.5.2">6.5.2</A> and <A
+HREF="vug6.html#6.5.3">6.5.3</A>). <P>
+
+<STRONG>KEY</STRONG> Explanation and User Actions
+<HR>
+<STRONG>ABNSHELL</STRONG> The last command executed by the
+UNIX/shell, invoked via the USH command from TAE, has terminated
+abnormally. Resubmit the shell command correctly. <P>
+
+<STRONG>ABORT</STRONG> The TCL global variable $SKEY will assume
+this value after you have typed an ABORT command. <P>
+
+<STRONG>ABORTOK</STRONG> This is an information message, indicating
+that the specified asynchronous job has been successfully aborted.
+<P>
+
+<STRONG>ABOWAIT</STRONG> This is the value of the TCL global
+variable $SKEY after the user has used the attention sequence to abort
+a WAIT command. <P>
+
+<STRONG>ACCERR</STRONG> Defined ACCESS values are: IN - the file
+exists; OUT - the file will be created; INOUT - the file exists and
+can be written to; and NOCHECK - no check is to be made. Correct the
+ACCESS specification according to one of the options listed above. <P> 
+
+<STRONG>ACCNOTALL</STRONG> ACCESS is only allowed for
+<CODE>FILE</CODE> variables. Change the variable type or delete the
+ACCESS clause. <P>
+
+<STRONG>ALLOC</STRONG> You have attempted to allocate or deallocate
+a tape drive which is already allocated to another user. Allocate an
+alternate tape drive or wait for the user of the current drive to
+deallocate it. <P>
+
+<STRONG>ALLOCLOG</STRONG> VICAR was unable to define the logical
+name in the job table for the ALLOC command. This logical name is the
+same as the symbolic name, with a value of the actual device name. The
+host message given with this key should explain the error further.
+Interpret the host message and act accordingly. <P>
+
+<STRONG>AMBIGPAR</STRONG> The abbreviation used for a parameter
+identifies more than one parameter for this command. Use more
+characters in the name of the parameter. Use <CODE>TUTOR</CODE> to
+determine the full name for the parameter. <P>
+
+<STRONG>AMBIGSUB</STRONG> The abbreviation used for a subcommand
+identifies more than one subcommand for this command. Use more
+characters in the name of the subcommand. If you do not know the
+correct name of the subcommand, request the TUTOR subcommand display
+by typing: <CODE>TUTOR <VAR>commandname-</VAR></CODE> <P>
+
+<STRONG>AMBIGVAL</STRONG> An "ambiguous" value was assigned to a
+variable. An ambiguous value is a value that is the left substring of
+more than one of the valid values for the variable. Determine the
+valid values for the variable (by requesting help on a parameter in
+TUTOR or by finding the declaration statement for the variable and
+consulting its "VALID" list), and re-type the errant command using a
+unique substring of the desired value. <P>
+
+<STRONG>ARESTERR</STRONG> In an asynchronous job, there was an error
+updating the job context with the results of a dynamic parameter
+session. Because the results are communicated to the asynchronous TAE
+monitor through files, this error generally occurs when another user
+has created a file with the same name as the communication file. See
+the TAE system manager for an explanation of the naming of TAE
+communication files. <P>
+
+<STRONG>ARIERR</STRONG> One of the following occurred: 1) The result
+of an integer addition or multiplication is greater than the greatest
+integer that can be held in the host system. 2) The result of a
+floating point addition or multiplication is greater than the largest
+floating point number that can be held in the host system. 3) The
+result of a floating point division requires too much precision for
+floating point numbers in the host system. See local system
+documentation or the System Manager to determine the possible size of
+numbers on your system, and correct the command or procedure
+accordingly. <P>
+
+<STRONG>ASGNFAIL</STRONG> The host returned an error when attempting
+to assign a channel to the tape drive in order to do a rewind. The
+host message given with this key should explain the error. Interpret
+the host message and act accordingly. <P>
+
+<STRONG>ASYCRE</STRONG> TAE is unable to initiate an asynchronous
+job because certain resource quotas (assigned to the user by the
+system manager), have been exceeded. If your problem is related to
+resource quotas (indicated by a VAX/VMS error code of 28), and you do
+not have any asynchronous jobs active, see your system manager to
+increase your quotas. The TAE Systems Manager's guide has guidelines
+for quota assignments. Otherwise, if you have active asynchronous
+jobs, wait until one of them completes. You may check the status of
+asynchronous jobs with the SHOW-ASYNC command. <P>
+
+<STRONG>ASYINTRPT</STRONG> This is an information message. The user
+typed the attention sequence (e.g., <CODE>CONTROL/C</CODE>)
+after"<CODE>REPLY</CODE>ing" to and "<CODE>RUN</CODE>ning" an
+asynchronous proc. One reason for doing this might be that the TM
+subprocess created to execute the asynchronous job was terminated. The
+parent TM then "hangs" while attempting to send a message (via the
+<CODE>reply_do</CODE> subroutine call) to the TM subprocess. See
+system manager to determine why the TM subprocess was terminated. <P>
+
+<STRONG>ASYNCDONE</STRONG> This message informs the user that a job
+invoked with the value of the command qualifier <CODE>ASYNCEND</CODE>
+set to <CODE>NOTIFY</CODE> has terminated. No action required. <P>
+
+<STRONG>ASYNCJOB</STRONG> This message informs the user that TAE was
+successful in creating the asynchronous job. Note, however, that this
+does not guarantee that the job will run; the job may abort because of
+system quota limitations after a successful initiation. Check the
+status of the submitted job by typing <CODE>SHOW-ASYNC</CODE>. If the
+job could not be run, the <CODE>SKEY</CODE> field should contain a key
+value such as <CODE>TAE-COMINI</CODE>.  <P>
+
+<STRONG>ASYNCREQ</STRONG> This message informs the user that one or
+more asynchronous jobs are waiting for dynamic parameters. The
+<CODE>REPLY</CODE> command may be used to supply the parameter values
+to the asynchronous job. Type <CODE>HELP REPLY</CODE> for additional
+information. If more than one asynchronous job is active, find the
+job(s) requesting the dynamic parameters by typing the
+<CODE>SHOW-WAITING</CODE> command. Then use the <CODE>REPLY</CODE>
+command, with job name if necessary, to initiate a dynamic parameter
+session. <P>
+
+<STRONG>ASYONLY</STRONG> The command you typed is only available from
+within an asynchronous job; see the <CITE>TAE Command Language
+Programmer's Manual</CITE> for an explanation of the use of this
+command. <P>
+
+<STRONG>ASYPARM</STRONG> An asynchronous proc invoked by either a
+batch or asynchronous job requested dynamic parameters. TAE does not
+support this request because there is no associated interactive user.
+<P>
+
+<STRONG>ASYRCV</STRONG> The asynchronous job, waiting for dynamic
+parameters from the interactive TAE monitor, was unsuccessful in
+receiving a reply message. Find an explanation for the host error
+code printed with the error message. If you cannot correct the
+problem, see your System Manager. <P>
+
+<STRONG>ASYSND</STRONG> The interactive TAE job is unable to send
+parameters to the asynchronous job. The cause of the problem is
+supplied as the host-dependent error code in the error message. Find
+the explanation for the host-dependent error code printed with the
+message. Correct the problem, if possible, and resubmit the job. If
+you cannot correct the problem see your System Manager. <P>
+
+<STRONG>ASYRCV</STRONG> An error has been encountered by TAE in
+receiving and processing a dynamic parameter request from an
+asynchronous job. Find the explanation for the host-dependent error
+code printed with the error message. See your system manager if you
+cannot correct the problem. <P>
+
+<STRONG>ATROOT</STRONG> The root menu is the currently displayed
+menu. No action required. <P>
+
+<STRONG>ATTN</STRONG> Should never be displayed. Referenced by code in
+<CODE>tae$tm:misccmd.c</CODE> which, due to conditional compilation,
+will never be compiled. <P>
+
+<STRONG>BADABB</STRONG> An abbreviation was specified (using the
+<CODE>abc*def</CODE> form) in which the asterisk was the first
+character. You must specify at least one character before the
+asterisk. Correct the input command accordingly. <P>
+
+<STRONG>BADCMD</STRONG> The specified command is not available in the
+mode in which it was used. It may or may not be available in some
+other mode. The TCL command modes are normal mode and interrupt mode
+(entered when you type the attention sequence to interrupt an
+executing proc), and dynamic prompt mode (entered when you type two
+escapes while prompted for additional input to a program or proc).
+Type <CODE>HELP</CODE> while in a given mode to determine the commands
+available in that mode. <P>
+
+<STRONG>BADCOMBO</STRONG> A <CODE>RESTORE</CODE> command may restore a
+specified variable into an existing variable of a different name. You
+may not restore into a target variable if you are restoring all
+variables from a file. <P>
+
+<STRONG>BADDECL</STRONG> A command appeared in a PDF before the
+<CODE>BODY</CODE> command for procedures, or anywhere for processes,
+that cannot be processed by the TAE interpreter. Only TCL
+"declaration" commands may appear in process PDFs or before the
+<CODE>BODY</CODE> command in procedures. If the proc is a procedure,
+check that the <CODE>BODY</CODE> command is in the correct place. See
+the <CITE>TAE Command Language Programmer's Manual</CITE> for the list
+of TCL declaration commands. <P>
+
+<STRONG>BADDEV</STRONG> You have entered a device specification
+which is not recognized. Re-issue the command using the correct
+device specification. <P>
+
+<STRONG>BADESC</STRONG> <CODE>BREAK</CODE> and <CODE>NEXT</CODE>
+commands are only valid inside a loop. Correct the PDF to delete the
+<CODE>BREAK</CODE> or <CODE>NEXT</CODE>. Place it inside a loop as
+appropriate. Descriptions of <CODE>BREAK</CODE> and <CODE>NEXT</CODE>
+are available using the TCL commands <CODE>HELP BREAK</CODE> and
+<CODE>HELP NEXT</CODE> <P>
+
+<STRONG>BADFILE</STRONG> The named file cannot be found or the name of
+the file is not correct for the local operating system. Determine if
+the named file has correct spelling. If it does, see the TAE system
+manager or Appendix A of the <CITE>TAE Command Language User's
+Manual</CITE> to check for the format of correct file names on your
+system. <P>
+
+<STRONG>BADHLPDIR</STRONG> The help file contains an unrecognized
+directive, that is, an unrecognized word following a period in column
+one. Recognized directives in help files are: <CODE>.ELSEIF, .END,
+.HELP, .IF, .IFEND, .INCLUDE, .LEVEL1, .LEVEL2, .PAGE, .SUBCMD,
+.TITLE, .VARIABLE,</CODE> and <CODE>.VAR</CODE>. Examine the help file
+and ensure that all directives are valid help directives. <P>
+
+<STRONG>BADIVAL</STRONG> The left side of a <CODE>LET</CODE>
+assignment statement is indexed but the right side does not represent
+a singly-valued variable or constant. The number of component values
+on the right side must be exactly one; the null value
+("<CODE>--</CODE>") is not acceptable and multiple values are not
+acceptable. Examples: 
+<PRE>
+	LET X(24) = 100		!valid 
+	LET X(24) = --		!invalid: null value 
+	LET X(24) = (1, 3)	!invalid: multiple values
+</PRE>
+
+<STRONG>BADJOBFILE</STRONG> The mechanism by which a TAE batch or
+asynchronous job receives information from the initiating parent is
+through a "job" file. If this message appears, the job file has been
+corrupted. See the TAE system manager to list the job file and
+determine the problem. <P>
+
+<STRONG>BADKEY</STRONG> The proper format for a message key is
+"xxx-yyy" and should be typed exactly as shown in the square brackets
+([ and ]) of the error message. Type the key as indicated above. <P>
+
+<STRONG>BADLET</STRONG> The valid form for the <CODE>LET</CODE> is
+<CODE>LET <VAR>variable</VAR> = <VAR>expression</VAR></CODE>. See the
+section in the <CITE>TAE Command Language Programmer's Manual</CITE>
+on expressions for more details. Correct the command to use the proper
+form. <P>
+
+<STRONG>BADLETSUBS</STRONG> The subscript in the <CODE>LET</CODE>
+command has one of the following faults: 1) It is larger than the
+largest subscript allowed for the variable. 2) It is more than one
+greater than the current value count of the variable. 3) It is not a
+positive integer. 4) It is multi-valued. Determine which of the above
+faults is the cause of the error and fix the command accordingly. <P>
+
+<STRONG>BADMENCMD</STRONG> The command is not a known menu command.
+Correct the command. Type <CODE>HELP</CODE> while in menu mode for a
+list of menu commands. <P>
+
+<STRONG>BADMENDIR</STRONG> The menu definition file contains an
+unrecognized directive. (A word is interpreted as a menu directive if
+it follows a period in column one in a menu definition file.) The menu
+directives are: <CODE>.COMMAND, .TITLE, .PROC, .MENU, .HELP,</CODE>
+and <CODE>.PAGE</CODE>.  Correct the menu file to use only the
+directives listed above. <P>
+
+<STRONG>BADMSG</STRONG> The TAE monitor has received a data
+block from a process and the block has invalid format. This
+represents a major failure in the TAE Monitor or in the TAE subroutine
+library. <P>
+
+<STRONG>BADNAME</STRONG> The specified variable does not exist. <P>
+
+<STRONG>BADONFAIL</STRONG> In a procedure, the local variable
+<CODE>_ONFAIL</CODE> was set to a command that is not permitted as an
+"onfail" command, or the onfail command is is an improper command (an
+unsatisfied <CODE>GOTO</CODE>, for example). Correct the procedure to
+set <CODE>_ONFAIL</CODE> to a valid command. See the <CITE>TAE Command
+Language Programmer's Manual</CITE> for a list of allowed "onfail"
+commands. <P>
+
+<STRONG>BADOP</STRONG> One of the following operators was used
+inappropriately: 1) The +, /, -, and * operators are restricted to
+real and integer data types. 2) The // operator (concatenation) is
+restricted to string data types. 3) The NOT, AND, and OR operators are
+restricted to real and integer data types. 4) The >, <, >=, and <=
+operators are restricted to real and integer data types. Determine the
+cause of the incorrect usage and correct the command. <P>
+
+<STRONG>BADPAR</STRONG> The parameter is not known to the command, or
+an unknown command or parameter qualifier has been used. Every command
+(or proc) has a defined set of parameter names, and only parameters
+from this set may appear on the command line.  Note that the existence
+of a subcommand changes the set of parameters, i.e., a command may
+have different parameter sets depending upon the subcommand in
+use. Re-enter the command, naming the parameters and any command or
+parameter qualifiers correctly. You may use the TUTOR command to get
+an exact list of the parameter names. Type <CODE>HELP</CODE> for a
+description of command and parameter qualifiers. See the <CITE>TAE
+Command Language User's Manual</CITE> for details on qualifiers. <P>
+
+<STRONG>BADPARENT</STRONG> In a <CODE>WINDOW-CREATE</CODE> operation,
+a parent window was specified that doesn't exist. <P>
+
+<STRONG>BADPARFILE</STRONG> An attempt was made to execute a PAR file
+but the PAR file could not be recognized (that is, it did not have the
+proper identifying flag). Try <CODE>disp-parfile</CODE> to display the
+contents of the file. A probable cause is that the file was copied
+over. <P>
+
+<STRONG>BADPFILE</STRONG> Possible causes: 1) A parameter file read
+during a <CODE>RESTORE</CODE> or dynamic parameter operation does not
+have a valid format for a parameter file. 2) The parameter file could
+not be opened. 3) There was an error while reading the parameter
+file. 4) The file was created by an older version of TAE. Type
+<CODE>HELP CONVERT</CODE> or <CODE>TUTOR CONVERT</CODE> for
+information on converting such files. Check the spelling of the file
+name. If the spelling is correct, determine whether the named file was
+created by a <CODE>SAVE</CODE> operation or by a process. If by a
+process, determine if the process is properly using the
+<CODE>XQWRTB</CODE> call. If the file could not be opened then the
+file may not exist, or you may not have the privileges to read the
+file. If there was an error while reading the parameter file, then the
+file may be corrupted; see the TAE system manager. <P>
+
+<STRONG>BADPQUAL</STRONG> A proc has been invoked with an incorrectly
+formatted parameter qualifier. A parameter qualifier is a string
+between two vertical bars following the value of a
+parameter. Parameter qualifier values have the same format as
+parameters. See the <CITE>TAE Command Language User's Manual</CITE>
+for a description of parameter qualifiers and the proper format for
+parameter values.  <P>
+
+<STRONG>BADPROC</STRONG> An incorrectly formatted proc specification
+was entered. See the <CITE>TAE Command Language User's Manual</CITE>
+for the correct format of proc specs. <P>
+
+<STRONG>BADQUERY</STRONG> The information requested on a window
+could not be obtained. <P>
+
+<STRONG>BADREF</STRONG> The definition of a proc parameter is
+incorrect. The parameter is of type <CODE>NAME</CODE> but the
+<CODE>DEFAULT</CODE> specification names a variable which is not
+defined in the proc. <CODE>DEFAULT</CODE> specifications for
+<CODE>NAME</CODE> parameters are resolved locally. The proc definition
+must be corrected. <P>
+
+<STRONG>BADSIZE</STRONG> A program has attempted to set a string
+variable to a string with more than the maximum number of characters
+supported. See the TAE system manager to determine the maximum number
+for characters and correct the program. (The maximum is set by the
+<CODE>MAXSTRSIZ</CODE> parameter in the <CODE>TAECONF</CODE> file.)
+<P>
+
+<STRONG>BADTARG</STRONG> The user had issued a <CODE>RESTORE</CODE>
+command to restore a set of variables from a previously saved file to
+a different set of target variables. The number of
+<CODE>VARIABLE</CODE> values does not match the number of
+<CODE>TARGET</CODE>s. Reenter the command with matching number of
+targets. <P>
+
+<STRONG>BADTITLE</STRONG> The title block - the text following
+<CODE>.TITLE</CODE> - in the help file or proc definition file is
+incorrect. In general, the title is too long to fit on the
+screen. Correct the text. <P>
+
+<STRONG>BADTUTCMD</STRONG> The command is not a known TUTOR
+command. Correct the command. Type <CODE>HELP</CODE> for a list of
+TUTOR commands. <P>
+
+<STRONG>BADTYPE</STRONG> There is a type mismatch between a declared
+parameter and the value provided for the parameter on the proc
+invocation line. This often occurs when the de-reference operation is
+used on a variable of a type different than the type expected by the
+proc. Example: 
+<PRE>
+	local i integer 
+	display @i	!'display' wants a string
+</PRE>
+Correct the invocation line so that the proc parameters use the
+expected data types. <P>
+
+<STRONG>BADVALCT</STRONG> The number of values specified for a
+parameter is less than the minimum or more than the maximum defined
+for the parameter. If the variable is a parameter defined via the
+<CODE>PARM</CODE> statement, use <CODE>HELP-PARM</CODE> to determine
+the allowable minimum and maximum number of values and re-issue the
+command accordingly. If the variable was defined in a proc via the
+<CODE>LOCAL</CODE> statement, inspect the PDF file and determine the
+allowable number of values by checking the <CODE>COUNT</CODE>
+field. <P>
+
+<STRONG>BATCHRUN</STRONG> On a UNIX system, the attempt to submit a
+batch job failed. The most common cause of this error is a lack of
+file descriptors in the TAE monitor. See your TAE system manager.
+<P>
+
+<STRONG>BCHOPN</STRONG> An I/O error occurred while creating the log
+file for the batch job. Use local system utilities to check if you
+have the appropriate privileges to write to the file. If you have used
+the <CODE>DCL</CODE> command, <CODE>SET DEFAULT</CODE>, to change to
+another user's directory, you may not have the appropriate
+privileges. Use the local operating system I/O error code listed in
+the error message to determine the source of the error. See the
+documentation on the operating system or the System Manager for
+further action. <P>
+
+<STRONG>BCHRD</STRONG> The batch job file is the initial source of
+commands when the TAE monitor is operating in batch mode. An I/O
+error occurred while the TAE monitor was reading command records from
+the submitted batch file. Use the local operating system I/O error
+code listed in the error message to determine the source of the
+error. See the documentation on the operating system or the TAE system
+manager for further action. <P>
+
+<STRONG>BCHSTAT</STRONG> Under VAX/VMS, the batch job status is
+received from a mailbox. The attempt to create the mailbox has
+failed. The VAX/VMS code is listed. Report the problem to the TAE
+system manager. <P>
+
+<STRONG>BCHWRT</STRONG> The batch job file is the file created when
+a batch job is submitted. It contains the host-dependent batch
+commands as well as the commands for the submitted proc. An I/O error
+occurred while writing to this file. Use the local operating system
+I/O error code listed in the error message to determine the source of
+the error. See the documentation on the operating system or the System
+Manager for further action. <P>
+
+<STRONG>BIGSUBS</STRONG> The subscript specified for a variable is
+larger than the maximum defined for that variable. If the variable is
+a command parameter, use the TCL command <CODE>HELP-PARM
+[<VAR>parameter name</VAR>] [<VAR>command name</VAR>]</CODE> or the
+TUTOR command <CODE>HELP [<VAR>parameter name</VAR>]</CODE> to
+determine the maximum number ofvalues for the parameter. If the
+variable is a global variable, determine the name of the proc that
+defines the global, enter TUTOR for that proc, and use TUTOR as above
+to find information on the variable. If the variable is a local
+variable defined in a PDF, check the <CODE>LOCAL</CODE> command in the
+PDF. <P>
+
+<STRONG>BTNNACT</STRONG> The specified button has been disabled
+since it has no meaning in the present context. Take some action
+which will make the specified button relevant and thereby re-activate
+the button. <P>
+
+<STRONG>CANTALLDEV</STRONG> An attempt was made to allocate
+(<CODE>USE</CODE>) a display device allocated to another user. Do a
+<CODE>SHOWDISP</CODE> to determine which devices are available to be
+allocated and <CODE>USE</CODE> one of them. <P>
+
+<STRONG>CANTDALLDEV</STRONG> A system error occurred in the device
+deallocation routine while attempting to deallocate the device.
+Report the error to the VRDI cognizant programmer. <P>
+
+<STRONG>CMDCNFLCT</STRONG> <CODE>DEFCMD</CODE> may not used to replace
+an existing command. Use a different name for the new command, or use
+<CODE>DELCMD</CODE> to delete the old command. You may display a list
+of the existing commands defined with <CODE>DEFCMD</CODE> by typing
+<CODE>DISPLAY $DEFCMD0</CODE>.  <P>
+
+<STRONG>CNTERR</STRONG> One of the values for <CODE>COUNT</CODE> in a
+<CODE>PARM</CODE> or <CODE>LOCAL</CODE> declaration is less that one,
+or greater than the maximum number of values allowed, or the
+<CODE>COUNT</CODE> specification does not follow the proper
+format. The proper format for <CODE>COUNT</CODE> is either a single
+integer or "a:b", where "a" is the minimum number of values to be
+allowed, and "b" is the maximum. <CODE>COUNT</CODE> will allow a 0 to
+indicate a nullable parameter as long as there is a valid range given
+as well, i.e. <CODE>COUNT=(0,4:20)</CODE> Correct the
+<CODE>COUNT</CODE> specification. See the TAE system manager for the
+maximum number of values allowed for a parameter on your system. <P>
+
+<STRONG>COMINI</STRONG> For VAX_VMS: The TAE monitor, in its
+initialization under VAX/VMS, creates a permanent subprocess. This
+creation has failed. On VAX/VMS systems, the problem is often caused
+by a depleted <CODE>BYTLM</CODE> quota or by exceeding the maximum
+number of processes allowed in the system. Restart TAE and report the
+problem to the TAE system manager. For UNIX: You should never receive
+this error message from the Terminal monitor when running under UNIX.
+Report the problem to the TAE system manager. <P>
+
+<STRONG>COMMERR</STRONG> An I/O error occurred while receiving or
+sending a message from a procedure via a path (a mailbox under VMS, a
+socket under UNIX). The message usually contains parameters. Find an
+explanation for the host error code printed with the error message. If
+you cannot correct the problem, see your System Manager. <P>
+
+<STRONG>COMOPEN</STRONG> The TAE monitor could not open the file,
+either containing information from the asynchronous job, or to be sent
+to the asynchronous job. This may happen if you do not have write
+access to the current default directory. Check the host-related
+explanation given in the error message. If not related to protection
+violation, inform your system manager. <P>
+
+<STRONG>COMPDEFG</STRONG> A PDF contains a TCL command that cannot be
+compiled. See the proc author or remove the command from the PDF. See
+the <CITE>TAE Command Language Programmer's Manual</CITE> for a list
+of commands that cannot be compiled. <P>
+
+<STRONG>COMPDRFG</STRONG> A proc that de-references a global
+variable (using the @ symbol) in the declaration section of the proc
+cannot be compiled. <P>
+
+<STRONG>COMPNULL</STRONG> The null value syntax ("<CODE>--</CODE>")
+appeared as a list element of a multi-value list. The null value is
+not acceptable as a component of another value. Individual components
+of a variable may not be nulled; only the variable itself may be
+nulled. Re-enter the command replacing the "<CODE>--</CODE>" with an
+actual value. <P>
+
+<STRONG>COMREAD</STRONG> After a <CODE>REPLY</CODE> command, the TAE
+monitor could not read the asynchronous job communication file. Check
+the explanation given in the error message. Inform your system
+manager.  <P>
+
+<STRONG>COMWRITE</STRONG> This is a TAE internal error. After a
+<CODE>REPLY</CODE> command, the TAE monitor could not write the
+dynamic parameter values to the asynchronous job communication
+file. Check the host-specific explanation given in the error
+message. Inform your System Manager. <P>
+
+<STRONG>COMWRT</STRONG> Following a <CODE>REPLY</CODE> command, the
+TAE monitor could not write the dynamic parameter values, to the
+communication file sent to the asynchronous job. This is an internal
+or host system error. Check the explanation given in the error
+message. Inform your System Manager. <P>
+
+<STRONG>CONCNULL</STRONG> One of the string variables in an expression
+using the concatenation operator contained a null value
+("<CODE>--</CODE>"). The null value is not allowed in a concatenation
+operation.  The variable must be given a non-null string value. <P>
+
+<STRONG>CONTROLC</STRONG> A <CODE>CONTROL/C</CODE> was entered while a
+TCL procedure was waiting on X Window System events. No action may be
+necessary. A procedure may disable interrupts by a procedure
+declaration <CODE>PROCEDURE OPTIONS=NOINTERRUPT</CODE> <P>
+
+<STRONG>CPDFBHDR</STRONG> The header in a compiled PDF was not
+properly formatted. This error message generally indicates that the
+compiled PDF was corrupted (or is not, in fact, a compiled PDF). <P>
+
+<STRONG>CPDFMALF</STRONG> The symbol table in a compiled PDF was not
+properly formatted. This error message generally indicates that the
+compiled PDF was corrupted (or is not, in fact, a compiled PDF). <P>
+
+<STRONG>CRELNMERR</STRONG> A system error occurred in the device
+allocation routine while attempting to create the logical name
+required by the VRDI routines. Report the error to the VRDI cognizant
+programmer. <P>
+
+<STRONG>DALFAIL</STRONG> The DAL (Memory file Deallocate) operation
+failed due to a host-specific problem. Interpret the host message and
+act accordingly. <P>
+
+<STRONG>DELNMERR</STRONG> A system error occurred in the device
+deallocation routine while attempting to delete the logical name
+created by the device allocation routine. Report the error to the
+VRDI cognizant programmer. <P>
+
+<STRONG>DELREF</STRONG> A global variable may not be deleted if there
+is a currently active proc with a <CODE>REFGBL</CODE> on that global.
+Determine the procedure that references the global and either delete
+the global after the proc terminates or remove the reference. <P>
+
+<STRONG>DELVAR</STRONG> Certain local variables are implicitly defined
+for all procs and may never be deleted. The <CODE>DELETE-LOCALS</CODE>
+TCL command causes this message to be displayed and all non-implicit
+local variables to be deleted. The implicitly defined local variables
+are the following: 
+
+<PRE>
+	_PROC 	: the name of a proc 
+	_SUBCMD : the active subcommand 
+	_STDOUT : standard output file name 
+	_ONFAIL : command to be executed upon error 
+</PRE> 
+
+Only <CODE>_STDOUT</CODE> is implicitly defined when TM is in
+interactive mode. See the <CITE>TAE Command Language Programmer's
+Manual</CITE> for more details. <P>
+
+<STRONG>DEVALLOC</STRONG> An attempt to allocate a display device
+has been made when the device is already allocated. Use a different
+device, or wait for it to be freed up. <P>
+
+<STRONG>DEVNOTAVL</STRONG> An attempt has been made to allocate a
+device which is not currently available for use. Allocate another
+device. <P>
+
+<STRONG>DFTERR</STRONG> The default or initial value does not conform
+to the rest of the declaration. For example, a variable declared to be
+an integer must have an integer default that is within the range
+specified in the <CODE>VALID</CODE> specification. Correct the default
+or initial value. Request <CODE>HELP</CODE> on the parameter in TUTOR
+mode to display a list of the valid values for the parameter. <P>
+
+<STRONG>DIBERROR</STRONG> An unexpected error occurred while reading
+the device information block file. Have the VRDI cognizant programmer
+correct the error. <P>
+
+<STRONG>DIBOPEN</STRONG> An unexpected error occurred while opening
+the device information block file. Have the VRDI cognizant programmer
+correct the error. <P>
+
+<STRONG>DISHOST</STRONG> For VAX/VMS: The <CODE>EXIT</CODE> and
+<CODE>DCL</CODE> commands have been disabled. For UNIX: The
+<CODE>EXIT</CODE> and <CODE>USH</CODE> commands have been disabled.
+Continue working or execute the <CODE>LOGOFF</CODE> command while in a
+menu. For further assistance, see your System Manager. <P>
+
+<STRONG>DISMNTFAIL</STRONG> The host returned an error when
+attempting to dismount your tape. The host message given with this key
+should explain the error. Interpret the host message and act
+accordingly. <P>
+
+<STRONG>DIVZERO</STRONG> An arithmetic expression included a
+division with a zero in the denominator. Determine why a zero is in
+the denominator and correct the condition. <P>
+
+<STRONG>DUBINTNAME</STRONG> There are two internal procs with the same
+name. Internal procs are identified by <CODE>PROCESS</CODE>,
+<CODE>PROCEDURE</CODE>, or <CODE>PARMSET</CODE> commands that have a
+value for the <CODE>NAME</CODE> parameter. <P>
+
+<STRONG>DUMMY</STRONG> Should never be displayed. Associated with an
+unsupported feature contained in <CODE>tae$tm:action.c</CODE> <P>
+
+<STRONG>DUPPANEL</STRONG> An attempt was made to create a panel with
+the same name as an existing panel. Delete the existing panel (using
+<CODE>WPT-ERASE</CODE>) or rename the new panel. <P>
+
+<STRONG>DYNBATCH</STRONG> A process attempted to request dynamic
+parameters (by calling the <CODE>XQDYNP</CODE> subroutine) in batch
+mode.  <CODE>XQDYNP</CODE> is not allowed in batch mode. A process
+that calls <CODE>XQDYNP</CODE> may only be run interactively. <P>
+
+<STRONG>DYNINTERN</STRONG> A program attempted to initiate a dynamic
+parameter session for an internal proc. TAE does not support requests
+for dynamic parameters in internal procs. In the requesting program,
+check the name of the file for which dynamic parameters were
+requested. <P>
+
+<STRONG>EMPTYASY</STRONG> The user attempted to remove, abort, or
+wait on a specific asynchronous job (or all asynchronous jobs) when
+the asynchronous job list was empty. <P>
+
+<STRONG>EOFERR</STRONG> An unexpected EOF was encountered while TAE
+was reading the symbol table in a compiled PDF. This error message
+generally indicates that the compiled PDF was corrupted (or is not, in
+fact, a compiled PDF). <P>
+
+<STRONG>ERPROC</STRONG> The command name is incorrectly formatted.
+The command name is the first field on a command line (after a
+label). Correct the command name. A valid command name is the name of
+a TCL intrinsic command or the name of a proc. Type HELP while in TCL
+for a list of intrinsic commands and for valid abbreviations of
+intrinsic commands. If the command is a proc, a valid name is any
+valid file specification on the host. See the TAE system manager or
+Appendix A of the <CITE>TAE Command Language User's Manual</CITE>. <P>
+
+<STRONG>EXEPARERR</STRONG> An attempt was made to execute a PAR
+file, but the PAR file could not be read. The host-specific reason
+for the inability to read the file is indicated in the message. <P>
+
+<STRONG>EXHELP</STRONG> The amount of help information exceeds the
+internal capacity of the TAE monitor for an index of page start
+locations. You may continue to use the help display, but no PAGE
+capability is available. <P>
+
+<STRONG>EXIT</STRONG> This string appears as the value of the
+<CODE>$SKEY</CODE> TCL global after dynamic TUTOR session has been
+terminated using <CODE>EXIT</CODE>. <P>
+
+<STRONG>EXPR</STRONG> The expression used in a <CODE>LET</CODE>,
+<CODE>FOR</CODE>, or <CODE>IF</CODE> command does not follow the rules
+for the proper format of expressions in TCL. (See the <CITE>TAE
+Command Language Programmer's Manual</CITE> for the rules concerning
+expressions.) Check for one of the following common problems, and
+correct the command accordingly. 1) Missing closing parenthesis. 2) No
+characters after an "=". 3) More than one "=". 4) Invalid numeric
+(e.g., 1..0e2) 5). Unrecognized operator. <P>
+
+<STRONG>FDSAVAIL</STRONG> This message tells you the number of file
+descriptors available for your process. UNIX only. <P>
+
+<STRONG>FLTUTWAIT</STRONG> This is an information message indicating
+that TAE is currently busy, reading files and constructing the
+necessary data structures for the TUTOR panels. <P>
+
+<STRONG>FMTCOMM</STRONG> This is a TAE internal error. When an
+asynchronous job requests dynamic parameters, the data communication
+between the asynchronous job and the interactive TAE monitor takes
+place in the form of files. In this case, the file sent by the async
+job was found to have the incorrect format. <P>
+
+<STRONG>FMTERR</STRONG> A field in the command does not follow the
+proper format for that command. This occurs usually when a field has
+too many characters in it, or when a closing quotation mark has been
+omitted. Check the proper format of the command, by typing <CODE>HELP
+<VAR>XXX</VAR></CODE> for help on command <VAR>XXX</VAR>. <P>
+
+<STRONG>FMTRESTR</STRONG> The file used in a <CODE>RESTORE</CODE>
+command does not have the proper format, i.e., the file was not
+created by the <CODE>SAVE</CODE> command. This message might also
+indicate that the file was created by <CODE>SAVE</CODE>, but while
+running under a different version of TAE. Parameter files are not
+necessarily compatible between different versions of TAE. <P>
+
+<STRONG>FORVARBAD</STRONG> The target variable of a <CODE>FOR</CODE>
+statement is not recognizable. The command element following the
+characters "<CODE>FOR</CODE>" must be the name of a TCL variable and
+is limited to eight or fewer characters. The target variable may not
+be indexed.  Correct the proc definition containing the
+<CODE>FOR</CODE> statement and re-run.  <P>
+
+<STRONG>FUNUNAV</STRONG> This function is not available until the
+invalid value is corrected. Correct the invalid value. <P>
+
+<STRONG>GBLREDEF</STRONG> A mismatch of types occur while attempting
+to redefine a global variable. For example, a <CODE>REAL</CODE> value
+was targeted for an <CODE>INTEGER</CODE> global variable. Check the
+type of the global variable. <P>
+
+<STRONG>GETOPIDERR</STRONG> A system error occurred in the device
+allocation routine while attempting to get the process identification
+number of the owner of the display device you wish to allocate.
+Report the error to the VRDI cognizant programmer. <P>
+
+<STRONG>GETERMERR</STRONG> A system error occurred in the device
+allocation routine while attempting to get the name of the terminal
+you are currently using. Report the error to the VRDI cognizant
+programmer. <P>
+
+<STRONG>GETPIDERR</STRONG> A system error occurred in the device
+allocation routine while attempting to get your process identification
+number. Report the error to the VRDI cognizant programmer. <P>
+
+<STRONG>GETVAXERR</STRONG> A system error occurred in the device
+allocation routine while attempting to get the value of the VAX system
+symbol. Report the error to the VRDI cognizant programmer. <P>
+
+<STRONG>HIMENNUM</STRONG> The menu selection number is greater than
+the highest menu entry shown on the screen. A menu entry selection
+must be between 1 and the number of the highest entry shown on the
+menu display. Re-enter the selection number; type <CODE>HELP</CODE>
+for instructions on running the menu mode of TAE. <P>
+
+<STRONG>HLPRD</STRONG> An I/O error was encountered while reading
+the help file. This error occurs after a successful open, and
+therefore probably indicates a hardware problem. See the system
+manager. <P>
+
+<STRONG>HLPWRT</STRONG> An I/O error occurred while writing the
+requested help file. This error occurs after a successful open, and
+therefore probably indicates a hardware problem. See the system
+manager. <P>
+
+<STRONG>IMSGERR</STRONG> If VAX/VMS: An I/O error occurred while
+sending the process initialization message to the process. The message
+usually contains initial process parameters. There is a configuration
+problem or a host system problem. See the System Manager to check your
+quotas and the hardware. If UNIX: The requested process could not be
+executed. Use the local system utilities to determine if an
+executable image exists for the specified process. Determine if you
+have privileges to run that image. If the executable image is named
+correctly and you have the proper privileges, then check if there is
+a configuration problem or a hardware problem. See the System Manager
+to check your quotas and the hardware. <P>
+
+<STRONG>INAPRN</STRONG> Should never be displayed. Referenced by code
+in <CODE>tae$tm:misccmd.c</CODE> which, due to conditional
+compilation, will never be compiled. <P>
+
+<STRONG>INCOMPAT</STRONG> The definition of a variable received with
+a <CODE>RECVAR</CODE> command is incompatible with the definition for the
+corresponding variable in the current procedure. Check the
+declaration of the variable in the receiving and sending tasks for
+matching variable types, and for value vector size and value(s) sent
+to be within the range defined in the receiving task. <P>
+
+<STRONG>INCONS</STRONG> You have entered a tape drive specific
+command using a symbolic name which is inconsistent with the device
+name you have entered. Re-issue the command specifying the names
+correctly. Alternatively, specify only the symbolic name OR the
+actual device name. <P>
+
+<STRONG>INITXRLIB</STRONG> The TAE monitor could not initialize the Xr
+library. Make sure that the X server is running on your system.  If an
+Xr error code is given in the accompanying error message, look up the
+Xr error code definition in the Xr include file "<CODE>defs.h</CODE>"
+and correct the problem if possible. Else, talk to your system
+manager.  <P>
+
+<STRONG>INTERR</STRONG> The TAE monitor has failed an internal
+integrity check. Report the problem to the TAE system manager. <P>
+
+<STRONG>INTPDF</STRONG> TAE determined that the requested proc was
+an internal proc, but could not re-open the PDF in which the proc is
+located. Internal procs may only be invoked from within the PDF that
+declares them. If the PDF cannot be re-opened then there may be one of
+the following problems: 1) The PDF was inadvertently deleted. 2)
+There is insufficient file quota. 3) There is a host system or TAE
+internal problem. Verify that the PDF is still in the expected
+directory (you can use TUTOR to do this), then see the TAE system
+manager. <P>
+
+<STRONG>INUSE</STRONG> The symbolic name you have specified is
+currently in use. Re-issue the command using another symbolic name.
+<P>
+
+<STRONG>INVALIDPRE</STRONG> The parameter's type is incompatible
+with the presentation type specified in the view file. Edit the view
+file and reenter the command. <P>
+
+<STRONG>INVBQNAM</STRONG> The name of the batch queue specified in the
+<CODE>RUNTYPE</CODE> qualifier is invalid. The valid batch queue names
+are <CODE>NOHUP</CODE> and <CODE>NICE</CODE>. <CODE>NOHUP</CODE> is
+the default name. Enter the queue name correctly. <P>
+
+<STRONG>INVDCL</STRONG> The last character on a TCL "<CODE>DCL</CODE>"
+command must not be a dash. Remove the dash. If it is necessary to
+continue a line, you may use the TCL continuation indicator, "+". <P>
+
+<STRONG>INVHEX</STRONG> A number with an invalid hexadecimal format
+was used in a command that expects a hexadecimal number. Correct the
+number to make it a valid hex number. Type <CODE>HELP
+<VAR>xxx</VAR></CODE> for help on the "<VAR>xxx</VAR>" command. <P>
+
+<STRONG>INVIFILE</STRONG> The parameter has type <CODE>FILE</CODE> but
+the named file does not match one of the following access rights:
+1)The file can be accessed for input. 2) The file can be accessed for
+both input and output. Determine through TUTOR or
+<CODE>HELP-PARM</CODE> the expected access rights for the file. Using
+local system utilities, determine if the file exists and if you have
+appropriate rights to read the file. If the parameter is defined to
+have <CODE>INOUT</CODE> access, then determine if you have appropriate
+rights to write to the file. <P>
+
+<STRONG>INVINT</STRONG> The value for an integer does not conform to
+the rules for acceptable integer values. Correct the value to follow
+the rules. An acceptable integer is one of the following: 1) A number
+without a fraction (e.g., 1001). 2) A number with a zero fraction
+(e.g., 2.0). 3) A number with an exponent, but no fraction (e.g., 2e2
+or 2.0e2, but not 2e-2 and not 2.2e3). <P>
+
+<STRONG>INVNAME</STRONG> The name of a variable does not follow the
+rules for variable naming. Correct the variable name. A valid variable
+name contains eight or fewer characters, starts with a letter or
+underscore or dollar sign, and may contain any of the following
+characters: any number (0-9), any letter (A-Z, a-z), dollar sign ($),
+or underscore (_). <P>
+
+<STRONG>INVOUT</STRONG> An output value from a process is not
+compatible with the target TCL variable. The candidate value must have
+attributes (<CODE>COUNT</CODE>, <CODE>TYPE</CODE>, etc.) that are
+consistent with the declaration of the target. Note that, for
+parameters of type <CODE>NAME</CODE>, the target variable is the
+referenced variable. Determine the name of the variable that was
+referenced, and the attributes (<CODE>type</CODE>, <CODE>count</CODE>,
+etc.) of that variable. Examine the proc that generated the output to
+determine why the value was set incorrectly. <P>
+
+<STRONG>INVPNAME</STRONG> A parameter name has an invalid format.
+Correct the parameter name. A valid parameter name consists of eight
+or fewer letters or numbers. <P>
+
+<STRONG>INVPVAL</STRONG> The value of a parameter or command qualifier
+is incorrectly formatted. Correct the value. A valid value may be
+enclosed in quotation marks or unquoted. If unquoted, it should
+consist of 134 or fewer characters, and must not contain the
+characters ",", ")", "(", a space, or a tab. If the value contains
+more than one element, the list of elements should be enclosed within
+parentheses. <P>
+
+<STRONG>INVREAL</STRONG> The value for a real variable does not
+conform to the rules for acceptable real values. Examples of valid
+real numbers are: 81, 100., 478.345, and 456.E-5. Correct the
+value. An acceptable real value is any FORTRAN-like <CODE>REAL</CODE>
+number acceptable to your host system. <P>
+
+<STRONG>INVSHL</STRONG> The last character on a <CODE>ush</CODE>
+command (or other shell entry command) must not be a "\" (the shell
+continuation indicator). Use the TCL "+" character for
+continuation. <P>
+
+<STRONG>INVSTR</STRONG> The value of a variable does not match any of
+the strings in the list of valid strings defined for the variable.  If
+the variable is a command parameter, use the TCL command
+<CODE>HELP-PARM [<VAR>parameter name</VAR>] [<VAR>command
+name</VAR>]</CODE> or the TUTOR command <CODE>HELP [<VAR>parameter
+name</VAR>]</CODE> to determine the valid strings for the
+parameter. If the variable is a global variable, determine the name of
+the proc that defines the global, enter TUTOR for that proc, and use
+TUTOR as above to find information on the variable. If the variable is
+a local variable defined in a PDF, check the <CODE>LOCAL</CODE>
+command in the PDF. <P>
+
+<STRONG>INVSUBNAME</STRONG> The name of a variable used in
+substitution (i.e., following an "<CODE>&amp;</CODE>") does not follow
+the rules for variable naming. Correct the variable name. A valid
+variable name contains eight or fewer characters, starts with a letter
+or underscore or dollar sign, and may contain any of the following
+characters: any number (0-9), any letter (A-Z, a-z), dollar sign ($),
+or underscore (_). <P>
+
+<STRONG>INVSUBS</STRONG> The subscript for a variable is either not
+an integer or not greater than zero. Determine why the subscript is
+not a positive integer; correct the condition. <P>
+
+<STRONG>INVVAL</STRONG> If the variable is a string, then the value of
+the variable does not match any of the strings in the list of valid
+strings defined for the variable. If the variable is not a string,
+then the value of the variable is not in the range (or ranges)
+acceptable for the variable. If the variable is a command parameter,
+use the TCL command <CODE>HELP-PARM [<VAR>parameter name</VAR>]
+[<VAR>command name</VAR>]</CODE> or the TUTOR command <CODE>HELP
+[<VAR>parameter name</VAR>]</CODE> to determine the valid values for
+the parameter. If the variable is a global variable, determine the
+name of the proc that defines the global, enter TUTOR for that proc,
+and use TUTOR as above to find information on the variable. If the
+variable is a local variable defined in a PDF, check the
+<CODE>LOCAL</CODE> command in the PDF. <P>
+
+<STRONG>ITRPQUAL</STRONG> In a proc, a parameter is qualified by
+setting the <CODE>QUAL</CODE> parameter of the <CODE>PARM</CODE>
+declaration to the name of a proc that defines the qualifiers. This
+proc must be an internal proc or another PDF; it cannot be an
+intrinsic command. Check the name of the referenced qualifier proc. If
+it is the name of an existing proc, the proc must be renamed. <P>
+
+<STRONG>JOBOPN</STRONG> While starting a batch or asynchronous job,
+TAE encountered a file error opening a JOB file. The JOB file is used
+to communicate the job's parameters to the asynchronous or batch TAE
+monitor. This error is generally caused by one of the following: 1)
+a file quota problem, or 2) a privilege violation (generally
+occurring when you run in someone else's account). Interpret the
+host-specific error code and confirm that you have access to files in
+the current directory. If you do, see the System Manager to determine
+if you have sufficient file quota. <P>
+
+<STRONG>JOBREDUN</STRONG> This message is for information only. The
+<CODE>JOB</CODE> command qualifier and the second component of the
+<CODE>RUNTYPE</CODE> qualifier may be used to specify an asynchronous
+or batch job name. If both are specified, the second component of the
+<CODE>RUNTYPE</CODE> qualifier is ignored. If you have specified the
+command qualifiers positionally, check to see that the values you
+specified are the ones intended. <P>
+
+<STRONG>JOBWRT</STRONG> TAE encountered a file error writing to a
+JOB file. The JOB file is used to communicate the batch or
+asynchronous job's parameters to the batch or asynchronous TAE
+monitor. This typically indicates a disk error or a disk space quota
+problem. Interpret the host-specific error code and confirm that you
+have access to files in the current directory. If you do, see the
+System Manager to determine if you have sufficient disk space quota.
+<P>
+
+<STRONG>KEYCONFLICT</STRONG> The proc definition is incorrect. There
+exist one or more keyword parameters that have conflicting (i.e.,
+duplicate) keyword values. The proc definition must be corrected. Each
+parameter declared <CODE><VAR>TYPE</VAR>=<VAR>KEYWORD</VAR></CODE>
+must have a <CODE>VALID</CODE> list of keywords that are unique among
+all keyword values in the proc. <P>
+
+<STRONG>KEYSYNTAX</STRONG> The apostrophe character has been
+incorrectly used in a command line. Normally, the apostrophe is used
+to "flag" keyword values, and every unquoted apostrophe must be
+followed by a keyword value. Re-type the command: if the apostrophe
+was intended to flag a keyword, correct the command; if the apostrophe
+was unintentional, remove the apostrophe. <P>
+
+<STRONG>KEYWORD</STRONG> This error indicates that an invalid or
+ambiguous keyword has been used in a command string. The keyword was
+flagged with the apostrophe character. The keyword may have been used
+for a parameter or for a qualifier. Either the keyword needs to be
+correctly spelled or more characters are required to resolve the
+ambiguity. The keyword value must be uniquely identified among all of
+the keyword values for the proc. <P>
+
+<STRONG>KILLED</STRONG> This is an information message. The process
+was terminated because the user typed <CODE>ABORT</CODE> while in
+dynamic prompt mode or <CODE>EXIT</CODE> while in dynamic TUTOR. No
+action required. <P>
+
+<STRONG>LIBS</STRONG> The length of the library list is greater than
+the maximum allowed. Provide fewer libraries in the list. <P>
+
+<STRONG>LOCCONFLICT</STRONG> An attempt has been made to declare a TCL
+global variable with the same name as an existing local
+variable. Global variables must have names different from any local
+variable on the current procedure level. Use <CODE>DISPLAY</CODE> to
+list the names of all variables, then rename one of the variables in
+conflict.  <P>
+
+<STRONG>LOGNULL</STRONG> One of the variables in a logical expression
+contained a null value ("<CODE>--</CODE>"). The null value is not
+allowed in logical expressions ("<CODE>AND</CODE>", "<CODE>OR</CODE>",
+"<CODE>NOT</CODE>"). The variable must be given a non-null value. Note
+that if the <CODE>$COUNT</CODE> TCL function returns a 0 for the count
+of a variable then the current value is the null value. <P>
+
+<STRONG>LOMENNUM</STRONG> The menu selection number is less than 1.  A
+menu entry must be selected that is between 1 and the highest entry
+number shown on the menu display.  Re-enter the selection number; type
+<CODE>HELP</CODE> for instructions on running the menu mode of
+TAE. <P>
+
+<STRONG>LONGCMDLINE</STRONG> The command line is longer than the
+maximum allowed line. Note that this may be a result of substitution
+(i.e., a string replacing a variable name starting with an
+ampersand). If the line overflow is caused by substitution, the
+de-referencing technique may remedy the situation. See the <CITE>TAE
+Command Language Programmer's Manual</CITE>. <P>
+
+<STRONG>LONGINDX</STRONG> The variable name or expression provided for
+a variable index in a <CODE>LET</CODE> statement is too long. For
+example: <CODE>LET <VAR>var</VAR>(THIS FIELD) = XXX</CODE>. Shorten the
+index value length to be shorter than or equal to the number of
+characters specified in the error message. <P>
+
+<STRONG>LONGJNAME</STRONG> The user specified asynchronous job name
+is longer than the maximum limit allowed by TAE. Check the maximum
+allowed length specified in the error message. Resubmit the job with a
+shorter name. <P>
+
+<STRONG>LONGJOBFILE</STRONG> Under VAX/VMS, the largest allowable
+name for a batch job log file is nineteen characters. Change the file
+name. <P>
+
+<STRONG>LONGNAME</STRONG> The variable name on the left side of a
+<CODE>LET</CODE> assignment statement is too long. The name of TCL
+variables is limited to eight characters. <P>
+
+<STRONG>LONGQNAME</STRONG> Under VAX/VMS, the largest allowable name
+for a batch queue is fifteen characters. Change the queue name. <P>
+
+<STRONG>LONGSTR</STRONG> The number of characters in a string is
+greater than the defined maximum length of the string. Determine the
+maximum length of a string for the specified variable, and correct the
+command entry accordingly. <P>
+
+<STRONG>LONGVSTR</STRONG> A variable was declared with a
+<CODE>VALID</CODE> string that contained more than 24 characters. Use
+a shorter <CODE>VALID</CODE> string. <P>
+
+<STRONG>MALFAIL</STRONG> The MAL (Memory file ALlocate) operation
+failed due to a host-specific problem. Interpret the host message and
+act accordingly. <P>
+
+<STRONG>MALMDF</STRONG> The specified entry in the menu definition
+file has a <CODE>.MENU</CODE> or <CODE>.PROC</CODE> with no associated
+menu or proc name.  See the <CITE>TAE Command Language Programmer's
+Manual</CITE> for a description of menu definition files. Correct the
+entry in the menu definition file to specify a file name. <P>
+
+<STRONG>MALMSGF</STRONG> Possible causes: 1) There was an I/O error in
+reading the help message file. 2) The file of indexes for the message
+file does not correspond to the current message file. Use the
+<CODE>MSGBLD</CODE> utility to re-build the index file from the
+message file. Note for VAX/VMS and UNIX users: the index file has type
+<CODE>.INX</CODE>, and the message file has type
+<CODE>.MSG</CODE>. <P>
+
+<STRONG>MANYTAPES</STRONG> The maximum number of tapes are already
+allocated or mounted. Wait until other users have dismounted and
+deallocated their tape drives and try again. <P>
+
+<STRONG>MAXDEFC</STRONG> The maximum number of user-defined commands
+has already been reached. The <CODE>DEFCMD</CODE> that resulted in the
+error message is ignored. $DEFCMD0,
+<CODE>$DEFCMD1</CODE>,...,<CODE>$DEFCMD9</CODE> contain the current
+list of user-defined commands. Use <CODE>DELCMD</CODE> to delete a
+user-defined command. <P>
+
+<STRONG>MAXMEM</STRONG> An attempt was made to allocate more than
+the maximum allowed number of memory files. The maximum number of
+memory files allowed is controlled by a parameter in TAE. If a larger
+number is necessary, see the system programmer about increasing the
+ceiling. <P>
+
+<STRONG>MAXMEN</STRONG> The last MENU command or selection of a new
+menu entry caused the TAE monitor limit on successive menu references
+to be exceeded. Go back to the root menu by typing
+<CODE>TOP</CODE>. Note that this condition may be caused by
+interspersing menu selection by entry number with menu selection using
+the <CODE>MENU</CODE> command. <P>
+
+<STRONG>MAXNEST</STRONG> The TCL limit on nested constructs was
+reached. Correct the procedure commands to eliminate the extra
+nesting. <P>
+
+<STRONG>MAXPNEST</STRONG> The maximum number of nested procedure
+calls has been reached. This error usually occurs when a procedure
+accidently activates itself, and there is no special logic to resolve
+the recursion. Correct the procedure's self-reference or reduce the
+depth of nesting required by your application. See the TAE system
+manager to determine the maximum depth available on your system. <P>
+
+<STRONG>MAXREDEF</STRONG> The <CODE>LOCAL-REDEF</CODE> command does
+not support lists of variables. <P>
+
+<STRONG>MDFOPEN</STRONG> The requested menu is not available. This is
+generally because of one of the following: 1) incorrect spelling of
+the menu name, 2) the menu does not exist in the specified library, or
+3) you do not have appropriate access rights to read the menu.
+Determine which of the conditions above is the cause of the
+problem. If the menu does not exist or you do not have appropriate
+access rights, or there is some other cause, see the TAE system
+manager. <P>
+
+<STRONG>MEMEXIST</STRONG> The memory file requested has already been
+allocated. Only one memory file may be allocated with a given name at
+a time. Avoid double allocations. If a memory file size needs to be
+changed, use the <CODE>DAL</CODE> command to delete it, and then use
+<CODE>MAL</CODE> to create a new one. <P>
+
+<STRONG>MEMOVR</STRONG> The TAE monitor does not have sufficient
+internal memory to handle the current command in addition to the
+memory already in use as a result of previous commands. Attempt to
+reduce the memory required. The major user-controllable uses of the
+TAE Monitor internal memory store are: 1) Each variable (including
+parameters, local variables, and global variables) requires storage
+for the variable characteristics and values. 2) Each nested invocation
+of a proc requires storage for proc context. 3) Each nested invocation
+of a menu requires storage for menu context. 4) Each
+<CODE>DEFCMD</CODE> requires storage for the command definition. 5)
+Each library added to the search list adds storage for the list. <P>
+
+<STRONG>MISEQ</STRONG> A command line using the <CODE>FOR</CODE> or
+<CODE>LET</CODE> command did not follow the proper format for these
+commands. Type <CODE>HELP FOR</CODE> or <CODE>HELP LET</CODE>, and
+correct the command line according to the help information
+displayed. <P>
+
+<STRONG>MISINTRO</STRONG> All proc definition files in TCL must start
+with one of <CODE>PROCEDURE</CODE>, <CODE>PROCESS</CODE>,
+<CODE>GLOBAL</CODE>, or <CODE>PARMSET</CODE>, depending on the type of
+proc. Insert the necessary introductory command. Type <CODE>HELP
+<VAR>xxx</VAR></CODE> to display information on the "<VAR>xxx</VAR>"
+command. <P>
+
+<STRONG>MISMATCH</STRONG> A target variable of a <CODE>RESTORE</CODE>
+operation does not have the proper definition for the corresponding
+variable in the parameter file. For example, a <CODE>REAL</CODE>
+variable in a parameter file was targeted for an <CODE>INTEGER</CODE>
+variable, or a "valid" list changed after the variable was
+<CODE>SAVE</CODE>d. Check for correct file name if you are restoring
+explicitly by using the <CODE>RESTORE</CODE> command. <P>
+
+<STRONG>MISPAR</STRONG> The specified command requires that the listed
+parameters be entered on the command line. Re-issue the command with
+values for the missing parameters. If you are unsure of the proper
+values for this command, Type <CODE>TUTOR <VAR>xxx</VAR></CODE> to
+TUTOR for the values for command "<VAR>xxx</VAR>", or type
+<CODE>HELP-PARM <VAR>yyy xxx</VAR></CODE> to display information on
+the "<VAR>yyy</VAR>" parameter of the "<VAR>xxx</VAR>" command. <P>
+
+<STRONG>MISPROC</STRONG> A help request was given without a proc
+specified. This may occur if, in a <CODE>help-parm</CODE> or
+<CODE>help-global</CODE> request, a subcommand was given with no
+command. <P>
+
+<STRONG>MISSLIB</STRONG> The specified library is not on the current
+library list. No action required. Use <CODE>SHOW</CODE> to display the
+current library search list. <P>
+
+<STRONG>MISWINPARM</STRONG> Should never be displayed. Associated with
+an unsupported feature contained in <CODE>tae$tm:action.c</CODE> <P>
+
+<STRONG>MIXTYPE</STRONG> The type of a variable used on the left side
+in a <CODE>LET</CODE> or <CODE>FOR</CODE> command does not match the
+type of a variable or constant used on the right-hand side. All
+variables and constants used in <CODE>LET</CODE> and <CODE>FOR</CODE>
+commands must have the same type. For example, if a user types
+<CODE>LET II = 1.2</CODE> then <CODE>II</CODE> should be a
+<CODE>REAL</CODE> variable. The TCL data types are
+<CODE>INTEGER</CODE>, <CODE>STRING</CODE>, <CODE>REAL</CODE>, and
+<CODE>FILE</CODE>; see the <CITE>TAE Command Language Programmer's
+Manual</CITE> for the rules on allowable values for each data
+type. Correct the command to use matching types. <P>
+
+<STRONG>MIXVAR</STRONG> More than one data type is used on the right
+side of a <CODE>LET</CODE> or <CODE>FOR</CODE> command, or the type of
+a variable or constant used on the left side in a <CODE>LET</CODE> or
+<CODE>FOR</CODE> command does not match the type of a variable or
+constant used on the right-hand side. All variables and constants used
+in <CODE>LET</CODE> and <CODE>FOR</CODE> commands must have the same
+type.  For example, if a user types <CODE>LET II = J + 1.2</CODE> then
+<CODE>II</CODE> and <CODE>J</CODE> should be <CODE>REAL</CODE>
+variables. The TCL data types are <CODE>INTEGER</CODE>,
+<CODE>STRING</CODE>, <CODE>REAL</CODE>, and <CODE>FILE</CODE>; see the
+<CITE>TAE Command Language Programmer's Manual</CITE> for the rules on
+allowable values for each data type. Correct the command to use
+matching types. <P>
+
+<STRONG>MNTABORT</STRONG> A mount request was aborted during
+execution. The abort could have been a <CODE>control-C</CODE> typed by
+the user, an operator abort, or a situation with which the
+<CODE>MOUNT</CODE> command does not know how to deal. The message
+given should be self explanatory. If it is unclear, consult the system
+programmer. <P>
+
+<STRONG>MOUNTED</STRONG> You have attempted to mount or deallocate a
+tape drive which is currently mounted. If you are attempting to
+mount, use another tape drive or wait until the current user of this
+drive has dismounted and deallocated. If you are attempting to
+deallocate, dismount the tape first. <P>
+
+<STRONG>MSGHANDS</STRONG> When an executing process sends a message
+to the TAE monitor (via the <CODE>XMPUT</CODE> subroutine call), TM sends a
+handshake message back to the process acknowledging the reception of
+the original message. The process is unable to receive this handshake
+message. This is an internal error. <P>
+
+<STRONG>MULVAR</STRONG> The only operation supported for multivalued
+expressions is assignment. Only scalars may be used in arithmetic,
+string, or logical expressions. Use subscripts to apply the
+operations to the individual components of the vector. <P>
+
+<STRONG>NAMERR</STRONG> <CODE>VALID</CODE>, <CODE>ACCESS</CODE>, and
+<CODE>COUNT</CODE> do not apply for <CODE>TYPE=NAME</CODE>. In
+performing checks on data assignments to variables with type
+<CODE>NAME</CODE>, the TAE monitor uses the <CODE>VALID</CODE>,
+<CODE>ACCESS</CODE>, <CODE>TYPE</CODE>, and <CODE>COUNT</CODE> of the
+ultimately referenced variable. Remove the <CODE>VALID</CODE>, or
+<CODE>ACCESS</CODE>, or <CODE>COUNT</CODE> clause from the command
+line. <P>
+
+<STRONG>NESTMUL</STRONG> TCL does not support the placement of a
+parenthesized list embedded within another parenthesized list. For
+example, the following is not legal: <CODE>LET I = (1, 2, (2, 3)
+)</CODE> Determine the cause of the nested parenthesized lists; remove
+the inner parentheses or correct the commands that generated the
+lists. <P>
+
+<STRONG>NOABO</STRONG> The specific asynchronous job could not be
+aborted because it is no longer active. This means the job either has
+run to completion, or has already been aborted by the user. This
+message is also generated in response to a <CODE>REMOVE</CODE> command
+for a specific or all asynchronous jobs, showing the name of the
+active job(s) that are not removed from the async job list. User
+action: 1) None, if the job to be aborted is already complete. 2)
+None, if you have used the <CODE>REMOVE ALL</CODE> command. 3) Else,
+(in case of <CODE>REMOVE <VAR>job name</VAR></CODE>) wait until the
+job is completed, and then reissue the command. (You may abort the job
+if you do not want to wait until it completes.) <P>
+
+<STRONG>NOASYROOM</STRONG> The TAE monitor maintains housekeeping
+information for up to 100 asynchronous jobs. If you submit more than
+100 jobs without removing completed jobs from the list, TM tries to
+remove the first inactive job from the list to make room for the new
+job. However, if all the jobs in the list are active, the new job
+cannot be run asynchronously. Wait until at least one active job is
+complete. You may check that by typing the <CODE>SHOW-ASYNC</CODE>
+command. Then resubmit your job. <P>
+
+<STRONG>NOAVLGDEV</STRONG> An attempt was made to allocate
+(<CODE>USE</CODE>) a display device using a generic device name and no
+such device is available to be allocated. Do a <CODE>SHOWDISP</CODE>
+to determine which devices are available to be allocated and
+<CODE>USE</CODE> one of them. <P>
+
+<STRONG>NOBATCH</STRONG> The submission of the batch job to the
+local operating system was rejected. Use the documentation on the
+local operating system to interpret the error code. See the TAE system
+manager for further action. <P>
+
+<STRONG>NOBCHSTA</STRONG> Under VAX/VMS, the batch job status is
+read from a VMS mailbox; an I/O error was encountered while reading
+from this mailbox. Use the documentation on the local operating
+system to interpret the error code. See the TAE system manager for
+further action. <P>
+
+<STRONG>NOCOLOR</STRONG> In a <CODE>WINDOW-DRAW</CODE> operation, a
+color was requested that does not exist. Run the
+<CODE>fontbrowse</CODE> proc to determine the available colors on your
+system. <P>
+
+<STRONG>NOCOMM</STRONG> An I/O error occurred while the process was
+sending a message containing parameters to the TAE monitor. Report
+the problem to the TAE system manager. For VAX/VMS users: the I/O
+error occurred while writing to a mailbox. The error code is shown on
+the message line. <P>
+
+<STRONG>NOCOMMAND</STRONG> This command has been implemented on some
+TAE versions, but not the version you are using. <P>
+
+<STRONG>NODEFDEV</STRONG> An attempt was made to allocate
+(<CODE>USE</CODE>) a display device using the default device option
+and the terminal used does not have a default device assigned to
+it. Do a <CODE>SHOWDISP</CODE> to determine which devices are
+available to be allocated and <CODE>USE</CODE> one of them. <P>
+
+<STRONG>NODEVID</STRONG> You have issued a tape drive specific
+command without specifying a drive. Re-issue the command, specifying
+the drive or request <CODE>HELP</CODE> on the command. <P>
+
+<STRONG>NODISABLE</STRONG> A path cannot be disabled while a job is
+active. Abort the current job, or wait for it to terminate. To show
+the status of all jobs, use <CODE>SHOW-ASYNC</CODE>; to abort a job, use
+<CODE>ABORT-ASYNC</CODE>. <P>
+
+<STRONG>NODYNPDF</STRONG> The name of a PDF to be used for dynamic
+tutoring was not found where expected. This is an indication of a
+problem in the TAE software. <P>
+
+<STRONG>NOENABLE</STRONG> There was a request to receive variables
+from another task at a path which has not been established. Establish
+a path with the <CODE>ENABLE-RECVAR</CODE> TCL command before
+requesting to receive messages. Find an explanation for the host error
+code printed with the error message. If you cannot correct the
+problem, see your System Manager. <P>
+
+<STRONG>NOFAC</STRONG> Either the message index file for the specified
+facility cannot be found or opened, or the message file itself cannot
+be found or opened. (The "facility" is the string of characters before
+the dash in the message key.) See the TAE system manager. Note for
+VAX/VMS and UNIX users: the index file has type <CODE>.INX</CODE>, and
+the message file has type <CODE>.MSG</CODE>. <P>
+
+<STRONG>NOFILE</STRONG> The specified message file could not be
+found. Check your typing against the intended name. Note that the
+default type is "msg". <P>
+
+<STRONG>NOFONT</STRONG> The specified font does not exist on this
+system. The TAE utility proc fontbrowse can be used to display the
+available fonts on your system. <P>
+
+<STRONG>NOGBLRES</STRONG> This message indicates that the disk file
+referenced on a <CODE>RESTORE</CODE> command does not contain any
+global variables. This is a information message and may not
+necessarily indicate that an error condition exists. The message may
+be avoided by using the <CODE>RESTORE-LOCALS</CODE> command. <P>
+
+<STRONG>NOGLB</STRONG> The user requested help on a TCL global
+variable that does not exist. Check the name of the global
+variable. You may display the existing globals by using the
+<CODE>DISPLAY-GLOBAL</CODE> command. <P>
+
+<STRONG>NOHELP</STRONG> There is no help information on the named
+command or menu. See the TAE system manager or the author of the menu
+or command. <P>
+
+<STRONG>NOJOB</STRONG> The user specified asynchronous job is not in
+the async job list. Either the job was never submitted for
+asynchronous execution, or the job has already been removed from the
+list. Check the job name, and if the name was misspelled, re-enter
+the command with the correct name. You may display the async job list
+using <CODE>SHOW-ASYNC</CODE>. <P>
+
+<STRONG>NOKEY</STRONG> There is no help information on the specified
+messagekey in the message file for the specified facility. (The
+"facility" is the string of characters before the dash in the message
+key.) See the TAE system manager or the author of the message file.
+<P>
+
+<STRONG>NOLETVAL</STRONG> A <CODE>LET</CODE> command must have a value
+on the right hand side. Correct the <CODE>LET</CODE> command to have
+an appropriate value. <P>
+
+<STRONG>NOLOCRES </STRONG> This message indicates that the disk file
+referenced on a <CODE>RESTORE</CODE> command does not contain any
+local variables. This is a warning message and may not necessarily
+indicate that an error condition exists. The message may be avoided by
+using the <CODE>RESTORE-GLOBALS</CODE> command. <P>
+
+<STRONG>NOMEMFIL</STRONG> An attempt was made to delete a memory file
+which is not currently allocated. No action is required. If the memory
+file does not exist, it does not need to be deleted. In addition, all
+memory files are automatically deleted upon exiting TAE. <P>
+
+<STRONG>NOMODHELP</STRONG> No help is available on this mode of
+TAE. See your System Manager. <P>
+
+<STRONG>NOMOUNT</STRONG> The host returned an error when attempting
+to mount your tape. The host message given with this key should
+explain the error. Interpret the host message and act accordingly.
+<P>
+
+<STRONG>NOMSG</STRONG> The message key is missing from the
+<CODE>HELP-MESSAGE</CODE> command. The <CODE>HELP-MESSAGE</CODE>
+command requires a key. For example: <CODE>HELP-MESSAGE
+TAE-HELLO</CODE> <P>
+
+<STRONG>NONAME</STRONG> A proc contains another proc, but the
+contained ("internal") proc does not have a
+name. <CODE>PROCESS</CODE>, <CODE>PROCEDURE</CODE>, and
+<CODE>PARMSET</CODE> commands that are internal to another proc must
+be identified by a value for the <CODE>NAME</CODE> parameter. If an
+internal proc is desired, name it using a value for the
+<CODE>NAME</CODE> parameter. See the <CITE>TAE Command Language
+Programmer's Manual</CITE> for details on internal procs. <P>
+
+<STRONG>NONE</STRONG> This string appears as the value of the
+<CODE>$SKEY</CODE> TCL global after a listing command has been issued
+that results in no entries listed. <P>
+
+<STRONG>NONGBL</STRONG> A global variable may be deleted only by using
+the <CODE>DELETE-GLOBALS</CODE> command with the name of a
+<CODE>GLOBAL</CODE> proc that defines the variables, or using
+<CODE>DELETE-VAR</CODE>. Determine the <CODE>GLOBAL</CODE> proc that
+defined the variable to be deleted, and use <CODE>DELETE</CODE>
+accordingly.  For more information on <CODE>DELETE</CODE> type
+<CODE>HELP DELETE</CODE>. <P>
+
+<STRONG>NOOWNGDEV</STRONG> An attempt was made to deallocate
+(<CODE>FREE</CODE>) a display device using a generic device name and
+no such device had been allocated. Do a <CODE>SHOWDISP</CODE> to
+determine which device is currently allocated to you and
+<CODE>FREE</CODE> it. <P>
+
+<STRONG>NOPANEL</STRONG> In a WPT operation, the named panel does not
+exist. Review your TCL code that created the panels. The panel name is
+in the TCL variable <CODE><VAR>VIEW._panel.name</VAR></CODE>, where
+<CODE>VIEW</CODE> is the view variable through which the panel
+attributes are set. <P>
+
+<STRONG>NOPARENS</STRONG> Parentheses are required around logical
+expressions. Example: <CODE>IF (s = "myfile" AND t =
+"yourfile")...</CODE> Insert the necessary parentheses around the
+logical expression. <P>
+
+<STRONG>NOPARHELP</STRONG> No help information exists on the specified
+parameter in the help file for the specified proc. See the TAE system
+manager or the author of the proc. Note that you may type <CODE>TUTOR
+<VAR>xxx</VAR></CODE> to be tutored for the parameter values on
+command "<VAR>xxx</VAR>".  <P>
+
+<STRONG>NOPARM</STRONG> The specified command is to be typed using
+only the command name. There are no parameters. Retype the command
+name alone. <P>
+
+<STRONG>NOPARMRES</STRONG> The user requested that TAE restore all
+the parameters from a saved file in which there are no
+parameters. Check the file name for correctness. <P>
+
+<STRONG>NOPDFPARM</STRONG> This is an information message. The
+specified PDF does not have any parameters. No action required. <P>
+
+<STRONG>NOPRMNM</STRONG> You have not specified which parameter you
+want help on. Re-issue the command, specifying the parameter name.
+<P>
+
+<STRONG>NOPROC</STRONG> The first word on the command line is expected
+to be a command name. If it is not a TCL intrinsic command, then TAE
+searches for the name in the proc libraries. If a proc search was
+intended, then use the <CODE>SHOW</CODE> command to display the
+current search list. Also the <CODE>PROCS</CODE> utility in the
+utilities library may be used to display the names of available
+procs. <P>
+
+<STRONG>NOQUAL</STRONG> Command qualifiers are not defined for TCL
+intrinsic commands. Qualifiers are special parameters enclosed in
+vertical bars, for example: <CODE><VAR>command</VAR>|RUNTYPE=BATCH,
+RESTORE=<VAR>file</VAR>|</CODE> <P>
+
+<STRONG>NOSUB</STRONG> <CODE>SUBCMD/END-SUB</CODE> are proper brackets
+for parameters associated with a subcommand. This error message also
+appears when subcommands are nested. Insert <CODE>SUBCMD</CODE> at the
+appropriate location in the procedure or delete the
+<CODE>END-SUB</CODE>. <P>
+
+<STRONG>NOSUBC</STRONG> No subcommand has been selected. Select a
+subcommand then select the <CODE>DO</CODE> button. <P>
+
+<STRONG>NOSUBHELP</STRONG> No help text is defined in the PDF or
+help file for the associated specified sub-command. See the author of
+the proc. <P>
+
+<STRONG>NOSUCHDEV</STRONG> An attempt was made to allocate
+(<CODE>USE</CODE>) a display device unknown to the system. Do a
+<CODE>SHOWDISP</CODE> to determine which devices are available to be
+allocated and <CODE>USE</CODE> one of them. <P>
+
+<STRONG>NOSYMNAM</STRONG> You have entered the <CODE>MOUNT</CODE>
+command without specifying a symbolic name for the tape drive. Since
+you did not allocate the drive, both the symbolic name and the actual
+device name are required. Re-issue the <CODE>MOUNT</CODE> command,
+specifying both the symbolic name and the actual device name. An
+alternative is to allocate the drive first. <P>
+
+<STRONG>NOSYNC</STRONG> In proc interrupt mode - the mode TAE enters
+after the attention sequence is typed - a user may type most TCL
+intrinsic commands, or initiate an asynchronous or batch proc. A user
+may not invoke a proc in proc interrupt mode unless the proc is to be
+run asynchronously (<CODE>RUNTYPE</CODE> qualifier set to
+<CODE>ASYNC</CODE>) or in batch (<CODE>RUNTYPE</CODE> set to
+<CODE>BATCH</CODE>). <P>
+
+<STRONG>NOTALLOC</STRONG> You have attempted to deallocate a tape
+drive which is not currently allocated. Re-issue the command,
+correctly specifying the symbolic or actual device name of the drive
+you wish to deallocate. <P>
+
+<STRONG>NOTARGET</STRONG> The variable for the "target" qualifier set
+required for creating the panel does not exist. Correct your TCL code
+to refer to the appropriate variable. (See the <CODE>WPT</CODE>
+command in the <CITE>TAE Command Language Programmer's Guide</CITE> for
+more information on using <CODE>WPT-PANEL</CODE>.) <P>
+
+<STRONG>NOTASYNCMD</STRONG> An asynchronous proc is trying to execute
+a TCL intrinsic command that is not available from asynchronous
+jobs. An example is the <CODE>ENABLE-LOG</CODE> command. Delete the
+command from the proc, or run the proc interactively. <P>
+
+<STRONG>NOTAVAIL</STRONG> VMS was unable to allocate the drive you
+requested. Interpret the host message given and act accordingly. If
+the problem is not obvious, consult VMS manuals or see your System
+Manager. <P>
+
+<STRONG>NOTBATCHCMD</STRONG> The specified command is available only
+if you are running in an interactive session. See the <CITE>TAE
+Command Language User's Manual</CITE> for the list of commands not
+allowed in batch.  Eliminate the command from the procedure. Note that
+a procedure may "adapt" to its environment as follows:
+
+<PRE>
+	IF ($RUNTYPE = "INTERACTIVE")
+	    <VAR>commands-restricted-to-interactive-sessions</VAR>
+	END-IF
+</PRE>
+
+<STRONG>NOTDEALL</STRONG> The host returned an error when attempting
+to deallocate a device. The host message given with this key should
+explain the error. Interpret the host message and act accordingly.
+<P>
+
+<STRONG>NOTEXT</STRONG> The help file exists for the requested
+information but there is no text following the <CODE>.HELP</CODE>
+directive. See the author of the proc or the TAE system manager. <P>
+
+<STRONG>NOTFND</STRONG> No parameter or subcommand name was found
+matching the string specified. This message is also displayed when the
+only occurrence of the string is the current parameter or subcommand.
+Specify another string for which to search. <P>
+
+<STRONG>NOTINBODY</STRONG> The specified command is allowed only in
+the declaration section of the PDF. Either eliminate the command or
+place it in the declaration section. <P>
+
+<STRONG>NOTINPDF</STRONG> The specified command is allowed only at
+the interactive level. Remove the command from the PDF. <P>
+
+<STRONG>NOTINPRE</STRONG> The specified command is allowed only after
+the <CODE>BODY</CODE> command of a procedure. Move the command to
+follow <CODE>BODY</CODE>. <P>
+
+<STRONG>NOTMOUNT</STRONG> You have issued a <CODE>DISMOUNT</CODE>
+command for a tape drive which is not currently mounted. Re-issue the
+command using the correct symbolic name or actual device name. <P>
+
+<STRONG>NOTMOUNTED</STRONG> You are attempting to access a file on a
+tape which is not mounted. Make sure the tape is properly mounted,
+then re-issue the command. <P>
+
+<STRONG>NOTNAME</STRONG> The argument to a <CODE>$COUNT</CODE> or a
+<CODE>$GLOBAL</CODE> function is not a variable name. For example:
+<CODE>LET I = $COUNT(1)</CODE>, or <CODE>LET J =
+$GLOBAL(123)</CODE>. Here the arguments 1 and 123 are numbers rather
+than names. If the variable name is misspelled, type it correctly.
+<P>
+
+<STRONG>NOTNULL</STRONG> An attempt was made to assign the null value
+to a parameter, but the definition of the parameter does not permit
+the null value. The null value is indicated by two adjacent dashes,
+i.e., "<CODE>--</CODE>". The "<CODE>--</CODE>" must be replaced by a
+valid value. You can learn more about the specific parameter by
+entering TUTOR mode and requesting help on the parameter. If you are
+already in TUTOR, type <CODE>HELP parm</CODE>. <P>
+
+<STRONG>NOTSTR</STRONG> The argument to the <CODE>$STRLEN</CODE>
+function must be a string. Correct the <CODE>$STRLEN</CODE>
+argument. <P>
+
+<STRONG>NOTUSED</STRONG> This error indicates a problem in one of the
+following areas: 1) A process has malfunctioned. The process has
+called the <CODE>XQDYNP</CODE> subroutine with a V-block that contains
+one or more TCL variables that are not defined in PDF identified by
+the <CODE>XQDYNP</CODE> call. 2) The parameter file specified by a
+<CODE>RESTORE</CODE> command qualifier contains some parameters that
+do not apply to the command.  This is not necessarily an error
+condition; the parameters that are known to the PDF have been properly
+retrieved. <P>
+
+<STRONG>NOVALID</STRONG> A parameter with type <CODE>NAME</CODE> was
+declared with a <CODE>VALID</CODE> list. Remove the <CODE>VALID</CODE>
+list from the <CODE>NAME</CODE> parameter.  (<CODE>VALID</CODE> lists
+may be included in the declaration of the variable referenced through
+the <CODE>NAME</CODE> parameter, but not associated with the
+<CODE>NAME</CODE> parameter itself.) <P>
+
+<STRONG>NOVAL</STRONG> A command referenced a variable that has never
+been assigned a value. A variable may be declared without any
+value. The variable must have a value in order to participate in the
+expression. A variable may be assigned a value with the
+<CODE>LET</CODE> command, for example: <CODE>LET <VAR>STRING</VAR> =
+"hello"</CODE> <P>
+
+<STRONG>NOVALUE</STRONG> An attempt to substitute for a TCL
+variable was made and the variable currently has no
+value. (Substitution is indicated by the ampersand character.) If the
+command line was typed interactively, re-type the command, requesting
+substitution only for variables which have values. If the error
+occurred in a proc, then the proc definition is incorrect and must be
+corrected. <P>
+
+<STRONG>NOVAR</STRONG> The user requested that TAE restore the
+value(s) of a global, local, or parameter variable that does not exist
+in the specified parameter file. Check the variable name and the saved
+file name for correctness. The <CODE>DISPLAY-PARFILE</CODE> command
+may be used to display the variable names in the parameter file. <P>
+
+<STRONG>NOVIEW</STRONG> The variable for the <CODE>view</CODE>
+qualifier set required for creating the panel does not exist. Correct
+your TCL code to refer to the appropriate variable. (See the
+<CODE>WPT</CODE> command in the <CITE>TAE Command Language Programmer's
+Guide</CITE> for more information on using <CODE>WPT-PANEL</CODE>.) <P>
+
+<STRONG>NOWAIT</STRONG> The user issued a reply command with no job
+name when there are no asynchronous jobs waiting for dynamic
+parameters, or a reply command is issued for a specific job which is
+not waiting. Check the asynchronous job status by typing
+<CODE>SHOW-ASYNC</CODE>. In case of a misspelled job name, re-enter
+the original command with the correct name. <P>
+
+<STRONG>NOWAIT</STRONG> You cannot wait on an asynchronous job that is
+itself waiting for dynamic parameters from the user. If you type
+<CODE>WAIT-ASYNC <VAR>name</VAR></CODE>, to wait on job
+<VAR>name</VAR> (or <CODE>ALL</CODE>), TAE displays the name(s) of the
+job(s) that are waiting for dynamic parameters. <P>
+
+<STRONG>NOWINDOW</STRONG> In a <CODE>WINDOW</CODE> operation, a window
+that does not exist was named. Use <CODE>WINDOW-INFO</CODE> to
+determine the names of windows currently displayed. <P>
+
+<STRONG>NOWRITE</STRONG> You specified the <CODE>'INIT</CODE> keyword
+on the mount command, but did not specify <CODE>'WRITE</CODE>. The
+tape must be writeable in order to be initialized. Re-issue the
+command with the <CODE>'WRITE</CODE> keyword. <P>
+
+<STRONG>NOWRTRNG</STRONG> This is an informational message only. A
+tape was mounted with <CODE>PROTECT=WRITE</CODE> but no write ring, so
+the tape is being dismounted and the operator is forced to put a write
+ring on the tape or abort the job. No action needed. <P>
+
+<STRONG>NOXINIT</STRONG> The X Window System has not been
+initialized. <CODE>WPT-INIT</CODE> initializes the X Window
+System. <P>
+
+<STRONG>NOXLIB</STRONG> TAE was not installed on your system with X
+Windows support. If X Windows is available on your system, check with
+your system manager about re-installing TAE with X Windows support.
+<P>
+
+<STRONG>NULLARG</STRONG> A null argument - a variable with the "null"
+value - was passed to a TCL function that does not support null
+arguments. Determine why the argument was null and correct the
+problem. See the <CITE>TAE Command Language Programmer's Manual</CITE> for
+an explanation of TCL functions and null arguments. <P>
+
+<STRONG>NULLELEM</STRONG> The null value syntax ("<CODE>--</CODE>")
+appeared as a list element of a multi-value list. The null value is
+not acceptable as a component of another value. Individual components
+of a variable may not be nulled; only the variable itself may be
+nulled. <P>
+
+<STRONG>NULLLIST</STRONG> This is an information message. A proc is
+requesting dynamic parameter input but has provided no list of
+parameters against which to request information. No action is
+required. The proc continues execution. <CODE>UNRPSCMD</CODE> The
+command is not a recognized prompt style command. Re-issue the command
+or type <CODE>HELP</CODE>.  <P>
+
+<STRONG>NUMPARM</STRONG> The specified command is defined to use only
+the number of parameters shown. Type <CODE>HELP
+<VAR>commandname</VAR></CODE> to determine the format of the
+command. <P>
+
+<STRONG>NUMNULL</STRONG> One of the variables in a numeric expression
+contained a null value ("<CODE>--</CODE>"). The null value is not
+allowed in numeric expressions ("+","-","/","*"). The variable must be
+given a non-null value. Note that if the <CODE>$COUNT</CODE> TCL
+function returns a 0 for the count of a variable then the current
+value is the null value. <P>
+
+<STRONG>OLDPARFILE</STRONG> The parameter file you tried to read has
+an obsolete format. You must convert the file in order to use it.
+Type <CODE>HELP CONVERT</CODE> or <CODE>TUTOR CONVERT</CODE> for
+information on how to convert old files. <P>
+
+<STRONG>OLDRESFILE</STRONG> The resource file you tried to read has an
+obsolete format. You must convert the file in order to use it.  Type
+<CODE>HELP CONVERT</CODE> or <CODE>TUTOR CONVERT</CODE> for
+information on how to convert old files. <P>
+
+<STRONG>ONFAIL</STRONG> Two possible causes: 1) The command string
+that was assigned in a procedure to the <CODE>_ONFAIL</CODE> variable
+has a command format that cannot be interpreted by the TAE monitor. 2)
+The <CODE>_ONFAIL</CODE> variable has been assigned a command that is
+not allowed for <CODE>_ONFAIL</CODE>. The only commands allowed for
+<CODE>_ONFAIL</CODE> are <CODE>GOTO</CODE>, <CODE>CONTINUE</CODE>,
+<CODE>RETURN</CODE>, <CODE>BREAK</CODE>, <CODE>NEXT</CODE>, or
+<CODE>STOP</CODE>. Correct the <CODE>_ONFAIL</CODE> assignment. <P>
+
+<STRONG>OPNRD</STRONG> The command you issued cannot open the file
+you specified on the command line. The file does not exist, or the
+file is protected against read access, or the file specification is
+incorrect. (Note that there is no hierarchy search for scripts or
+parameter files; if the file is not located in the default library,
+you must name the library explicitly.) Use the local operating system
+I/O error code listed in the error message to determine the source of
+the error. See the documentation on the operating system or the System
+Manager for further action. Use local system utilities to check if
+the file exists and to check if you have appropriate privileges to
+read the file. If the problem is not then evident, see the System
+Manager. <P>
+
+<STRONG>OPNWRT</STRONG> The command you issued cannot open the file
+you specified on the command line. The error is usually related to one
+of the following: 1) The file specification has incorrect syntax. 2)
+The explicit directory is protected from access. 3) The default
+directory is protected from access. Use local system utilities to
+check if you have the appropriate privileges to write to the
+file. (If, under VAX/VMS, you have used the DCL command, <CODE>SET
+DEFAULT</CODE>, to change to another user's directory, you may not
+have the appropriate privileges.) Use the local operating system I/O
+error code listed in the error message to determine the source of the
+error. See the documentation on the operating system or the System
+Manager for further action. <P>
+
+<STRONG>OVER</STRONG> An application program has malfunctioned. The
+file name being received by a call to <CODE>XRFILE</CODE> is longer
+than the declaration of the character variable designated to receive
+the name.  The program has been terminated at the point of the
+<CODE>XRFILE</CODE> call. <P>
+
+<STRONG>PAGENUM</STRONG> A negative or zero page number was typed or
+the page number was a string. Re-issue the command with the desired
+page number. <P>
+
+<STRONG>PARBLK</STRONG> TAE has received a data block from a process
+and the block is incorrectly formatted. This usually means that the
+program has called the <CODE>XQDYNP</CODE> subroutine or the
+<CODE>XQOUT</CODE> subroutine with a V-block that is improperly
+formatted. This can be caused by one or more of the following: 1) The
+V-block was properly constructed but has been destroyed at some point
+before the <CODE>XQ</CODE> call.  2) The V-block was not properly
+constructed using the XQ subroutines. A typical sequence of V-block
+construction is: <CODE>XQINI</CODE>, <CODE>XQINTG</CODE>,
+<CODE>XQREAL</CODE>, and <CODE>XQSTR</CODE>. <P>
+
+<STRONG>PAROPN</STRONG> A new PAR file could not be created because
+of a failure in the open operation. More specific information on the
+cause of the error is given in the message. The most likely cause is
+an attempt to write into a directory for which the user does not have
+"write" access. Another possible cause is an error in typing the file
+specification. <P>
+
+<STRONG>PARS</STRONG> There are fewer parameters defined for the
+specified command than are given on the command line, or too many
+command or parameter qualifiers are specified. Re-issue the command
+with the correct number of parameter values or qualifiers. If you do
+not know the correct number, type <CODE>TUTOR <VAR>xxx</VAR></CODE> to
+be tutored for the parameters of command "<VAR>xxx</VAR>", or type
+<CODE>HELP <VAR>xxx</VAR></CODE> to display information about the
+command. <P>
+
+<STRONG>PARSIZE</STRONG> The structure used to send information for
+dynamic tutoring (the "parblk" structure) is not large enough to
+handle all the variables requested. <P>
+
+<STRONG>PATH</STRONG> The requested path cannot be established.
+Find an explanation for the host error code printed with the error
+message. If you cannot correct the problem, see your System Manager.
+<P>
+
+<STRONG>PDFRD</STRONG> The proc definition file has been found but
+cannot be opened. This is usually caused by a file protection error.
+Use host system utilities to check the integrity of the proc file
+(that is, determine if the file can be read by host system
+utilities). See the TAE system manager for further help. <P>
+
+<STRONG>PFOPN</STRONG> This condition is a result of a problem
+associated with the executable code of a process or the file
+configuration. The file specified in an <CODE>XRRDB</CODE> call could
+not be opened. Use the error code shown in the message to determine
+why the file could not be opened. Correct the file configuration or
+the program accordingly. <P>
+
+<STRONG>PFRD</STRONG> This condition is a result of a problem in the
+executable code of a process or the file configuration. An I/O error
+occurred while reading the specified parameter file from the process
+(in an <CODE>XRRDB</CODE> call). Use the error code given in the
+message to determine the cause of the error. Correct the file
+configuration or the program accordingly. <P>
+
+<STRONG>PFWRT</STRONG> This condition is a result of a problem in the
+executable code of a process or the file configuration. An I/O error
+occurred while writing to the specified parameter file from the
+process (in an <CODE>XQWRTB</CODE> call). Use the error code given in
+the message to determine the cause of the error. Correct the file
+configuration or the program accordingly. <P>
+
+<STRONG>POSERR</STRONG> The format of a proc invocation command line
+requires that values specified by position precede values specified by
+name for command parameters, and for command or parameter qualifiers.
+Example: <CODE>CMD 1, 2, 3, P4=4, P5=5</CODE>. In this example, the
+first three values are specified by position, and the last two by
+name. <P>
+
+<STRONG>PRCDONLY</STRONG> The TCL command you typed is allowed only in
+TAE procedures. See the <CITE>TAE Command Language User's
+Manual</CITE> for a list of commands available to a terminal user. <P>
+
+<STRONG>PRCSABT</STRONG> A system error was encountered when trying
+to abort a process. There is a configuration problem or a host system
+problem. See the System Manager. <P>
+
+<STRONG>PRCSACT</STRONG> The program associated with the proc cannot
+be found on disk. If the <CODE>EXECUTE=</CODE> specification is
+omitted from the <CODE>PROCESS</CODE> statement for the proc, then the
+program name is assumed to be in the same library as the proc. If the
+<CODE>EXECUTE=</CODE> specification is present, then the file name
+cannot be accessed; either the file does not exist or the the file is
+protected from access. Correct the proc definition or create the
+program file.  <P>
+
+<STRONG>PRCSCOM</STRONG> On UNIX systems, the terminal monitor could
+not establish communication with the application process. This may
+happen if the terminal monitor exceeds the open file quota limit or
+if there is a hardware problem. See the TAE system manager to check
+your quotas and the hardware. <P>
+
+<STRONG>PRCSINI</STRONG> If VAX/VMS: The requested process cannot be
+initiated. Use the local system utilities to determine if an
+executable image exists for the specified process. Determine if you
+have privileges to run that image. If the executable image is named
+correctly and you have the proper privileges, then check whether there
+is a configuration problem or a hardware problem. See the System
+Manager. If UNIX: Under the UNIX operating system, the TAE monitor
+first creates a child process to run an application program. This
+creation has failed. This problem may be caused by exceeding the
+maximum number of processes allowed in the system. Restart TAE and
+report the problem to the TAE system manager. <P>
+
+<STRONG>PRCSTRM</STRONG> This is an information message. The
+executed process returned an "abnormal" status. <P>
+
+<STRONG>PREEOF</STRONG> An end-of-file was read in a proc definition
+file before the <CODE>END-PROC</CODE> command was encountered. Place
+an <CODE>END-PROC</CODE> at the end of the proc definition file (or,
+if there is help information, before the help information). <P>
+
+<STRONG>PRMRCV</STRONG> This condition is a result of a problem
+associated with the executable code of the process or the environment
+in which the user is running. The call to <CODE>XRINIM</CODE>
+failed. Use the code shown on the message line to determine the cause
+of the problem. Correct the program or the user's environment
+accordingly.  <P>
+
+<STRONG>PRMSIZ</STRONG> This condition is a result of a problem in the
+executable code for the process. A call to <CODE>XRINIM</CODE> or
+<CODE>XRRDB</CODE> failed because the <CODE>DIM</CODE> argument is not
+large enough to receive the variable values. Determine the appropriate
+size for <CODE>DIM</CODE> and correct the program accordingly. <P>
+
+<STRONG>PROCONLY</STRONG> The specified command is not available for
+interactive use. Place the command in a procedure, or use a different
+command. Type <CODE>HELP <VAR>xxx</VAR></CODE> for more information on
+command "<VAR>xxx</VAR>". <P>
+
+<STRONG>PROCSYN</STRONG> The name of the proc to be invoked does not
+follow the TAE rules for proc names. Correct the name. The rules for
+correct proc names are given in the <CITE>TAE Command Language User's
+Manual</CITE>. (If the proc name you have given is a host file spec,
+see the appendix A to that manual.) <P>
+
+<STRONG>PSETOVER</STRONG> The internal memory store reserved by the
+TAE monitor for process parameter values is not large enough to
+accommodate the current values. Reduce one or more of the following:
+1) the number of values per parameter, 2) the number of parameters, or
+3) the number of characters in string parameters. <P>
+
+<STRONG>QUALDEL</STRONG> Deleting a qualifier of a variable is not
+allowed. <P>
+
+<STRONG>QUALERR</STRONG> The qualifier after the proc name or
+parameter is not enclosed within '|' or the format for the qualifiers
+do not follow the general parameter list format. Enclose the
+qualifiers within '|' or fix the qualifier list. The proper format for
+the list is shown in the following example: <CODE>PROC|RESTORE=myfile,
+RUNTYPE=BATCH| PAR=3</CODE> which sets the <CODE>RESTORE</CODE>
+qualifier to <CODE>myfile</CODE> and the <CODE>RUNTYPE</CODE> to
+<CODE>BATCH</CODE>. Another example: <CODE>PR1 x|3|</CODE> Here, proc
+<CODE>PR1</CODE> sets the parameter qualifier for the <CODE>x</CODE>
+parameter to 3. <P>
+
+<STRONG>RANGE</STRONG> The value of the variable is not in the
+acceptable range (or ranges) for the variable. If the variable is a
+command parameter, use the TCL command <CODE>HELP-PARM [<VAR>parameter
+name</VAR>] [<VAR>command name</VAR>]</CODE> or the TUTOR command
+<CODE>HELP [<VAR>parameter name</VAR>]</CODE> to determine the valid
+range for the parameter. If the variable is a global variable,
+determine the name of the proc that defines the global, enter TUTOR
+for that proc, and use TUTOR as above to find information on the
+variable. If the variable is a local variable defined in a PDF, check
+the <CODE>LOCAL</CODE> command in the PDF. <P>
+
+<STRONG>RCVERR</STRONG> An I/O error occurred while receiving a
+message from a process. The message usually contains process
+parameters for dynamic TUTOR. There is a configuration problem or a
+host system problem. See the System Manager. <P>
+
+<STRONG>RCVMON</STRONG> The asynchronous job, waiting for dynamic
+parameters from the interactive TAE monitor, was unsuccessful in
+receiving a reply message. This may happen due to a TAE internal error
+or a host system problem. Find an explanation for the host error code
+printed with the error message. If you cannot correct the problem, see
+your System Manager. <P>
+
+<STRONG>RDEOF</STRONG> During the second phase of a PDF compilation,
+an unexpected end-of-file was encountered while re-reading the
+partially compiled file. The file was corrupted during the
+compilation. Re-try the compilation; if it fails again, see the TAE
+system manager. <P>
+
+<STRONG>RDERR</STRONG> An I/O error was encountered while reading
+records from the specified file. The file is either missing or
+corrupt. If an error code is given, use local system utilities to
+interpret the error code; also use local system utilities to check the
+integrity of the file. If the problem is not then evident, see the
+SystemManager. <P>
+
+<STRONG>REDEF</STRONG> If a <CODE>GLOBAL</CODE> proc contains a
+<CODE>PARM</CODE> command for a global that already exists, it must
+use the same <CODE>TYPE</CODE>, <CODE>ACCESS</CODE>, and
+<CODE>COUNT</CODE>, as the existing global. Correct the
+<CODE>PARM</CODE> commands to agree, or rename one of the
+variables. To determine the attributes of the existing global named
+<VAR>gx</VAR>, determine the defining PDF, TUTOR on it, and type
+<CODE>HELP <VAR>gx</VAR></CODE> <P>
+
+<STRONG>REFEX</STRONG> A <CODE>REFGBL</CODE> command may not refer to
+a global variable with the same name as an existing local variable or
+parameter. Change the name of the conflicting local or parameter
+variable, or do not reference the global variable. <P>
+
+<STRONG>REFS</STRONG> A proc contains more <CODE>REFGBL</CODE>
+statements than are supported at this TAE installation. Delete one or
+more of the <CODE>REFGBL</CODE> statements. See the TAE system manager
+to determine the number of <CODE>REFGBL</CODE> statements supported at
+your installation. (The number is defined by the <CODE>MAXREF</CODE>
+parameter in the <CODE>TAECONF</CODE> include file.) <P>
+
+<STRONG>RELNULL</STRONG> One of the variables in a relational
+expression with the operator ">", "<", "<=", or ">=" contained a null
+value ("<CODE>--</CODE>"). The null value is not allowed in relational
+expressions except for "=" and "<>". The variable must be given a
+non-null value. Note that if the <CODE>$COUNT</CODE> TCL function
+returns a 0 for the count of a variable then the current value is the
+null value. <P>
+
+<STRONG>REMOVE</STRONG> If you submit more asynchronous jobs than TM
+can maintain in its asynchronous job list, TAE tries to remove the
+first inactive job from the async list to make room for the incoming
+job. If successful, TM informs you the name of the removed inactive
+job with this message. No action required. <P>
+
+<STRONG>REPWAIT</STRONG> Either there was a request to wait on a job
+that is itself waiting for dynamic parameters, or a request for
+dynamic parameters came from a job during a wait. If a job is waiting
+for dynamic parameters, the job must be explicitly continued before
+you can wait for its completion. Use the <CODE>REPLY</CODE> command to
+either abort or continue the job. <P>
+
+<STRONG>RESALL</STRONG> TAE reserves the word <CODE>ALL</CODE> to
+imply all asynchronous jobs. Resubmit the job with a different
+acceptable job name. <P>
+
+<STRONG>RESERVED</STRONG> The name used for a variable is a reserved
+word in TCL and may not be used as a variable name. Rename the
+variable. See the <CITE>TAE Command Language Programmer's Manual</CITE> for
+a list of reserved names. <P>
+
+<STRONG>RESFORMAT</STRONG> The indicated TAE Plus resource file
+could not be read because of a problem accessing the records. The
+file has been corrupted. Repeat the operation. If the operation
+continues to fail, the resource file must be re-created. <P>
+
+<STRONG>RESTPARM</STRONG> TAE does not allow parameters to be created
+by a <CODE>RESTORE</CODE> command. There exists a parameter in the
+file for which there is no corresponding parameter in the proc of the
+<CODE>RESTORE</CODE> command. You may first create a local variable
+corresponding to each non-existent parameter and then
+<CODE>RESTORE</CODE> the parameters into these locals using the
+<CODE>TARGET</CODE> key word. <P>
+
+<STRONG>REWFAIL</STRONG> The host returned an error when attempting
+to rewind your tape. The host message given with this key should
+explain the error. Interpret the host message and act accordingly.
+<P>
+
+<STRONG>RUNINT</STRONG> Internal procs may only be run interactively
+that is, they may not be invoked with the command qualifier
+<CODE>RUNTYPE</CODE> set to <CODE>BATCH</CODE> or
+<CODE>ASYNC</CODE>. See the <CITE>TAE Command Language Programmer's
+Manual</CITE> for details on internal procs. <P>
+
+<STRONG>RUNSHELL</STRONG> On UNIX systems, the Terminal monitor could
+not invoke the UNIX/shell in response to the <CODE>USH</CODE>
+command. This problem may be caused if the system process table is
+full or due to configuration or hardware problems. See the TAE system
+manager. <P>
+
+<STRONG>RUNTYPE</STRONG> The <CODE>RUNTYPE</CODE> qualifier, if
+specified, must be set to <CODE>INTERACTIVE</CODE> (the default),
+<CODE>BATCH</CODE>, or <CODE>ASYNC</CODE>. This situation sometimes
+occurs when a qualifier is placed in the wrong position after the
+"|". Re-issue the command with <CODE>BATCH</CODE> or
+<CODE>ASYNC</CODE> as the qualifier, or with the qualifiers in their
+appropriate positions. <P>
+
+<STRONG>SAVELAST</STRONG> TUTOR is unable to save the current
+parameter set on disk. (Whenever you <CODE>RUN</CODE> from TUTOR mode,
+your set of parameters is saved in a parameter file named
+<CODE>LAST</CODE>.) This error is usually caused by one of the
+following: 1) The current default directory is protected against file
+creation. 2) Your disk space or file quota has been exceeded. 3) In
+VMS, the logical name <CODE>LAST</CODE> has been assigned to some file
+specification that is not valid. Despite the error message, TUTOR has
+properly executed the proc. <P>
+
+<STRONG>SAVERR</STRONG> The parameter save operation cannot be
+performed because of an I/O error writing to the file, because the
+file cannot be opened, or because the TAE monitor does not have
+sufficient internal storage to accommodate all the parameter values.
+Use the local operating system I/O error code listed in the error
+message to determine the source of the error. See the documentation on
+the operating system or the System Manager for further action. <P>
+
+<STRONG>SAVEWRT</STRONG> The disk file that is to hold the variable
+values from a <CODE>SAVE</CODE> command cannot be written. This
+typically indicates a disk error or a disk space quota problem. <P>
+
+<STRONG>SAVRST</STRONG> Your parameters have been successfully saved
+to or restored from the specified file. No action is necessary; the
+message is informational. <P>
+
+<STRONG>SCRCNT</STRONG> One of the parameters to the
+<CODE>ENABLE-SCRIPT</CODE> command is the number of times the script
+is to be executed. A negative number for this parameter has no
+meaning. <P>
+
+<STRONG>SIZERR</STRONG> On a UNIX system, the number and size of all
+parameters are too large to transmit to the application process. (Note
+that the total size required is affected by both the number of
+parameters and the number of components in all parameters.) Try to
+find a way to reduce the size of the amount of information to send in
+the parameter block. For example, try using a shell environment
+variable for long file names. If this is not possible, reduce the
+number of parameters required or the number of components in
+parameters. <P>
+
+<STRONG>SNDERR</STRONG> An I/O error occurred while sending a
+message to a process. The message usually contains process
+parameters. There is a configuration problem or a host system
+problem. See the System Manager to check your quotas (especially the
+<CODE>BYTLM</CODE> quota). <P>
+
+<STRONG>STDOPEN</STRONG> This key is returned as status in
+<CODE>$SKEY</CODE> when a program cannot open the standard output. The
+standard output, used for default program output, is specified using
+the <CODE>STDOUT</CODE> command qualifier; it defaults to a the
+terminal if the proc is run interactively. Check the name of the
+standard output file; confirm that you have privileges to write to
+that file. See the <CITE>TAE Command Language User's Manual</CITE> for
+more details on standard output. <P>
+
+<STRONG>STDOOPN</STRONG> The standard output could not be opened.  The
+standard output file is the file specified through the
+<CODE>STDOUT</CODE> qualifier on a command line. Note that the
+<CODE>STDOUT</CODE> qualifier may have been used in a procedure. Use
+local system utilities to check if the file exists and to check if you
+have the appropriate privileges to write to the file. (If, under
+VAX/VMS, you have used the DCL command, <CODE>SET DEFAULT</CODE>, to
+change to another user's directory, you may not have the appropriate
+privileges.) Use the local operating system I/O error code listed in
+the error message to determine the source of the error. See the
+documentation on the operating system or the System Manager for
+further action. <P>
+
+<STRONG>STDOUTOPEN</STRONG> This key is returned as status in
+<CODE>$SKEY</CODE> when a program cannot open the standard output. The
+standard output, used for default program output, is specified using
+the <CODE>STDOUT</CODE> command qualifier. Use local system utilities
+to check if the file exists and to check if you have the appropriate
+privileges to write to the file. If VAX/VMS, If you have used the DCL
+command, <CODE>SET DEFAULT</CODE>, to change to another user's
+directory, you may not have the appropriate privileges. Use the local
+operating system I/O error code listed in the error message to
+determine the source of the error. See the documentation on the
+operating system or the System Manager for further action. See the
+<CITE>TAE Command Language User's Manual</CITE> for more details on
+standard output.  <P>
+
+<STRONG>STDOWRT</STRONG> An I/O error was encountered while writing to
+the standard output file. The standard output file is the file
+specified through the <CODE>STDOUT</CODE> qualifier on a command
+line. Note that the <CODE>STDOUT</CODE> qualifier may have been used
+in a procedure. There is a configuration problem or a host system
+problem. See the System Manager to check your quotas and the
+hardware. Use the local operating system I/O error code listed in the
+error message to determine the source of the error. See the
+documentation on the operating system or the System Manager for
+further action. <P>
+
+<STRONG>STOLEN</STRONG> The tape drive was stolen by another user
+during the attempt to initialize the tape. Due to a bug in VMS, the
+tape must be initialized in the subprocess which means the drive must
+be deallocated from the parent and reallocated in the subprocess.
+During this time, there is a small chance that the drive can get
+stolen by another user. The same thing happens after the
+initialization to transfer control back to the parent. Please notify
+the VICAR system programmers if this happens. Either wait for the tape
+drive to free up again, or get a different drive. <P>
+
+<STRONG>STRSIZ</STRONG> The declaration of the type for the named
+variable included a string size that is greater than the maximum.
+Correct the string size. The longest string in TAE is defined by the
+TAE configuration file. <P>
+
+<STRONG>SUBAVL</STRONG> This message lists the names of the
+subcommands available for the proc that you attempted to execute.
+Subcommands are keywords that select a sub-function of a command.
+Re-enter the command and prefix one of the subcommands to the command
+name. The subcommand should be separated from the command with a
+dash. For example: <CODE>SETLIB-ADD (lib1, lib2, lib3)</CODE> To
+obtain a description of each subcommand, type the following:
+<CODE>TUTOR <VAR>command</VAR>-</CODE> <P>
+
+<STRONG>SUBCFMT</STRONG> The subcommand name, that is, the word after
+the dash, is incorrectly formatted. Correct the command to use a
+proper subcommand format. A valid subcommand name contains eight or
+fewer characters, starts with a letter or underscore or dollar sign,
+and may contain any of the following characters: any number (0-9), any
+letter (A-Z, a-z), dollar sign ($), or underscore (_). <P>
+
+<STRONG>SUBERR</STRONG> An internal TAE error has occurred while
+tutoring on a subcommand. The most common cause of the error is that
+TAE has run out of dynamic memory. <P>
+
+<STRONG>SUBNST</STRONG> An attempt to nest subcommand definitions
+occurred. Within the statements bracketed by <CODE>SUBCMD</CODE> and
+<CODE>END-SUB</CODE>, only parameter and variable definitions are
+allowed; another subcommand bracket is not allowed. Correct the
+procedure containing the nested subcommands. <P>
+
+<STRONG>SUBREQ</STRONG> The command must be accompanied by a
+subcommand. A subcommand selects a group of parameters from among
+several groups the command may recognize. The format to include a
+subcommand is <CODE>proc-subcommand parameters</CODE> to invoke
+<VAR>proc</VAR> with subcommand <VAR>subcommand</VAR>; the dash is
+required. An example: <CODE>HELP-PARM p1 proc1</CODE> <P>
+
+<STRONG>SUBTWC</STRONG> One of the following errors has occurred: 1)
+The subcommand typed by the user is ambiguous, i.e., the subcommand is
+a truncated abbreviation for more than one of the valid
+subcommands. 2) The proc definition is incorrect because a given
+subcommand is defined twice. 1) Select a non-ambiguous spelling for
+the desired subcommand and re-enter the command. 2) Fix the multiple
+definition of the subcommand in the proc definition file. Use "TUTOR
+<VAR>pr</VAR>-" to determine the subcommands for proc
+"<VAR>pr</VAR>". <P>
+
+<STRONG>SYMBOL</STRONG> You have issued a tape drive specific command
+using a symbolic name which is not currently defined.  Re-issue the
+command using the correct symbolic name or device specification. For
+VAX/VMS, note: if you are entering a <CODE>MOUNT</CODE> command and
+you have not allocated the drive, you must enter both the symbolic
+name and the actual device name. <P>
+
+<STRONG>SYNERR</STRONG> The command cannot be processed because the
+format is unrecognizable. The error message attempts to identify the
+area in the command where the format error occurred. Re-enter the
+command. For information on the general rules for commands, type
+<CODE>HELP</CODE>. <P>
+
+<STRONG>SYNTUTHLD</STRONG> This message informs the user that dynamic
+TUTOR has been put on "hold" for an asynchronous job. The asynchronous
+job requested dynamic parameters, the user entered <CODE>REPLY</CODE>,
+and then <CODE>HOLD</CODE> to postpone the selection of parameter
+values. The TCL command <CODE>GETPAR</CODE> requests dynamic
+parameters for procedures. The TAE library routine <CODE>XQDYNP</CODE>
+requests dynamic parameters for processes.  When ready to enter
+parameter values for the asynchronous proc, enter <CODE>REPLY</CODE>
+again. <P>
+
+<STRONG>TEST</STRONG> Should never be displayed. Referenced by code in
+<CODE>tae$olb:message.c</CODE> which, due to conditional compilation,
+will only be compiled when doing internal testing. <P>
+
+<STRONG>TINVSUBHLP</STRONG> Help on a subcommand other than the
+current subcommand has been requested. The "current" subcommand is
+established in TUTOR when you name it in a TUTOR subcommand display,
+or, by default. The "current" subcommand is indicated in the upper
+left corner of the TUTOR mode display. If you wish help on another
+subcommand you must request it from TCL (using <CODE>HELP
+<VAR>xxx-yyy</VAR></CODE> to get help on subcommand <VAR>yyy</VAR> in
+proc <VAR>xxx</VAR>) or enter TUTOR mode for subcommands (<CODE>TUTOR
+<VAR>xxx</VAR>-</CODE>"). <P>
+
+<STRONG>TMEQASS</STRONG> The TUTOR parameter assignment command is
+missing an "=". Use the following format for parameter value
+assignment: <CODE><VAR>parameter-name</VAR> = <VAR>value</VAR></CODE>
+Examples: <CODE>CYCLE = 2, BIN(2) = 3, VECTOR = 1, 2, 3, 4</CODE> <P>
+
+<STRONG>TMISPAR</STRONG> The TUTOR <CODE>RUN</CODE> command was used
+while the listed parameters did not have values. Use the TUTOR
+parameter value assignment command (<CODE><VAR>parameter</VAR> =
+<VAR>value</VAR></CODE>) to set the values of the listed parameters,
+and repeat the <CODE>RUN</CODE> command. <P>
+
+<STRONG>TNISUBSC</STRONG> The value of a subscript for a variable is
+not a positive integer. Correct the value and repeat the command.
+<P>
+
+<STRONG>TNODEFSUB</STRONG> While in TUTOR subcommand display, a hyphen
+was typed with no following word, thereby choosing the default
+subcommand. The current command, however, has no default subcommand.
+Choose one of the subcommands listed in the subcommand display, and
+type <CODE>-[<VAR>subcommand name</VAR>]</CODE>. (If a subcommand is
+the default subcommand, it is marked <CODE>** DEFAULT **</CODE>.) <P>
+
+<STRONG>TNODEF</STRONG> While in TUTOR mode, a parameter was assigned
+a default value, using <CODE><VAR>parameter-name</VAR> = </CODE>,
+(i.e., no explicit value on the right side of "=".) The named
+parameter has no default value. Use <CODE><VAR>parameter-name</VAR> =
+<VAR>value</VAR></CODE> to assign an explicit value. <P>
+
+<STRONG>TNOLATCH</STRONG> When the TUTOR command is typed with no
+proc name, TUTOR attempts to run using the "latched" parameters.
+Parameters are latched (i.e., remembered) only when the previous proc
+invocation had missing or incorrect parameters. Re-issue the TUTOR
+command with a proc name. <P>
+
+<STRONG>TNOLEV2</STRONG> The programmer who created the proc
+has not specified detailed help for the parameter or subcommand.
+Often the description of the proc itself will supply additional
+information concerning parameters. Type <CODE>HELP *</CODE>. <P>
+
+<STRONG>TNOQUAL</STRONG> The <CODE>QUALIFY</CODE> command in TUTOR
+mode tells TAE to enter TUTOR mode for parameter qualifiers. In this
+case, there are no parameter qualifiers defined for the specified
+parameter. Check the name of the parameter and check the declaration
+of the parameter in the PDF. The method for declaring parameter
+qualifiers is described in the <CITE>TAE Command Language Programmer's
+Manual</CITE>.  <P>
+
+<STRONG>TNOTPROC</STRONG> When in dynamic command mode, the only way
+TUTOR may be entered is by using <CODE>TUTOR</CODE> alone, with no
+proc name. It is not possible to TUTOR on procs other than the current
+proc. Type <CODE>TUTOR</CODE> to enter TUTOR mode. <P>
+
+<STRONG>TNOTUSED</STRONG> A parameter file was restored, or parameters
+were provided by a program for a dynamic parameter session, in which
+one of the following is true for one or more of the parameters: 1) A
+parameter in the parameter file does not exist in the PDF used for the
+TUTOR or dynamic parameter session. 2) The parameter does not have a
+valid value (according to the declaration in the PDF). A common cause
+of this condition is the use of <CODE>RESTORE</CODE> on a file that
+does not match the current PDF. For example, the PDF may have been
+changed since the parameter file was <CODE>SAVE</CODE>d. Check that
+you have use the intended parameter file name. If a dynamic parameter
+session has been initiated, determine if the generating program refers
+to the correct PDF, and determine if implied characteristics of the
+parameters used in the program agree with the declaration for the
+parameters in the PDF. <P>
+
+<STRONG>TNOTFOUND</STRONG> The string specified in the
+<CODE>SEARCH</CODE> command could not be found anywhere in the list of
+valid strings.  Check the spelling of the specified search string. If
+it was correct, that string is not available. Try the
+<CODE>SEARCH</CODE> command with a different string. <P>
+
+<STRONG>TNPNAM</STRONG> While searching through help data to find
+information on a named variable, a <CODE>.VARIABLE</CODE> help
+directive was encountered with no parameter name. Correct the help
+file to specify a name with <CODE>.VARIABLE</CODE> or inform the help
+file author. <P>
+
+<STRONG>TNPRCSYN</STRONG> TUTOR is available for any proc or for any
+TCL intrinsic command that has proc invocation syntax. Commands like
+<CODE>LET</CODE> have syntax incompatible with TUTOR mode. <P>
+
+<STRONG>TNSCR</STRONG> A TUTOR command only available in the NOSCREEN
+TUTOR mode was typed. Type <CODE>HELP</CODE> to display the commands
+available in the current TUTOR mode. <P>
+
+<STRONG>TOLENB</STRONG> Terminal output logging was already active
+when the user attempted to execute the <CODE>ENABLE-TOL</CODE>
+command. <P>
+
+<STRONG>TOOASYNC</STRONG> If a proc is repeatedly submitted to run
+asynchronously, TAE maintains unique job names for the proc by
+appending a unique two digit sequence number to the proc name. If all
+the sequence numbers have already been assigned, it can no longer
+create a job name for that proc. Either submit the asynchronous job
+with a unique, explicit job name, or remove the completed asynchronous
+jobs from the list (using the <CODE>REMOVE</CODE> command) and
+resubmit your job.  <P>
+
+<STRONG>TOOFEW</STRONG> The number of values specified for a
+parameter is less than the minimum defined for the parameter. Use
+TUTOR to determine the allowable minimum number of values and re-issue
+the command accordingly. <P>
+
+<STRONG>TOOFEWVAL</STRONG> An attempt has been made to set a component
+value of a variable, but the operation is unacceptable because the
+resulting component count would have been inconsistent with the
+variable's declaration. For example, if <CODE>X</CODE> were declared
+to have between 4 and 8 values and to be nullable, the following
+sequence would produce the <CODE>TOOFEWVAL</CODE> error:
+<PRE>
+	LET X = --	!null value to X 
+	LET X(1) = 10	!invalid: resulting count would be 1
+</PRE>
+
+<STRONG>TOOMANY</STRONG> The number of values specified for a
+parameter is greater than the maximum defined for the parameter. Use
+TUTOR to determine the allowable maximum number of values and re-issue
+the command accordingly. Parameter help available in TUTOR mode should
+describe the number of values allowed. <P>
+
+<STRONG>TOOMNYFOR</STRONG> The number of values that may be assigned
+using a <CODE>FOR</CODE> list is limited to 10 values. (A longer
+<CODE>FOR</CODE> list may be simulated using a multi-valued local
+variable, an index, and a <CODE>LOOP</CODE> construct.) Delete values
+from the <CODE>FOR</CODE> list. <P>
+
+<STRONG>TPAGNSC</STRONG> There are no TUTOR pages while in NOSCREEN
+TUTOR. Use the <CODE>LIST</CODE> command to list the parameter values,
+and the <CODE>DISPLAY</CODE> command to display the parameter
+descriptions. <P>
+
+<STRONG>TPAGNUM</STRONG> The TUTOR <CODE>PAGE</CODE> command (or an
+abbreviation, e.g., <CODE>PA</CODE>) was typed followed by a negative
+number or zero. Use a positive page number. <P>
+
+<STRONG>TQUNTCMD</STRONG> The requested command is not available
+when tutoring for parameter qualifiers. The list of available
+commands is given at the bottom of the qualifier screen. For an
+explanation of each command, type <CODE>HELP</CODE>. <P>
+
+<STRONG>TRANSFAIL</STRONG> On VAX/VMS systems, TAE finds the current
+directory tree (which contains all TAE system files) using the VMS
+logical name <CODE>TAE</CODE>. Check that the logical name
+<CODE>TAE</CODE> is defined in your user process; if it is, see the
+System Manager.  <P>
+
+<STRONG>TSELNAVAIL</STRONG> The <CODE>SELECT</CODE> display is not
+available for the specified parameter. The <CODE>SELECT</CODE> display
+is restricted to parameters that have a specified list of valid string
+values. Do not attempt to use <CODE>SELECT</CODE> display for this
+parameter. <P>
+
+<STRONG>TSELNOTSCR</STRONG> The TUTOR command <CODE>SELECT</CODE>
+brings up the <CODE>TUTOR/SELECT</CODE> screen. The
+<CODE>TUTOR/SELECT</CODE> screen is not available in
+<CODE>NOSCREEN</CODE> TUTOR. Do not use the <CODE>SELECT</CODE>
+command when using TUTOR in <CODE>NOSCREEN</CODE> mode. <P>
+
+<STRONG>TSHOWPRM</STRONG> The <CODE>SHOW</CODE> command requires that
+you type the name and index of the value that you want to see. Re-type
+the <CODE>SHOW</CODE> command. Example: <CODE>SHOW X(4)</CODE> <P>
+
+<STRONG>TSLUNTCMD</STRONG> The requested command is not available when
+using the TUTOR select display. The list of available commands is
+given at the bottom of the TUTOR select screen. For an explanation of
+each command, type <CODE>HELP</CODE>. <P>
+
+<STRONG>TSUNTCMD</STRONG> The command is not a known command for TUTOR
+subcommand display. Correct the command. Type <CODE>HELP</CODE> for a
+list of commands available while in TUTOR subcommand display. <P>
+
+<STRONG>TTLERR</STRONG> The title information for a TUTOR, menu, or
+help screen cannot be read from disk. This message usually indicates a
+disk failure. <P>
+
+<STRONG>TTOOVAL</STRONG> There are too many words on a
+<CODE>DISPLAY</CODE> or <CODE>LIST</CODE> command. The format for a
+<CODE>DISPLAY</CODE> or <CODE>LIST</CODE> command is: 1)
+<CODE>DISPLAY/LIST</CODE>, 2) <CODE>DISPLAY/LIST <VAR>parameter
+name</VAR></CODE>, or 3) <CODE>DISPLAY/LIST (<VAR>list of parameter
+names</VAR>)</CODE>. In #1, all parameters are displayed or listed. In
+#2, the specified parameter is displayed or listed. In #3, all the
+parameters listed in parentheses are displayed or listed. <P>
+
+<STRONG>TUNEXCH</STRONG> The command line extends beyond the expected
+end for this command. Type <CODE>HELP</CODE> to display information on
+the correct format for each TUTOR command. <P>
+
+<STRONG>TUNRECPAR</STRONG> The word after the TUTOR command is not
+recognized as an option associated with that command. Type
+<CODE>HELP</CODE> to display information on the options for TUTOR
+commands. <P>
+
+<STRONG>TUTOERR</STRONG> The error message just prior to this one
+explains the cause of this error. If there is no such error message,
+then the error is an internal TAE error. <P>
+
+<STRONG>TUTSUB</STRONG> The ampersand character was used
+incorrectly in a TUTOR command. When an ampersand is used, it must be
+followed immediately by the name of a TCL variable - the value of the
+variable is then substituted, replacing the ampersand and the variable
+name. An error occurs when an ampersand is not followed by a variable
+name or when the variable is not known on the interactive level. If
+you want an ampersand character itself to appear in a quoted string,
+use two adjacent ampersands. <P>
+
+<STRONG>TYPERRN</STRONG> Only proc interface parameters (declared
+using <CODE>PARM</CODE>) may be declared to have type
+<CODE>NAME</CODE>; <CODE>NAME</CODE>s not supported for global
+variables, or for local variables. Change the declaration to use a
+different type. <P>
+
+<STRONG>TYPERR</STRONG> The allowed <CODE>TYPE</CODE> values are
+<CODE>REAL</CODE>, <CODE>INTEGER</CODE>, <CODE>STRING</CODE>,
+<CODE>KEYWORD</CODE>, <CODE>NAME</CODE>, or <CODE>FILE</CODE>. In
+addition, for a <CODE>STRING</CODE> declaration, the maximum size of
+the string may be declared using: <CODE>TYPE = (STRING,
+[<VAR>size</VAR>])</CODE> Correct the command to use one of the types
+listed above. <P>
+
+<STRONG>UNBALCON</STRONG> The <CODE>FOR</CODE>, <CODE>LOOP</CODE>, and
+<CODE>IF</CODE> commands require <CODE>END-FOR</CODE>,
+<CODE>END-LOOP</CODE>, <CODE>END-IF</CODE>, respectively, to close the
+construct.  Provide the necessary closing command. <P>
+
+<STRONG>UNBALPAR</STRONG> An <CODE>IF</CODE> command is missing a
+right parenthesis. Insert the necessary closing parenthesis. <P>
+
+<STRONG>UNDEFCMD</STRONG> The named command is not a user-defined
+command. The command is a TCL intrinsic command (which may not be
+deleted), or the command has not been defined during the current
+session. Correct the named command. The list of defined commands may
+be displayed using <CODE>DISPLAY $DEFCMD0</CODE>. <P>
+
+<STRONG>UNDEFGBL</STRONG> A procedure contains a <CODE>REFGBL</CODE>
+command for a global variable that has not been defined. Determine if
+the name of the global is correctly specified. The following TAE
+command will list the names of all currently defined globals:
+<CODE>DISPLAY-GLOBALS</CODE> <P>
+
+<STRONG>UNDEFSUB</STRONG> A subcommand name was used that is either
+not defined for this command or is an ambiguous abbreviation. Type
+<CODE>TUTOR <VAR>xxx</VAR>-</CODE> to TUTOR for any subcommand
+associated with command "<VAR>xxx</VAR>", or type <CODE>HELP
+<VAR>xxx</VAR></CODE> to display information on the command. <P>
+
+<STRONG>UNDEFVAR</STRONG> The named variable has not been defined.
+Check the command. If a <CODE>LET</CODE> command is used to set the
+value of a string variable, then the string value must be
+quoted. String constants in <CODE>IF</CODE>, <CODE>FOR</CODE>, and
+<CODE>ELSE-IF</CODE> commands must also be quoted. Examples: 
+<PRE>
+	LET STRING = "hello"	!quotes required 
+	IF (STRING ="hello") !quotes required </PRE> If the variable
+reference is intentional, then the procedure in which the
+<CODE>LET</CODE> occurs should contain a <CODE>LOCAL</CODE> or
+<CODE>PARM</CODE> command for the named variable, or there must be a
+<CODE>REFGBL</CODE> for a global variable and the variable must be
+defined in a <CODE>GLOBAL</CODE> proc. If the variable is a parameter
+with type <CODE>NAME</CODE>, then the referenced variable is not local
+to the procedure and should be in the scope of the calling
+procedure. <P>
+
+<STRONG>UNDLABEL</STRONG> A <CODE>GOTO</CODE> command refers to a
+label that does not exist in the current procedure. Note that
+<CODE>GOTO</CODE> commands may only reference a label in the forward
+direction. Correct the procedure to eliminate the reference or insert
+the label. If you need to do a backwards branch, use the
+<CODE>LOOP</CODE> command. <P>
+
+<STRONG>UNEXCH</STRONG> The command line extends beyond the expected
+end for this command. If the command is a TCL command, type <CODE>HELP
+[<VAR>command name</VAR>]</CODE> to display information on the correct
+format for the command. In TUTOR mode, or in a menu, <CODE>HELP</CODE>
+alone will display information on all commands. <P>
+
+<STRONG>UNEXEOL</STRONG> The TAE expression analyzer encountered the
+end of the line before the line analysis was complete. This error
+message generally indicates an expression was encountered that does
+not conform to the TCL rules for expression. Examples are arithmetic
+expressions that end with an operator (e.g., "1-") or omitted right
+parentheses. <P>
+
+<STRONG>UNEXPECTH</STRONG> Help text was encountered in the middle of
+a PDF, i.e., before the <CODE>end-proc</CODE>. Inform the author of
+the proc that the help text is located in the incorrect place in the
+PDF. <P>
+
+<STRONG>UNRECCMD</STRONG> The named command is not a TCL intrinsic
+command. This condition usually arises when the introductory command
+(<CODE>PROCEDURE</CODE>, <CODE>PROCESS</CODE>, etc.) in a proc
+definition file is missing and a proc invocation command appears
+before the <CODE>BODY</CODE> command. <P>
+
+<STRONG>UNRECSUB</STRONG> The named subcommand is not defined for the
+associated command. (The subcommand is the first word following
+<CODE>[<VAR>command name</VAR>]-</CODE>, e.g., in
+<CODE>HELP-PARM</CODE>, <CODE>PARM</CODE> is the subcommand.)  Type
+<CODE>TUTOR <VAR>xxx</VAR>-</CODE> for a list of subcommands
+appropriate command <VAR>xxx</VAR>.  <P>
+
+<STRONG>UNRECTTY</STRONG> Your terminal is not a known type. Therefore
+it can not be supported by the TAE terminal package.  If this is a
+hardcopy device, no action is necessary. For VAX/VMS: If this is a CRT
+device, if <CODE>TERM$TABLOC</CODE> is defined, check that your
+terminal is of a type listed in the file to which it points. If
+<CODE>TERM$TABLOC</CODE> is not defined, make sure that your terminal
+type is listed in the default VMS terminal table. For UNIX: If this is
+a CRT device, check that the Unix environment variable,
+<CODE>TERM</CODE>, is defined to be a terminal type listed in the file
+pointed to by <CODE>$TERMCAP</CODE>. If <CODE>$TERMCAP</CODE> is
+undefined, make sure that your terminal type is listed in the default
+UNIX terminal table. <P>
+
+<STRONG>USEDNAME</STRONG> The user has already submitted another
+asynchronous job with the same job name. Either submit the
+asynchronous job with a different name, or if the previous job with
+that name is complete, remove it from the list (using the
+<CODE>REMOVE</CODE> command) and then resubmit the current job. <P>
+
+<STRONG>VALIDERR</STRONG> A variable declaration includes a
+<CODE>VALID</CODE> specification with an incorrect format for the
+range specification.  Find the errant declaration and correct the
+range specification. A valid range specification is formatted "a:b"
+where "a" is the lower number, and "b" is the higher number. The colon
+is required and there may not be any spaces in the
+specification. Example: <CODE>PARM I TYPE=INTEGER VALID=(1:80,
+100:150)</CODE> <P>
+
+<STRONG>VALIDREQ</STRONG> The definition of a proc parameter is
+incorrect. The parameter is declared to be a <CODE>KEYWORD</CODE>
+parameter, but the <CODE>VALID</CODE> list has been
+omitted. <CODE>KEYWORD</CODE> parameters require a <CODE>VALID</CODE>
+list. The PDF must be corrected. See the <CITE>TAE Command Language
+Programmer's Manual</CITE> for a discussion on parameters of type
+keyword. <P>
+
+<STRONG>VARCNFLCT</STRONG> A variable already exists with the same
+name. If this error message is received interactively, then the name
+conflicts with a local that has been declared interactively or with
+any of the global variables. Rename the variable. <P>
+
+<STRONG>VBADCOUNT</STRONG> This condition is caused by a problem in
+the executable code of a process. The <CODE>COUNT</CODE> argument in
+an <CODE>XQ</CODE> call is either less than the minimum or greater
+than the maximum allowed for the specified variable. Correct the
+program so that the count is within the variable's limits. <P>
+
+<STRONG>VBADNAME</STRONG> This condition is caused by a problem in the
+executable code of a process. The <CODE>NAME</CODE> argument in an
+<CODE>XR</CODE> call refers to a variable that does not exist in the
+V-block, or an <CODE>XQ</CODE> call has the mode argument set to
+<CODE>xupdat</CODE> and the <CODE>NAME</CODE> argument refers to a
+variable that does not exist. Correct the program or the PDF so that
+the <CODE>NAME</CODE> argument refers to an existing variable. <P>
+
+<STRONG>VBADPFILE</STRONG> An application program attempted to read a
+parameter file by calling the <CODE>XRRDB</CODE> subroutine and the
+parameter file is incorrectly formatted. Some possible causes of this
+error are: 1) The file is not a parameter file. Parameter files must
+be created by TAE's <CODE>SAVE</CODE> command or by calling
+<CODE>XQWRTB</CODE> from a program.  2) The file was incorrectly
+created by <CODE>XQWRTB</CODE> because the V-block argument was not
+properly constructed. 3) The file is a parameter file created by an
+old version of TAE. <P>
+
+<STRONG>VBADTYPE</STRONG> This condition is caused by a problem in the
+executable code of a process. In an <CODE>XR</CODE> call or an
+<CODE>XQ</CODE> call with <CODE>MODE</CODE> set to
+<CODE>xupdat</CODE>, the type of the variable in the V-block does not
+agree with the type implied by the name of the subroutine. (E.g.,
+<CODE>XRREAL</CODE> expects a real variable.)  Determine the type of
+the named variable and correct the program accordingly. <P>
+
+<STRONG>VBLOCK</STRONG> The V-block has insufficient space to
+accommodate the variables specified in a <CODE>SENDVAR</CODE>
+request. Divide the list of variables into smaller lists and do
+multiple <CODE>SENDVAR</CODE> requests. <P>
+
+<STRONG>VDIMEN</STRONG> This condition is caused by a problem in the
+executable code of a process. In <CODE>XR</CODE> the <CODE>DIM</CODE>
+argument is not large enough to receive the number of values for the
+specified variable.  Determine the type of the <CODE>COUNT</CODE> of
+the named variable and correct the program accordingly. <P>
+
+<STRONG>VDUPNAME</STRONG> This condition is caused by a problem in the
+executable code of a process. In an <CODE>XQ</CODE> call, the
+<CODE>MODE</CODE> was set to <CODE>xadd</CODE> and the
+<CODE>NAME</CODE> of the variable was the name of a variable already
+in the V-block. Use a different name for one of the variables, or use
+the <CODE>xupdat</CODE> MODE for the <CODE>XQ</CODE> call. <P>
+
+<STRONG>VNOPARM</STRONG> A program has attempted to add a qualifier
+value to a V-block when the parameter being qualified does not exist.
+Check the program against the PDF and make sure that the parameter
+being qualified is defined in the intended PDF. <P>
+
+<STRONG>VNOROOM</STRONG> This condition is caused by a problem in the
+executable code of a process. In an <CODE>XQ</CODE> call, the V-block
+has insufficient space to accommodate the values specified. Increase
+the size of the block. (See <CODE>XQINI</CODE>.) <P>
+
+<STRONG>VOLDPARM</STRONG> A program has attempted to qualify a
+variable that was created under a version of TAE prior to Version
+1.3. Versions of TAE prior to version 1.3 did not support parameter
+qualifiers. Variables saved under old versions of TAE cannot be
+qualified. <P>
+
+<STRONG>VTRANS</STRONG> This condition is caused by a problem in the
+executable code of a process. In <CODE>XRFILE</CODE>, a variable
+containing a file specification was read and could not be translated
+using the Catalog Manager or the host operating system. If the user
+typed the file name correctly determine why the file specification
+could not be translated, and correct the program accordingly. <P>
+
+<STRONG>WINDEXISTS</STRONG> An attempt was made to create a window
+with the same name as a window that already exists. Use
+<CODE>WINDOW-INFO</CODE> to determine the name of windows that already
+exist. <P>
+
+<STRONG>WINDOWCREATE</STRONG> In a <CODE>WINDOW-CREATE</CODE>
+operation, the requested window could not be created. Check that the X
+window system is active, and that you are on an appropriate bit-mapped
+workstation.  <P>
+
+<STRONG>WPTPANEL</STRONG> The requested panel could not be created.
+Check that you have done a <CODE>WPT-INIT</CODE>. Check that the X
+window system is active on your display system. <P>
+
+<STRONG>WRGREC</STRONG> During the second phase of a PDF
+compilation, an unexpected record format was encountered while
+re-reading the partially compiled file. The file was corrupted during
+the compilation. Re-try the compilation; if it fails again, see the
+TAE system manager. <P>
+
+<STRONG>WRTERR</STRONG> An I/O error was encountered while TAE was
+writing the compilation output file. Interpret the associated host
+error code and take the appropriate action. <P>
+
+<STRONG>XTRAELSE</STRONG> An <CODE>ELSE</CODE> command was encountered
+without a matching <CODE>IF</CODE>. Correct the procedure to eliminate
+the unmatched <CODE>ELSE</CODE> or insert the <CODE>IF</CODE>. <P>
+
+<STRONG>XTRAENDFOR</STRONG> An <CODE>END-FOR</CODE> command was
+encountered without a matching <CODE>FOR</CODE>. Correct the procedure
+to eliminate the unmatched <CODE>END-FOR</CODE> or insert the
+<CODE>FOR</CODE>. <P>
+
+<STRONG>XTRAENDLP</STRONG> An <CODE>END-LOOP</CODE> command was
+encountered without a matching <CODE>LOOP</CODE>. Correct the
+procedure to eliminate the unmatched <CODE>END-LOOP</CODE> or insert
+the <CODE>LOOP</CODE>. <P>
+
+<STRONG>XTRELSIF</STRONG> An <CODE>ELSE-IF</CODE> command was
+encountered without a matching <CODE>IF</CODE>. Correct the procedure
+to eliminate the unmatched <CODE>ELSE-IF</CODE> or insert the
+<CODE>IF</CODE>. <P>
+
+<STRONG>XTRENDIF</STRONG> An <CODE>END-IF</CODE> command was
+encountered without a matching <CODE>IF</CODE>. Correct the procedure
+to eliminate the unmatched <CODE>END-IF</CODE> or insert the
+<CODE>IF</CODE>. <P>
+
+<STRONG>ZEROJOB</STRONG> The user wanted to abort all asynchronous
+jobs when there was none active. Check the list of completed
+asynchronous jobs using <CODE>SHOW-ASYNC</CODE>. <P>
+
+<HR>
+<A HREF="vug10.11-12.html"><IMG SRC="back.gif"></A>
+<A HREF="vug10.14.html"><IMG SRC="fwd.gif"></A>
+<P> 
+
+If you wish to return to the Contents page, click <A
+HREF="vugfinal.html#Contents">here</A>.

@@ -1,0 +1,88 @@
+<HEAD>
+<TITLE>Include Files</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=902 HREF=subsection3.9.1.html><IMG SRC="/icons/previous.png"></A> <A NAME=904 HREF=section3.9.html><IMG SRC="/icons/up.png"></A>  <A NAME=900 HREF=subsection3.9.3.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=903 HREF=subsection3.9.1.html>RTL Differences</A>  <b>Up:</b> <A NAME=905 HREF=section3.9.html>Porting Fortran</A>  <b>Next:</b> <A NAME=901 HREF=subsection3.9.3.html>No EQUIVALENCE for Type Conversion</A> <P>
+ <H2>Include Files</H2>
+<A NAME=ftninc><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+Fortran include files are a tough problem under Unix.  That is because on some
+Fortran compilers (notably on the Sun), the INCLUDE statement does not accept
+environment variables, nor is there a way on the command line to specify
+a directory for includes.  That means that includes must either be in the
+current directory during the compile, or they must have an absolute pathname
+in the INCLUDE statement.  The latter solution is clearly unacceptable,
+since the directory names change not only from system to system, but
+for different versions (development, operational, etc.) of VICAR!
+<P>
+This means that all includes must be in the current directory in order for
+the Fortran compiler to find them.  This is achieved via the build files
+created by <tt> vimake</tt>.  On Unix, they create a symbolic link for each include
+you use (which must be specified in the imakefile) in the current directory.
+The compiler can then find the includes via these links.  The links are deleted
+when the compile is finished.  On VMS, temporary logical names are created
+for the includes you use that point at the correct location.  The logical
+names go away after the compile.
+<P>
+There are four major classes of include files you will use.  They are
+VICAR main, VICAR system, VICAR subroutine, and local.  There are no system
+includes available in Fortran.
+<P>
+Please keep track of which include files you actually need, and include
+only those.  Some includes require that others be included first, but try to
+achieve the minimum set.  Extra includes in your program don't gain you
+anything, and they slow down your compiles.  They also make system maintenance
+much tougher, since the source code must occasionally be searched to see what
+programs use an include, and all programs that use an include must be
+recompiled when it changes (even if it's not really used).
+<P>
+The VICAR main include file, which all VICAR programs should start with,
+must be in upper case, with single quotes.  The name of the main include has
+changed to ``VICMAIN_FOR'', with no directory specifiers.  Do not add the
+``<tt> /NOLIST</tt>'' qualifier that is common in current VICAR applications.
+Since all applications need VICMAIN_FOR, it is made available automatically
+in the build files, and you do not need to list it in the imakefile.
+<P>
+<PRE><TT>
+        INCLUDE 'VICMAIN_FOR'
+</TT></PRE>
+<P>
+VICAR system includes are those provided as part of the RTL.  Their names
+should be in lower case, without a file type extension or pathname.  They
+should be in single quotes.  The valid ones are listed below (as of this
+writing, there is only one).  They must be listed in the imakefile, in
+FTNINC_LIST, to be accessible.  See Section <A HREF=subsection3.13.1.html#vimake><IMG SRC="/icons/cross-ref.png"></A>, <tt> vimake</tt>,
+for more details.
+<P>
+<PRE><TT>
+        INCLUDE 'errdefs'
+</TT></PRE>
+<P>
+VICAR subroutine include files are quite similar to the VICAR system includes.
+They should be in lower case, without a file type extension or pathname, and
+they should be in single quotes.  They must also be listed in the imakefile,
+in FTNINC_LIST, to be accessible.  The include file itself comes from one
+of the application include directories, such as p2$inc ($P2INC) or vrdi$inc
+($VRDIINC), and must be in lower case with an extension of ``.fin'' (for
+Fortran INclude).
+<P>
+<PRE><TT>
+        INCLUDE 'sublib_inc'
+        INCLUDE 'fortport'
+        INCLUDE 'verrdefs'
+</TT></PRE>
+<P>
+Local includes, which are delivered as part of the COM file and are used only
+by that application, should be referenced in lower case, <em> with</em> the
+``.fin'' extension.  They should <em> not</em> be listed in FTNINC_LIST, although
+all local includes must be in INCLUDE_LIST so they can be cleaned up properly.
+<P>
+<PRE><TT>
+        INCLUDE 'my_include.fin'
+</TT></PRE>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

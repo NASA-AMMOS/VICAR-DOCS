@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--
+This document was converted from RTF source: 
+By rtftohtml 4.17
+See http://www.sunpack.com/RTF
+Filename:WORD Ram Disk:RTL_Manual.rtf
+Application Directory:Data Disk:r2h4
+Subject:
+Author:Larry Bolef
+Operator:Larry Bolef
+Document Comments:
+Version Comments:
+Comments:
+Keywords:
+Translation Date:06/05/1999
+Translation Time:08:05:08
+Translation Platform:MacOS
+Number of Output files:59
+This File:WORD Ram Disk:RTL_Manual-11_3.html
+SplitDepth=2
+SkipNavPanel=0
+SkipLeadingToc=0
+SkipTrailingToc=1
+GenContents=1
+GenFrames=0
+GenIndex=0
+-->
+<HEAD lang="en"><META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<TITLE>11.3	x/zlgetlabel&#8212;(Obsolete) Read labels into local memory </TITLE>
+</HEAD>
+
+<BODY ><DIV ALIGN="LEFT"><A HREF="RTL_Manual-Appendix-3.html">Up</A> | 
+<A HREF="RTL_Manual-11_2.html">Previous</A> | 
+<A HREF="RTL_Manual-11_4.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+<HR>
+
+
+<a name="_Toc453201496"></a><A NAME="Heading137"></A><H2 ALIGN="LEFT">
+11.3	x/zlgetlabel&#8212;(Obsolete)
+Read labels into local memory 
+</H2>
+
+<PRE>call xlgetlabel (unit,buf,bufsize,status) 
+status = zvlgetlabel (unit,buf,bufsize,status) </PRE><BLOCKQUOTE>
+Replace
+with explicit calls to the other label routines to retrieve only the labels of
+interest. Reading the entire label buffer and searching through it for a key
+word (the common usage of 
+<B>xlgetlabel</B>)
+is prone to error as the given key word might exist as part of some other,
+unrelated label. It is permissible (if the label contents are set up this way)
+to read a set of labels into a buffer and search that buffer, but do not use 
+<B>xlgetlabel</B>
+for this. 
+<BR>
+<B>x/zlgetlabel</B>
+returns the entire VICAR label in a single buffer as it exists in the file,
+except that the LBLSIZE key word for the part of the label which exists at the
+end of the file (if the label is in two parts) is not written into the buffer. 
+<BR>
+The
+BUFSIZE argument puts a ceiling on the number of bytes returned. That is, the
+actual number of bytes written into the buffer is the smaller of the entire
+label size and BUFSIZE. If BUFSIZE is zero on input, then nothing is copied
+into the buffer, but the en tire label size will be return ed in BUFSIZE
+(instead of 0). 
+<BR>
+The
+user can thus use a BUFSIZE of zero to find out how much space is needed before
+calling to get the actual label. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+input, integer
+<BR>Unit
+of associated file. A valid VICAR unit number (returned from 
+<B>x/zvunit</B>)
+of an open file. 
+<LI><FONT FACE="Symbol">	</FONT><B>BUF</B>:
+output, byte array
+<BR>Buffer
+to contain labels. The buffer in which the VICAR label is to be returned.
+Should be large enough to hold the entire label, although BUFSIZE may be used
+to inhibit too large a transfer. Type HELP ARGUMENTS BUFSIZE for further
+information. 
+<LI><FONT FACE="Symbol">	</FONT><B>BUFSIZ</B>:
+input/output, integer
+<BR>The
+size of the internal buffer being used for the I/O operations. If the file is a
+tape, BUFSIZ will be equivalent to the block size of the tape in bytes. 
+<BR>On
+input, BUFSIZE specifies the maximum number of bytes to be returned in the
+buffer. On output, it gives the actual number of bytes returned. 
+<BR>If
+BUFSIZE is zero on input, then nothing is copied into BUFFER, and the total
+size of the label is returned (instead of zero). 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer
+<BR>Error
+status code. A value of one indicates success. The error codes are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">10</A>
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>
+.
+</UL>
+<HR>
+
+<DIV ALIGN="LEFT"><A HREF="RTL_Manual-Appendix-3.html">Up</A> | 
+<A HREF="RTL_Manual-11_2.html">Previous</A> | 
+<A HREF="RTL_Manual-11_4.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+</BODY>
+
+</HTML>

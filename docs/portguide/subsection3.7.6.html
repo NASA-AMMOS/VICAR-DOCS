@@ -1,0 +1,85 @@
+<HEAD>
+<TITLE>Dealing with Binary Labels</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=824 HREF=subsection3.7.5.html><IMG SRC="/icons/previous.png"></A> <A NAME=826 HREF=section3.7.html><IMG SRC="/icons/up.png"></A>  <IMG SRC="/icons/next.png">  <b>Previous:</b> <A NAME=825 HREF=subsection3.7.5.html>Converting Data Types &amp; Hosts</A>  <b>Up:</b> <A NAME=827 HREF=section3.7.html>Data Types and Host Representations</A>  <P>
+ <H2>Dealing with Binary Labels</H2>
+<A NAME=binlabel><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+Binary labels are application-defined extensions to a VICAR image that are used
+to store ancilliary information about the image.  They are made up of two
+parts:  binary headers, which are extra records that appear at the beginning
+of the image, and binary prefixes, which are extra bytes that appear at the
+beginning of each image record.  Binary labels are not part of the image data.
+In fact, an application will never even see the binary label data unless it
+specifically asks for it via a COND BINARY optional to <b> x</b>/<b>  zvopen</b>.
+<P>
+Binary headers are extra records that appear at the beginning of the file,
+between the standard label and the image.  The number of records is specified
+by the NLB (Number of Lines of Binary) system label item.  Binary headers are
+often thought of as extra ``lines'' of data, but depending on the file
+organization they can actually be extra lines, samples, or bands.  The size
+of each binary header record is exactly the same as the size of each image
+record.  The headers specified by NLB occur exactly once in the file, not
+once per band (BSQ organization) or once per line (BIL or BIP organizations).
+<P>
+Binary prefixes are extra bytes that appear at the beginning of each and every
+image record.  The number of bytes is specified by the NBB (Number of Bytes of
+Binary) system label item.  The image record consists of NBB bytes of binary
+prefix data, followed by the samples that make up one line (for BSQ
+organization).  Other file organizations label the units differently:  a
+record for BIL is NBB plus the samples that make up one band, while a record
+for BIP is NBB plus the bands that make up one sample.  NBB is always
+specified in terms of bytes, <em> not</em> in terms of pixels, even if the
+pixels are larger than one byte.
+<P>
+Binary labels (both headers and prefixes) pose probably the most difficult
+porting challenge for application programmers.  The basic problem is that
+the data stored in them is application-defined.  The RTL has no idea what
+types of data are stored in the binary label, and therefore cannot automatically
+convert the data to the native host format as it does for image data.
+The application program has sole responsibility for converting the data
+to the native host format when it is read.
+<P>
+To make things worse, only a few application programs actually understand
+any given kind of binary label.  For example, the Voyager project has a
+definition for what goes in the binary label of its images.  The
+Voyager-specific processing programs know how to interpret these labels
+and can make use of them.  The Galileo project also has a definition for
+its binary labels.  Galileo-specific programs can interpret the Galileo
+binary labels.  However, the two kinds of binary labels are different, and
+programs written for one cannot make use of the other.  The Magellan project
+has its own binary labels in yet another format.
+<P>
+The variety of binary labels poses a problem for a general-purpose
+application.  How do you deal with the binary labels?  They could certainly
+be ignored, but then the information would be lost.  This would be a frequent
+occurence for a program like COPY or LABEL, and the binary labels would
+disappear often.  Therefore, many general-purpose programs simply copy the
+binary labels from the input to the output, thereby preserving the information.
+As long as the information is only copied, not used, the application does not
+need to know what kind of data it is.
+<P>
+But what happens when you start mixing machine types?  Say you have a file
+with binary labels that was written on a VAX.  You want to run COPY on the
+file from a Sun.  COPY reads the input image, and writes the output image.
+The RTL automatically converts the image data from VAX to Sun format on input,
+and so the file gets written in Sun format.  The system labels also say it
+is in Sun format.  COPY also reads the binary labels, and writes them to the
+output file.  The binary labels cannot be converted, as neither the RTL nor
+the COPY program know what data types are in the binary labels.  Therefore,
+the binary labels get written out in the only way possible: in VAX format.
+<P>
+This is clearly untenable, as the system labels say the file is in Sun format,
+but the binary labels are still in VAX format.
+<P>
+<P>___________________________________________________<UL> 
+<LI> <A NAME=828 HREF=subsubsection3.7.6.1.html>Separate Host Types</A>
+<LI> <A NAME=829 HREF=subsubsection3.7.6.2.html>Using Binary Labels</A>
+<LI> <A NAME=830 HREF=subsubsection3.7.6.3.html>Binary Label Type</A>
+</UL>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

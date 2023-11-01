@@ -1,0 +1,637 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--
+This document was converted from RTF source: 
+By rtftohtml 4.17
+See http://www.sunpack.com/RTF
+Filename:WORD Ram Disk:RTL_Manual.rtf
+Application Directory:Data Disk:r2h4
+Subject:
+Author:Larry Bolef
+Operator:Larry Bolef
+Document Comments:
+Version Comments:
+Comments:
+Keywords:
+Translation Date:06/05/1999
+Translation Time:08:02:27
+Translation Platform:MacOS
+Number of Output files:59
+This File:WORD Ram Disk:RTL_Manual-2_6.html
+SplitDepth=2
+SkipNavPanel=0
+SkipLeadingToc=0
+SkipTrailingToc=1
+GenContents=1
+GenFrames=0
+GenIndex=0
+-->
+<HEAD lang="en"><META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<TITLE>2.6	Mixing FORTRAN and C </TITLE>
+</HEAD>
+
+<BODY ><DIV ALIGN="LEFT"><A HREF="RTL_Manual-Programm.html">Up</A> | 
+<A HREF="RTL_Manual-2_5.html">Previous</A> | 
+<A HREF="RTL_Manual-2_7.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+<HR>
+
+<UL>
+<A HREF="#Heading24">2.6.1	Bridge Routines </A><BR>
+<A HREF="#Heading25">2.6.2	Naming Subroutines </A><BR>
+<A HREF="#Heading26">2.6.3	Passing Numeric Arguments </A><BR>
+<A HREF="#Heading27">2.6.4	Passing Strings </A><BR>
+<UL>
+<A HREF="#Heading28">2.6.4.1	Accepting FORTRAN Strings in C </A><BR>
+<A HREF="#Heading29">2.6.4.2	Accepting C Strings in FORTRAN </A><BR>
+<A HREF="#Heading30">2.6.4.3	Machine Dependencies </A><BR>
+</UL>
+</UL>
+
+<a name="Heading37"></a><a name="_Toc425047501"></a><a name="_Toc425048056"></a><a name="_Toc425750580"></a><a name="_Toc453201392"></a><A NAME="Heading23"></A><H2 ALIGN="LEFT">
+2.6	Mixing
+FORTRAN and C 
+</H2>
+<BLOCKQUOTE>
+This
+section describes how to mix code written in both FORTRAN and C. It covers both
+internal code (used only within one program), and SUBLIB subroutines that must
+be called from either language.
+<BR>
+A
+subroutine must have a separate interface for each language. A FORTRAN program
+can only call the FORTRAN interface, while a C program can only call the C
+interface, because the necessary calling conventions are so different. If you
+are rewriting a subroutine which is used only internally to your program, you
+may need an interface for only one language. Some SUBLIB routines are useful
+only for one language, but most subroutines will have two interfaces. 
+<a name="_Ref393877095"></a><a name="_Toc425047502"></a><a name="_Toc425048057"></a><a name="_Toc425329679"></a><a name="_Toc425750581"></a><a name="_Toc453201393"></a></BLOCKQUOTE><A NAME="Heading24"></A><H3 ALIGN="LEFT">
+2.6.1	Bridge
+Routines 
+</H3>
+<BLOCKQUOTE>
+The
+calling interface for the language of subroutine are straightforward. Follow
+the rules for that language. The interface for the other language will be
+implemented via a &#8220;bridge&#8221; routine, which must be written in C. 
+<BR>
+The
+bridge routine accepts arguments in the format of the opposite language,
+converts them to the form of the subroutine&#8217;s language and calls the main
+subroutine. For example, a subroutine written in C would have a bridge also
+written in C that accepts arguments in the FORTRAN style, reformat them, and
+call the main C subroutine. A subroutine written in FORTRAN would have a C
+bridge that accepts C-style arguments, and call the FORTRAN subroutine in the
+proper manner. 
+<BR>
+If
+you are using ANSI C, do not use function prototypes on FORTRAN bridges
+(routines written in C that are intended to be called from FORTRAN).
+<a name="_Ref394558196"></a><a name="_Ref394558207"></a><a name="_Toc425047503"></a><a name="_Toc425048058"></a><a name="_Toc425329680"></a><a name="_Toc425750582"></a><a name="_Toc453201394"></a></BLOCKQUOTE><A NAME="Heading25"></A><H3 ALIGN="LEFT">
+2.6.2	Naming
+Subroutines 
+</H3>
+<BLOCKQUOTE>
+The
+subroutine names for the FORTRAN and C interfaces 
+<I>must</I>
+be different. It is not sufficient to add an underscore to the end of a name;
+the letters themselves must be different. The name difference is forced by the
+fact that some FORTRAN compilers put a trailing underscore after the name, and
+others do not.
+<BR>
+In
+order for a C routine to be called from FORTRAN, it must be named in a manner
+the FORTRAN compiler will recognize. This is handled via the FTN_NAME macro.
+This macro is used any where the subroutine name would be, including in the
+declaration of the subroutine. The subroutine name is the argument for the
+macro; &#8220;ftnbridge.h&#8221; must be included:
+</BLOCKQUOTE>
+<PRE>#include "xvmaininc.h"
+#include "ftnbridge.h"
+
+void FTN_NAME(mysub)(param1, param2)
+int *param1, *param2;                       /* inputs */
+{
+   zmysub(*param1, *param2);
+}</PRE><BLOCKQUOTE>
+
+would be called by FORTRAN: 
+</BLOCKQUOTE>
+<PRE>      integer a, b 
+      call mysub(a, b)</PRE><BLOCKQUOTE>
+A
+FORTRAN routine that wishes to be called by C must have a bridge written in C.
+Otherwise, the C caller would have to use the FTN_NAME macro to call the
+routine, which would cause problems if the routine were ever converted to C.
+The bridge routine takes care of this:
+</BLOCKQUOTE>
+<PRE>subroutine fsub(param1, param2)
+      integer param1, param2                   ! inputs
+C     do something
+      return</PRE><P ALIGN="LEFT">
+The C bridge looks like the following. Note the use of FTN_NAME when calling
+the FORTRAN program:
+</P>
+
+<PRE>#include "xvmaininc.h"
+#include "ftnbridge.h"
+
+void csub(param1, param2)
+int param1, param2;                            /* inputs */
+{
+   FTN_NAME(fsub)(&amp;param1, &amp;param2);
+}</PRE><P ALIGN="LEFT">
+It would be called from a C program:
+</P>
+
+<PRE>int a, b; 
+csub(a, b); <a name="Heading38"></a><a name="_Toc425047504"></a><a name="_Toc425048059"></a><a name="_Toc425329681"></a><a name="_Toc425750583"></a><a name="_Toc453201395"></a></PRE><A NAME="Heading26"></A><H3 ALIGN="LEFT">
+2.6.3	Passing
+Numeric Arguments 
+</H3>
+<BLOCKQUOTE>
+Passing
+numeric arguments and arrays between FORTRAN and C is straightforward. The data
+type equivalencies are listed. See 
+<A HREF="RTL_Manual-2_4.html#_Ref393695036">Table 8: FORTRAN declarations for Run-Time Library arguments</A>.
+A routine that receives data of one type must be passed the equivalent type of
+data if called from the other language. The bridge may  change the datatype
+between the caller and the routine if desired, but the subroutine interface
+that actually spans the language change (caller-bridge for FORTRAN to C,
+bridge-routine for C to FORTRAN) must follow this table.
+<BR>
+For
+numeric arguments FORTRAN passes arguments by reference, while C normally
+passes input arguments by value. Such arguments must be converted in the bridge
+routine. A FORTRAN to C bridge declares all arguments as pointers, then puts
+asterisks (*) in front of the appropriate arguments to dereference them when
+calling the main routine. A C to FORTRAN bridge declares the appropriate
+arguments as values (not pointers), and uses an ampersand (&amp;) in the call
+to the FORTRAN routine to convert them to pointers. There are examples in 
+<A HREF="RTL_Manual-2_6.html#_Ref394558196">2.6.2</A>
+<A HREF="RTL_Manual-2_6.html#_Ref394558207">Naming Subroutines</A>.
+<BR>
+Not
+all C arguments are passed by value. If a pointer comes in, such as for an
+output variable or an array, then the pointer can normally be passed unchanged
+to the subroutine.
+</BLOCKQUOTE><DIV ALIGN="CENTER"><TABLE BORDER>
+<TR VALIGN="TOP">
+<TD WIDTH=150 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier"><B>FORTRAN
+Data Type 
+</B></FONT></TT></DIV>
+</TD>
+<TD WIDTH=207 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier"><B>C
+Data Type 
+</B></FONT></TT></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=150 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">BYTE
+</FONT></TT></DIV>
+</TD>
+<TD WIDTH=207 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">unsigned
+char 
+</FONT></TT></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=150 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">INTEGER*2
+</FONT></TT></DIV>
+</TD>
+<TD WIDTH=207 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">short
+int 
+</FONT></TT></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=150 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">INTEGER*4
+</FONT></TT></DIV>
+</TD>
+<TD WIDTH=207 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">int
+</FONT></TT></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=150 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">REAL*4
+</FONT></TT></DIV>
+</TD>
+<TD WIDTH=207 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">float
+</FONT></TT></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=150 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">REAL*8
+</FONT></TT></DIV>
+</TD>
+<TD WIDTH=207 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">double
+</FONT></TT></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=150 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">COMPLEX*8
+</FONT></TT></DIV>
+</TD>
+<TD WIDTH=207 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">struct
+complex {float r, i; } 
+</FONT></TT></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=150 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">INTEGER
+</FONT></TT></DIV>
+</TD>
+<TD WIDTH=207 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">int
+</FONT></TT></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=150 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">CHARACTER*n
+</FONT></TT></DIV>
+</TD>
+<TD WIDTH=207 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">char
+x[n] * 
+</FONT></TT></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=150 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">INTEGER
+x(m) 
+</FONT></TT></DIV>
+</TD>
+<TD WIDTH=207 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">int
+x[m] 
+</FONT></TT></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=150 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">REAL
+x(m) 
+</FONT></TT></DIV>
+</TD>
+<TD WIDTH=207 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">float
+x[m] 
+</FONT></TT></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=150 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">CHARACTER*n
+x(m) 
+</FONT></TT></DIV>
+</TD>
+<TD WIDTH=207 COLSPAN=1 ROWSPAN=1 VALIGN="TOP">
+<DIV ALIGN="LEFT"><TT><FONT FACE="Courier">char
+x[m][n] * 
+</FONT></TT></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<BLOCKQUOTE>
+*
+Characters require special handling, see 
+<A HREF="RTL_Manual-2_6.html#_Ref393876585">2.6.4</A>
+<A HREF="RTL_Manual-2_6.html#_Ref393876585">Passing Strings</A></BLOCKQUOTE><P ALIGN="CENTER">Table
+9: FORTRAN and C Argument Data Type Equivalence 
+</P>
+<BLOCKQUOTE>
+Two-dimensional
+(or higher) arrays are handled differently in each language. FORTRAN accesses
+them in column-major order, while C uses row-major order. The order of the
+subscripts is reversed. One can either copy the array and reshuffling it in the
+bridge (which can be inefficient), or simply document the need to reverse the
+subscripts in the other language when calling the routine. 
+<a name="_Ref393876585"></a><a name="_Toc425047505"></a><a name="_Toc425048060"></a><a name="_Toc425329682"></a><a name="_Toc425750584"></a><a name="_Toc453201396"></a></BLOCKQUOTE><A NAME="Heading27"></A><H3 ALIGN="LEFT">
+2.6.4	Passing
+Strings 
+</H3>
+<BLOCKQUOTE>
+Passing
+FORTRAN strings is not standardized among compilers. The RTL currently supports
+six different methods of passing FORTRAN strings in arguments. The details of
+the six methods are hidden in the RTL FORTRAN String Conversion Routines, so
+they all look the same to the application programmer. 
+<BR>
+Code
+that passes a string to or from FORTRAN uses the RTL string conversion routines (
+<B>sfor2c</B>
+and 
+<B>sc2for</B>
+family). Code that calls the conversion routines must set the FTN_STRING flag
+in the imakefile. 
+<a name="Heading39"></a></BLOCKQUOTE><A NAME="Heading28"></A><H4 ALIGN="LEFT">
+2.6.4.1	Accepting
+FORTRAN Strings in C 
+</H4>
+<BLOCKQUOTE>
+Writing
+a C routine that accepts FORTRAN strings as arguments is easy. Use 
+<B>sfor2c</B>
+for input from a FORTRAN program and 
+<B>sc2for</B>
+for output to a FORTRAN program.
+<BR>
+The
+<B>sfor2c</B>
+and 
+<B>sc2for</B>
+family of routines are described, with examples, in 
+<BR>
+Typically,
+a FORTRAN to C bridge routine will first call some of the 
+<B>sfor2c
+</B>routines
+to convert all the input strings to C format, then it will call the main C
+subroutine, and finally it will convert any output strings back to FORTRAN
+format via the 
+<B>sc2for</B>
+family of routines. 
+<BR>
+There
+is no way currently implemented to return CHARACTER*n variables as the function
+return of a C subroutine. Any output strings should be included as arguments
+instead. 
+<a name="Heading40"></a></BLOCKQUOTE><A NAME="Heading29"></A><H4 ALIGN="LEFT">
+2.6.4.2	Accepting
+C Strings in FORTRAN 
+</H4>
+<BLOCKQUOTE>
+The
+easiest way to accept C strings in a FORTRAN subroutine is to write the
+subroutine in C instead. It is possible to accept C strings by doing a
+two-stage bridge routine. The first stage, written in C, handles the FTN_NAME
+part of the transfer, and passes the string and its length as arguments to the
+second bridge.
+<BR>
+The
+second bridge, written in FORTRAN, accepts the strings as BYTE arrays and uses
+the SUBLIB routine 
+<TT><FONT FACE="Courier">mvlc</FONT></TT>
+and the passed-in length to convert them to FORTRAN strings, which may then be
+passed to the FORTRAN main subroutine. To get strings out, the reverse
+procedure is used. The FORTRAN bridge uses 
+<TT><FONT FACE="Courier">mvcl</FONT></TT>
+to write a BYTE array, then passes that and the length back to the C bridge,
+which puts a null terminator on the string and returns it to the C caller. 
+<BR>
+Examples
+of this type of bridge are the SPICE bridge routines, in the file SPBRI.COM.
+One of the bridges, for 
+<TT><FONT FACE="Courier">bodvar</FONT></TT>,
+is presented below. The C-callable first bridge follows:
+</BLOCKQUOTE>
+<PRE>void zbodvar(body, item, dim, values)
+
+int body;
+char *item;
+int *dim;
+double *values;
+{
+   int i;
+   i=strlen(item);
+
+   FTN_NAME(xbodvar) (&amp;body, item, &amp;i, dim, values);
+}</PRE><BLOCKQUOTE>
+It
+takes the length string parameter and passes it with the string pointer to the
+second-stage bridge. It converts scalar and array arguments, and uses the
+FTN_NAME macro. The second bridge called by code above follows:
+</BLOCKQUOTE>
+<PRE>subroutine xbodvar(body, item, i, dim, values)
+
+      integer body
+      byte item(1)
+      integer i
+      integer dim
+      double precision values(*)
+      character*80 text
+
+      text='
+      if (i.gt.80) call xvmessage('xbodvar, string too long',' ')
+
+C     Transformation to Fortran-string
+      call mvlc(item, text, i)
+
+      call bodvar(body, text, dim, values)
+
+      return</PRE><BLOCKQUOTE>
+It
+converts the C string (passed as a BYTE array) and length to a FORTRAN
+CHARACTER*n variable, which is then passed into the 
+<TT><FONT FACE="Courier">bodvar</FONT></TT>
+routine, the FORTRAN -callable version. 
+<a name="_Ref395921269"></a></BLOCKQUOTE><A NAME="Heading30"></A><H4 ALIGN="LEFT">
+2.6.4.3	Machine
+Dependencies 
+</H4>
+<BLOCKQUOTE>
+Machine
+dependencies can&#8217;t always be avoided. Code may be dependent on the
+operating system (VMS or UNIX), the computer hardware or variety of UNIX. There
+are significant differences among UNIX implementations.
+<BR>
+Machine
+dependencies may be isolated into separate source files, and compiled only on
+the relevant machine. Or machine-dependent code can be written in-line, and the
+C preprocessor used to select the appropriate version. 
+<BR>
+The
+first solution, separate source files, is appropriate when there are entire
+routines that are implemented differently under various operating systems. This
+option is normally used for differences between VMS and UNIX; only rarely will
+you have separate source files for variants of UNIX. Filenames end in an
+underscore and the OS name, for example, &#8221;open_input_file_vms.c&#8221;
+and &#8220;open_input_file_unix.c&#8221;. 
+<BR>
+Once
+you have separate working source files, get the appropriate one to compile
+during a build by modifying the imakefile.
+<BR>
+The
+MODULE_LIST (or other appropriate macro) is defined based on the machine type.
+Since vimake uses the C preprocessor, the rules listed below for
+machine-dependent preprocessor symbols should be used. For example, a program
+named &#8220;prog.c&#8221; calls a routine that is OS-dependent, named
+&#8220;sub_vms.c&#8221; and &#8220;sub_unix.c&#8221;:
+</BLOCKQUOTE>
+<PRE>#if VMS_OS 
+#define MODULE_LIST prog.c sub_vms.c 
+#define CLEAN_OTHER_LIST sub_unix.c 
+#else 
+#define MODULE_LIST prog.c sub_unix.c 
+#define CLEAN_OTHER_LIST sub_vms.c 
+#endif</PRE><BLOCKQUOTE>
+The
+CLEAN_OTHER_LIST macro deletes the source code for the module not compiled
+during a clean-source operation.
+<BR>
+The
+second solution to the machine dependency problem uses the C preprocessor to
+conditionally compile parts of the code. This method is appropriate for small
+differences and handling differences between various flavors of UNIX. The
+necessary preprocessor symbols are defined in 
+<TT><FONT FACE="Courier">xvmaininc.h</FONT></TT>.<BR>
+Use
+the symbols &#8220;VMS_OS&#8221; and &#8220;UNIX_OS&#8221; to select VMS or
+UNIX. Use &#8220;#if &#8220; (not &#8220;#ifdef&#8221;). &#8220;#else&#8221;
+may be used to select the other operating system, but the #else clause must
+apply to UNIX. Put &#8220;VMS_OS&#8221; in the #if statement. 
+<BR>
+To
+open a standard text file with the 
+<TT><FONT FACE="Courier">fopen()</FONT></TT>
+routine, VMS requires that you give RMS file type arguments to 
+<TT><FONT FACE="Courier">fopen()</FONT></TT>.
+Otherwise, EDT will not be able to access the file properly. For example:
+</BLOCKQUOTE>
+<PRE>/* Open an output text file */ 
+#if VMS_OS 
+file = fopen(filename, &#8220;w&#8221;,&#8221;rat=cr&#8221;, &#8220;rfm=var&#8221;); 
+#else 
+file = fopen(filename, &#8220;w&#8221;); 
+#endif</PRE><BLOCKQUOTE>
+The
+file xvmaininc.h defines symbols for all the types of machines VICAR runs on,
+such as: &#8220;VAX_ARCH&#8221;, &#8220;SUN4_ARCH&#8221;,
+&#8220;MAC_AUX_ARCH&#8221;, etc., but these are never used in program code. For
+example, the 
+<TT><FONT FACE="Courier">fstat()</FONT></TT>
+system routine returns the optimal blocksize on some machines, but not on
+others. The Sun 4 and DECstation have it, but Silicon Graphics and HP do not.
+The 
+<TT><FONT FACE="Courier">mmap()</FONT></TT>
+command, is available on Sun 4 and Silicon Graphics, but not on DECstation or
+HP; the groupings are different.
+<BR>
+Machine
+dependencies based on 
+<I>features</I>,
+rather than
+<I>
+machines
+</I>
+ is the proper way to solve the problem. To port to a new system, we determine
+whether or not it has the feature in question, and modify the include files.
+For example, the symbol &#8220;FSTAT_BLKSIZE_OS&#8221; defines whether or not 
+<TT><FONT FACE="Courier">fstat()</FONT></TT>
+returns the optimal blocksize. &#8220;MMAP_AVAIL_OS&#8221; defines whether or
+not the 
+<TT><FONT FACE="Courier">mmap()</FONT></TT>
+routine is present. These and other 
+<I>feature
+defines
+</I>,
+which all end in &#8220;_OS&#8221; by convention, handle machine dependencies.
+All such definitions end in &#8220;_OS&#8221;, so searches through the code to
+find the machine dependencies are easy.
+<BR>
+The
+rule is: conditional compilation statements to handle machine dependencies use
+names of specific features that are required in the code. These names are
+defined in standard include files based on the machine type. 
+</BLOCKQUOTE><P ALIGN="LEFT">Examine
+xvmaininc.h for current machine dependencies, and check again; it will change.
+There are machine dependencies that aren't listed in xvmaininc.h. Contact the
+VICAR system programmer to add the dependency to xvmaininc.h. This is the only
+include file an imakefile can use. 
+</P>
+<BLOCKQUOTE>
+Since
+xvmaininc.h is under the control of the VICAR system programmer, it is not
+always possible for an application programmer to have it modified on short
+notice. &#8220;vmachdep.h&#8221; is provided in the portable includes (p2$inc
+on VMS and $P2INC on UNIX). It contains dependencies that are needed only by
+application programs. If your definition is in vmachdep.h, it must be included
+in your source.
+</BLOCKQUOTE><P ALIGN="LEFT">Use
+the style of xvmaininc.h when adding new dependencies to
+&#8220;vmachdep.h&#8221;, and make sure you determine the correct setting for
+every architecture VICAR supports. If you can't find out, contact the system
+programmer, and if you still can't, make note of the unknowns in the include
+file. Reserve &#8220;vmachdep.h&#8221;, add your definition, and redeliver it,
+even if your application isn't ready for delivery. Then other programmers can
+modify the file as well. Don&#8217;t sit on &#8220;vmachdep.h&#8221;! Following
+are examples:
+</P>
+
+<PRE>#if FTRUNCATE_AVAIL_OS
+   if (ftruncate(devstate-&gt;dev.disk.channel, j) != 0)
+      status = errno;
+   else
+#endif
+      status = SUCCESS;
+
+...
+
+#if OPEN_PROTECT_OS
+   file = open(filename, O_RDWR|O_CREAT, 0666);
+#else
+   file = open(filename, O_RDWR|O_CREAT);
+#endif
+
+...
+
+/* This example shows finding the EOF with and without fstat */
+
+#if FSTAT_AVAIL_OS
+#if VMS_OS
+#include &lt;stat.h&gt;
+#else
+#include &lt;sys/types.h&gt;
+#include &lt;sys/stat.h&gt;
+#endif
+#else
+#include seek_include
+#endif
+...
+#if FSTAT_AVAIL_OS
+   struct stat statbuf;
+#endif
+...
+#if FSTAT_AVAIL_OS
+   status = fstat(file, &amp;statbuf);
+   if (status != 0) return errno;
+   eof = statbuf.st_size;
+#else                                      /* fstat not available */
+   status = lseek(file, 0, SEEK_END);
+   if (status == -1) return errno;
+   eof = status;
+#endif</PRE>
+<HR>
+
+<DIV ALIGN="LEFT"><A HREF="RTL_Manual-Programm.html">Up</A> | 
+<A HREF="RTL_Manual-2_5.html">Previous</A> | 
+<A HREF="RTL_Manual-2_7.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+</BODY>
+
+</HTML>

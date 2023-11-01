@@ -1,0 +1,121 @@
+<HEAD>
+<TITLE><tt> vimake</tt></TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=1069 HREF=section3.13.html><IMG SRC="/icons/previous.png"></A> <A NAME=1071 HREF=section3.13.html><IMG SRC="/icons/up.png"></A>  <A NAME=1067 HREF=subsection3.13.2.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=1070 HREF=section3.13.html>Creating Applications</A>  <b>Up:</b> <A NAME=1072 HREF=section3.13.html>Creating Applications</A>  <b>Next:</b> <A NAME=1068 HREF=subsection3.13.2.html>Application Packer</A> <P>
+ <H2><tt> vimake</tt></H2>
+<A NAME=vimake><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+Most Unix programs come with a ``makefile'' that is run through the standard
+Unix command <tt> make</tt> to compile and link the program.  The makefile 
+escribes everything needed to build the program, including what options to use
+for the compiler, what libraries are needed for the linker, and where to
+install the manual pages.  Using <tt> make</tt> has many advantages, including
+compiling only what has changed since the last compile.
+<P>
+Unfortunately, VMS does not come with a <tt> make</tt> program.  There is a
+layered product available, called <tt> MMS</tt>, that performs the same function
+with very similar makefiles, but it spawns a subprocess to do the compilation,
+which is very slow under VMS.  It is also not available on all systems.
+Therefore, it is not practical for VICAR applications or subroutines.
+<P>
+Previously, VICAR programs were built in one of two basic ways.  The first,
+and older, method was to have compile and link statements directly in the
+``.COM'' file that contained all the application pieces.  The pieces would
+be extracted, and the compiles performed, all in one step.  The second method
+was to have a separate compile and link file, typically named ``CLapp.COM''
+(for Compile and Link the application).  This file was packaged in the
+application COM file along with the source code.  It could then be executed
+independently of the application COM file to build the program.
+<P>
+The use of an independent command procedure to build the program under VMS
+has many advantages.  It allows the application COM file to be separate.
+It works on all VMS machines, since DCL is standard.  And, it is fast, since
+no subprocesses need to be created.  The old CL files suffer from a terrible
+lack of standardization, and are not the easiest things to use, but the
+basic concept is a good one.
+<P>
+So, it boils down to this.  To build applications under Unix, it is highly
+desirable to use <tt> make</tt> with a makefile.  To build them under VMS, it is
+highly desirable to use DCL with a command procedure.  Obviously, these two
+files (the makefile and the command procedure) are going to be incompatible.
+Worse yet, there is quite a bit of variation required for makefiles on
+different Unix machines.  The commands used often vary, and sometimes there
+are differences in the format and capabilities of <tt> make</tt> itself.
+<P>
+It would be very cumbersome to require the VICAR application programmer to
+maintain two sets of build files for every application (for VMS and Unix).
+Furthermore, the differences in Unix makefiles would make it almost
+impossible to come up with a single makefile for all Unix systems.  Fortunately,
+a program called <tt> imake</tt> has been written to solve these problems.
+<P>
+<tt> imake</tt> is used extensively in the X-windows system to allow building
+the system on many different platforms.  TAE uses it as well.  It is a program
+that makes makefiles.  <tt> imake</tt> makes use of the C preprocessor for macros
+and conditional statements in order to customize the makefile for a particular
+platform.  The input ``imakefile'' is a reduced makefile that contains only
+the program-specific parts, not the system-specific parts.  A template file
+provides the system-specific parts of the makefile for each machine type.
+The <tt> imake</tt> program does some minor cleanup on the imakefile, runs it and
+the template through the C preprocessor, and does some cleanup on the output.
+The result is a makefile that is customized for the system you are on.
+<P>
+This helps to create Unix makefiles, but what about VMS?  If you are familiar
+with <tt> imake</tt>, you know that the imakefiles typically look quite a bit like
+a makefile.  There is a set of rules and definitions that are set up at the
+top of the makefile, but basically the structure of the imakefile is retained
+in the makefile.  It would be impossible to generate a VMS command procedure
+from a typical imakefile.
+<P>
+The VICAR program <tt> vimake</tt> takes the concept of <tt> imake</tt> and goes one
+step further.  Since the compile and link statements for all VICAR programs
+are quite similar, they do not need to be specified at all in the imakefile.
+In fact, <tt> vimake</tt> extracts <em> all</em> of the control out of the imakefile,
+leaving only C preprocessor commands.
+<P>
+<blockquote> 
+The VICAR imakefile contains only a description of <em> what</em> is to be built,
+not <em> how</em> to build it.
+</blockquote>
+<P>
+A VICAR imakefile consists only of C preprocessor statements, mostly #define's
+and a few #if's.  These #define statements set up the filenames used in
+the program, and select various options on how to build the program.  The
+<tt> vimake</tt> program uses this information and a system-specific template to
+create a build file for any system.  Under VMS, it creates a DCL command file
+that will build the program.  Under Unix, it creates a makefile instead.  The
+makefile and DCL command file are never delivered with the program; only the
+imakefile is.
+<P>
+There are many advantages to this scheme.  First of all, the programmer need
+only create one imakefile, instead of separate build files for each system.
+Second, it is much easier to create the imakefile than it would be to create
+a full-blown build file.  Third, all build files are standardized, since they
+are created entirely by the <tt> vimake</tt> templates.  They all operate the
+same, and can be fairly complex since the application programmer never modifies
+them directly.  Fourth, locations of libraries and other files are standardized,
+since the imakefile doesn't specify where the library is, just what library it
+wants.  Finally, changing the way applications are built is easy.  Only the
+templates need to change, and all applications will be built the new way.
+<P>
+<P>___________________________________________________<UL> 
+<LI> <A NAME=1073 HREF=subsubsection3.13.1.1.html>Creating and Using a VICAR Imakefile</A>
+<LI> <A NAME=1074 HREF=subsubsection3.13.1.2.html>Valid <tt> vimake</tt> Commands</A>
+<UL> 
+<LI> <A NAME=1075 HREF=paragraph3.13.1.2.1.html>Module Type Macros</A>
+<LI> <A NAME=1076 HREF=paragraph3.13.1.2.2.html>Name List Macros</A>
+<LI> <A NAME=1077 HREF=paragraph3.13.1.2.3.html>Main Language Macros</A>
+<LI> <A NAME=1078 HREF=paragraph3.13.1.2.4.html>Languages Used Macros</A>
+<LI> <A NAME=1079 HREF=paragraph3.13.1.2.5.html>Build Flag Macros</A>
+<LI> <A NAME=1080 HREF=paragraph3.13.1.2.6.html>Module Class Macros</A>
+<LI> <A NAME=1081 HREF=paragraph3.13.1.2.7.html>Documentation Macros</A>
+<LI> <A NAME=1082 HREF=paragraph3.13.1.2.8.html>Library Macros</A>
+</UL> 
+<LI> <A NAME=1083 HREF=subsubsection3.13.1.3.html>Using the Generated VMS Build File</A>
+<LI> <A NAME=1084 HREF=subsubsection3.13.1.4.html>Using the Generated Unix Makefile</A>
+</UL>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

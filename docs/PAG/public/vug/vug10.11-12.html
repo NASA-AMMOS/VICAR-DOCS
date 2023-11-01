@@ -1,0 +1,379 @@
+<Title>VICAR User's Guide - Appendix 11 - 12</Title>
+<H2>10.11 Examples of Proc Definition Files (PDFs)</H2>
+                                                               
+This appendix contains sample process and procedure PDFs.  The first
+two examples are the process PDFs for a couple of VICAR application
+programs. The remaining examples are procedure PDFs.  At the right of
+each line in a procedure PDF there is a line number and at the end of
+the PDF an explanation for each line is given.  In the later procs,
+some line explanations may be skipped if they were already explained
+in an earlier proc.  The user is advised to try to understand each
+sample proc before going on to the next, more complex PDF. <P>
+
+<EM>Example 1:</EM> Process PDF for the application program
+<CODE>APPEND</CODE>. <P> 
+
+<PRE>
+    PROCESS HELP=*
+    PARM INP TYPE=STRING COUNT=2:30
+    PARM OUT TYPE=STRING
+    END-PROC
+    .TITLE
+    VICAR Program APPEND
+    .HELP
+    PURPOSE:
+    APPEND accepts up to thirty data sets and writes them out, 
+    one after another, as a single data set.
+
+    EXECUTION:
+
+    Example
+	    APPEND INP=(A,B,C) OUT=D    will write A, B, and C 
+					out to D.
+
+    Size and parameter fields are not used.
+
+    Note:  APPEND outputs the total number of lines and samples 
+    written; if input images are of varying data types, the 
+    "number of samples written" will be the maximum number of 
+    samples of all the inputs. If real input is mixed with 
+    integer, the data type of the output will be real.
+    .PAGE
+    OPERATION:
+    After opening all the inputs, APPEND computes the size of 
+    the output data set. It will choose the format of the 
+    largest data type, where the order (largest to smallest) 
+    is: COMP, DOUB, REAL, FULL, HALF, and BYTE.  Each input is 
+    then copied into the output data set, in the same order as 
+    specified in the command.  If the inputs are of varying 
+    sample length, the output lines are padded with zeroes on 
+    the end.  All output lines are of the same length, the 
+    length of the longest input line(maximum # of samples x 
+    largest format).
+	Note that APPEND does not copy over any binary labels.
+
+    Currently BYTE, HALF, FULL, REAL, DOUB, and COMP formats are 
+    supported.
+    .page
+    HISTORY:
+
+      WRITTEN BY:  Ron Alley, 25 October 1978
+      CONVERTED TO VAX BY:  A. S. Mazer,  26 Aug. 1983
+      CONVERTED TO VICAR2 BY:  L. W. Kamp,  26 Nov. 1984
+      PORTED TO UNIX BY: S. V. Hwan, 20 July 1994
+
+      COGNIZANT PROGRAMMER:  S. V. Hwan
+
+    REVISIONS: 
+    Number of input images increased to 30 -- BAM -- 26 Nov. 
+    1984.
+
+    In mixed case, chooses largest type now instead of smallest. 
+    -SVH 20 July 1994
+
+    Switched from FORTRAN to C -- SVH -- 20 July 1994
+
+    Added capability for DOUB and COMP data types. -- SVH -- 
+    20 July 1994
+
+
+    .LEVEL1
+    .VARIABLE INP
+    STRING - Input image files
+    .VARIABLE OUT
+    STRING - Output image file
+    .LEVEL2
+    .VARIABLE INP
+    INP specifies the input data sets.  Up to thirty are allowed.
+    .VARIABLE OUT
+    OUT specifies the output data set.  The number of lines in 
+    the output will be the sum of the number of lines in all the 
+    inputs.  The number of samples will be the maximum of the 
+    number of samples of all the inputs.  The format of the 
+    output will the the format of the largest input data type.
+    .END
+</PRE>
+
+<HR>
+
+<EM>Example 2:</EM> Process PDF for the application program
+<CODE>RESET</CODE>. <P> 
+
+<PRE>
+    PROCESS HELP=*
+    PARM    INPUT	TYPE=(STRING,40)
+    PARM    NEXTFILE	TYPE=INT 	   DEFAULT=1
+    END-PROC
+    .help
+    RESET takes an input which is a list of files in the format
+    of the output from the proc SRCH and resets the next file 
+    (the n in "NEXT FILE = n", the first record) to the value 
+    specified by NEXTFILE, or 1 by default. (This number is
+    limited to 5 digits.)
+    .level1
+    .vari input
+    Input file name
+    .vari nextfile
+    New next file number
+    .level2
+    .vari input
+    INPUT is a file in the format written by the proc SRCH, 
+    containing the line "NEXT FILE = n" followed by a list  
+    of file names 
+    .vari nextfile
+    NEXTFILE is the new value for the "NEXT FILE =" field 
+    of the input file.  This field is used to provide a 
+    value for the program NXT. This file is limited to 5
+    digits.
+    .end
+</PRE>
+
+<HR>
+
+<A NAME="example3">
+<EM>Example 3:</EM> Example of a typical ULOGON.PDF. <P>
+</A>
+
+<PRE>
+    Procedure						!1
+    Refgbl $PROMPT					!2
+    Refgbl $ECHO					!3
+    Refgbl $BECHO					!4
+    Body						!5
+    Enable-log						!6
+    Defcmd scr "Enable-script"				!7
+    Defcmd chk "Syntax check"				!8
+    Defcmd nochk "Syntax nocheck"			!9
+    Defcmd que "ush lpq"				!10
+    Let $ECHO= "YES"					!11
+    Let $BECHO= ("YES","YES")				!12
+    Let $PROMPT="GoGetum"				!13
+    End-proc						!14
+
+Line 1		defines that this proc is a procedure.
+Lines 2-4 	declares that the Global variables <CODE>$PROMPT</CODE>, 
+		<CODE>$ECHO</CODE> and <CODE>$BECHO</CODE> will be referenced. 
+Line 5		defines that the BODY of the procedure follows 
+		this line. 
+Line 6		initiates the session.log and session.tsl files.
+Line 7		defines <CODE>scr</CODE> as a command equivalent to typing
+		<CODE>enable-script</CODE>. 
+Line 8		defines <CODE>chk</CODE> as a command equivalent to typing 
+		<CODE>syntax check</CODE>. 
+Line 9		defines <CODE>nochk</CODE> as a command equivalent to typing 
+		<CODE>syntax nocheck</CODE>.
+Line 10		defines <CODE>que</CODE> as a command equivalent to typing
+		<CODE>ush lpq</CODE>.
+Lines 11,12	redefine the Global variables $ECHO and $BECHO 
+		to the specified values.  See <A HREF="vug7.html#7.1.2.2">Section 7.1.2.2</A> for 
+		an explanation of Global variables. 
+Line 13		redefines the Global variable <CODE>$PROMPT</CODE> to be 
+		"GoGetum" instead of the default "VICAR". 
+Line 14		defines that the end of the proc has been 
+		reached.
+</PRE>
+
+<HR>
+
+<A NAME="example4">
+<EM>Example 4:</EM> Example of a typical ULOGOFF.PDF. <P>
+</A>
+
+<PRE>
+    Procedure						!1
+    Body						!2
+    disable-log						!3
+    ush rm last.par					!4
+    !ush rm session.tsl					!5
+    !ush lpr session.log				!6
+    End-proc						!7
+
+Line 1		defines that this proc is a procedure.
+Line 2		defines that the BODY of the procedure follows
+		this line.  
+Line 3		halts the current session.log and session.tsl 
+		files.
+Line 4		deletes all last.par files in the current 
+		directory.
+Line 5		deletes the session.tsl in the current
+		directory. Note that it is currently commented 
+		out and if the user wishes to execute this
+		command the "!" will have to be removed.  
+Line 6		prints out the latest version of the
+		session.log. Note that it is also commented out
+		and if the user wishes to execute this command
+		the "!" will have to be removed.  
+Line 7		defines that the end of the proc has been 
+		reached.
+</PRE>
+
+<HR>
+
+<EM>Further examples will be provided in the future.</EM> <P>
+<HR>
+
+
+<A NAME="10.12">
+<H2>10.12 Examples of VICAR Labels</H2>
+</A>
+
+Below are two formats for listing the contents of a VICAR label.
+Example 1 is a VICAR ASCII dump and Example 2 is a formatted VICAR
+ASCII listing.  Both list system and history information. <P>
+
+<EM>Example 1:</EM> VICAR ASCII dump <P>
+
+<PRE>
+VICAR>Label-list |stdout=VUGLBL3.DMP|   97G1.BYT   'DUMP
+
+Beginning VICAR task LABEL
+************************************************************************
+************* File 97G1.BYT *************
+LBLSIZE=3000
+FORMAT='BYTE'
+TYPE='IMAGE'
+BUFSIZ=20000
+DIM=3
+EOL=0
+RECSIZE=1000
+ORG='BSQ'
+NL=1000
+NS=1000
+NB=1
+N1=1000
+N2=1000
+N3=1
+N4=0
+NBB=0
+NLB=0
+TASK='CONVIM'
+USER='USERID'
+DAT_TIM='Thu Oct 30 20:41:51 1986'
+LAB01=
+'77                    0801    1280 8011280 L 1                      SC'
+LAB02=
+'VGR-2   FDS 43800.00   PICNO 0263S2-007   SCET 81.231 06:54:23       C'
+LAB03=
+'NA CAMERA  EXP 15360.0 MSEC  FILT 7(  UV  )  LO GAIN  SCAN RATE  5:1 C'
+LAB04=
+'ERT 81.231 08:20:00   1/ 1 FULL    RES   VIDICON TEMP  -79.00 DEG C  C'
+LAB05=
+'IN/213190/05 OUT/******/**               DSS 12    BIT SNR   21.233  C'
+LAB06=
+'0E665 A/4BEB0BD7 B/C381 C/638B D/007F0000 ETLM/C5C692C6A8A9E1DE1910 AC'
+LAB07=
+'NA OPCAL 00(*****.* MSEC) PIXAVG 048/1 OPERATIONAL MODE 2(NAONLY)   AC'
+LAB08=
+'CAM ECAL CYCLE BEAM RESET OPEN  CLOSE FLOOD AEXPM  FIL G1 SHUT MODE AC'
+LAB09=
+'NA   NO   READ  YES   NO    NO    NO    NO    NO    7 P  * NORMAL   AC'
+LAB10=
+'WA   NO   PREP  NO    YES   NO    NO    NO    NO    7 P  3 NORMAL   AC'
+LAB11=
+'INCIDENCE ANGLE  30.3    EMISSION ANGLE  20.0    PHASE ANGLE   8.1   C'
+LAB12=
+'NORTH AZIMUTH ANGLE 323.0    KM/LINE    65.59     KM/SAMP    65.59   C'
+LAB13=
+'ALT  7078076 KM SL.RANGE       0 KM VFOV   60442 KM HFOV  70792 KM   C'
+LAB14=
+'LAT   26(UL)  79(UR)  -7(LL)  38(LR)  36(C)  14(SUB S/C)   8(SUBSOL) C'
+LAB15=
+'LONG 116(UL) 254(UR)  70(LL)  23(LR)  75(C)  80(SUB S/C)  88(SUBSOL) L'
+NLABS=15
+TASK='ADESPIKE'
+USER='USERID'
+DAT_TIM='Wed Nov 12 19:01:59 1986'
+ADJ_LINE=1281
+SAM_LINE=855
+TASK='FICOR77'
+USER='USERID'
+DAT_TIM='Wed Nov 12 19:02:55 1986'
+LABEL1='FICOR77  MINSAT= 6003 NUMSAT=   816                            '
+LABEL2='FOR NANOWATTS/CM**2/STER/NM MULTIPLY DN VALUE BY    0.02181    '
+LABEL3='FOR (I/F)*10000., MULTIPLY DN VALUE BY              0.10000    '
+LABEL4='FICOR77  DARK CURRENT FDS = 43958.48                           '
+TASK='RESSAR77'
+USER='USERID'
+DAT_TIM='Wed Nov 12 19:06:24 1986'
+PIX_CNT=22259
+TASK='GEOMA'
+USER='USERID'
+DAT_TIM='Wed Nov 12 19:07:20 1986'
+TASK='C'
+USER='USERID'
+DAT_TIM='Thu Nov 13 15:14:44 1986'
+************************************************************************
+</PRE>
+
+<HR>
+
+<EM>Example 2:</EM> Formatted VICAR ASCII listing <P>
+
+<PRE>
+VICAR>Label-list |stdout=VUGLBL2.LST|   97G1.BYT
+
+Beginning VICAR task LABEL
+********************************************************
+	************  File 97G1.BYT ************
+		3 dimensional IMAGE file
+		File organization is BSQ     
+		Pixels are in BYTE format from a SUN-4 host
+		1 bands
+		1000 lines per band
+		1000 samples per line
+                0 lines of binary header
+                0 bytes of binary prefix per line
+---- Task: CONVIM -- User: USERID -- Thu Oct 30 20:41:51 1986 ----
+LAB01=
+'77                  0801    1280 8011280 L 1                        SC'
+LAB02=
+'VGR-2   FDS 43800.00   PICNO 0263S2-007   SCET 81.231 06:54:23       C'
+LAB03=
+'NA CAMERA  EXP 15360.0 MSEC  FILT 7(  UV  )  LO GAIN  SCAN RATE  5:1 C'
+LAB04=
+'ERT 81.231 08:20:00   1/ 1 FULL    RES   VIDICON TEMP  -79.00 DEG C  C'
+LAB05=
+'IN/213190/05 OUT/******/**                DSS #**   BIT SNR   21.233 C'
+LAB06=
+'0E665 A/4BEB0BD7 B/C381 C/638B D/007F0000 ETLM/C5C692C6A8A9E1DE1910 AC'
+LAB07=
+'NA OPCAL 00(*****.* MSEC) PIXAVG 048/1 OPERATIONAL MODE 2(NAONLY)   AC'
+LAB08=
+'CAM ECAL CYCLE BEAM  RESET OPEN CLOSE FLOOD AEXPM  FIL G1 SHUT MODE AC'
+LAB09=
+'NA   NO   READ  YES   NO    NO    NO    NO    NO    7 P  * NORMAL   AC'
+LAB10=
+'WA   NO   PREP  NO    YES   NO    NO    NO    NO    7 P  3 NORMAL   AC'
+LAB11=
+'INCIDENCE ANGLE  30.3     EMISSION ANGLE  20.0     PHASE ANGLE   8.1 C'
+LAB12=
+'NORTH AZIMUTH ANGLE 323.0     KM/LINE    65.59      KM/SAMP    65.59 C'
+LAB13=
+'ALT  7078076 KM SL.RANGE       0 KM VFOV   60442 KM HFOV   70792 KM  C'
+LAB14=
+'LAT   26(UL)  79(UR)  -7(LL)  38(LR)  36(C)  14(SUB S/C)  8(SUBSOL)  C'
+LAB15=
+'LONG 116(UL) 254(UR)  70(LL)  23(LR)  75(C)  80(SUB S/C) 88(SUBSOL)  L'
+NLABS=15
+---- Task: ADESPIKE -- User: USERID -- Wed Nov 12 19:01:59 1986 ----
+ADJ_LINE=1281
+SAM_LINE=855
+---- Task: FICOR77 -- User: USERID -- Wed Nov 12 19:02:55 1986 ----
+LABEL1='FICOR77  MINSAT= 6003 NUMSAT=   816                            '
+LABEL2='FOR NANOWATTS/CM**2/STER/NM MULTIPLY DN VALUE BY    0.02181    '
+LABEL3='FOR (I/F)*10000., MULTIPLY DN VALUE BY              0.10000    '
+LABEL4='FICOR77  DARK CURRENT FDS = 43958.48                           '
+---- Task: RESSAR77 -- User: USERID -- Wed Nov 12 19:06:24 1986 ----
+PIX_CNT=22259
+---- Task: GEOMA -- User: USERID -- Wed Nov 12 19:07:20 1986 ----
+---- Task: C -- User: USERID -- Thu Nov 13 15:14:44 1986 ----
+************************************************************************
+</PRE>
+
+<HR>
+<A HREF="vug10.4-10.html"><IMG SRC="back.gif"></A>
+<A HREF="vug10.13.html"><IMG SRC="fwd.gif"></A>
+<P> 
+
+If you wish to return to the Contents page, click <A
+HREF="vugfinal.html#Contents">here</A>.

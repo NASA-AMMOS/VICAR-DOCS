@@ -1,0 +1,80 @@
+<HEAD>
+<TITLE>Test Routines</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=1179 HREF=subsection3.13.2.html><IMG SRC="/icons/previous.png"></A> <A NAME=1181 HREF=section3.13.html><IMG SRC="/icons/up.png"></A>  <IMG SRC="/icons/next.png">  <b>Previous:</b> <A NAME=1180 HREF=subsection3.13.2.html>Application Packer</A>  <b>Up:</b> <A NAME=1182 HREF=section3.13.html>Creating Applications</A>  <P>
+ <H2>Test Routines</H2>
+<P>
+Test routines are required for every VICAR class 2 (R2LIB) application and
+subroutine.  Test routines are largely the same as before, but there are a
+few differences.
+<P>
+As before, programs and procedures typically have a procedure PDF as the
+test routine.  This PDF must be portable as well.  See Section <A HREF=section3.10.html#porttcl><IMG SRC="/icons/cross-ref.png"></A>,
+Porting TCL, for details on making a PDF portable.
+<P>
+Subroutines must have a test program that calls the subroutine, as well as
+a procedure PDF that calls the test program.  The test program must be portable
+as well, and should have its own imakefile and its own PDF.  So subroutines
+often have four test files: the test program, the imakefile, the test program
+PDF, and the test PDF that calls it.  All of these files go under the TEST file
+category in <tt> vpack</tt>.  To run the test, you would first unpack just the
+TEST files, run <tt> vimake</tt> on the test imakefile, build the program, and
+finally execute the test PDF.
+<P>
+Keep in mind that the test programs and scripts should test all of the
+major functions of the program, rather than just testing that the program
+doesn't crash.  This is not a change, but it is a point that needs emphasizing.
+<P>
+The log that's generated when the test is run must in most cases be delivered
+with the program.  This ensures that you run the test before delivery, in
+order to make sure it still works.  You should really run <tt> diff</tt> on the
+new log versus the old log, to make sure nothing changed.  In any case,
+Test &amp; Integration will have to compare the logs.
+<P>
+One thing that really makes checking the logs difficult is the <tt> usage</tt>
+statistics that TAE automatically puts in the log after each program execution.
+The date, amount of time, page faults, etc. used will vary every time the test
+is run, and yet make no difference in the results of the regression test.
+The usage statistics generate lots of meaningless differences, which tend to
+hide any real differences.
+<P>
+For this reason, the TAE global variable $AUTOUSAGE has been added to control
+the automatic printing of usage statistics.  It can take three values,
+``BATCH'', ``ALL'', and ``NONE''.  To use it, you must use the TAE command
+``refgbl $AUTOUSAGE'' before the ``body'' statement, then you can set
+it with a standard ``let'' command.  The values are described below.
+<P>
+<UL>
+<LI> BATCH:  This is the default, and the way previous versions of VICAR
+worked all the time.  In this mode, automatic usage statistics are printed
+after every program execution in batch mode.  In interactive mode, usage
+statistics are not printed unless the <tt> usage</tt> command is explicitly given.
+<P>
+<LI> ALL:  This causes automatic usage statistics to be printed after <em>
+every</em> program execution, in both batch and interactive modes.
+<P>
+<LI> NONE:  This supresses automatic usage statistics in both batch and
+interactive modes.  With ``NONE'' set, the only way to get the statistics is
+via the <tt> usage</tt> command.
+</UL>
+<P>
+It is recommended that $AUTOUSAGE be set to ``NONE'' in every test script, to
+avoid meaningless usage statistics.
+<P>
+Note:  As of this writing, the <tt> usage</tt> command has not yet been implemented
+under Unix, therefore $AUTOUSAGE has not either.
+<P>
+Another problem in the checking of test scripts is the issue of numerical
+precision.  It is possible that the results of a test involving floating-point
+calculations may be different on different machines in the least significant
+few digits.  This is due to differences in numerical representation and
+precision, as well as possible differences in library routines.  The acceptable
+difference between the results is defined in the <i> MSTP Software Requirements
+Document</i>, by Steve Pohorsky, JPL D-10637.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

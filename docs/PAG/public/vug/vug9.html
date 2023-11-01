@@ -1,0 +1,194 @@
+<Title>VICAR User's Guide</Title>
+<H1>9   Advanced VICAR Concepts</H1>
+
+<STRONG>Contents</STRONG>
+
+<PRE>
+9.1   <A HREF="#9.1">Dataset Structure</A>
+9.2   <A HREF="#9.2">VICAR Label Structure</A>
+</PRE>
+
+<STRONG>EXPERT</STRONG> This section expands on two basic concepts
+introduced in Section 4: datasets and labels.  More detailed
+information on dataset and label structure can be found in <A
+HREF="/vicar/vic_file_fmt.html"><CITE>The VICAR
+File Format</CITE></A>. <P>
+
+<A NAME="9.1">
+<H2>9.1	Dataset Structure</H2>
+</A>
+
+<STRONG>EXPERT</STRONG> The standard structure for VICAR datasets is a
+file of fixed-length records which consists of the parts listed
+below.  Figure 9.1 is a visual representation of the dataset
+structure. <P>
+
+<IMG SRC="fig.9.1.gif"> <P>
+
+<UL>
+<LI>VICAR label (<A HREF="#9.2">Section 9.2</A>)
+<LI>binary label header - optional
+<LI>binary label prefix - optional
+<LI>pixel data
+<LI>end-of-dataset label (EOL; <A
+HREF="vug4.html#4.4">Section 4.4</A>) - optional 
+</UL>
+
+<STRONG>EXPERT</STRONG> The binary label is an optional area for
+storing information about a dataset in free-form binary format.  The
+data in the binary label are not defined by the executive, but by the
+individual applications.  There are two parts to the binary label, the
+binary header and the binary prefix. The binary header is useful for
+storing information which may pertain to the entire dataset.  The
+binary prefix consists of a fixed number of bytes from each pixel data
+line and is useful for storing line-dependent information (e.g.,
+marking "bad" data).  The binary label is hidden from programs unless
+they specifically request access to it.  If a program does request
+access, the binary label is then treated as a part of the data.  If
+access is not requested, the binary label will not be present in the
+output dataset. <P>
+
+<STRONG>EXPERT</STRONG> The pixel data portion of a dataset may
+contain between 1 and 2.147E9 (2 to the power of 31, minus 1) lines,
+each of the same length.  The maximum length is dependent upon the
+storage device.  Each line is a sequence of pixels whose format is
+represented by 1, 2, 4 or 8 bytes (<A HREF="vug4.html#Table
+4.3.3">Table 4.3.3</A>) and is fixed for a given dataset.  In the
+"picture" interpretation, each line of a dataset represents one raster
+scan line. The sequence of lines represents the sequence of raster
+scan lines beginning with line 1 and proceeding down.
+Multi-dimensional pixel data can be organized in one of three ways:
+band-sequential (BSQ), band-interleaved by line (BIL) or
+band-interleaved by pixel (BIP).  Additional information on
+multi-dimensional pixel data organization can be found in the
+<CITE>VICAR Run-time Library Reference Manual</CITE>. <P>
+
+<A NAME="9.2">
+<H2>9.2	VICAR Label Structure</H2>
+</A>
+
+<STRONG>EXPERT</STRONG> The VICAR label is an ASCII string containing
+free-field items of the form <CODE>keyword=value</CODE> (<A
+HREF="vug4.html#4.4.1">Section 4.4.1</A>) separated by spaces.  <P>
+
+<STRONG>EXPERT</STRONG> The VICAR label contains three classes of
+information.  Dataset description ("system") items describe the size,
+organization, data format, and existence of the optional sections of
+the dataset. "Property" items describe properties of the image in the
+image domain, such as the map projection, lookup table, and
+latitude/longitude information.  "History" items describe the history
+of the pixel data in the dataset, the procs that have processed the
+pixel data, sometimes their parameters, the user identification, and
+the processing date and time. <P>
+
+<STRONG>EXPERT</STRONG> System items in the VICAR label include, in
+order:
+
+<PRE>
+LBLSIZE		the size of the label in bytes
+FORMAT		the data format of the pixels in the image
+		(byte, half, full, real, doub, or comp; word
+		long, and complex may also be found but are
+		obsolete)
+TYPE		the dataset type (image, param, graph1, graph2
+		graph3, tabular)
+BUFSIZ		(obsolete, but still required; set it equal to
+		RECSIZE in new files) the internal blocksize 
+		VICAR will use during I/O
+DIM		the number of dimensions in the file (always
+		equals 3)
+EOL		end-of-dataset label (if there is an EOL, EOL=1)
+RECSIZE		the size in bytes of each record in the VICAR
+		file
+ORG		data organization:
+		BSQ	band sequential
+		BIL 	band interleaved by line 
+		BIP	band interleaved by pixel
+NL		number of lines (number of records)
+NS		number of samples (record length)
+NB		number of image bands (number of data planes)
+N1		equal to NS or NB depending on pixel data 
+		organization (ORG - Table 9.2) 
+N2		equal to NL, NS or NB depending on pixel data 
+		organization (ORG - Table 9.2) 
+N3		equal to NB or NL depending on pixel data 
+		organization (ORG - Table 9.2) 
+N4		not yet used; defaults to 0
+NBB		number of binary prefix bytes
+NLB		number of binary header records
+HOST		the type of computer used to generate the
+		image (alliant, cray, decstatn, hp-700,
+		mac-aux, mac-mpw, sgi, sun-3, sun-4, tek,
+		vax-vms)
+INTFMT		format used ot represent integer pixels
+		(byte, half, and full) in the file. (low, for 
+		vax-vms and decstatn; high for all other
+		except cray, which isn't implemented yet)
+REALFMT		format used to represent floating-point
+		pixels (real, doub, and comp) in the file.
+		(rieee for decstatn; vax for vax-vms; ieee
+		for all others except cray which isn't
+		implemented yet)
+BHOST		type of computer used to generate the
+		binary label. (same values as HOST)
+BINTFMT		format used to represent integers in the
+		binary label (same values as INTFMT)
+BREALFMT	format used to represent floating-point
+		data in the binary label (same values as
+		REALFMT)
+BLTYPE		type of binary label
+</PRE>
+
+<HR>
+<PRE>
+		DIM		ORG
+		
+			BSQ	BIL	BIP
+
+		N1	NS	NS	NB
+		N2	NL	NB	NS
+		N3	NB	NL	NL
+
+	   Table  9.2  VICAR Data Organization 
+</PRE>
+<HR>
+
+<STRONG>EXPERT</STRONG> Property labels are located between the system
+and the history labels.  They begin with the first occurrence of the
+keyword <CODE>PROPERTY</CODE> and end with the first occurrence of the
+keyword <CODE>TASK</CODE>.  A dataset may exclude property labels
+entirely.  Each property begins with a <CODE>PROPERTY</CODE> keyword,
+which is the name of the property set. This is followed by the label
+items that make up the property. The valid property names, and the
+keywords that make up each property, are defined in a name registry
+maintained by the VICAR system programmer. <P>
+
+<STRONG>EXPERT</STRONG> History items in the VICAR label include:
+<PRE>
+TASK		a proc that has processed the dataset
+USER		user identification (login id.)
+DAT_TIM		processing date and time
+optional items	added by the application proc listed under task
+</PRE>
+
+<I>Example:</I> History items added by VICAR 
+
+<PRE>
+	TASK='RESSAR77'
+	USER='USERID'
+	DAT_TIM='Wed Nov 12 19:06:24 1986'
+	PIX_CNT=22259
+	PARMS='AUTO-STRETCH:    0 to    0 and   138 to   255'
+</PRE>
+
+<STRONG>EXPERT</STRONG> The contents of a VICAR label may be listed
+either as formatted ASCII or as an ASCII dump (<A
+HREF="vug10.11-12.html#10.12">Appendix 10.12</A>). <P>
+
+<HR>
+<A HREF="vug8.html"><IMG SRC="back.gif"></A>
+<A HREF="vug10.1-3.html"><IMG SRC="fwd.gif"></A>
+<P> 
+
+If you wish to return to the Contents page, click <A
+HREF="vugfinal.html#Contents">here</A>. 

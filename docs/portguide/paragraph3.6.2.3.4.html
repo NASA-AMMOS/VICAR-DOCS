@@ -1,0 +1,94 @@
+<HEAD>
+<TITLE><b> x</b>/<b>  zvhost</b></TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=662 HREF=paragraph3.6.2.3.3.html><IMG SRC="/icons/previous.png"></A> <A NAME=664 HREF=subsubsection3.6.2.3.html><IMG SRC="/icons/up.png"></A>  <A NAME=660 HREF=paragraph3.6.2.3.5.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=663 HREF=paragraph3.6.2.3.3.html><b> x</b>/<b>  zvcmdout</b></A>  <b>Up:</b> <A NAME=665 HREF=subsubsection3.6.2.3.html>Miscellaneous Routines</A>  <b>Next:</b> <A NAME=661 HREF=paragraph3.6.2.3.5.html><b> x</b>/<b>  zvpixsize</b></A> <P>
+ <H4><b> x</b>/<b>  zvhost</b></H4>
+<P>
+<PRE><TT>
+call xvhost(host, intfmt, realfmt, status)
+status = zvhost(host, intfmt, realfmt);
+</TT></PRE>
+<P>
+Returns the integer and real data representations of a host given the
+host type name.  The returned values may be used with the translation
+routines or the INTFMT and REALFMT system label items.  This routine
+can also return the host type name, for use with the HOST system label.
+<P>
+This routine is rarely needed, as the normal case is to read any type of
+file (where you get INTFMT and REALFMT from the file), and to write in native
+format (where you don't need to specify the formats).  However, this routine
+is useful in the rare case that a program needs to write in a non-native
+format.  The user can select the machine type for output, and this routine
+will return the data representations needed for that machine type.
+<P>
+<b> Arguments:</b>
+<UL>
+<P>
+<LI> HOST: string, input
+<P>
+HOST is the type name of the host you want information about.  It is not
+the name of a particular machine, rather, it is the name of a type of machine.
+HOST corresponds to the HOST system label.  The HOST system label is intended
+for documentation only, however, the same values are valid in this parameter.
+Normally, the HOST parameter will come from user input.  The valid values
+will change as VICAR is ported to more machines, so the program should allow
+any value as user input, then check the status from <b> x</b>/<b>  zvhost</b> to see if the
+machine name is valid.  The currently valid values are listed in
+Table <A HREF=subsection3.7.2.html#hostlabel><IMG SRC="/icons/cross-ref.png"></A>.  In addition, the following values are accepted:
+<P>
+<DL>
+<DT>NATIVE
+<DD>: Returns the INTFMT and REALFMT for the machine currently running.
+<DT>LOCAL
+<DD>: Same as NATIVE.
+<DT>HOSTNAME
+<DD>: Special, see below.
+<P>
+ </DL>
+<P>
+The value ``HOSTNAME'' is special.  If this value is given for HOST, then
+the return values change.  The parameter INTFMT returns the host type name for
+the machine currently running.  The parameter REALFMT is undefined on output.
+The value returned in INTFMT could then be used in another call to <b> x</b>/<b>  zvhost</b>
+(which wouldn't gain much since ``NATIVE'' or ``LOCAL'' do the same thing),
+or it could be used in a HOST label.  This should be needed only from Fortran.
+A C program should use the ``NATIVE_HOST_LABEL'' macro defined in xvmaininc.h
+instead.  Similarly, ``NATIVE'' and ``LOCAL'' will be mainly useful in a
+Fortran program, as a C program should use the NATIVE_INTFMT and
+NATIVE_REALFMT macros.
+<P>
+<LI> INTFMT: string, output
+<P>
+The integral host representation for the machine in question is returned in
+INTFMT.  It corresponds to the INTFMT label item in a file, and the related
+parameters to the translation routines.  The returned value will be one of
+the supported integer data types, which are listed in Table <A HREF=subsection3.7.2.html#intfmtlabel><IMG SRC="/icons/cross-ref.png"></A>.
+<P>
+If the special host name ``HOSTNAME'' is given, then INTFMT instead returns
+the host type name (HOST label) of the native machine.
+<P>
+<LI> REALFMT: string, output
+<P>
+The floating-point host representation for the machine in question is returned
+in REALFMT.  It corresponds to the REALFMT label item in a file, and the
+related parameters to the translation routines.  The returned value will be
+one of the supported floating-point data types, which are listed in
+Table <A HREF=subsection3.7.2.html#realfmtlabel><IMG SRC="/icons/cross-ref.png"></A>.
+<P>
+If the special host name ``HOSTNAME'' is given, then the value returned in
+REALFMT is undefined and should not be used.
+<P>
+<LI> STATUS: integer, output
+<P>
+The returned status value.  It is an argument in Fortran and the function
+return value in C.  Any value other than SUCCESS indicates that the value
+given for HOST was invalid.
+<P>
+</UL>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

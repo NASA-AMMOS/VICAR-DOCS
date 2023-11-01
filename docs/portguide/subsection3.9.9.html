@@ -1,0 +1,68 @@
+<HEAD>
+<TITLE>Machine Dependencies</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=942 HREF=subsection3.9.8.html><IMG SRC="/icons/previous.png"></A> <A NAME=944 HREF=section3.9.html><IMG SRC="/icons/up.png"></A>  <IMG SRC="/icons/next.png">  <b>Previous:</b> <A NAME=943 HREF=subsection3.9.8.html>VMS-Specific Code</A>  <b>Up:</b> <A NAME=945 HREF=section3.9.html>Porting Fortran</A>  <P>
+ <H2>Machine Dependencies</H2>
+<P>
+There will be times where machine dependencies cannot be avoided, and
+will be required in the code.  These dependencies can be based on the operating
+system (VMS vs. Unix), or they can be based on the actual machine type or
+flavor of Unix that is running.  Not all variants of Unix are created equal,
+and sometimes there can be significant differences among machines.  This
+section describes how to handle such machine dependencies in your Fortran
+code.
+<P>
+Fortran is at a severe disadvantage when it comes to writing machine-dependent
+code.  Simply put, Fortran does not have a portable means for doing conditional
+compilation.  The C preprocessor does a wonderful job at this, but it cannot
+be used to conditionally compile Fortran code in a portable manner.  For this
+reason, the best method to write machine-dependent code in Fortran is to
+write it in C instead!
+<P>
+If machine-dependent code has to be written in Fortran, it must be isolated
+into separate source files.  Only the source files containing the code that
+applies to the machine you're on will be compiled.  In-line code variants
+for different machines is not possible due to the lack of a conditional
+compilation method.
+<P>
+The filenames for the machine-dependent code should by convention end in an
+underscore and the OS name or feature type that it depends on, for example,
+``open_input_file_vms.f'' and ``open_input_file_unix.f''.
+<P>
+Once you have the files separate, you must get the appropriate one
+to compile during a build.  This is handled in the imakefile (see
+Section <A HREF=subsection3.13.1.html#vimake><IMG SRC="/icons/cross-ref.png"></A>, cmd vimake, for details on the imakefile).  The
+MODULE_LIST (or other appropriate macro) would be defined differently based
+on the machine type.  Since <tt> vimake</tt> uses the C preprocessor, the rules for
+machine-dependent preprocessor symbols should be used.  For example,
+a program named ``prog.f'' calls a routine that is OS-dependent, named
+``sub_vms.f'' and ``sub_unix.f''.  The module list for the imakefile
+would look like this:
+<P>
+<PRE><TT>
+#if VMS_OS
+#define MODULE_LIST prog.f sub_vms.f
+#define CLEAN_OTHER_LIST sub_unix.f
+#else
+#define MODULE_LIST prog.f sub_unix.f
+#define CLEAN_OTHER_LIST sub_vms.f
+#endif
+</TT></PRE>
+<P>
+The CLEAN_OTHER_LIST macro is needed to make sure that the source code
+for the module not compiled is deleted during a clean-source operation.
+See Section <A HREF=subsection3.13.1.html#vimake><IMG SRC="/icons/cross-ref.png"></A>, <tt> vimake</tt>, for details.
+<P>
+For more details on the preprocessor symbols allowed in the imakefile,
+see Section <A HREF=subsection3.8.4.html#machdepc><IMG SRC="/icons/cross-ref.png"></A>, Machine Dependencies, under the section on
+Porting C.  Note that specific machine types must not be used, as described
+in that section.  Use feature defines instead.  Note that any such feature
+defines must be in xvmaininc.h, since that is the only include file that
+<tt> vimake</tt> can access.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

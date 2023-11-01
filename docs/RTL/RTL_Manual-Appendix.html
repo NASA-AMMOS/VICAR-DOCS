@@ -1,0 +1,883 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--
+This document was converted from RTF source: 
+By rtftohtml 4.17
+See http://www.sunpack.com/RTF
+Filename:WORD Ram Disk:RTL_Manual.rtf
+Application Directory:Data Disk:r2h4
+Subject:
+Author:Larry Bolef
+Operator:Larry Bolef
+Document Comments:
+Version Comments:
+Comments:
+Keywords:
+Translation Date:06/05/1999
+Translation Time:08:04:50
+Translation Platform:MacOS
+Number of Output files:59
+This File:WORD Ram Disk:RTL_Manual-Appendix.html
+SplitDepth=2
+SkipNavPanel=0
+SkipLeadingToc=0
+SkipTrailingToc=1
+GenContents=1
+GenFrames=0
+GenIndex=0
+-->
+<HEAD lang="en"><META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<TITLE>9.	Appendix A: Summary of Calling Sequences</TITLE>
+</HEAD>
+
+<BODY ><DIV ALIGN="LEFT"><A HREF="RTL_Manual-8_2.html">Previous</A> | 
+<A HREF="RTL_Manual-Appendix-2.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+<HR>
+
+
+<a name="_Toc453201488"></a><A NAME="Heading130"></A><H1 ALIGN="LEFT">
+9.	Appendix
+A: Summary of Calling Sequences
+</H1>
+<BLOCKQUOTE>
+This
+section contains a brief synopsis of the calling sequences for all the RTL
+routines, in alphabetical order.
+<BR>
+For
+routines that take optional arguments (keyword-value pairs), the allowed
+keywords are listed. You must have an argument list terminator on every routine
+that lists optional arguments, even if you don't use them. Some of the keywords
+listed are not implemented or not useful, but they are allowed by the parameter
+parsing mechanism.
+<BR>
+The
+actual data type declarations for the data types below are listed. See 
+<A HREF="RTL_Manual-2_4.html#_Ref393695036">Table 8: FORTRAN declarations for Run-Time Library arguments</A>.
+Also See 
+<A HREF="RTL_Manual-2_3.html#_Ref393619550">Table 6: C Declarations for Run-Time Library Arguments</A>.
+Keep in mind that a value listed as &#8220;output&#8221; or
+&#8220;in/out&#8221; in a C call must be passed by address, not value.
+</BLOCKQUOTE>
+<PRE>abend/zabend
+
+call abend
+zabend();
+
+qprint/zqprint
+
+call qprint(message, length)
+zqprint(message, length);
+	message	input	string
+	length	input	integer
+
+sc2for
+
+sc2for(c_string, max_length, for_string, argptr, nargs, argno, strno);
+	c_string	input	string
+	max_length	input	integer
+	for_string	output	fortran string
+	argptr	input	void pointer
+	nargs	input	integer
+	argno	input	integer
+	strno	input	integer
+
+sc2for_array
+
+sc2for_array(c_string, len, nelements, for_string, max_length, argptr, nargs, argno, strno);
+	c_string	input	string array, size nelements
+	len	input	integer
+	nelements	input	integer
+	for_string	output	fortran string array, size nelements
+	max_length	in/out	integer
+	argptr	input	void pointer
+	nargs	input	integer
+	argno	input	integer
+	strno	input	integer
+
+sfor2c
+
+sfor2c(c_string, len, for_string, argptr, nargs, argno, strno);
+	c_string	output	string
+	len	input	integer
+	for_string	input	fortran string
+	argptr	input	void pointer
+	nargs	input	integer
+	argno	input	integer
+	strno	input	integer
+
+sfor2c_array
+
+sfor2c_array(c_string, max_length, nelements, for_string, argptr, nargs, argno, strno);
+	c_string	output	pointer to string array, size nelements
+	max_length	in/out	integer
+	nelements	input	integer
+	for_string	input	fortran string array, size nelements
+	argptr	input	void pointer
+	nargs	input	integer
+	argno	input	integer
+	strno	input	integer
+
+sfor2len
+
+sfor2len(for_string, argptr, nargs, argno, strno);
+	for_string	input	fortran string
+	argptr	input	void pointer
+	nargs	input	integer
+	argno	input	integer
+	strno	input	integer
+
+sfor2ptr
+
+ptr = sfor2ptr(for_string);
+	for_string	input	fortran string
+	ptr	output	string pointer
+
+xladd/zladd
+
+call xladd(unit, type, key, value, status, &lt;optionals&gt;, ' ')
+status = zladd(unit, type, key, value, &lt;optionals&gt;, 0);
+	unit	input	integer
+	type	input	string
+	key	input	string
+	value	input	value array, size NELEMENT
+	status	output	integer
+Optionals allowed:
+	ELEMENT	input	integer
+	ERR_ACT	input	string
+	ERR_MESS	input	string
+	FORMAT	input	string
+	HIST	input	string
+	INSTANCE	input	integer
+	LEVEL	input	integer
+	MODE	input	string
+	NELEMENT	input	integer
+	PROPERTY	input	string
+	ULEN	input	integer
+
+xldel/zldel
+
+call xldel(unit, type, key, status, &lt;optionals&gt;, ' ')
+status = zldel(unit, type, key, &lt;optionals&gt;, 0);
+	unit	input	integer
+	type	input	string
+	key	input	string
+	status	output	integer
+Optionals allowed:
+	ELEMENT	input	integer
+	ERR_ACT	input	string
+	ERR_MESS	input	string
+	HIST	input	string
+	INSTANCE	input	integer
+	NELEMENT	input	integer
+	NRET	output	integer
+	PROPERTY	input	string
+
+xlget/zlget
+
+call xlget(unit, type, key, value, status, &lt;optionals&gt;, ' ')
+status = zlget(unit, type, key, value, &lt;optionals&gt;, 0);
+	unit	input	integer
+	type	input	string
+	key	input	string
+	value	output	value array, size NELEMENT
+	status	output	integer
+Optionals allowed:
+	ELEMENT	input	integer
+	ERR_ACT	input	string
+	ERR_MESS	input	string
+	FORMAT	input	string
+	HIST	input	string
+	INSTANCE	input	integer
+	LENGTH	output	integer
+	LEVEL	output	integer
+	NELEMENT	input	integer
+	NRET	output	integer
+	PROPERTY	input	string
+	ULEN	input	integer
+
+xlgetlabel/zlgetlabel
+
+call xlgetlabel(unit, buf, bufsize, status)
+status = zlgetlabel(unit, buf, bufsize);
+	unit	input	integer
+	buf	output	string
+	bufsize	in/out	integer
+	status	output	integer
+
+xlhinfo/zlhinfo
+
+call xlhinfo(unit, tasks, instances, nhist, status, &lt;optionals&gt;, ' ')
+status = zlhinfo(unit, tasks, instances, nhist, &lt;optionals&gt;, 0);
+	unit	input	integer
+	tasks	output	string array, size nhist
+	instances	output	integer array, size nhist
+	nhist	in/out	integer
+	status	output	integer
+Optionals allowed:
+	ERR_ACT	input	string
+	ERR_MESS	input	string
+	NRET	output	integer
+	ULEN	input	integer
+
+xlinfo/zlinfo
+
+call xlinfo(unit,type,key,format,maxlen,nelement,status,&lt;optionals&gt;,' ')
+status = zlinfo(unit,type,key,format,maxlen,nelement,&lt;optionals&gt;, 0);
+	unit	input	integer
+	type	input	string
+	key	input	string
+	format	output	string
+	maxlen	output	integer
+	nelement	output	integer
+	status	output	integer
+Optionals allowed:
+	ERR_ACT	input	string
+	ERR_MESS	input	string
+	HIST	input	string
+	INSTANCE	input	integer
+	MOD	output	integer
+	PROPERTY	input	string
+	STRLEN	output	integer
+
+xlninfo/zlninfo
+
+call xlninfo(unit, key, format, maxlength, nelement, status, &lt;optionals&gt;, ' ')
+status = zlninfo(unit, key, format, maxlength, nelement,&lt;optionals&gt;, 0);
+	unit	input	integer
+	key	output	string
+	format	output	string
+	maxlength	output	integer
+	nelement	output	integer
+	status	output	integer
+Optionals allowed:
+	ERR_ACT	input	string
+	ERR_MESS	input	string
+	MOD	output	integer
+	STRLEN	output	integer
+
+xlpinfo/zlpinfo
+
+call xlpinfo(unit, properties, nprop, status, &lt;optionals&gt;, ' ')
+status = zlpinfo(unit, properties, nprop, &lt;optionals&gt;, 0);
+	unit	input	integer
+	properties	output	string array, size nprop
+	nprop	in/out	integer
+	status	output	integer
+Optionals allowed:
+	ERR_ACT	input	string
+	ERR_MESS	input	string
+	NRET	output	integer
+	ULEN	input	integer
+	INST_NUM	input	integer array
+
+xmove/zmove
+
+call xmove(from, to, len)
+zmove(from, to, len);
+	from	input	pixel buffer, size len (bytes)
+	to	output	pixel buffer, size len (bytes)
+	len	input	integer
+
+xvadd/zvadd
+
+call xvadd(unit, status, &lt;optionals&gt;, ' ')
+status = zvadd(unit, &lt;optionals&gt;, 0);
+	unit	input	integer
+	status	output	integer
+Optionals allowed:
+	BHOST	input	string
+	BIN_CVT	input	string
+	BINTFMT	input	string
+	BLTYPE	input	string
+	BREALFMT	input	string
+	CLOS_ACT	input	string
+	COND	input	string
+	CONVERT	input	string
+	FORMAT	input	string
+	HOST	input	string
+	I_FORMAT	input	string
+	INTFMT	input	string
+	IO_ACT	input	string
+	IO_MESS	input	string
+	LAB_ACT	input	string
+	LAB_MESS	input	string
+	METHOD	input	string
+	OP	input	string
+	O_FORMAT	input	string
+	OPEN_ACT	input	string
+	OPEN_MES	input	string
+	REALFMT	input	string
+	TYPE	input	string
+	U_DIM	input	integer
+	U_FILE	input	integer
+	U_FORMAT	input	string
+	U_NB	input	integer
+	U_NBB	input	integer
+	U_NL	input	integer
+	U_NLB	input	integer
+	U_NS	input	integer
+	U_N1	input	integer
+	U_N2	input	integer
+	U_N3	input	integer
+	U_ORG	input	string
+	UPD_HIST	input	string
+
+xvbands/zvbands
+
+call xvbands(sb, nb, nbi)
+zvbands(sb, nb, nbi);
+	sb	output	integer
+	nb	output	integer
+	nbi	output	integer
+
+xvclose/zvclose
+
+call xvclose(unit, status, &lt;optionals&gt;, ' ')
+status = zvclose(unit, &lt;optionals&gt;, 0);
+	unit	input	integer
+	status	output	integer
+Optionals allowed:
+	CLOS_ACT	input	string
+
+xvcmdout/zvcmdout
+
+call xvcmdout(command, status)
+status = zvcmdout(command);
+	command	input	string
+	status	output	integer
+
+xvcommand/zvcommand
+
+call xvcommand(command, status)
+status = zvcommand(command);
+	command	input	string
+	status	output	integer
+
+xveaction/zveaction
+
+status = xveaction(action, message)
+status = zveaction(action, message);
+	action	input	string
+	message	input	string
+	status	output	integer
+
+xvend/zvend
+
+call xvend(status)
+zvend(status);
+	status	input	integer
+
+xvfilpos/zvfilpos
+
+position = xvfilpos(unit)
+position = zvfilpos(unit);
+	unit	input	integer
+	position	output	integer
+
+xvget/zvget
+
+call xvget(unit, status, &lt;optionals&gt;, ' ')
+status = zvget(unit, &lt;optionals&gt;, 0);
+	unit	input	integer
+	status	output	integer
+Optionals allowed:
+	BHOST	output	string
+	BINTFMT	output	string
+	BLTYPE	output	string
+	BREALFMT	output	string
+	BUFSIZ	output	integer
+	DIM	output	integer
+	FLAGS	output	integer
+	FORMAT	output	string
+	HOST	output	string
+	IMG_REC	output	integer
+	INTFMT	output	string
+	LBLSIZE	output	integer
+	NAME	output	string
+	NB	output	integer
+	NBB	output	integer
+	NL	output	integer
+	NLB	output	integer
+	NS	output	integer
+	N1	output	integer
+	N2	output	integer
+	N3	output	integer
+	ORG	output	string
+	PIX_SIZE	output	integer
+	REALFMT	output	string
+	RECSIZE	output	integer
+	TYPE	output	string
+	VARSIZE	output	integer
+	UPD_HIST	input	string
+
+xvhost/zvhost
+
+call xvhost(host, intfmt, realfmt, status)
+status = zvhost(host, intfmt, realfmt);
+	host	input	string
+	intfmt	output	string
+	realfmt	output	string
+	status	output	integer
+
+xvintract/zvintract
+
+call xvintract(subcmd, prompt)
+zvintract(subcmd, prompt);
+	subcmd	input	string
+	prompt	input	string
+
+xvip/zvip
+
+call xvip(name, value, count)
+status = zvip(name, value, count);
+	name	input	string
+	value	output	value array, size count
+	count	output	integer
+	status	output	integer
+
+xviparm/zviparm
+
+call xviparm(name, value, count, def, maxcnt)
+status = zviparm(name, value, count, def, maxcnt, length);
+	name	input	string
+	value	output	value array, size count
+	count	output	integer
+	def	output	integer
+	maxcnt	input	integer
+	length	input	integer
+	status	output	integer
+
+xviparmd/zviparmd
+
+call xviparmd(name, value, count, def, maxcnt)
+status = zviparmd(name, value, count, def, maxcnt, length);
+	name	input	string
+	value	output	value array, size count
+	count	output	integer
+	def	output	integer
+	maxcnt	input	integer
+	length	input	integer
+	status	output	integer
+
+xvipcnt/zvipcnt
+
+call xvipcnt(name, count)
+status = zvipcnt(name, count);
+	name	input	string
+	count	output	integer
+	status	output	integer
+
+xvipone/zvipone
+
+status = xvipone(name, value, instance, maxlen)
+status = zvipone(name, value, instance, maxlen);
+	name	input	string
+	value	output	value
+	instance	input	integer
+	maxlen	input	integer
+
+xvipstat/zvipstat
+
+call xvipstat(name, count, def, maxlen, type)
+status = zvipstat(name, count, def, maxlen, type);
+	name	input	string
+	count	output	integer
+	def	output	integer
+	maxlen	output	integer
+	type	output	string
+	status	output	integer
+
+xviptst/zviptst
+
+GIVEN = xviptst(key)
+GIVEN = zviptst(key);
+	key	input	string
+
+xvmessage/zvmessage
+
+call xvmessage(message, key)
+zvmessage(message, key);
+	message	input	string
+	key	input	string
+
+xvopen/zvopen
+
+call xvopen(unit, status, &lt;optionals&gt;, ' ')
+status = zvopen(unit, &lt;optionals&gt;, 0);
+	unit	input	integer
+	status	output	integer
+Optionals allowed:
+	ADDRESS	output	pixel pointer
+	BHOST	input	string
+	BIN_CVT	input	string
+	BINTFMT	input	string
+	BLTYPE	input	string
+	BREALFMT	input	string
+	CLOS_ACT	input	string
+	COND	input	string
+	CONVERT	input	string
+	FORMAT	input	string
+	HOST	input	string
+	I_FORMAT	input	string
+	INTFMT	input	string
+	IO_ACT	input	string
+	IO_MESS	input	string
+	LAB_ACT	input	string
+	LAB_MESS	input	string
+	METHOD	input	string
+	OP	input	string
+	O_FORMAT	input	string
+	OPEN_ACT	input	string
+	OPEN_MES	input	string
+	REALFMT	input	string
+	TYPE	input	string
+	U_DIM	input	integer
+	U_FILE	input	integer
+	U_FORMAT	input	string
+	U_NB	input	integer
+	U_NBB	input	integer
+	U_NL	input	integer
+	U_NLB	input	integer
+	U_NS	input	integer
+	U_N1	input	integer
+	U_N2	input	integer
+	U_N3	input	integer
+	U_ORG	input	string
+	UPD_HIST	input	string
+
+xvp/zvp
+
+call xvp(name, value, count)
+status = zvp(name, value, count);
+	name	input	string
+	value	output	value array, size count
+	count	output	integer
+	status	output	integer
+
+xvparm/zvparm
+
+call xvparm(name, value, count, def, maxcnt)
+status = zvparm(name, value, count, def, maxcnt, length);
+	name	input	string
+	value	output	value array, size count
+	count	output	integer
+	def	output	integer
+	maxcnt	input	integer
+	length	input	integer
+	status	output	integer
+
+xvparmd/zvparmd
+
+call xvparmd(name, value, count, def, maxcnt)
+status = zvparmd(name, value, count, def, maxcnt, length);
+	name	input	string
+	value	output	value array, size count
+	count	output	integer
+	def	output	integer
+	maxcnt	input	integer
+	length	input	integer
+	status	output	integer
+
+xvpblk/zvpblk
+
+call xvpblk(parblk)
+zvpblk(parblk);
+	parblk	output	void pointer
+
+xvpclose/zvpclose
+
+call xvpclose(status)
+status = zvpclose();
+	status	output	integer
+
+xvpcnt/zvpcnt
+
+call xvpcnt(name, count)
+status = zvpcnt(name, count);
+	name	input	string
+	count	output	integer
+	status	output	integer
+
+xvpixsize/zvpixsize
+
+status = xvpixsize(pixsize, type, ihost, rhost)
+status = zvpixsize(pixsize, type, ihost, rhost);
+	pixsize	output	integer
+	type	input	string
+	ihost	input	string
+	rhost	input	string
+	status	output	integer
+
+xvpixsizeb/zvpixsizeb
+
+status = xvpixsizeb(pixsize, type, unit)
+status = zvpixsizeb(pixsize, type, unit);
+	pixsize	output	integer
+	type	input	string
+	unit	input	integer
+	status	output	integer
+
+xvpixsizeu/zvpixsizeu
+
+status = xvpixsizeu(pixsize, type, unit)
+status = zvpixsizeu(pixsize, type, unit);
+	pixsize	output	integer
+	type	input	string
+	unit	input	integer
+	status	output	integer
+
+xvpone/zvpone
+
+status = xvpone(name, value, instance, maxlen)
+status = zvpone(name, value, instance, maxlen);
+	name	input	string
+	value	output	value
+	instance	input	integer
+	maxlen	input	integer
+
+xvpopen/zvpopen
+
+call xvpopen(status, n_par, max_parm_size, filename, error_act, unit)
+status = zvpopen(filename, error_act, unit);
+	status	output	integer
+	n_par	input	integer (obsolete)
+	max_parm_size	input	integer (obsolete)
+	filename	input	string
+	error_act	input	string
+	unit	output	integer
+
+xvpout/zvpout
+
+call xvpout(status, name, value, format, count)
+status = zvpout(name, value, format, count, length);
+	status	output	integer
+	name	input	string
+	value	input	value array, size count
+	format	input	string
+	count	input	integer
+	length	input	integer
+
+xvpstat/zvpstat
+
+call xvpstat(name, count, def, maxlen, type)
+status = zvpstat(name, count, def, maxlen, type);
+	name	input	string
+	count	output	integer
+	def	output	integer
+	maxlen	output	integer
+	type	output	string
+	status	output	integer
+
+xvptst/zvptst
+
+GIVEN = xvptst(key)
+GIVEN = zvptst(key);
+	key	input	string
+
+xvread/zvread
+
+call xvread(unit, buffer, status, &lt;optionals&gt;, ' ')
+status = zvread(unit, buffer, &lt;optionals&gt;, 0);
+	unit	input	integer
+	buffer	output	pixel buffer
+	status	output	integer
+Optionals allowed:
+	BAND	input	integer
+	IO_MESS	input	string
+	LINE	input	integer
+	METHOD	input	string
+	NBANDS	input	integer
+	NLINES	input	integer
+	NSAMPS	input	integer
+	OP	input	string
+	OPEN_ACT	input	string
+	SAMP	input	integer
+	U_FORMAT	input	string
+
+xvselpi/zvselpi
+
+call xvselpi(instance)
+zvselpi(instance);
+	instance	input	integer
+
+xvsfile/zvsfile
+
+status = xvsfile(unit, file)
+status = zvsfile(unit, file);
+	unit	input	integer
+	file	input	integer
+	status	output	integer
+
+xvsignal/zvsignal
+
+call xvsignal(unit, status, abend_flag)
+zvsignal(unit, status, abend_flag);
+	unit	input	integer
+	status	input	integer
+	abend_flag	input	integer
+
+xvsize/zvsize
+
+call xvsize(sl, ss, nl, ns, nli, nsi)
+zvsize(sl, ss, nl, ns, nli, nsi);
+	sl	output	integer
+	ss	output	integer
+	nl	output	integer
+	ns	output	integer
+	nli	output	integer
+	nsi	output	integer
+
+xvsptr/zvsptr
+
+call xvsptr(value, count, offsets, lengths)
+zvsptr(value, count, offsets, lengths);
+	value	input	string
+	count	input	integer
+	offsets	output	integer array, size count
+	lengths	output	integer array, size count
+
+xvtpinfo/zvtpinfo
+
+status = xvtpinfo(sym_name, dev_name, tfile, trec)
+status = zvtpinfo(sym_name, dev_name, tfile, trec);
+	sym_name	input	string
+	dev_name	output	string
+	tfile	output	integer
+	trec	output	integer
+	status	output	integer
+
+xvtpmode/zvtpmode
+
+call xvtpmode(unit, istape)
+istape = zvtpmode(unit);
+	unit	input	integer
+	istape	output	integer
+
+xvtpset/zvtpset
+
+status = xvtpset(name, tfile, trec)
+status = zvtpset(name, tfile, trec);
+	name	input	string
+	tfile	input	integer
+	trec	input	integer
+	status	output	integer
+
+xvtrans/zvtrans
+
+call xvtrans(buf, source, dest, npix)
+zvtrans(buf, source, dest, npix);
+	buf	input	integer array, size 12
+	source	input	pixel buffer, size npix
+	dest	output	pixel buffer, size npix
+	npix	input	integer
+
+xvtrans_in/zvtrans_in
+
+call xvtrans_in(buf, stype, dtype, sihost, srhost, status)
+status = zvtrans_in(buf, stype, dtype, sihost, srhost);
+	buf	output	integer array, size 12
+	stype	input	string
+	dtype	input	string
+	sihost	input	string
+	srhost	input	string
+	status	output	integer
+
+xvtrans_inb/zvtrans_inb
+
+call xvtrans_inb(buf, stype, dtype, unit, status)
+status = zvtrans_inb(buf, stype, dtype, unit);
+	buf	output	integer array, size 12
+	stype	input	string
+	dtype	input	string
+	unit	input	integer
+	status	output	integer
+
+xvtrans_inu/zvtrans_inu
+
+call xvtrans_inu(buf, stype, dtype, unit, status)
+status = zvtrans_inu(buf, stype, dtype, unit);
+	buf	output	integer array, size 12
+	stype	input	string
+	dtype	input	string
+	unit	input	integer
+	status	output	integer
+
+xvtrans_out/zvtrans_out
+
+call xvtrans_out(buf, stype, dtype, dihost, drhost, status)
+status = zvtrans_out(buf, stype, dtype, dihost, drhost);
+	buf	output	integer array, size 12
+	stype	input	string
+	dtype	input	string
+	dihost	input	string
+	drhost	input	string
+	status	output	integer
+
+xvtrans_set/zvtrans_set
+
+call xvtrans_set(buf, stype, dtype, status)
+status = zvtrans_set(buf, stype, dtype);
+	buf	output	integer array, size 12
+	stype	input	string
+	dtype	input	string
+	status	output	integer
+
+xvunit/zvunit
+
+call xvunit(unit, name, instance, status, &lt;optionals&gt;, ' ')
+status = zvunit(unit, name, instance, &lt;optionals&gt;, 0);
+	unit	output	integer
+	name	input	string
+	instance	input	integer
+	status	output	integer
+Optionals allowed:
+	U_NAME	input	string
+
+xvwrit/zvwrit
+
+call xvwrit(unit, buffer, status, &lt;optionals&gt;, ' ')
+status = zvwrit(unit, buffer, &lt;optionals&gt;, 0);
+	unit	input	integer
+	buffer	input	pixel buffer
+	status	output	integer
+Optionals allowed:
+	BAND	input	integer
+	LINE	input	integer
+	NBANDS	input	integer
+	NLINES	input	integer
+	NSAMPS	input	integer
+	SAMP	input	integer
+	U_NL	input	integer
+
+xvzinit
+
+call xvzinit(lun, flag, debug)
+	lun	input	integer
+	flag	output	integer
+	debug	output	integer
+
+zvpinit
+
+zvpinit(parb);
+	parb	input	void pointer
+
+zv_rtl_init
+
+status = zv_rtl_init();
+	status	output	integer</PRE>
+<HR>
+
+<DIV ALIGN="LEFT"><A HREF="RTL_Manual-8_2.html">Previous</A> | 
+<A HREF="RTL_Manual-Appendix-2.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+</BODY>
+
+</HTML>

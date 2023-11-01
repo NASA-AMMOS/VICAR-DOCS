@@ -1,0 +1,68 @@
+<HEAD>
+<TITLE>Binary Label Type</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=843 HREF=subsubsection3.7.6.2.html><IMG SRC="/icons/previous.png"></A> <A NAME=845 HREF=subsection3.7.6.html><IMG SRC="/icons/up.png"></A>  <IMG SRC="/icons/next.png">  <b>Previous:</b> <A NAME=844 HREF=subsubsection3.7.6.2.html>Using Binary Labels</A>  <b>Up:</b> <A NAME=846 HREF=subsection3.7.6.html>Dealing with Binary Labels</A>  <P>
+ <H3>Binary Label Type</H3>
+<A NAME=bltype><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+Historically, there has been no way to determine what kind of binary label was
+on a file, just the size of it.  You could guess it was a certain kind
+(like a Voyager label), but if you were incorrect you would get invalid data,
+with no error checking.  You simply had to know beforehand what kind of data
+you had.
+<P>
+In order to solve this problem, a new system label has been added, called
+BLTYPE (Binary Label TYPE).  While BLTYPE does not affect portability
+<i> per se</i>, it does greatly improve the documentation of files and it makes
+the VICAR system more robust.  Everyone using binary labels, whether they are
+working on a portable program or not, is encouraged to make use of BLTYPE.
+<P>
+BLTYPE is simply a string that describes the kind of binary label present in
+the file.  It may be set via <b> x</b>/<b>  zvadd</b> or <b> x</b>/<b>  zvopen</b>, or by calling <b> x</b>/<b>  zladd</b>
+on an already open file.  No error checking or valid values are enforced by
+the RTL, so it is up to application programmers to make sure it is used
+properly.
+<P>
+The BLTYPE string should be a short string (maximum 32 characters) that gives
+a name to the binary label type.  It does not attempt to describe the fields
+in the binary label at all, but merely provides a pointer to how the fields
+could be determined.  Some of the currently registered names are
+``GLL_SSI_EDR'', ``IBIS'', and ``M94_HRSC''.
+<P>
+In order to maintain a consistent set of names, a name registry (similar to
+the one for properties) has been established for BLTYPE.  Every value for
+BLTYPE must be entered into this registry, with a pointer to documentation
+describing the layout of the binary label.  If you want to create a new kind
+of binary label, simply tell the keeper of the registry what name you want
+to use and what the layout is (either explicitly or by stating that it is
+in document ).  The registrar will check for duplicates, approve
+your request, and enter your name into the registry.
+<P>
+At the present time, the keeper of this registry is the VICAR system
+programmer.
+<P>
+It is important to note that the RTL makes no checks on the validity of the
+names used.  It is the responsibility of each individual programmer to make
+sure that they use this system. Failure to do so may result in your program
+not being accepted for delivery.
+<P>
+Application programs that expect a certain kind of binary label should check
+the value of BLTYPE to make sure that they have been given the correct type,
+and should issue an error message if it is incorrect.  If BLTYPE is not
+present or blank, assume that the binary label is of the correct type for
+backwards compatibility.
+<P>
+More sophisticated application programs could use the BLTYPE field to enable
+them to read several different kinds of binary labels.  These could be
+different versions of the same basic binary label (e.g. a type of ``X V2.0''
+for version 2 of the X label type), or they could be completely different
+labels from different projects.  Widespread use of BLTYPE will eventually
+allow a general-purpose program to be written that understands most if not
+all of the binary label types.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

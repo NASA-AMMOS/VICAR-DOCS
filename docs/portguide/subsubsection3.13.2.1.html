@@ -1,0 +1,295 @@
+<HEAD>
+<TITLE><tt> vpack</tt></TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=1171 HREF=subsection3.13.2.html><IMG SRC="/icons/previous.png"></A> <A NAME=1173 HREF=subsection3.13.2.html><IMG SRC="/icons/up.png"></A>  <A NAME=1169 HREF=subsubsection3.13.2.2.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=1172 HREF=subsection3.13.2.html>Application Packer</A>  <b>Up:</b> <A NAME=1174 HREF=subsection3.13.2.html>Application Packer</A>  <b>Next:</b> <A NAME=1170 HREF=subsubsection3.13.2.2.html><tt> vunpack</tt></A> <P>
+ <H3><tt> vpack</tt></H3>
+<P>
+The <tt> vpack</tt> program accepts a list of parameters as follows:
+<P>
+<PRE><TT>
+vpack &lt;file.com&gt;  [-u]
+                  [-s Source file(s)]
+                  [-i IMAKE template file(s)]
+                  [-b VMS build file(s)]
+                  [-m UNIX make file(s)]
+                  [-p PDF file(s)]
+                  [-t Test file(s)]
+                  [-d Documentation file(s)]
+                  [-o &quot;Other&quot; file(s)]
+</TT></PRE>
+<P>
+The ``<tt> -b</tt>'' (VMS build file) and ``<tt> -m</tt>'' (Unix makefile) should
+not be used.  The ``<tt> -i</tt>'' (Imakefile) option should be used instead.
+Machine-specific build files are allowed only under very unusual circumstances.
+<P>
+The ``<tt> -u</tt>'' option tells <tt> vpack</tt> that the module is unportable
+(VMS-specific), so the correct header information can be generated (the
+default for executing the COM file directly with no arguments is changed
+from ``STD'' to ``SYS'').  If <tt> vpack</tt> is used with unportable modules,
+``<tt> -u</tt>'' must be present; for portable modules, it must not be.
+<P>
+If you call the <tt> vpack</tt> program with no parameters, the program will tell
+you that you have made a syntax error and will tell you the proper syntax
+to use.
+<P>
+Based on the parameters provided, the <tt> vpack</tt> program will create the
+new COM file (named in the first argument), read the lists of files in the
+order given, and append them to the new COM file.  None of the source files is
+altered or deleted.  The output of the program is the new COM file, which
+is an ASCII file.  The <tt> vpack</tt> program requires that the COM filename be
+included as a parameter and also requires that at least one list of files be
+included.
+<P>
+As an example, the command necessary to assemble the Magellan program
+<tt> view</tt> into a COM file is:
+<P>
+<PRE><TT>
+vpack view.com -s view.h host.c image.c overlap.c view.c
+               -i view.imake
+               -p view.pdf
+               -t tstview.pdf tstview.scr
+</TT></PRE>
+<P>
+You will note that an include file (view.h) is considered a ``source'' file.
+Multiple file names can be separated by commas or spaces or both.  Of course,
+if you spread the command over several lines like that, you would need to use
+a continuation character appropriate for the operating system you are using.
+<P>
+The <tt> vpack</tt> program can be executed in three different ways.  The command
+can be executed directly from the command line as shown above, assuming the
+command line is long enough to hold the entire command.  It can also be
+executed from a repack file created by the <tt> vpack</tt> program.  For example,
+the repack file created for the <tt> view</tt> program is as follows:
+<P>
+<PRE><TT>
+$ vpack view.com -
+        -s view.h host.c image.c overlap.c view.c -
+        -i view.imake -
+        -p view.pdf -
+        -t tstview.pdf tstview.scr
+$ Exit
+</TT></PRE>
+<P>
+Under VMS only, this file can be executed directly by typing:
+<P>
+<PRE><TT>
+@view.repack
+</TT></PRE>
+<P>
+The operating system will read the file and execute it exactly as if you had
+typed the command from the command line.  The same limit on the length of
+a command line applies in this case.
+<P>
+The third method for executing the <tt> vpack</tt> program also uses the repack
+file, but uses it as a parameter to the program.  Type:
+<P>
+<PRE><TT>
+vpack view.repack
+</TT></PRE>
+<P>
+to execute the program.  This is the preferred method, and is required under
+Unix since DCL COM files cannot be executed directly.  There is no command line
+length limit with this method.
+<P>
+The <tt> vpack</tt> program creates a COM file in the following format:
+<P>
+<UL>
+<P>
+<LI> A standard header which lists all of the available parameters and options
+for the COM file in the VMS environment as comments.  This header also lists
+the version number of the <tt> vpack</tt> program which created the file and the
+name of the file.  See below for an example of a typical header.
+<P>
+<LI> DCL code which parses command-line options in the VMS environment and sets
+up the necessary conditions to carry out the user's instructions.  For example,
+if the user typed ``@file.com source'', this section would set the
+DCL variables to create the source files from the COM file.
+<P>
+<LI> A repack file which can be used by the <tt> vpack</tt> program or can be used
+stand-alone (under VMS only) to repack the COM file after making changes
+to the files which comprise it.
+<P>
+<LI> The various sections of files which make up the COM file, e.g., source
+file(s), PDF file(s), etc.  Each section of files consists of a label header
+(e.g., ``$Source_File:''), followed by the files within the section.
+<P>
+</UL>
+<P>
+If the COM file includes an imakefile, for use with <tt> vimake</tt>, the COM file
+header options will include many of the options which can be utilized by
+the generated build file (e.g., COMPILE, ALL, SYSTEM, CLEAN, etc.).  The
+<tt> vpack</tt> program is intelligent enough to adjust the header options based
+on the type of files included.  If only source files are assembled into the
+COM file, then the only options listed in the header will be those which
+unpack the various files - such options as compiling and linking will not
+be included.  If the COM file does not include a PDF file, then the option
+to unpack the PDF file is omitted from the COM file, and so on.
+<P>
+A typical header, once again for the <tt> view</tt> program, is shown below.
+Since the <tt> view</tt> program includes source files, a PDF file, test files,
+and an imakefile, all of these options are listed in the header file.  The various options
+for the COM file are only available under VMS.  The options are discussed in
+greater detail below.  For further information on the use of <tt> vimake</tt> and
+the build options, see Section <A HREF=subsection3.13.1.html#vimake><IMG SRC="/icons/cross-ref.png"></A>, <tt> vimake</tt>.
+<P>
+<PRE><TT>
+$!****************************************************************************
+$!
+$! Compile+link proc for MIPL module view
+$! VPACK Version 1.4, Thursday, June 25, 1992, 09:41:13
+$!
+$! Execute by entering:		$ @view
+$!
+$! The primary option controls how much is to be built.  It must be in
+$! the first parameter.  Only the capitalized letters below are necessary.
+$!
+$! Primary options are:
+$!   COMPile     Compile the program modules
+$!   ALL         Build a private version, and unpack the PDF and DOC files.
+$!   STD         Build a private version, and unpack the PDF file(s).
+$!   SYStem      Build the system version with the CLEAN option, and
+$!               unpack the PDF and DOC files.
+$!   CLEAN       Clean (delete/purge) parts of the code, see secondary options
+$!   UNPACK      All files are created.
+$!   REPACK      Only the repack file is created.
+$!   SOURCE      Only the source files are created.
+$!   SORC        Only the source files are created.
+$!               (This parameter is left in for backward compatibility).
+$!   PDF         Only the PDF file is created.
+$!   TEST        Only the test files are created.
+$!   IMAKE       Only the IMAKE file (used with the VIMAKE program) is created.
+$!   DOC         Only the documentation files are created.
+$!
+$!   The default is to use the STD parameter if none is provided.
+$!
+$!****************************************************************************
+$!
+$! The secondary options modify how the primary option is performed.
+$! Note that secondary options apply to particular primary options,
+$! listed below.  If more than one secondary is desired, separate them by
+$! commas so the entire list is in a single parameter.
+$!
+$! Secondary options are:
+$! COMPile,ALL:
+$!   DEBug      Compile for debug               (/debug/noopt)
+$!   PROfile    Compile for PCA                 (/debug)
+$!   LISt       Generate a list file            (/list)
+$!   LISTALL    Generate a full list            (/show=all)   (implies LIST)
+$! CLEAN:
+$!   OBJ        Delete object and list files, and purge executable (default)
+$!   SRC        Delete source and make files
+$!
+$!****************************************************************************
+$!
+$ write sys$output &quot;*** module view ***&quot;
+</TT></PRE>
+<P>
+As was stated above, each of the following options is only available when the
+COM file is executed under VMS.  To unpack files from the COM file in the
+UNIX environment, the companion program <tt> vunpack</tt> must be used.
+<P>
+It should be noted that many of these options pertaining to the build process
+will not typically be used.  The preferred way of modifying an application is
+to unpack it, change it, and repack the results when it's ready for delivery.
+The same options are available on the <tt> vimake</tt>-generated BLD file.
+However, the COM file may be edited directly without unpacking, in which case
+these options could be useful.
+<P>
+<UL>
+<P>
+<LI> COMPile: The compile option is only available when the program's files
+include an imakefile created for use with the <tt> vimake</tt> utility.  This
+option causes the COM file to create the source file(s) and the imakefile, if
+necessary.  <tt> vimake</tt> is called to create the appropriate VMS BLD file.
+The COM file then executes the BLD file to carry out the compile command.  This
+option also has several secondary options:
+<P>
+<UL>
+<P>
+<LI> DEBug: Compile for debug (<tt> /debug/noopt</tt>)
+<LI> PROfile: Compile for PCA (<tt> /debug</tt>)
+<LI> LISt: Generate a list file (<tt> /list</tt>)
+<LI> LISTALL: Generate a full list (<tt> /show=all</tt>) (implies LIST)
+<P>
+</UL>
+<P>
+If, for example, you wish to compile the modules for debugging, the
+appropriate syntax for executing the COM file would be:
+<P>
+<PRE><TT>
+@view comp deb
+</TT></PRE>
+<P>
+If you wanted to generate a list file as well, you would type:
+<P>
+<PRE><TT>
+@view comp deb,list
+</TT></PRE>
+<P>
+Notice that the secondary options are separated by commas, with no
+intervening spaces.
+<P>
+This command would generate debuggable versions of the object file(s) for the
+program.  To create the executable, you would still need to call the BLD file
+with the &quot;LINK DEBUG&quot; parameters.
+<P>
+<LI> ALL: This option builds a private version of the executable in the
+default directory.  By default, no secondary options are used.  Since the ALL
+option carries out the COMPILE command, it accepts the same secondary options
+described above.  The ALL option also unpacks the PDF and documentation files
+and calls the BLD file to carry out any additional processing of the
+documentation files when necessary.
+<P>
+<LI> STD: This option carries out the same actions as the ALL command, with
+the exception that documentation files are not unpacked or generated.  STD is
+the default option for portable modules (ones without the ``<tt> -u</tt>'' flag
+on the <tt> vpack</tt> command).
+<P>
+<LI> SYStem: This option builds the system version of the executable and
+executes the CLEAN option as well.  None of the secondary options are activated
+for the COMPILE and LINK commands, while the CLEAN command has both OBJ and
+SRC secondary options activated.   Additionally, the PDF and documentation
+files are unpacked and any additional processing of the documentation files
+needed is carried out.  This command should only be executed by Configuration
+Management.  This option is the default (for compatibility reasons) if the
+``<tt> -u</tt>'' (unportable) flag is given to <tt> vpack</tt>.
+<P>
+<LI> CLEAN: This option deletes and/or purges files from the disk, depending
+on which secondary options are selected.  If the OBJ option is selected, the
+command deletes any object and list files and purges the executable.  This
+is the default secondary option for the CLEAN command.  If the SRC option is
+selected, the source, imakefile, and build file are deleted.  Be careful with
+the SRC option; make sure the COM file is up to date before deleting the files
+that make it up.
+<P>
+</UL>
+<P>
+The remaining COM file options all have to do with which files are unpacked
+from the COM file.  This gives you complete control over which files are
+removed from the COM file.  When the files are unpacked from the COM file,
+the COM file itself remains unaltered.
+<P>
+<UL>
+<P>
+<LI> UNPACK: All files are created.
+<LI> REPACK: Only the repack file is created.
+<LI> SOURCE: Only the source files are created.
+<LI> PDF: only the PDF file is created.
+<LI> TEST: only the test files are created.
+<LI> DOC: only the documentation files are created.
+<LI> IMAKE: only the imakefile (used with the <tt> vimake</tt> program) is
+created.
+<P>
+</UL>
+<P>
+Since the COM file created by <tt> vpack</tt> is an ASCII file, it is editable
+by the user.  It is recommended, however, that you follow the normal procedure
+of unpacking the file(s), making and testing the necessary modifications, then
+using <tt> vpack</tt> to rebuild the COM file.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--
+This document was converted from RTF source: 
+By rtftohtml 4.17
+See http://www.sunpack.com/RTF
+Filename:WORD Ram Disk:RTL_Manual.rtf
+Application Directory:Data Disk:r2h4
+Subject:
+Author:Larry Bolef
+Operator:Larry Bolef
+Document Comments:
+Version Comments:
+Comments:
+Keywords:
+Translation Date:06/05/1999
+Translation Time:08:02:38
+Translation Platform:MacOS
+Number of Output files:59
+This File:WORD Ram Disk:RTL_Manual-3_1.html
+SplitDepth=2
+SkipNavPanel=0
+SkipLeadingToc=0
+SkipTrailingToc=1
+GenContents=1
+GenFrames=0
+GenIndex=0
+-->
+<HEAD lang="en"><META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<TITLE>3.1	Introduction</TITLE>
+</HEAD>
+
+<BODY ><DIV ALIGN="LEFT"><A HREF="RTL_Manual-Image.html">Up</A> | 
+<A HREF="RTL_Manual-Image.html">Previous</A> | 
+<A HREF="RTL_Manual-3_2.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+<HR>
+
+<UL>
+<A HREF="#Heading41">3.1.1	Unix filename expansion</A><BR>
+<A HREF="#Heading42">3.1.2	Temporary files</A><BR>
+<A HREF="#Heading43">3.1.3	Filename Expansions</A><BR>
+</UL>
+
+<a name="_Toc425047515"></a><a name="_Toc425048070"></a><a name="_Toc453201406"></a><A NAME="Heading40"></A><H2 ALIGN="LEFT">
+3.1	Introduction</H2>
+<P ALIGN="LEFT">This
+Section describes the image I/O to be used with the MIPL VICAR image processing
+executive. 
+</P>
+<BLOCKQUOTE>
+Note
+that a x/zvread or x/zwrite operation, without specifying the location
+(line/sample/band), automatically reads the "next" record. In BSQ this is the
+next line. See 
+<A HREF="RTL_Manual-3_2.html#_Ref453168521">3.2.6</A>
+<A HREF="RTL_Manual-3_2.html#_Ref453168463">x/zvread&#8212;Read a line</A>)
+for more information.
+<a name="_Toc453201407"></a></BLOCKQUOTE><A NAME="Heading41"></A><H3 ALIGN="LEFT">
+3.1.1	Unix
+filename expansion
+</H3>
+<BLOCKQUOTE>
+Under
+Unix, filenames accepted by the RTL (via x/zvunit), either the U_NAME optional
+or the INP or OUT parameters) now can contain environment variables and
+usernames. A reference of the form 
+<I>$var</I>
+will be replaced with the value of the environment variable 
+<I>var</I>.
+ The name of the environment variable (but not the dollar sign) may optionally
+be enclosed in curly braces (${
+<I>var</I>}).
+ A tilde (~) followed by a username will be replaced with the home directory of
+that user.  A tilde without a username will be replaced with the home directory
+of the current account.  Both of these expansions exactly mimic the behavior of
+the C-shell, so they should be familiar to most Unix users.
+<a name="_Toc453201408"></a></BLOCKQUOTE><A NAME="Heading42"></A><H3 ALIGN="LEFT">
+3.1.2	Temporary
+files
+</H3>
+<BLOCKQUOTE>
+Filenames
+that begin with a plus sign (+) are treated as 
+<I>temporary</I>
+files in both Unix and VMS.  The old VMS VICAR style of specifying temporary
+filenames was to leave off the filename extension, which was replaced with a .Z
+<I>xx</I>
+extension (where 
+<I>xx</I>
+is based on the process ID).  This approach still works under VMS, but it is
+not supported under Unix.  A Unix filename can have no extension and still be
+perfectly legal.  Plus, it is infeasible to search all the user's directories
+to delete temporary files when the user logs off (which is what happens under
+VMS).
+<BR>
+Instead
+of scattering temporary files all over the place (distinguised by their name),
+the new style is to collect them all in one directory.  Prepending a plus sign
+(+) to the name tells the VICAR RTL to put the files in the temporary
+directory.  This directory is pointed at by the $VTMP environment variable in
+Unix, and the VTMP: rooted logical name in VMS.  VTMP is set up by vicset2 for
+both systems (it normally points at /tmp/
+<I>username</I>
+for Unix and a scratch directory for VMS).  Because VTMP: is a rooted
+directory, accessing the top-level directory outside of VICAR is a little more
+difficult; you must use &#8220;vtmp:[000000]&#8221;.
+<BR>
+Subdirectories
+of VTMP are allowed.  Under Unix, they look like &#8220;+sub/dir/file&#8221;,
+while under VMS, they look like &#8220;+[sub.dir]file&#8221;.  The
+subdirectories are not automatically created; use &#8220;mkdir
+$VTMP/sub/dir&#8221; under Unix and &#8220;cre/dir vtmp:[sub.dir]&#8221; under
+VMS.  Because of these differences, the use of subdirectories is not portable
+between systems.
+<BR>
+Currently,
+all processes using the same login id share the same temporary directory. This
+may be changed in the future so concurrent independent jobs will have separate
+directories. In the meantime, a workaound is to redefine VTMP to use a
+process-specific directory name.
+<a name="_Toc453201409"></a></BLOCKQUOTE><A NAME="Heading43"></A><H3 ALIGN="LEFT">
+3.1.3	Filename
+Expansions
+</H3>
+<BLOCKQUOTE>
+Any
+time the RTL accepts a filename (x/zvunit or x/zvfilename), there
+<BR>
+are
+a number of expansions that can occur, most of which will be familiar to
+<BR>
+C-shell
+programmers.  Also, a special syntax for temporary files has been
+<BR>
+provided.
+<BR>
+For
+UNIX, the expansions are as follows: 
+</BLOCKQUOTE><UL>
+<LI><FONT FACE="Symbol">	</FONT><TT><FONT FACE="Courier"><B>$var</B></FONT></TT>:Expand
+environment variable &#8220;
+<TT><FONT FACE="Courier">var</FONT></TT>&#8221;.
+<LI><FONT FACE="Symbol">	</FONT><TT><FONT FACE="Courier"><B>${var}</B></FONT></TT>:Expand
+environment variable &#8220;
+<TT><FONT FACE="Courier">var</FONT></TT>&#8221;.
+<LI><FONT FACE="Symbol">	</FONT><TT><FONT FACE="Courier"><B>~user</B></FONT></TT>:
+Expand to home directory of user&#8221;
+<TT><FONT FACE="Courier">user</FONT></TT>&#8221;.
+<LI><FONT FACE="Symbol">	</FONT><TT><FONT FACE="Courier"><B>~</B></FONT></TT>:
+Expand to home directory of current user (
+<TT><FONT FACE="Courier">$HOME</FONT></TT>).
+<LI><FONT FACE="Symbol">	</FONT><TT><FONT FACE="Courier"><B>$$</B></FONT></TT>:
+Insert a single 
+<TT><FONT FACE="Courier">$</FONT></TT>
+(no environment variable). 
+<LI><FONT FACE="Symbol">	</FONT><TT><FONT FACE="Courier"><B>+</B></FONT></TT>:
+Expand to translation of 
+<TT><FONT FACE="Courier">&#8221;$VTMP/</FONT></TT>&#8221;
+for temporary files. 
+</UL><BLOCKQUOTE>
+For
+VMS, the expansions are as follows: 
+</BLOCKQUOTE><UL>
+<LI><FONT FACE="Symbol">	</FONT><TT><FONT FACE="Courier"><B>+</B></FONT></TT>:
+Expand to &#8220;
+<TT><FONT FACE="Courier">vtmp:</FONT></TT>&#8221;
+(if subdirectory present) or &#8220;
+<TT><FONT FACE="Courier">vtmp:[000000]</FONT></TT>&#8221;(if
+no subdirectory) for temporary files. 
+<LI><FONT FACE="Symbol">	</FONT><B>no
+</B><TT><FONT FACE="Courier"><B>+</B></FONT></TT><B>
+and no suffix
+</B>:
+Append &#8220;. Z 
+<I>xx</I>&#8221;
+(where 
+<I>xx</I>
+comes from 
+<TT><FONT FACE="Courier">v2$pidcode</FONT></TT>)
+for old-style temporary names. 
+</UL><BLOCKQUOTE>
+Under
+VMS, both expansions may occur on the same name. 
+</BLOCKQUOTE><P ALIGN="LEFT">The
+temporary filename locations (
+<TT><FONT FACE="Courier">$VTMP</FONT></TT>
+and 
+<TT><FONT FACE="Courier">vtmp</FONT></TT>)
+are set up in vicset2.
+</P>
+
+<HR>
+
+<DIV ALIGN="LEFT"><A HREF="RTL_Manual-Image.html">Up</A> | 
+<A HREF="RTL_Manual-Image.html">Previous</A> | 
+<A HREF="RTL_Manual-3_2.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+</BODY>
+
+</HTML>

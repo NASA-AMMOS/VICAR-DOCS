@@ -1,0 +1,142 @@
+<HEAD>
+<TITLE>Name List Macros</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=1113 HREF=paragraph3.13.1.2.1.html><IMG SRC="/icons/previous.png"></A> <A NAME=1115 HREF=subsubsection3.13.1.2.html><IMG SRC="/icons/up.png"></A>  <A NAME=1111 HREF=paragraph3.13.1.2.3.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=1114 HREF=paragraph3.13.1.2.1.html>Module Type Macros</A>  <b>Up:</b> <A NAME=1116 HREF=subsubsection3.13.1.2.html>Valid <tt> vimake</tt> Commands</A>  <b>Next:</b> <A NAME=1112 HREF=paragraph3.13.1.2.3.html>Main Language Macros</A> <P>
+ <H4>Name List Macros</H4>
+<P>
+<UL>
+<P>
+<LI> MODULE_LIST  - Specifies the list of source code modules.  The
+argument  is a space-separated list of filenames, including the
+extensions.  The extensions must match the language types in the supplied
+USES macros.  All files must be in the current directory, i.e. no pathnames.
+The MODULE_LIST is used to specify the modules to compile, link, put in the
+library, and clean (delete after the build).  Although some of those functions
+can be overridded with other lists, normally only MODULE_LIST will be used.
+MODULE_LIST must be defined, except for PROCEDUREs.  MODULE_LIST can only
+handle about 150 to 200 characters (2.5 lines) worth of filenames.  The limit
+is somewhat lower on VMS than on Unix.  If you have more files than
+MODULE_LIST can handle by itself, use the list extension macros
+MODULE_LIST2, MODULE_LIST3, and MODULE_LIST4.  You must define MODULE_LIST
+in any case; the extensions are also used if present.  They should be used in
+order.  Each of the extensions can handle about 200 characters.  If you need
+more than three extensions, contact the VICAR system programmer to add more
+extensions.
+<P>
+<LI> MODULE_LIST2  - The first extension for MODULE_LIST if it is too
+big.  See MODULE_LIST.
+<P>
+<LI> MODULE_LIST3  - The second extension for MODULE_LIST if
+MODULE_LIST2 fills up.  See MODULE_LIST.
+<P>
+<LI> MODULE_LIST4  - The third extension for MODULE_LIST if
+MODULE_LIST3 fills up.  See MODULE_LIST.
+<P>
+<LI> INCLUDE_LIST  - The argument  is a space-separated list of
+local include files, if any.  All includes delivered with the COM file must be
+listed here, with the appropriate filename extensions.  If there are no
+local includes, then do not define INCLUDE_LIST.  System includes, or
+includes from SUBLIB, should not be in the list.  This list is used for the
+source cleaning operation and for makefile dependencies.
+<P>
+<LI> FTNINC_LIST  - The argument  is a space-separated list of Fortran
+system and SUBLIB includes used in the Fortran modules, if any.  All Fortran
+system and SUBLIB includes must be listed here, <em> without</em> any filename
+extensions. If there are no Fortran system or SUBLIB includes, then do not
+define FTNINC_LIST.  This list is used to create logical names or symbolic
+links to the includes before the compile step.
+<P>
+<LI> CLEAN_OBJ_LIST  - The argument  is a space-separated list of
+object files to delete (clean) after a compile.  If not given, this list
+defaults to the value for MODULE_LIST, so CLEAN_OBJ_LIST should be rarely
+if ever be used.  The names in CLEAN_OBJ_LIST must have <em> source code</em>
+filename extensions.  <tt> vimake</tt> will convert them to standard object module
+names automatically.  CLEAN_OBJ_LIST may be extended with CLEAN_OBJ_LIST2,
+CLEAN_OBJ_LIST3, and CLEAN_OBJ_LIST4 in the same way as MODULE_LIST.
+See MODULE_LIST for details.
+<P>
+<LI> CLEAN_OBJ_LIST2  - The first extension for CLEAN_OBJ_LIST if it
+is too big.  See CLEAN_OBJ_LIST.
+<P>
+<LI> CLEAN_OBJ_LIST3  - The second extension for CLEAN_OBJ_LIST if
+CLEAN_OBJ_ fills up.  See CLEAN_OBJ_LIST.
+<P>
+<LI> CLEAN_OBJ_LIST4  - The third extension for CLEAN_OBJ_LIST if
+CLEAN_OBJ_ fills up.  See CLEAN_OBJ_LIST.
+<P>
+<LI> CLEAN_SRC_LIST  - The argument  is a space-separated list of
+source code to delete during a clean-source operation.  This happens during
+system builds.  Since the source code just came from the COM file, it does
+not need to be kept after the build.  If not given, this list defaults to
+the value for MODULE_LIST, so CLEAN_SRC_LIST should rarely if ever be
+used.  CLEAN_SRC_LIST may be extended with CLEAN_SRC_LIST2,
+CLEAN_SRC_LIST3, and CLEAN_SRC_LIST4 in the same way as MODULE_LIST.
+See MODULE_LIST for details.
+<P>
+<LI> CLEAN_SRC_LIST2  - The first extension for CLEAN_SRC_LIST if it
+is too big.  See CLEAN_SRC_LIST.
+<P>
+<LI> CLEAN_SRC_LIST3  - The second extension for CLEAN_SRC_LIST if
+CLEAN_SRC_ fills up.  See CLEAN_SRC_LIST.
+<P>
+<LI> CLEAN_SRC_LIST4  - The third extension for CLEAN_SRC_LIST if
+CLEAN_SRC_ fills up.  See CLEAN_SRC_LIST.
+<P>
+<LI> CLEAN_OTHER_LIST  - The argument  is a space-separated list
+of other files to clean during a clean-source operation.  After a clean-source
+is performed, only the files needed to execute the program (usually the
+program itself and the PDF) and the original COM file should still exist in
+the directory.  If any files are unpacked or created during the build process
+that are used only during the build process and that not covered by
+MODULE_LIST or INCLUDE_LIST (or automatically deleted as the .bld, .make,
+and .imake files are), then they should be listed in CLEAN_OTHER_LIST.
+These files are typically source code files that are used only on other
+machines, if MODULE_LIST or INCLUDE_LIST are defined conditionally.
+If there are no extra files (the usual case), then do not define
+CLEAN_OTHER_LIST.  There are currently no extension macros defined for
+CLEAN_OTHER_LIST.
+<P>
+<LI> LINK_LIST  - The argument  is a space-separated list of object
+code modules to link, in the order they will appear in the link statement.
+It is only valid for type PROGRAM.  The object code modules must have a ``.o''
+extension, even for VMS (it is converted to ``.obj'' automatically).  If not
+given, this list defaults to the value for MODULE_LIST (which is automatically
+converted to object-name format), so LINK_LIST should rarely if ever be used.
+LINK_LIST may be extended with LINK_LIST2, LINK_LIST3, and LINK_LIST4 in
+the same way as MODULE_LIST.  See MODULE_LIST for details.
+<P>
+<LI> LINK_LIST2  - The first extension for LINK_LIST if it
+is too big.  See LINK_LIST.
+<P>
+<LI> LINK_LIST3  - The second extension for LINK_LIST if
+LINK_LIST2 fills up.  See LINK_.
+<P>
+<LI> LINK_LIST4  - The third extension for LINK_LIST if
+LINK_LIST3 fills up.  See LINK_.
+<P>
+<LI> LIB_LIST  - The argument  is a space-separated list of object
+code modules to put in the object code library.  It is only valid for type
+SUBROUTINE.  The object code modules must have a ``.o'' extension, even for
+VMS (it is converted to ``.obj'' automatically).  If not given, this list
+defaults to the value for MODULE_LIST (which is automatically converted
+to object-name format), so LIB_LIST should rarely if ever be used.
+LIB_LIST may be extended with LIB_LIST2, LIB_LIST3, and LIB_LIST4 in
+the same way as MODULE_LIST.  See MODULE_LIST for details.
+<P>
+<LI> LIB_LIST2  - The first extension for LIB_LIST if it
+is too big.  See LIB_LIST.
+<P>
+<LI> LIB_LIST3  - The second extension for LIB_LIST if
+LIB_LIST2 fills up.  See LIB_LIST.
+<P>
+<LI> LIB_LIST4  - The third extension for LIB_LIST if
+LIB_LIST3 fills up.  See LIB_LIST.
+<P>
+</UL>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

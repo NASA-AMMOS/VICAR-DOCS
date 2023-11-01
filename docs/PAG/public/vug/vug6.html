@@ -1,0 +1,682 @@
+<Title>VICAR User's Guide</Title>
+<H1>6 VICAR User Aids</H1><P>
+
+<STRONG>Contents</STRONG>
+
+<PRE>
+6.1   <A HREF="#6.1">VICAR Help</A>
+    6.1.1   <A HREF="#6.1.1">HELP Command</A>
+6.2   <A HREF="#6.2">VICAR TUTOR Mode</A>
+    6.2.1   <A HREF="#6.2.1">General TUTOR Information</A> 
+    6.2.2   <A HREF="#6.2.2">TUTOR-SCREEN Mode</A>
+    6.2.3   <A HREF="#6.2.3">TUTOR-NOSCREEN Mode</A>
+6.3   <A HREF="#6.3">VICAR MENU Mode</A>
+    6.3.1   <A HREF="#6.3.1">General Menu Information</A> 
+    6.3.2   <A HREF="#6.3.2">The MENUTREE</A>
+    6.3.3   <A HREF="#6.3.3">Creating a Menu</A>
+6.4   <A HREF="#6.4">Syntax Checking</A>
+6.5   <A HREF="#6.5">Message Interpretation</A>
+    6.5.1   <A HREF="#6.5.1">General Message Information</A> 
+    6.5.2   <A HREF="#6.5.2">HELP-MESSAGE</A>
+    6.5.3   <A HREF="#6.5.3">"?"</A>
+</PRE>
+
+<P>
+Within this section, a variety of user aids will be introduced.  These
+tools will prove invaluable in all stages of the user's development.
+The aids being covered include Help, Tutor and Menu modes, syntax
+checking and message interpretation. <P>
+
+<A NAME="6.1">
+<H2>6.1 VICAR Help</H2>
+</A>
+
+The VICAR executive assists users of all experience levels. It is able
+to give on-line information and instructions to a user when trouble is
+encountered at any point in a session.  The following types of "help"
+are available: <P>
+
+<UL>
+<LI>Help information on a menu <A HREF="#6.3">(Section 6.3)</A>
+<LI>Help information on the operation of Tutor mode <A
+HREF="#6.2">(Section 6.2)</A> 
+<LI>Help information on procs or intrinsic commands <A
+HREF="#6.1.1">Section 6.1.1)</A>
+<LI>Help information on the parameters of a proc <A
+HREF="#6.1.1">Section 6.1.1)</A> 
+<LI>Help information on VICAR messages <A HREF="#6.5">(Section 6.5)</A>
+</UL>
+
+If questions still remain after exhausting these options, further
+assistance can be obtained by posting questions to the USENET
+newsgroup <CODE>jpl.vicar</CODE> or sending them to
+<CODE>Shari.C.Mayer@jpl.nasa.gov</CODE> via email. <P>
+
+<A NAME="6.1.1">
+<H3>6.1.1 Help Command</H3>
+</A>
+
+General help information on VICAR can be obtained by typing
+<CODE>help</CODE> with no subcommand.  General information is
+available on most commands used in the Command mode. <P>
+
+<EM>Syntax:</EM> General Help information.<P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG> help
+</PRE>
+
+Help on a specific topic can be obtained by using one of the following
+<CODE>HELP</CODE> subcommands: <P>
+
+<PRE>
+	help-command	(default for help)
+	help-proc  	(default for help)  
+	help-parm
+	help-global 
+	help-message 	<A HREF="#6.5.2">(Section 6.5.2)</A>
+	help-hardcopy 
+</PRE>
+
+<CODE>help-command</CODE> and <CODE>help-proc</CODE> are the defaults
+for <CODE>help</CODE>.  VICAR locates the command or proc by first
+doing a search among an intrinsic command list and then, if not found,
+performing a hierarchical library search.  <P>
+
+The <CODE>-command</CODE> subcommand displays information on the
+specified command.  If a subcommand is specified, then the information
+displayed will be for the subcommand only. <P>
+
+<EM>Syntax:</EM><P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>help-command command=<VAR>command</VAR>[-<VAR>subcommand</VAR>]
+</PRE>
+
+<EM>Example:</EM> Display help on the command <CODE>enable-script</CODE>.<P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>help-command enable-script
+</PRE>
+
+The <CODE>-proc</CODE> subcommand displays information on the
+specified proc or proc subcommand. <P>
+
+<EM>Syntax: </EM><P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>help-proc proc=<VAR>proc</VAR>[<VAR>-subcommand</VAR>]
+</PRE>
+
+<EM>Example:</EM> Display help on the proc <CODE>label-list</CODE>.<P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>help-proc label-list
+</PRE>
+
+The <CODE>-parm</CODE> subcommand is used to request detailed
+information on a specified parameter of a proc or a proc
+subcommand. <P>
+
+<EM>Syntax:</EM><P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>help-parm parm=<VAR>parm</VAR> proc=<VAR>proc</VAR>[-<VAR>subcommand</VAR>]
+</PRE>
+
+<EM>Example:</EM> Display help on the parameter <CODE>nl</CODE> of the
+program <CODE>gen</CODE>. <P> 
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>help-parm nl gen
+</PRE>
+
+The <CODE>-global</CODE> subcommand is used to request a detailed
+description of the specified Global variable. <P>
+
+<EM>Syntax:</EM><P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>help-global variable=<VAR>global_variable_name</VAR>
+</PRE>
+
+<EM>Example:</EM> Display help on the global variable
+<CODE>$aplib</CODE> <P> 
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>help-global $aplib
+</PRE>
+
+The <CODE>-hardcopy</CODE> subcommand writes a disk file containing
+information from both the <CODE>help-proc</CODE> and from Tutor. This
+file can then be printed in order to obtain a hardcopy of the
+information. If an output filename is not specified the file will be
+named <CODE><VAR>procname</VAR>.mem</CODE> and it will be located in the
+user's current directory. <P>
+
+<EM>Syntax:</EM> <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>help-hardcopy proc=<VAR>proc</VAR> [output=<VAR>filename</VAR>]
+</PRE>
+
+<EM>Example:</EM> Create a file (<CODE>difpic.mem</CODE>) of help
+information for the program <CODE>difpic</CODE>. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>help-hardcopy difpic
+</PRE>
+
+An alternate method to obtain a hardcopy of the help information is to
+print the <CODE><VAR>procname</VAR>.pdf</CODE> from the applications
+library. <P>
+
+<A NAME="6.2">
+<H2>6.2	VICAR Tutor Mode</H2>
+</A>
+
+<A NAME="6.2.1">
+<H3>6.2.1 General Tutor Information</H3>
+</A>
+
+Within VICAR there is a mode called "Tutor" which does exactly what
+its name implies.  It tutors or assists the user in the use of procs
+and the parameters associated with them.  Tutor not only permits the
+user to obtain more information concerning procs, but it actually
+permits the user to select parameters and then execute the proc via
+the <CODE>run</CODE> command. <P>
+
+Tutor mode can be accessed by any one of the following methods: <P>
+
+<UL>
+<LI>Typing <CODE>tutor <VAR>proc_name</VAR></CODE> in Command mode
+<LI>Selecting a proc in Menu mode
+<LI>Executing the Tutor command in Dynamic Parameter mode <A
+HREF="vug7.html#7.2.5">(Section 7.2.5)</A> 
+<LI>Hitting the key sequence <CODE>esc esc</CODE> at the proc prompt <A
+HREF="vug7.html#7.1.1.5">(Section
+7.1.1.5)</A> in an interactive proc and then typing <CODE>tutor</CODE> 
+</UL>
+
+There are actually two modes of Tutor available. <P>
+
+<STRONG>TUTOR-SCREEN</STRONG> is a formatted terminal screen display <A
+HREF="#6.2.2">(Section 6.2.2)</A>.  <P>
+
+<STRONG>TUTOR-NOSCREEN</STRONG> is similar in style to the TAE Command
+mode but provides a different prompt, lists the parameters requested
+and allows a set of commands unique to a Tutor session <A
+HREF="#6.2.3">(Section 6.2.3)</A>. <P>
+
+When tutoring is initiated, the mode entered by Tutor will be
+determined by the Global variable <CODE>$tutor</CODE>. It can be
+overridden by using one of the Tutor subcommands
+(<CODE>-screen</CODE>, <CODE>-noscreen</CODE>). <P>
+
+<EM>Syntax:</EM> <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>tutor[-<VAR>subcmd</VAR>] <VAR>proc_name</VAR>[-<VAR>subcmd</VAR>] [<VAR>proc-parameters</VAR>]
+</PRE>
+
+<EM>Example:</EM> Tutor the program <CODE>label-list</CODE> in SCREEN
+mode. <P> 
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>tutor-screen label-list
+</PRE>
+
+The <VAR>proc-parameters</VAR> field is optional and may contain a
+list of parameters.  Parameters supplied on the Tutor command line
+become initial or default values in the Tutor session. <P>
+
+<A NAME="6.2.2">
+<H3>6.2.2 TUTOR-SCREEN Mode</H3>
+</A>
+
+TUTOR-SCREEN mode commands allow the user to: <P>
+
+<UL>
+<LI>Request detailed information for parameters 
+<LI>Update parameter values 
+<LI>Scroll between pages of the Tutor display 
+<LI>Scroll between components of a multi-valued parameter 
+<LI>Request Tutor information on parameter qualifiers
+<LI>Save the parameter values
+<LI>Restore parameter values
+<LI>Execute the proc
+</UL>
+
+Upon entering Tutor mode the user is presented with the first page of
+a possibly multi-paged display showing information on each parameter
+of the selected proc or command.  For each parameter, Tutor displays
+the following: the parameter name, a brief description of the
+parameter, its current value (if one exists), and a note on qualifiers
+defined for the parameter (if there are any). <P>
+
+<STRONG>EXPERT</STRONG> When a multi-valued parameter has more values
+than will fit on one Tutor screen, only one full screen is shown.
+Tutor maintains a "window" on the elements of the parameters.  Unless
+a particular element is referenced (e.g.,
+<CODE><VAR>parm</VAR>(<VAR>i</VAR>)=</CODE> ), the display window
+includes the first element.  This window may be moved by using the
+intrinsic command <CODE>show</CODE>. <P>
+
+The "+" adjacent to the page number in the upper right corner of the
+Tutor display indicates that there are more pages available within the
+display.  If the character in that position is a period, there are no
+more pages. <P>
+
+Descriptions of Tutor mode user commands and special Tutor line editor
+keys can be found in Appendices <A
+HREF="vug10.4-10.html#10.8">10.8</A> and <A
+HREF="vug10.4-10.html#10.9">10.9</A>, respectively. <P>
+
+<A NAME="6.2.3">
+<H3>6.2.3 TUTOR-NOSCREEN Mode</H3>
+</A>
+
+The NOSCREEN mode of Tutor exists to support the following situations:
+hardcopy terminals, unsupported terminals for which VICAR can only
+operate in scrolling mode, low-speed terminals where the time for
+screen update is prohibitive, or personal choice (some users prefer
+the NOSCREEN Tutor mode). <P>
+
+NOSCREEN Tutor mode commands allow the user to: <P>
+
+<UL>
+<LI>List parameters and their values 
+<LI>Display parameters along with brief descriptions 
+<LI>Update parameter values 
+<LI>Request detailed information for parameters 
+<LI>Request tutoring on parameter qualifiers 
+<LI>Activate the proc
+</UL>
+
+There are operational differences between NOSCREEN and SCREEN modes.
+Features unique to NOSCREEN mode are: <P>
+
+<UL> 
+<LI>When TUTOR-NOSCREEN is initially entered, a list of parameter
+names is automatically displayed.
+<LI>The user is prompted for commands with a
+<STRONG>VICAR-<VAR>proc_name</VAR>&gt;</STRONG> prompt.
+<LI>The paging commands (<CODE>page</CODE> and
+<CODE>&lt;cr&gt;</CODE>) are not available.
+<LI>When a parameter is given a value, there is no automatic echo of
+the value.
+<LI>The <CODE>list</CODE> command may be used to display parameter
+names and current values.  This command may be supplied with a list of
+specific parameters to be displayed, or if no list is supplied, all
+parameters for the proc will be displayed.
+<LI>The <CODE>display</CODE> command may be used to display parameter
+names, values and a descriptive text for each parameter. 
+</UL>
+
+Descriptions of Tutor mode user commands and special Tutor line editor
+keys can be found in Appendices <A
+HREF="vug10.4-10.html#10.8">10.8</A> and <A
+HREF="vug10.4-10.html#10.9">10.9</A>, respectively. <P>
+
+<EM>Example:</EM>  TUTOR-NOSCREEN Session
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>tutor-noscreen difpic
+    <STRONG>proc "difpic", library "$R2LIB"
+    Parameters requested:  INP, OUT, SIZE, SL, SS, NL, NS...</STRONG>
+    <STRONG>VICAR-difpic&gt;</STRONG>list
+	<STRONG>INP= (no value specified)
+	OUT= -- (null value)
+	SIZE=(1,1,0,0)
+	SL=1
+	SS=1
+	NL=0
+	NS=0
+	NB=0
+	FORMAT= -- (null value)
+	STAT="STAT"
+	MOD= -- (null value)</STRONG>
+    <STRONG>VICAR-difpic&gt;</STRONG>inp=(a.bat,b.cat)
+    <STRONG>VICAR-difpic&gt;</STRONG>out=d.dat
+    <STRONG>VICAR-difpic&gt;</STRONG>size=(1,1,400,350)
+    <STRONG>VICAR-difpic&gt;</STRONG>list size
+	<STRONG>SIZE=(1,1,400,350)</STRONG>
+    <STRONG>VICAR-difpic&gt;</STRONG>run
+</PRE>
+
+<A NAME="6.3">
+<H2>6.3	VICAR Menu Mode</H2>
+</A>
+
+<A NAME="6.3.1">
+<H3>6.3.1 General Menu Information</H3>
+</A>
+
+(At the current time, only a bare skeleton of the menu system is
+available in UNIX VICAR.  Most of the information below is for the VMS
+system, but should apply to the UNIX system in the future.) <P>
+
+Menu mode is the VICAR alternative to Command mode.  In Menu mode, a
+user invokes applications by locating and selecting them through a
+series of menus.  Each menu is a terminal display containing
+categories, each describing either a more detailed menu or a proc to
+be executed. <P>
+
+There are two methods to access the VICAR Menu mode.  Depending on
+system configuration, the user may enter the Menu mode when invoking
+VICAR. In this instance, the user is given a "ROOT" menu and the Menu
+prompt <STRONG>?</STRONG>.  Alternatively, the user can manually enter
+the Menu mode.  <P>
+
+<EM>Syntax:</EM> <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>menu [name=<VAR>menu_name</VAR>]
+</PRE>
+
+<EM>Where:</EM> <VAR>menu_name</VAR> is the name of the desired
+menu. <P>
+
+If this is the first entry into Menu mode for the current session, the
+default menu is the ROOT directory defined by the host system.  If it
+is not the first entrance, then the default will be the most recent
+menu the user accessed.  The menu is located using the hierarchical
+library search unless the user explicitly specifies the library name
+of the menu. <P>
+
+<EM>Example:</EM> A typical menu screen. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>menu name=root
+</PRE>
+
+<IMG SRC="menu.gif"> <P>
+
+The above figure is an example of the format of a menu terminal
+display.  The categories are numbered entries arranged vertically on
+the screen. The prompt-line options are at the bottom of the screen
+arranged horizontally above the menu prompt. <P>
+
+At the menu prompt, <STRONG>?</STRONG>, the user selects a category or
+enters a Menu option.  If the category selected is a menu, the new
+menu is displayed. If the category selected is a proc, VICAR enters
+Tutor mode in order to prompt the user for the proc's parameters.
+After execution of the proc, the display of the last menu can be
+obtained by pressing the <CODE>&lt;CR&gt;</CODE> key. <P>
+
+If a Menu option is selected, VICAR executes the command.  Menu
+options are limited to those found in <A
+HREF="vug10.4-10.html#10.7">Appendix 10.7</A>.  These allow only basic
+management functions which include: accessing, moving back up the menu
+hierarchy, making a transition to Command mode, and exiting VICAR. <P>
+
+<STRONG>EXPERT</STRONG> A user may switch back and forth between Menu
+mode and Command mode.  When entering the Command mode from a menu
+(using <CODE>command</CODE>), the current menu and the path to the
+current menu are remembered.  This context is automatically restored
+when Menu mode is subsequently re-entered. <P>
+
+<A NAME="6.3.2">
+<H3>6.3.2 The MENUTREE</H3>
+</A>
+
+(At the current time the Menutree is only available on VMS systems.)
+<P> 
+
+<STRONG>WIZARD</STRONG> The ability to move forward or backward
+through the levels of a menu is essential to operating within VICAR.
+Unfortunately the user also runs the risk of conceptually "losing
+their place" in the system because of this flexibility.  There is a
+program, <CODE>menutree</CODE>, available within VICAR which permits
+the user to generate a graphic representation of a selected menu
+system. <P>
+
+<EM>Syntax:</EM> <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>menutree [menu=<VAR>menu_name</VAR>] [output=<VAR>output_option</VAR>]
+
+Where:	menu	specifies the starting menu name.  If omitted,
+		the default value is the top of the current
+		menutree (see Global variable <A HREF="vug10.4-10.html#MENU">$menus</A>).
+	output	directs the listing of the menutree:  
+		= file	    -  create menutree.txt
+		= printer   -  send to line printer
+		= terminal  -  send to terminal (default)
+</PRE>
+
+<EM>Example:</EM> Menutree run on the menu presented in
+<A HREF="#6.3.1">Section 6.3.1</A>.  <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>MENUTREE MENU=TAE$MENU:ROOT OUT=T
+
+    ****************  VICAR HELP  INFORMATION  ****************
+    TAE$MENU:
+    ROOT-------|
+	       |&gt; TAE$MENU:INTRO.PDF
+	       |&gt; NUT
+	       |- LEVEL3.
+	       |  MDF-------|
+               |            |&gt; TAE$MENU:SAMPLE1.PDF
+               |            |&gt; DCL @TAE$MENU:GEOREF.COM
+               |            |&gt; DCL @TAE$MENU:TIEPOINT.COM
+               |            |&gt; DCL @TAE$MENU:PROJECTION.COM
+               |            |&gt; DCL @TAE$MENU:VARIATE.COM
+               |
+               |
+	       |- LEVEL4.
+	       |  MDF-------|
+	       |	    |- ANNOT1.
+               |            |  MDF-------|
+               |            |            |- FONT
+	       |	    |	         |- MASKV
+   	       |	    |	         |- STARLAB
+	       |	    |	         |- TEXTAD
+ 	       |	    |
+	       |	    |
+	       |	    |- DISPLAY1.
+               |            |  MDF-------|
+	       |	    |	         |- BROWSE
+	       |	    |	         |- DISPLAYS
+	       |	    |	         |- DISPOUT
+	       |	    |	         |- EDIMAGE
+.
+.
+.
+</PRE>
+
+<STRONG>WIZARD</STRONG> If Menutree cannot be located in
+<CODE>TAE$UTIL</CODE>, ask your system administrator for the proper
+location. <P>
+
+<A NAME="6.3.3">
+<H3>6.3.3 Creating a Menu</H3>
+</A>
+
+<STRONG>WIZARD</STRONG> A menu corresponds to a Menu Definition File
+(MDF), which is a text file created or changed by using the host
+system's text editor.  MDFs contain the title of the menu, text
+describing each menu entry, name of the proc or menu files associated
+with each entry and help information for the menu.  Further
+information on menu creation can be found in the <CITE>TAE Command
+Language Programmer's Manual</CITE>. <P>
+
+<A NAME="6.4">
+<H2>6.4	Syntax Checking</H2>
+</A>
+
+A user has the ability, within VICAR, to check the syntax of a
+procedure <A HREF="vug7.html#7.3">(Section 7.3)</A> that has been
+written. This is particularly useful for procedures that will be run
+in the Batch mode. The syntax checker sets a switch which prevents
+VICAR commands from executing.  However, all normal processing up to
+the actual procedure execution does take place, so any syntax or
+parameter errors that are visible to VICAR will be detected and
+reported to the user. <P> 
+
+Once the syntax checker has been invoked, anything that is typed will
+be verified (e.g., VICAR commands or procs). <P>
+
+<EM>Syntax:</EM> <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>syntax check
+</PRE>
+
+<STRONG>BEWARE</STRONG> <EM>The syntax checker only verifies the
+wording to make sure all commands are valid VICAR commands.  It does
+not check logic errors, existence of referenced files or availability
+of resources. </EM><P>
+
+<STRONG>BEWARE</STRONG> <EM>All parameters required by a proc need to
+be supplied in order to successfully run the checker. Syntax check
+will fail when variables are assigned at time of execution (e.g., the
+proc <CODE>camparan</CODE>).  </EM><P>
+
+The syntax checker will remain invoked until the user turns it off wth
+the following command. <P>
+
+<EM>Syntax:</EM> <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>syntax nocheck
+</PRE>
+
+<STRONG>BEWARE</STRONG> <EM>The command<CODE> let $switch=...</CODE>
+should not be used in SYNTAX mode, since the syntax check flag is in
+<CODE>$switch</CODE>. By setting <CODE>$switch</CODE> to an absolute
+value, it is possible to accidently turn off the syntax check mode. To
+change other options within <CODE>$switch</CODE>, use the
+<CODE>flag-add</CODE> or <CODE>flag-del</CODE> commands. Further
+online Help information is available on flags or see <A
+HREF="vug10.4-10.html#10.4">Appendix 10.4</A>. </EM><P>
+
+<EM>Syntax:</EM> <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>help flag
+</PRE>
+
+<A NAME="6.5">
+<H2>6.5	Message Interpretation</H2>
+</A>
+
+<A NAME="6.5.1">
+<H3>6.5.1 General Message Information</H3>
+</A>
+
+VICAR has the capability of providing online information and
+instruction to a user when trouble is encountered.  The user is
+presented with brief messages when the error occurs and can request
+additional clarification and guidance. <P>
+
+Brief error messages are one-line comments preceded, in brackets, by a
+"message key". <P>
+
+<EM>Syntax:</EM> <P>
+
+<PRE>
+    [<VAR>SYSTEM-KEY</VAR>] <VAR>Message</VAR>
+
+where:	[<VAR>SYSTEM-KEY</VAR>]  is the "message key"
+	<VAR>SYSTEM</VAR>	      indicates which system issued the message: 
+			      VIC2 - VICAR Run-time Library
+			      TAE  - the TAE supervisor
+	<VAR>KEY</VAR>	       is the specific identifier for the 
+		       message given 
+	<VAR>MESSAGE</VAR>	       is the text containing a comment from
+ 		       VICAR
+</PRE>
+
+<EM>Example:</EM> End of volume message. <P>
+
+<PRE>
+    <STRONG>[VIC2-ENDOFVOL] End of volume (double tape mark) reached</STRONG>
+</PRE>
+
+In many cases, the brief error message adequately informs the user of
+the problem. However, in some cases the user might still be at loss as
+to what VICAR is trying to explain. In that case, there are two
+methods for obtaining further online assistance on the message
+interpretation: <P>
+
+<UL>
+<LI>by using the VICAR command <CODE>help-message</CODE>
+<LI>by using the VICAR command <CODE>?</CODE>
+</UL>
+
+In addition to the online error facilities, the user can make use of
+several other sources containing common message explanations,
+including: <P>
+
+<UL> 
+<LI><A HREF="vug10.13.html">Appendix 10.13</A> of this document
+<LI>the <CITE>VICAR Run-time Library Reference Manual </CITE>
+<LI>the disk file <CODE>$TAEHELP/msg/taefac.msg</CODE> on UNIX
+machines or <CODE>VICSYS:[VICAR121.TAE52_VAX-VMS.HELP.TM]
+TAEFAC.MSG</CODE> on VAXes.
+</UL>
+
+<A NAME="6.5.2">
+<H3>6.5.2 HELP-MESSAGE</H3>
+</A>
+
+The command <CODE>help-message</CODE> is used when the user wishes
+VICAR to expand upon the received message.  VICAR responds with an
+explanation of the error message and a suggested course of action for
+the user. <P>
+
+<EM>Syntax:</EM> <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>help-message key=<VAR>message-key</VAR>
+</PRE>
+
+<EM>Example:</EM> Get more help on the end of volume message. <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>help-message key=vic2-endofvol
+
+    <STRONG>Explanation:
+
+    The end of volume mark (double tape mark or double end 
+    of file) was hit when trying to open a file on an input 
+    tape.  
+
+    User action:
+
+    Scan tape to determine the actual number of files on it, 
+    and make sure that the proc does not try to access a file 
+    beyond that number. </STRONG>
+</PRE>
+
+<A NAME="6.5.3">
+<H3>6.5.3 "?"</H3>
+</A>
+
+An alternate method to obtain the same Help information is to type the
+VICAR command "<CODE>?</CODE>".  "<CODE>?</CODE>" is special in that
+no other parameters are allowed and it always causes VICAR to display
+help information on the last message received. <P>
+
+<EM>Syntax:  </EM> <P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>?
+</PRE>
+
+<HR>
+<A HREF="vug5.html"><IMG SRC="back.gif"></A>
+<A HREF="vug7.html"><IMG SRC="fwd.gif"></A>
+<P> 
+
+If you wish to return to the Contents page, click <A
+HREF="vugfinal.html#Contents">here</A>. 
+
+
+
+
+
+
+

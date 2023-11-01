@@ -1,0 +1,77 @@
+<HEAD>
+<TITLE>Using Property Labels</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=771 HREF=subsection3.6.6.html><IMG SRC="/icons/previous.png"></A> <A NAME=773 HREF=subsection3.6.6.html><IMG SRC="/icons/up.png"></A>  <A NAME=769 HREF=subsubsection3.6.6.2.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=772 HREF=subsection3.6.6.html>Property Labels</A>  <b>Up:</b> <A NAME=774 HREF=subsection3.6.6.html>Property Labels</A>  <b>Next:</b> <A NAME=770 HREF=subsubsection3.6.6.2.html>Property Names</A> <P>
+ <H3>Using Property Labels</H3>
+<P>
+Property labels are accessed in much the same way that history labels are.
+The routines <b> x</b>/<b>  zladd</b>, <b> x</b>/<b>  zldel</b>, <b> x</b>/<b>  zlget</b>, and <b> x</b>/<b>  zlinfo</b> have been modified
+to accept ``PROPERTY'' for the <em> type</em> argument, as well as ``SYSTEM'' and
+``HISTORY''.  You must specify which property the label belongs to via the
+``PROPERTY'' optional argument to these routines.  The ``HIST'' and ``INSTANCE''
+keywords are not used for property labels.  In addition, a new routine,
+<b> x</b>/<b>  zlpinfo</b>, has been added to get a list of properties in the label, similar
+to <b> x</b>/<b>  zlhinfo</b>.
+<P>
+From the user's point of view, the LABEL program has been extensively modified
+to recognize and use property labels.  See the help for LABEL for details on
+how to use it.
+<P>
+Internally, property labels are stored in between the system and history
+labels.  A property set starts with a
+``PROPERTY='<em> property-name</em>''' label item, followed by
+all labels for that property.  The property ends at the next ``PROPERTY''
+keyword or at the start of the history labels (indicated by a ``TASK'' keyword).
+<P>
+Properties appear automatically when a label item for that property is added.
+There is no explicit creation step to add a new property; just add a label item
+in that property and it will be created.  The same is not true for deletion
+(via the RTL):  if you want to delete an entire property you must delete all
+the elements from it and then delete the ``PROPERTY'' marker (using ``PROPERTY''
+as the keyword to delete from the property set).  The <tt> label-delete</tt>
+program can do this.  It is important to note that this is exactly the way
+history labels work: tasks are created automatically when programs are run, but
+to delete a task you must delete all the keywords for that task, including
+the marker labels (``TASK'', ``DAT_TIM'', and ``USER'').
+<P>
+Property labels, like history labels, are automatically copied from the
+primary input file to the output file.  This is done because most properties
+will not change in a typical program run.  Programs should update any
+properties that do change, of course.  The copying of property labels can be
+controlled via <b> x</b>/<b>  zvselpi</b>.
+<P>
+Property labels are a new feature, and some care must be taken if there is
+the possibility of using older versions of VICAR that don't support property
+labels.  If you put property labels on an image, then older versions of VICAR
+will not be able to access the property labels.  The image itself and the
+history label will be accessible, but the property labels will not.  There are
+three problems with using an image with property labels on an old VICAR system.
+First, a ``<tt> label-list 'dump</tt>'' will go into an infinite loop if there
+is more than one property.  Other forms of <tt> label</tt> work fine.  Second,
+if you try to modify a system label item (either through the <tt> label</tt>
+program or with <b> x</b>/<b>  zladd</b>), the system label item will go <em> after</em> the
+property labels (which are treated as unknown system label items).  This can
+be a problem on the old system if the property labels are very long, and it
+is definitely a problem if you then try to use the image on a system that
+supports property labels.  Third, property labels will not be copied from
+the primary input to the output on a system that does not support them.
+The information would be lost.  So, be careful when using property labels
+if there is the possibility of mixing systems.
+<P>
+If you are implementing something new, like a look-up table or a new flight
+label, then you can use the property labels with no problems.  However, if you
+are moving something that used to use history labels to the property label,
+like the map projection or an old flight label, then you have to make sure
+that you can read files with the information either in the property label or
+in the history label.  This is because old images with the information in the
+history label exist and will be used.  For this case, you might want to adopt
+a similar strategy to the reading of other host's data:  read the label from
+either the property or history label (wherever it is), but only write out
+property labels.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

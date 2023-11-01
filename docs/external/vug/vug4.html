@@ -1,0 +1,405 @@
+<Title>VICAR User's Guide - Basic Concepts</Title>
+<H1>4	Basic VICAR Concepts</H1>
+
+<STRONG>Contents</STRONG>
+
+<PRE>
+4.1   <A HREF="#4.1">Entering/Exiting VICAR</A>
+4.2   <A HREF="#4.2">Getting Started</A>
+4.3   <A HREF="#4.3">VICAR Datasets</A>
+    4.3.1   <A HREF="#4.3.1">Dataset Names</A>
+	4.3.1.1 <A HREF="#4.3.1.1">Temporary Datasets</A>
+    4.3.2   <A HREF="#4.3.2">Dataset Structure</A>
+    4.3.3   <A HREF="#4.3.3">Pixel Data Formats</A>
+4.4   <A HREF="#4.4">VICAR  Labels</A>
+    4.4.1 <A HREF="#4.4.1">VICAR Label Structure </A>
+4.5   <A HREF="#4.5">Procs</A>
+</PRE> 
+
+In this section, the user is introduced to some of the fundamental
+concepts of the VICAR image processing system.  The new user will
+learn how to enter and exit VICAR and be introduced to VICAR datasets,
+labels and "procs".  An understanding of these concepts is essential
+to effectively use VICAR and is assumed in subsequent sections. <P>
+
+<A NAME="4.1">
+<H2>4.1	Entering/Exiting VICAR</H2>
+</A>
+
+A VICAR session starts when a user invokes the VICAR executive by
+typing the command <CODE>vicar</CODE> at the prompt (% or $). <P> 
+
+<EM>Syntax: </EM><P>
+
+<PRE>
+    <STRONG>%</STRONG> vicar	(UNIX) 
+<EM>or</EM>
+    <STRONG>$</STRONG> VICAR	(VMS)
+</PRE>
+
+The user is then prompted for a VICAR command (<A
+HREF="vug7.html#7.1">Section 7.1</A>) with a VICAR prompt,
+<STRONG>VICAR&gt;</STRONG>. <P>
+
+The session ends when a user exits VICAR by typing the command
+<CODE>exit</CODE> at the VICAR prompt. <P>
+
+<EM>Syntax:</EM><P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>exit
+</PRE>
+The user is then returned to the UNIX shell or DCL.<P>
+
+
+<A NAME="4.2">
+<H2>4.2	Getting Started</H2>
+</A>
+
+Once in VICAR, a user is able to execute VICAR commands (<A
+HREF="vug7.html#7.1">Section 7.1</A>) using the following command line
+syntax.  Each required and optional term is explained in <A
+HREF="vug7.html#7.2">Section 7.2</A>. <P>
+
+<EM>Syntax:</EM><P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG><VAR>name</VAR>[-<VAR>subcommand</VAR>] [|<VAR>qualifiers</VAR>|] [<VAR>parameter_list</VAR>] +
+    <STRONG>VICAR&gt;+</STRONG>[<VAR>comments</VAR>]
+</PRE>
+
+The most common and simplest form of a command line consists only of
+the proc or command name followed by a list of parameters.<P>
+
+<EM>Syntax:</EM><P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG><VAR>name</VAR>[-<VAR>subcommand</VAR>] [<VAR>parameter_list</VAR>] 
+</PRE>
+
+The following are examples to show how most procs and commands are
+invoked.<P>
+
+<EM>Example:</EM>  Try these and see what happens.<P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>gen a 10 10
+    <STRONG>VICAR&gt;</STRONG>list a
+    <STRONG>VICAR&gt;</STRONG>usage	<EM>(should be available on UNIX with V12.2)</EM>
+    <STRONG>VICAR&gt;</STRONG>show
+</PRE>
+
+For those anxious users who would like to jump right in, we suggest
+invoking the Menu system (<A HREF="vug6.html#6.3">Section 6.3</A>) or
+going through the New User Tutorial (NUT - <A
+HREF="vug10.14.html">Appendix 10.14</A>). <P>
+
+<EM>Syntax:</EM>  Invoking the Menu mode.<P>
+
+<PRE>
+    <STRONG>VICAR&gt;</STRONG>menu
+</PRE>
+
+<A NAME="4.3">
+<H2>4.3	VICAR Datasets</H2>
+</A>
+
+A VICAR dataset is a file with fixed length records (<A
+HREF="#4.3.2">Section 4.3.2</A>).  This dataset can be categorized as
+image data, which is a digital representation of a visual "picture",
+or as non-image data.  The dataset structure for both types of data is
+the same, thus simplifying the VICAR interface. <P>
+
+<A NAME="4.3.1">
+<H3>4.3.1 Dataset Names</H3>
+</A>
+
+The VICAR user should name disk datasets with care. <P>
+
+<STRONG>BEWARE</STRONG> <EM>Unlike the VAX/VMS operating system, the
+UNIX operating system is case sensitive.  While VICAR commands are not
+case sensitive, the filenames still are.  Therefore,
+<CODE>planet.img</CODE> and <CODE>PLANET.IMG</CODE> are two different
+files on a UNIX system.</EM><P>
+
+<STRONG>BEWARE</STRONG>
+<EM>VICAR users should avoid using system assigned logical names (on
+VMS systems) or environment variables and aliases (on UNIX systems)
+for dataset names.  Assigned logical names can be obtained by typing
+the <CODE>SHOW LOGICAL</CODE> command in DCL, </EM><P>
+
+<EM>Syntax:</EM><P>
+
+<PRE>
+    <STRONG>$</STRONG> SHOW LOGICAL
+</PRE>
+
+<EM>or <CODE>setenv</CODE> and <CODE>alias</CODE> in UNIX.</EM><P>
+
+<EM>Syntax:</EM><P>
+
+<PRE>
+    <STRONG>%</STRONG> setenv
+    <STRONG>%</STRONG> alias
+</PRE>
+
+<STRONG>BEWARE</STRONG> <EM>When VICAR is required to write an output
+dataset, the VICAR executive I/O routines will check the directory for
+an existing dataset of the same name.  If one exists, it will write
+the new dataset directly over the old dataset instead of creating a
+new version.  For example, if a dataset named <CODE>over.byt</CODE>
+was created at 10:15, and another image with the same name was created
+at 10:18, there would be only a single entry in the current directory:
+</EM><P>
+
+<PRE>
+UNIX:
+
+    -rw-r--r--  1 edd         10400 Aug  5 10:18 over.byt
+not
+    -rw-r--r--  1 edd         10400 Aug  5 10:18 over.byt
+    -rw-r--r--  1 edd           550 Aug  5 10:15 over.byt.old
+
+VMS:
+
+    OVER.BYT;1               21   5-AUG-1994 10:15:34.38
+not
+    OVER.BYT;2               21   5-AUG-1994 10:18:41.23
+    OVER.BYT;1                2   5-AUG-1994 10:15:34.38
+</PRE><P>
+
+<STRONG>BEWARE</STRONG>
+<EM>On VMS systems, when a file is overwritten, the space allocation is
+updated, but the creation date is not. On UNIX systems, both are
+updated.</EM><P>
+
+<A NAME="4.3.1.1">
+<H4>4.3.1.1 Temporary Datasets</H4>
+</A>
+
+Temporary files are special files that are deleted when a user logs
+off.  Under the old VMS VICAR, temporary files were specified by
+leaving off the filename extensions and assigning instead a
+<CODE>.Z<VAR>xx</VAR></CODE> extension, where
+<CODE><VAR>xx</VAR></CODE> was based on the process ID.  While that
+approach still works under VMS, files that begin with a plus sign
+(<CODE>+</CODE>) will now be recognized as temporary files on both
+UNIX and VMS systems.  <P>
+
+Under the old system, temporary files were distinguised only by their
+name, and could be generated anywhere.  The new style is to collect
+them all in one directory.  Prepending a plus sign (+) to the name
+tells the VICAR RTL to put the files in the temporary directory.  This
+directory is pointed at by the <CODE>$VTMP</CODE> environment variable
+in UNIX, and the <CODE>VTMP:</CODE> rooted logical name in VMS.
+<CODE>VTMP</CODE> is set up by <CODE>vicset2</CODE> for both systems.
+(It normally points at <CODE>/tmp/<VAR>username</VAR></CODE> for UNIX
+and a scratch directory for VMS).  On VMS machines, because
+<CODE>VTMP:</CODE> is a rooted directory, accessing the directory
+outside of VICAR is a little awkward; you must use
+<CODE>vtmp:[000000]</CODE>.  <P>
+
+<STRONG>BEWARE</STRONG> <EM>The automatic deletion of the
+<CODE>/tmp/<VAR>username</VAR></CODE> directory contents has not yet
+been established in UNIX VICAR.  Therefore, in order to delete those
+files when you exit VICAR, you will need to place a <CODE>ush /bin/rm
+/tmp/<VAR>username</VAR>/*</CODE> command in your
+<CODE>ulogoff.pdf</CODE>.  (See <A HREF="vug5.html#5.4.2">Section
+5.4.2</A> for details on how to do this.)</EM> <P>
+
+Subdirectories of <CODE>VTMP</CODE> are permitted.  Under UNIX, they
+are referenced by <CODE>+sub_dir/file</CODE>, while under VMS, they
+are referenced by <CODE>+[sub_dir]file</CODE>.  The subdirectories are
+not automatically created; they must be created in advance using
+<CODE>mkdir $VTMP/sub_dir</CODE> under UNIX and <CODE>cre/dir
+vtmp:[sub_dir]</CODE> under VMS.  Because of these differences, the
+use of subdirectories is not portable between systems.  <P>
+
+Currently, all processes using the same login id share the same
+temporary directory.  This may be changed in the future so concurrent
+independent jobs will have separate directories.  In the meantime, a
+workaround can be used, which is to redefine <CODE>VTMP</CODE> to use
+a process-specific directory name. <P>
+
+
+<A NAME="4.3.2">
+<H3>4.3.2 Dataset Structure</H3>
+</A>
+
+A standard structure has been established for VICAR datasets and all
+VICAR programs operate with this structure by calling standard
+interface subroutines.  (See the <CITE>VICAR Run-time Library
+Reference Manual</CITE> and <A
+HREF="/vicar/vic_file_fmt.html"><CITE>The VICAR
+File Format</CITE></A>.) <P>
+
+A VICAR dataset is a file of fixed-length records consisting of five
+parts: <P>
+
+<UL>
+<LI>VICAR label (primary label)
+<LI>binary label header - optional
+<LI>binary label prefix - optional
+<LI>pixel data
+<LI>end-of-dataset label (EOL) - optional
+</UL>
+<P>
+
+Although the exact structure of a VICAR dataset varies depending on
+the presence of the three optional parts (binary label header, binary
+label prefix, and EOL), all VICAR datasets follow the same structure. <P>
+
+The VICAR label is an ASCII string containing information describing
+the size, origin, processing history and attributes of the dataset. <P>
+
+The binary label header and prefix are optional areas for storing
+information about a dataset in free form binary format. <P>
+
+The pixel data portion of the dataset is made up of samples (pixels)
+of specified data format (<A HREF="#4.3.3">Section 4.3.3</A>).  The
+data dimensions are described in terms of "number of samples" (NS -
+record length), "number of lines" (NL - number of records of length
+NS), and "number of bands" (NB - number of NL x NS data planes). <P>
+
+The end-of-dataset label is an optional area for continuation of the
+VICAR label. <P>
+
+For a more comprehensive discussion of dataset structure, refer to
+<A HREF="vug9.html#9.1">Section 9.1</A>. <P>
+
+<A NAME="4.3.3">
+<H3>4.3.3 Pixel Data Formats</H3>
+</A>
+
+Each sample of a dataset contains the same number of bytes, as defined
+by the <CODE>FORMAT</CODE> item in the VICAR label (<A
+HREF="vug9.html#9.2">Section 9.2</A>).  The allowed values for
+<CODE>FORMAT</CODE> and the characteristics of these pixel format
+types are defined in the following table. <P>
+
+<A NAME="Table 4.3.3">
+<PRE>
+			<STRONG>Table 4.3.3</STRONG></A> <P>
+
+	        Bytes    Bits
+    Format 	 per 	 per	     	Description
+	        Sample 	Sample
+
+    BYTE	  1	   8	    unsigned, binary integer
+			            (data range:  0 to 255)
+    HALF	  2	  16	    signed, binary integer 
+			            (data range:  -32,768 
+			            to +32,767)
+    FULL	  4	  32	    signed, binary integer
+    REAL	  4	  32	    floating point
+    COMP	  8	  64	    a pair of REAL values	
+    DOUB	  8	  64	    double precision floating 
+			            point
+</PRE></A><P>
+
+Note: There may still be a few programs which use the old convention
+of <CODE>WORD</CODE> instead of <CODE>HALF</CODE>, and
+<CODE>COMPLEX</CODE> instead of <CODE>COMP</CODE>.  VICAR will
+continue to support these programs until they are converted to use the
+proper formats. <P>
+
+<A NAME="4.4">
+<H2>4.4	VICAR Labels</H2>
+</A>
+
+A VICAR label contains dynamic information that describes the size,
+origin, processing history and attributes of the associated dataset.
+All VICAR application programs are designed to read information from
+the VICAR labels of the input datasets and dynamically update
+them. <P>
+
+All VICAR datasets must be in "VICAR format" which means they are
+required to have a standard VICAR label in order to be processed.
+Data received from other facilities with "foreign" (non-VICAR) formats
+require a special purpose program, called a "logging" program, to read
+and convert the data into VICAR format (<A
+HREF="vug8.html#8.3.3">Section 8.3.3</A>). <P>
+
+<A NAME="4.4.1">
+<H3>4.4.1 VICAR Label Structure</H3>
+</A>
+
+A VICAR label is an ASCII string composed of label items which are
+<VAR>keyword</VAR>=<VAR>value</VAR> pairs separated by spaces. <P>
+
+<EM>Syntax:</EM><P>
+
+<PRE>
+    <VAR>keyword</VAR>=<VAR>value</VAR>
+
+	where:	 <VAR>keyword</VAR>   is a text keyword that identifies 
+			    the label item
+
+		 <VAR>value</VAR>	   is the information portion of the 
+			    label item; may be of type string, 
+			    integer, real, or double, and may be 
+			    multi-valued
+</PRE>
+
+<EM>Examples:</EM>   Possible <VAR>keyword</VAR>=<VAR>value</VAR> pairs.
+
+<DL>
+<DT>NL=800
+<DT>FORMAT='HALF'
+<DT>SIZE=(1,1,800,800)
+</DL>
+
+A VICAR label contains 3
+ different classes of
+<VAR>keyword</VAR>=<VAR>value</VAR> label items: <P>
+
+<UL>
+<LI>system
+<LI>property
+<LI>history
+</UL>
+
+The system portion consists of those items that are independent of the
+history of the dataset.  These items include:   size of the image, its
+organization, its pixel format, host type and items indicating the
+existence of the optional sections of the dataset. <P>
+
+The property portion of the label contains items that describe
+properties of the image in the image domain, such as the map
+projection, lookup table, and latitude/longitude information. <P>
+
+The history label portion consists of information relating to the
+processing history of the data.  Each time a program processes a
+dataset, VICAR adds history items to the label.  The history items
+include:   processing task name, user's identification, processing
+date and time.  Thus, a sequence of  subsets are recorded
+chronologically in the dataset label. <P>
+
+For a detailed description of the VICAR label structure, refer to <A
+HREF="vug9.html#9.2">Section 9.2</A>.  For examples explaining how to
+list labels, see <A HREF="vug10.11-12.html#10.12">Appendix
+10.12</A>. <P>
+
+<A NAME="4.5">
+<H2>4.5	Procs</H2>
+</A>
+
+When commanding VICAR, the user either issues intrinsic commands or
+invokes procedures or processes.  Intrinsic commands are predefined
+operations used to manage a session. A procedure is a collection of
+VICAR commands that may be executed as one function.  A process is a
+program which gets activated by VICAR. <P>
+
+Procedures and processes are collectively referred to as "procs"
+because they are identical in invocation syntax.  Therefore,
+throughout this document "proc" will be used whenever it is not
+necessary to distinguish between procedures and processes <A
+HREF="vug7.html#7.3">(Section 7.3)</A>. <P>
+
+<HR>
+<A HREF="vug3.html"><IMG SRC="back.gif"></A>
+<A HREF="vug5.html"><IMG SRC="fwd.gif"></A>
+<P> 
+
+If you wish to return to the Contents page, click <A
+HREF="vugfinal.html#Contents">here</A>. 

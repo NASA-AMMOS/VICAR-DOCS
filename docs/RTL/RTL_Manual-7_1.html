@@ -1,0 +1,266 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--
+This document was converted from RTF source: 
+By rtftohtml 4.17
+See http://www.sunpack.com/RTF
+Filename:WORD Ram Disk:RTL_Manual.rtf
+Application Directory:Data Disk:r2h4
+Subject:
+Author:Larry Bolef
+Operator:Larry Bolef
+Document Comments:
+Version Comments:
+Comments:
+Keywords:
+Translation Date:06/05/1999
+Translation Time:08:04:37
+Translation Platform:MacOS
+Number of Output files:59
+This File:WORD Ram Disk:RTL_Manual-7_1.html
+SplitDepth=2
+SkipNavPanel=0
+SkipLeadingToc=0
+SkipTrailingToc=1
+GenContents=1
+GenFrames=0
+GenIndex=0
+-->
+<HEAD lang="en"><META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<TITLE>7.1	Introduction</TITLE>
+</HEAD>
+
+<BODY ><DIV ALIGN="LEFT"><A HREF="RTL_Manual-FORTRAN.html">Up</A> | 
+<A HREF="RTL_Manual-FORTRAN.html">Previous</A> | 
+<A HREF="RTL_Manual-7_2.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+<HR>
+
+<UL>
+<A HREF="#Heading103">7.1.1	Common Features: Rules and arguments common to all string routines</A><BR>
+<UL>
+<A HREF="#Heading104">7.1.1.1	Include file</A><BR>
+<A HREF="#Heading105">7.1.1.2	Imakefile</A><BR>
+<A HREF="#Heading106">7.1.1.3	FORSTR_PARAM and FORSTR_DEF macros</A><BR>
+<A HREF="#Heading107">7.1.1.4	Argument restrictions</A><BR>
+<A HREF="#Heading108">7.1.1.5	Arguments to FORTRAN string conversion routines</A><BR>
+</UL>
+</UL>
+
+<a name="_Toc425047571"></a><a name="_Toc425048126"></a><a name="_Toc453201465"></a><A NAME="Heading102"></A><H2 ALIGN="LEFT">
+7.1	Introduction</H2>
+<BLOCKQUOTE>
+These
+routines allow C-language subroutines to use character strings passed in from a
+FORTRAN routine (CHARACTER*n data type). FORTRAN-callable subroutines written
+in C must use these routines to handle character strings. The passing of
+strings between FORTRAN and C varies widely among different machine
+architectures. Attempting to do your own without using these routines
+practically guarantees that your code will not be portable.
+<BR>
+These
+routines are most useful in the FORTRAN interface to SUBLIB routines, but they
+could be useful within a single application program if it uses both languages.
+<BR>
+All
+of these routines are callable from C only. Do not} attempt to call them from
+FORTRAN. Writing a FORTRAN routine that accepts C strings is much more
+difficult. See 
+<A HREF="RTL_Manual-2_6.html#Heading37">2.6</A>
+<A HREF="RTL_Manual-2_6.html#Heading37">Mixing FORTRAN and C</A>.<BR>
+These
+routines have much in common in their calling sequences, so the common features
+and rules are described only once in the Common Features section below.
+<BR>
+Two
+of the routines apply only to strings being sent out of a C routine, back to
+the FORTRAN caller. They are marked &#8220;output&#8221; below. The other four
+apply only to strings being passed in to a C routine, from a FORTRAN caller.
+They are marked &#8220;input''.
+<a name="_Toc425047572"></a><a name="_Toc425048127"></a><a name="_Ref425062348"></a><a name="_Ref425062355"></a><a name="_Ref425062385"></a><a name="_Toc425329731"></a><a name="_Toc453201466"></a></BLOCKQUOTE><A NAME="Heading103"></A><H3 ALIGN="LEFT">
+7.1.1	Common
+Features: Rules and arguments common to all string routines
+</H3>
+<BLOCKQUOTE>
+All
+the string conversion routines place great emphasis on the argument list of the
+C routine that is directly called by FORTRAN. Certain rules apply to that
+argument list, and many of the common parameters reference it. All of these
+apply to the routine called directly} by FORTRAN. Suppose a FORTRAN routine
+calls routine a(), which then calls routine b(), and b() wants to call one of
+these string conversion routines. All of the parameters and rules will apply
+only to a()'s argument list. Routine b() will need much of the information
+passed in from a() in order to call the string conversion routines, but all the
+information is relative to a()'s argument list. In general, it's usually easier
+to have a() do all the conversion and let b() deal only with C strings, but
+sometimes that is impractical.
+</BLOCKQUOTE><A NAME="Heading104"></A><H4 ALIGN="LEFT">
+7.1.1.1	Include
+file
+</H4>
+<BLOCKQUOTE>
+In
+order to use any of the routines, you must include the file
+&#8220;ftnbridge.h&#8221;. As with other RTL includes, you must include
+xvmaininc.h first, the names must be enclosed in double quotes and end in the
+&#8220;.h&#8221; extension (you don't need xvmaininc.h if
+&#8220;vicmain_c&#8221; is included). Example:
+</BLOCKQUOTE>
+<PRE>#include "xvmaininc.h"
+#include "ftnbridge.h"</PRE><A NAME="Heading105"></A><H4 ALIGN="LEFT">
+7.1.1.2	Imakefile</H4>
+<BLOCKQUOTE>
+The
+flag FTN_STRING must be defined in the imakefile for the program unit if any C
+routine accepts FORTRAN strings. This applies to both the direct-called
+routine, and the routine that ultimately calls one of the conversion routines.
+The FTN_STRING flag causes the compiler to use a lower level of optimization,
+which is required on some machines in order to access the argument list.
+<BR>
+</BLOCKQUOTE><A NAME="Heading106"></A><H4 ALIGN="LEFT">
+7.1.1.3	FORSTR_PARAM
+and FORSTR_DEF macros
+</H4>
+<BLOCKQUOTE>
+In
+most routines (see below for exception), include the macro FORSTR_PARAM in the
+argument list of the directly called routine, FORSTR_DEF at the end of the
+formal parameter declaration list, just before the opening brace of the
+procedure and FORSTR_BLOCK immediately after the opening brace of the function
+with no other declarations or statements before it.
+<BR>
+FORSTR_DEF
+and FORSTR_BLOCK should not have semicolons after them, as the semicolon (if
+needed) is included in the macro definition. These macros are no-ops on many
+machines, but are required on some in order to get at the FORTRAN string lengths.
+<BR>
+The
+exception is routines that use the &lt;varargs.h&gt; variable argument
+mechanism. User subroutines should not normally use varargs, but it is used
+fairly extensively inside the RTL to handle the keyword-value argument pairs.
+If you use &lt;varargs.h&gt;, follow all the standard C rules for that
+mechanism, and you should not use the FORSTR_PARAM, FORSTR_BLOCK or FORSTR_DEF
+macros. For example:
+</BLOCKQUOTE>
+<PRE>FTN_NAME(text)(inbuf, inchr, line, outbuf, size, dn, FORSTR_PARAM)
+char *inbuf;
+int *inchr, *line;
+unsigned char outbuf[];
+int *size, *dn;
+FORSTR_DEF
+{
+   FORSTR_BLOCK
+   char *c_string;
+   int  length,i;
+   ...
+</PRE><A NAME="Heading107"></A><H4 ALIGN="LEFT">
+7.1.1.4	Argument
+restrictions
+</H4>
+<BLOCKQUOTE>
+All
+arguments to the direct-called routine must be the size of a generic pointer.
+Since FORTRAN passes everything by reference anyway, all of your arguments will
+be pointers, so this should not cause a problem.
+</BLOCKQUOTE><A NAME="Heading108"></A><H4 ALIGN="LEFT">
+7.1.1.5	Arguments
+to FORTRAN string conversion routines
+</H4>
+<BLOCKQUOTE>
+The
+arguments to the FORTRAN string conversion routines all apply to the argument
+list of the routine that is directly called by FORTRAN, not to any intermediary
+routines.
+</BLOCKQUOTE><UL>
+<LI><FONT FACE="Symbol">	</FONT><B>FOR_STRING:
+ pointer to char, input/output
+</B><BR>FOR_STRING
+should be the name of the argument that contains the FORTRAN string. It should
+be declared as type &#8220;char *&#8221; in the argument list. Simply pass in
+the name of the argument, without any extra \&amp;'s or *'s or anything. The
+FORTRAN routine must declare the string as CHARACTER*n. String arrays (handled
+with the routines  
+<B>sc2for_array</B>}
+and  
+<B>sfor2c</B>_array}
+must be declared as single-dimension arrays of CHARACTER*n, but are still
+declared as &#8220;char *&#8221; in the C routine.
+<LI><FONT FACE="Symbol">	</FONT><B>ARGPTR:
+ generic pointer, input
+</B><BR>ARGPTR
+should be the address of the first argument, whatever it is. It does not matter
+what the data type of the first argument is, or if it is already a pointer to
+something else. Simply put an ampersand (\&amp;) followed by the name of the
+first argument in the argument list.
+<LI><FONT FACE="Symbol">	</FONT><B>NARGS:
+ integer, input
+</B><BR>NARGS
+is simply the total number of arguments passed in to the routine. Do not} count
+FORSTR_PARAM as one of the arguments. If you are using &lt;varargs.h&gt;, pass
+in the actual number of arguments sent to the routine.
+<LI><FONT FACE="Symbol">	</FONT><B>ARGNO:
+ integer, input
+</B><BR>ARGNO
+is the number of the argument that contains the string to be converted. If the
+string is the first argument in the list, ARGNO would be 1. If it is the fifth
+argument, ARGNO would be 5.
+<LI><FONT FACE="Symbol">	</FONT><B>STRNO:
+ integer, input
+</B><BR>STRNO
+is the string count for the string to be converted. It is similar to ARGNO, but
+counts only strings. So, if the string you are converting is the third
+argument, but only the second string in the argument list (because the first
+one is an integer), then ARGNO would be 3 but STRNO would be 2.
+</UL><BLOCKQUOTE>
+Some
+examples may help to clarify things. The routine  
+<B>sfor2c</B>
+is used in these examples, but the principles apply to all the string
+conversion routines. The calling sequence for  
+<B>sfor2c</B>}
+is 
+<B>sfor2c</B>(c_string,
+max_length, for_string, argptr, nargs, argno, strno).
+</BLOCKQUOTE>
+<PRE>int constargs(a, s1, s2, b, FORSTR_PARAM)
+  int *a, *b;
+  char *s1, *s2;
+  FORSTR_DEF
+{ char cs1[11], cs2[20];
+  sfor2c(cs1, 10, s1, &amp;a, 4, 2, 1);
+  sfor2c(cs2, 19, s2, &amp;a, 4, 3, 2);
+}
+
+int constargs2(s1, s2, a, s3, b, s4, FORSTR_PARAM)
+  char *s1, *s2, *s3, *s4;
+  int *a, *b;
+{ char cs1[101], cs2[31], cs3[80], cs4[5];
+  sfor2c(cs1, 100, s1, &amp;s1, 6, 1, 1);
+  sfor2c(cs2, 30,  s2, &amp;s1, 6, 2, 2);
+  sfor2c(cs3, 79,  s3, &amp;s1, 6, 4, 3);
+  sfor2c(cs4, 4,   s4, &amp;s1, 6, 6, 4);
+}
+
+int varargs(va_alist)
+  va_dcl
+{ char cs[11];
+ /* nargs = number of arguments, argno=argument #, and strno=string # */
+ /* which all come from knowing what to expect in the argument list */
+  forstr = va_arg(ap, char *);
+  sfor2c(cs, 10, forstr, &amp;va_alist, nargs, argno, strno);
+}</PRE>
+<HR>
+
+<DIV ALIGN="LEFT"><A HREF="RTL_Manual-FORTRAN.html">Up</A> | 
+<A HREF="RTL_Manual-FORTRAN.html">Previous</A> | 
+<A HREF="RTL_Manual-7_2.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+</BODY>
+
+</HTML>

@@ -1,0 +1,45 @@
+<HEAD>
+<TITLE>Terminator</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=387 HREF=section3.5.html><IMG SRC="/icons/previous.png"></A> <A NAME=389 HREF=section3.5.html><IMG SRC="/icons/up.png"></A>  <A NAME=385 HREF=subsection3.5.2.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=388 HREF=section3.5.html>RTL Calling Conventions</A>  <b>Up:</b> <A NAME=390 HREF=section3.5.html>RTL Calling Conventions</A>  <b>Next:</b> <A NAME=386 HREF=subsection3.5.2.html>No Optional Arguments</A> <P>
+ <H2>Terminator</H2>
+<P>
+The most immediately obvious change in the RTL calling sequence is the addition
+of an argument list terminator for keyword-value routines.  There are
+two basic types of RTL routines:  those that take a constant number of
+arguments, and those that take optional arguments of the form
+``keyword'',``value'', ``keyword'',``value'', etc.  The terminator applies
+<em> only</em> to the keyword-value routines.  <em> All</em> routines that accept
+keyword-value pairs, whether or not the pairs are used in any particular call,
+must have the terminator.  The terminator is a language-dependent argument
+that goes at the end of the argument list, where the next keyword would be if
+it existed.
+<P>
+In Fortran, the terminator is a single blank in quotes at the end of the
+argument list:
+<P>
+<PRE><TT>
+      call xvopen(unit, status, 'op', 'write', 'open_act', 'sa', ' ')
+      call xvread(unit, buffer, status, 'line', 1, ' ')
+      call xvclose(unit, status, ' ')
+</TT></PRE>
+<P>
+Note that <b> x</b>/<b>  zvclose</b> requires a terminator, since it allows a (seldom-used)
+keyword-value pair.  Since the routine allows keyword-value pairs, it must
+have a terminator, even though the keyword-value pairs are not used in this
+particular call.
+<P>
+In C, the terminator is a 0 or NULL argument (<em> not</em> a blank):
+<P>
+<PRE><TT>
+status = zvopen(unit, &quot;op&quot;, &quot;write&quot;, &quot;open_act&quot;, &quot;sa&quot;, 0);
+status = zvread(unit, buffer, &quot;line&quot;, 1, 0);
+status = zvclose(unit, 0);
+</TT></PRE>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

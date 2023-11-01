@@ -1,0 +1,317 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--
+This document was converted from RTF source: 
+By rtftohtml 4.17
+See http://www.sunpack.com/RTF
+Filename:WORD Ram Disk:RTL_Manual.rtf
+Application Directory:Data Disk:r2h4
+Subject:
+Author:Larry Bolef
+Operator:Larry Bolef
+Document Comments:
+Version Comments:
+Comments:
+Keywords:
+Translation Date:06/05/1999
+Translation Time:08:04:38
+Translation Platform:MacOS
+Number of Output files:59
+This File:WORD Ram Disk:RTL_Manual-7_2.html
+SplitDepth=2
+SkipNavPanel=0
+SkipLeadingToc=0
+SkipTrailingToc=1
+GenContents=1
+GenFrames=0
+GenIndex=0
+-->
+<HEAD lang="en"><META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<TITLE>7.2	String Conversion API</TITLE>
+</HEAD>
+
+<BODY ><DIV ALIGN="LEFT"><A HREF="RTL_Manual-FORTRAN.html">Up</A> | 
+<A HREF="RTL_Manual-7_1.html">Previous</A> | 
+<A HREF="RTL_Manual-Utility.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+<HR>
+
+<UL>
+<A HREF="#Heading110">7.2.1	sc2for&#8212;C null-terminated string to an output FORTRAN string</A><BR>
+<A HREF="#Heading111">7.2.2	sc2for_array&#8212;C null-terminated array of strings to FORTRAN string array</A><BR>
+<A HREF="#Heading112">7.2.3	sfor2c&#8212;FORTRAN input string to a standard C null-terminated string</A><BR>
+<A HREF="#Heading113">7.2.4	sfor2c_array&#8212;FORTRAN string array to C null-terminated array of strings</A><BR>
+<A HREF="#Heading114">7.2.5	sfor2len&#8212;Length of a FORTRAN string</A><BR>
+<A HREF="#Heading115">7.2.6	sfor2ptr&#8212;Pointer to actual characters in FORTRAN string</A><BR>
+</UL>
+
+<a name="_Toc425047573"></a><a name="_Toc425048128"></a><a name="_Toc453201467"></a><A NAME="Heading109"></A><H2 ALIGN="LEFT">
+7.2	String
+Conversion API
+<a name="_Toc425047574"></a><a name="_Toc425048129"></a><a name="_Toc425329732"></a><a name="Conversion"></a></H2>
+<A NAME="Heading110"></A><H3 ALIGN="LEFT">
+	<a name="_Toc453201468"></a>sc2for&#8212;C
+null-terminated string to an output FORTRAN string
+</H3>
+
+<PRE>sc2for(c_string, max_length, for_string, argptr, nargs, argno, strno);</PRE><BLOCKQUOTE>
+This
+routine converts a standard C null-terminated string to an output FORTRAN
+string. It is used to send strings back to a FORTRAN caller.
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments</B>:</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>C_STRING</B>:
+string, input
+<BR>String
+to convert in standard null-terminated C format.
+<LI><FONT FACE="Symbol">	</FONT><B>MAX_LENGTH</B>:
+integer, input.
+<BR>Alternate
+maximum length of the FORTRAN string. Normally the maximum length is obtained
+from the output FORTRAN string itself (the &#8220;n&#8221; in the CHARACTER*n
+declaration. If MAX_LENGTH is passed in as 0, then this natural length is used.
+MAX_LENGTH is an alternate maximum string length in case one is provided as a
+parameter to the routine. The actual maximum FORTRAN length used is the minimum
+of the passed in MAX_LENGTH (if not 0) and the natural FORTRAN string length.
+The output string will be truncated if the FORTRAN string is not long enough.
+Any extra space at the end of the FORTRAN string will be padded with blanks in
+the standard FORTRAN style.
+<LI><FONT FACE="Symbol">	</FONT><B>FOR_STRING,
+ARGPTR, NARGS, ARGNO, STRNO
+</B><BR>See
+<A HREF="RTL_Manual-7_1.html#_Ref425062348">7.1.1</A>
+<A HREF="RTL_Manual-7_1.html#_Ref425062355">Common Features: Rules and arguments common to all string routines</A>
+above.
+<a name="_Toc425047575"></a><a name="_Toc425048130"></a><a name="_Toc425329733"></a><a name="_Toc453201469"></a></UL><A NAME="Heading111"></A><H3 ALIGN="LEFT">
+7.2.2	sc2for_array&#8212;C
+null-terminated array of strings to FORTRAN string array
+</H3>
+
+<PRE>sc2for_array(c_string,len,nelements,for_string,max_length,argptr,nargs, argno,strno);</PRE><BLOCKQUOTE>
+This
+routine converts a standard C null-terminated array of strings into an output
+FORTRAN string array. The C string array must be a two-dimensional array of
+characters, not} an array of pointers to strings. The FORTRAN string should be
+declared as a single-dimensional array of CHARACTER*n in the calling routine.
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>C_STRING</B>:
+string array, input
+<BR>String
+array to convert in standard null-terminated C format. It must be a
+two-dimensional array of char, not an array of pointers to strings. Each string
+should have its own null terminator.
+<LI><FONT FACE="Symbol">	</FONT><B>LEN</B>:
+integer, input
+<BR>LEN
+is the size of the inner dimension of the C string array. If the array is
+declared as &#8220;char x[10][81];+&#8221; (10 strings of 80 characters each
+plus terminator), then LEN would be 81.
+<LI><FONT FACE="Symbol">	</FONT><B>NELEMENTS</B>:
+integer, input
+<BR>NELEMENTS
+is the number of strings in the array to convert.
+<LI><FONT FACE="Symbol">	</FONT><B>MAX_LENGTH</B>:
+ integer, input/output
+<BR>On
+input, MAX_LENGTH is the alternate maximum length of each FORTRAN string.
+Normally the maximum length is obtained from the output FORTRAN string array
+itself (the &#8220;n&#8221; in a CHARACTER*n declaration). If MAX_LENGTH is
+passed in as 0, then this natural length is used. MAX_LENGTH is an alternate
+maximum string length in case one is provided as a parameter to the routine.
+The actual maximum FORTRAN length used is the minimum of the passed in
+MAX_LENGTH (if not 0) and the natural FORTRAN string length. The output string
+will be truncated if the FORTRAN string is not long enough. Any extra space at
+the end of the FORTRAN string will be padded with blanks in the standard
+FORTRAN style. MAX_LENGTH should normally be passed in as 0, as it makes little
+sense to override the natural FORTRAN string length. However, it is possible,
+and might be useful in some unusual cases.
+<BR>On
+output, MAX_LENGTH returns the actual FORTRAN string length used by the routine.
+<LI><FONT FACE="Symbol">	</FONT><B>FOR_STRING,
+ARGPTR, NARGS, ARGNO, STRNO
+</B><BR>See
+<A HREF="RTL_Manual-7_1.html#_Ref425062348">7.1.1</A>
+<A HREF="RTL_Manual-7_1.html#_Ref425062355">Common Features: Rules and arguments common to all string routines</A>
+above.
+<a name="_Toc425047576"></a><a name="_Toc425048131"></a><a name="_Toc425329734"></a><a name="_Toc453201470"></a></UL><A NAME="Heading112"></A><H3 ALIGN="LEFT">
+7.2.3	sfor2c&#8212;FORTRAN
+input string to a standard C null-terminated string
+</H3>
+
+<PRE>sfor2c(c_string, len, for_string, argptr, nargs, argno, strno);</PRE><BLOCKQUOTE>
+This
+routine converts FORTRAN input string to a standard C null-terminated string.
+It is used to receive string parameters from a FORTRAN caller.
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT>
+<B>C_STRING</B>:
+string, output
+<BR>Buffer
+to hold the output C string. The string will be truncated if the buffer is not
+big enough. It will always be null terminated, even if it was truncated. Any
+trailing blanks in the FORTRAN string will be removed.
+<LI><FONT FACE="Symbol">	</FONT><B>LEN</B>:
+integer, input
+<BR>Maximum
+length of the output C string. This parameter defines the size of the C string
+buffer. It is expressed in terms of the maximum length} of the string, which
+means it does not include the terminator byte. The buffer should actually be
+declared to be one byte larger than LEN to allow room for the null terminator.
+So, if the declaration is &#8220;char buffer[80];&#8221;, then LEN should be 79.
+<LI><FONT FACE="Symbol">	</FONT><B>FOR_STRING,
+ARGPTR, NARGS, ARGNO, STRNO
+</B><BR>See
+<A HREF="RTL_Manual-7_1.html#_Ref425062348">7.1.1</A>
+<A HREF="RTL_Manual-7_1.html#_Ref425062355">Common Features: Rules and arguments common to all string routines</A>
+above.
+<a name="_Toc425047577"></a><a name="_Toc425048132"></a><a name="_Toc425329735"></a><a name="_Toc453201471"></a></UL><A NAME="Heading113"></A><H3 ALIGN="LEFT">
+7.2.4	sfor2c_array&#8212;FORTRAN
+string array to C null-terminated array of strings
+</H3>
+
+<PRE>sfor2c_array(c_string, max_length, nelements, for_string, argptr, nargs, argno, strno);</PRE><BLOCKQUOTE>
+This
+routine converts a FORTRAN string array to a standard C null-terminated array
+of strings. The returned C string array is a two-dimensional array of
+characters, not} an array of pointers to strings. The FORTRAN string should be
+declared as a single-dimensional array of CHARACTER*n in the calling routine.
+<BR>
+This
+routine is somewhat unusual in that it actually allocates the memory for the C
+string for you. You pass in the address of a character pointer, not the address
+of a buffer for the characters. 
+<B>sfor2c</B>_array
+calls malloc()}to allocate the required memory, and returns the address of that
+memory in the pointer. It is your responsibility to call free()to free up that
+memory when you are done with it.
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT>C_STRING:
+pointer to string array, output
+<BR>C_STRING
+is the address of a pointer that will be filled in to point at the string
+array. The returned array will be a two-dimensional array of characters, not an
+array of pointers to strings. Each string will have its own null terminator.
+</UL><P ALIGN="LEFT">This
+routine actually allocates the memory for the C string for you. C_STRING is the
+address of a character pointer, not the address of a buffer for the characters. 
+<B>sfor2c</B>_array}
+calls sub malloc() to allocate the required memory, and returns the address of
+that memory in C_STRING. It is your responsibility to call free() to free up
+that memory when you are done with it.
+</P><P ALIGN="LEFT">The
+inner dimension of the array is returned via the MAX_LENGTH parameter. Since
+you don't know this size at compile time, you can't access the strings like a
+normal two-dimensional array. It is easy enough to do your own addressing,
+however. For example:
+</P>
+
+<PRE>char *array;
+int maxlen=0;
+...
+sfor2c_array(&amp;array, &amp;maxlen, ...);
+...
+process_string(array+(i*maxlen));       /* to get at the i'th string */</PRE><UL>
+<LI><FONT FACE="Symbol">	</FONT>
+MAX_LENGTH: integer, input/output
+<BR>On
+input, MAX_LENGTH is the alternate maximum length of each FORTRAN string.
+Normally the maximum length is obtained from the input FORTRAN string array
+itself (the &#8220;n&#8221; in a CHARACTER*n declaration). If MAX_LENGTH is
+passed in as 0, then this natural length is used. MAX_LENGTH is an alternate
+maximum string length in case one is provided as a parameter to the routine.
+The actual maximum FORTRAN length used is the minimum of the passed in
+MAX_LENGTH (if not 0) and the natural FORTRAN string length. MAX_LENGTH should
+almost always be passed in as 0, as it makes little sense to override the
+natural FORTRAN string length, especially on an array. However, it is possible,
+and might be useful in some unusual cases.
+</UL><P ALIGN="LEFT">On
+output, MAX_LENGTH returns the size of the inner dimension of the C string
+array that was allocated by  
+<B>sfor2c</B>_array}.
+To access the i'th string in the array, simply add i*maxlen to the returned
+array pointer.
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT>NELEMENTS:
+integer, input
+<BR>The
+number of strings in the array to convert.
+<LI><FONT FACE="Symbol">	</FONT>FOR_STRING,
+ARGPTR, NARGS, ARGNO, STRNO
+<BR>See
+<A HREF="RTL_Manual-7_1.html#_Ref425062348">7.1.1</A>
+<A HREF="RTL_Manual-7_1.html#_Ref425062355">Common Features: Rules and arguments common to all string routines</A>
+above.
+<a name="_Toc425047578"></a><a name="_Toc425048133"></a><a name="_Toc425329736"></a><a name="_Toc453201472"></a></UL><A NAME="Heading114"></A><H3 ALIGN="LEFT">
+7.2.5	sfor2len&#8212;Length
+of a FORTRAN string
+</H3>
+
+<PRE>length = sfor2len(for_string, argptr, nargs, argno, strno);</PRE><BLOCKQUOTE>
+This
+routine returns the length of a FORTRAN string. It does not get a pointer to
+the characters, nor does it convert them to a C string. It is most useful to
+get the length of a string in order to allocate a buffer for it before calling  
+<B>sfor2c</B>.
+Note that the length returned is the &#8220;n&#8221; in the CHARACTER*n
+declaration, not the number of characters currently in the string.
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT>FOR_STRING,
+ARGPTR, NARGS, ARGNO, STRNO
+<BR>See
+<A HREF="RTL_Manual-7_1.html#_Ref425062348">7.1.1</A>
+<A HREF="RTL_Manual-7_1.html#_Ref425062355">Common Features: Rules and arguments common to all string routines</A>
+above.
+<a name="_Toc425047579"></a><a name="_Toc425048134"></a><a name="_Toc425329737"></a><a name="_Toc453201473"></a></UL><A NAME="Heading115"></A><H3 ALIGN="LEFT">
+7.2.6	sfor2ptr&#8212;Pointer
+to actual characters in FORTRAN string
+</H3>
+
+<PRE>ptr = sfor2ptr(for_string);</PRE><BLOCKQUOTE>
+This
+routine returns a pointer to the actual characters in an input FORTRAN string.
+It does not get the FORTRAN string length, nor does it copy the string to an
+output C string. It merely returns a pointer to the characters. No guarantee is
+made that any of the characters are valid, since that depends on the FORTRAN
+string length. You can be sure that there will not be a null terminator. Some
+machines may have one, but you may not depend on a null terminator being there.
+<BR>
+This
+routine should be used sparingly; use  
+<B>sfor2c</B>
+for most FORTRAN string conversion. 
+<B>sfor2ptr</B>
+is mainly intended for use in scanning a variable-length argument list to find
+the end-of-list marker. It is used extensively inside the RTL for this purpose.
+It should only rarely if ever be used in application code.
+<BR>
+Note
+that only the FOR_STRING standard argument is required. This is because the
+FORTRAN string length is ignored. All the other parameters are used to find the
+length.
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>FOR_STRING</B><BR>See
+<A HREF="RTL_Manual-7_1.html#_Ref425062348">7.1.1</A>
+<A HREF="RTL_Manual-7_1.html#_Ref425062355">Common Features: Rules and arguments common to all string routines</A>
+above.
+</UL>
+<HR>
+
+<DIV ALIGN="LEFT"><A HREF="RTL_Manual-FORTRAN.html">Up</A> | 
+<A HREF="RTL_Manual-7_1.html">Previous</A> | 
+<A HREF="RTL_Manual-Utility.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+</BODY>
+
+</HTML>

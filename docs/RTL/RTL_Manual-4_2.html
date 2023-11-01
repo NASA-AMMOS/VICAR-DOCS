@@ -1,0 +1,1108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--
+This document was converted from RTF source: 
+By rtftohtml 4.17
+See http://www.sunpack.com/RTF
+Filename:WORD Ram Disk:RTL_Manual.rtf
+Application Directory:Data Disk:r2h4
+Subject:
+Author:Larry Bolef
+Operator:Larry Bolef
+Document Comments:
+Version Comments:
+Comments:
+Keywords:
+Translation Date:06/05/1999
+Translation Time:08:03:52
+Translation Platform:MacOS
+Number of Output files:59
+This File:WORD Ram Disk:RTL_Manual-4_2.html
+SplitDepth=2
+SkipNavPanel=0
+SkipLeadingToc=0
+SkipTrailingToc=1
+GenContents=1
+GenFrames=0
+GenIndex=0
+-->
+<HEAD lang="en"><META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<TITLE>4.2	Image Label Access API </TITLE>
+</HEAD>
+
+<BODY ><DIV ALIGN="LEFT"><A HREF="RTL_Manual-Label.html">Up</A> | 
+<A HREF="RTL_Manual-4_1.html">Previous</A> | 
+<A HREF="RTL_Manual-Paramete.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+<HR>
+
+<UL>
+<A HREF="#Heading62">4.2.1	x/zladd&#8212;Add information to an existing label item </A><BR>
+<A HREF="#Heading63">4.2.2	x/zldel&#8212;Remove a label item </A><BR>
+<A HREF="#Heading64">4.2.3	x/zlget&#8212;Return the value of a label item </A><BR>
+<A HREF="#Heading65">4.2.4	x/zlhinfo&#8212;Return history label information </A><BR>
+<A HREF="#Heading66">4.2.5	x/zlinfo&#8212;Return information about a single label item </A><BR>
+<A HREF="#Heading67">4.2.6	x/zlninfo&#8212;Return name of next key </A><BR>
+<A HREF="#Heading68">4.2.7	x/zlpinfo&#8212;Returns the names of property subsets in the given file </A><BR>
+</UL>
+
+<a name="Heading72"></a><a name="_Toc425047531"></a><a name="_Toc425048086"></a><a name="_Toc453201424"></a><A NAME="Heading61"></A><H2 ALIGN="LEFT">
+4.2	Image
+Label Access API 
+</H2>
+<BLOCKQUOTE>
+This
+Section describes the subroutines that make up the programmer's interface for
+label processing. 
+<a name="Heading73"></a><a name="_Toc425047532"></a><a name="_Toc425048087"></a><a name="_Toc425329700"></a><a name="Label"></a><a name="_Toc453201425"></a></BLOCKQUOTE><A NAME="Heading62"></A><H3 ALIGN="LEFT">
+4.2.1	x/zladd&#8212;Add
+information to an existing label item 
+</H3>
+
+<PRE>call xladd(unit, type, key, value, status, &lt;optionals&gt;, ' ')
+status = zladd(unit, type, key, value, &lt;optionals&gt;, 0);</PRE><BLOCKQUOTE>
+<B>x/zladd</B>
+adds label items or values to multi-valued label items to a label. Strings in
+the image label are delimited by single quotes (
+<TT><FONT FACE="Courier">'</FONT></TT>).
+A single quote in an input string will be repeated before being put in the
+label. On output (from 
+<B>x/zlget</B>),
+the pair will be returned as one single quote. In other words, the repeating of
+quotes is transparent to the application program. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+input, integer 
+<BR>Unit
+of associated file. 
+<LI><FONT FACE="Symbol">	</FONT><B>TYPE</B>:
+input, string
+<BR>&#180;PROPERTY',
+'HISTORY' or 'SYSTEM'. 
+<LI><FONT FACE="Symbol">	</FONT><B>KEY</B>:
+input, string
+<BR>The
+key word of the label item. 
+<LI><FONT FACE="Symbol">	</FONT><B>VALUE</B>:
+input, array (size: NELEMENT)
+<BR>Holds
+the values of the label item. The type of argument required depends on the
+FORMAT optional given. For single values, INT requires an integer, REAL
+requires floating point (single-precision), and STRING requires a simple string
+argument ( (char *) in C, CHARACTER in FORTRAN). For multi-valued items (if
+NELEMENT is not 1), INT and REAL take single-dimension arrays of integers or
+reals. A STRING must be a two-dimensional array of characters in either FORTRAN
+or C. 
+<BR>For
+example, a string array capable of handling 10 elements, with 80 characters in
+each element,  is declared in C: 
+<TT><FONT FACE="Courier">char
+value[10][80];
+</FONT></TT>
+<BR>The
+standard C null string terminator is required, so the above array could only
+hold 79 characters. You will still pass in the length (in ULEN) as 80. ULEN is
+required for C strings that have more than one element. It is not legal to pass
+in an array of string pointers; the value must be a true array of characters. 
+<BR>In
+FORTRAN you use a CHARACTER array: 
+<TT><FONT FACE="Courier">CHARACTER*80
+VALUE (10)
+</FONT></TT><BR>ULEN
+is not required, because the character descriptor contains the length of each
+string. Trailing spaces are stripped from FORTRAN strings by the executive; you
+can not add a label item that ends in a blank. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer
+<BR>Error
+status. The possible errors are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">10</A>
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>.
+</UL><P ALIGN="LEFT"><B>Optional
+arguments:
+</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>ERR_ACT:</B>
+input, string
+<BR>Indicates
+the action to be taken by the Executive when an error condition is raised as a
+result of a call to this routine. A valid string may contain one or more of
+three characters in any order, 'A', 'U', 'S'. The presence of each character
+has the following meanings: 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>A</B>:
+an error will cause an immediate program abort. Otherwise, the routine will
+return an error number in STATUS. 
+<LI><FONT FACE="Symbol">	</FONT><B>U</B>:
+an error will cause the string that the user has specified with the ERR_MESS
+optional to be printed. 
+<LI><FONT FACE="Symbol">	</FONT><B>S</B>:
+an error will cause a system message to be printed. 
+</UL></UL><P ALIGN="LEFT">The
+three values are independent of each other. Thus 'SA' will cause a system
+message to be printed and the program to abort if an error occurs. If ERR_ACT
+consists only of blanks, an error will cause routine to return an error number
+in STATUS. 
+<BR>If
+ERR_ACT is not specified, then the action defaults to the value of the LAB_ACT
+optional to 
+<B>x/zvopen</B>
+(the default for LAB_ACT is specified by 
+<B>x/zveaction</B>).
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>ERR_MESS:</B>
+input, string
+<BR>Holds
+the user message that the programmer wishes printed when an error occurs as
+directed by ERR_ACT. Default is specified by 
+<B>x/zveaction</B>.
+<BR>
+if the ERR_ACT option is not specified, and the LAB_ACT option given to 
+<B>x/zvopen</B>
+specifies a message be printed, the message given by LAB_MESS, 
+<I>not</I>
+ERR_MESS is printed. 
+<LI><FONT FACE="Symbol">	</FONT><B>FORMAT</B>:
+input, format
+<BR>Indicates
+the format of the given label item value. Valid values are: 'INT', 'REAL',
+&#8216;DOUB&#8217; and 'STRING'. The VALUE array type should match FORMAT, i.e.
+float for REAL, double for DOUB, etc. See 
+<A HREF="RTL_Manual-2_3.html#_Ref393619550">Table 6: C Declarations for Run-Time Library Arguments</A>)
+for matching C declarations. See 
+<A HREF="RTL_Manual-2_4.html#_Ref393695027">Table 6: FORTRAN declarations for pixel types</A>
+
+for matching FORTRAN declarations.
+</UL><P ALIGN="LEFT"><B>FORMAT
+is required. 
+</B>If
+the value in the FORMAT optional does not match the format of the currently
+existing label item, the label item is changed to match the optional. If this
+is not possible (i.e., a non-numeric string being changed to an integer), an
+error is returned. 
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>LEVEL</B>:
+input, integer
+<BR>In
+the ADD routine, which allows label items to be added to a label, a level may
+be associated with a label item when that item is added. LEVEL holds the
+positive integer which is the level of the label item. (NOT YET AVAILABLE) 
+<LI><FONT FACE="Symbol">	</FONT><B>ELEMENT</B>:
+input, integer
+<BR>For
+a multi-value item, the starting point to add the VALUE. If there are 4
+elements currently, and ELEMENT is 3, then the new value will become the third
+element, and the old third and fourth will either be moved down to make room
+(if MODE is 'INSERT'), or will be replaced (if MODE is &#8216;REPLACE'). A
+value of -1 says to add the element at the end, after all existing elements.
+The default is -1, i.e. to add it at the end. 
+<LI><FONT FACE="Symbol">	</FONT><B>NELEMENT</B>:
+input, integer
+<BR>The
+number of values to be added to a multi-value item. Default: 1. 
+<LI><FONT FACE="Symbol">	</FONT><B>HIST</B>:
+input, string
+<BR>If
+TYPE is 'HISTORY' then this argument holds the name of the processing task that
+identifies the particular history subset in which 'KEY' may be found; if not
+entered, defaults to current task. 
+<LI><FONT FACE="Symbol">	</FONT><B>INSTANCE</B>:
+input, integer
+<BR>If
+TYPE is 'HISTORY&#8217;, &#8216;INSTANCE&#8217; specifies into which instance
+the name of the task from &#8216;HIST&#8217; will be entered. If TYPE is
+&#8216;PROPERTY&#8217;, &#8216;INSTANCE&#8217; specifies into which instance
+the name of the property set from &#8216;PROPERTY&#8217; will be entered.
+Attempting to add a label to a non-esistent property instance will cause a new
+instance to be created.  Instance numbers created may not match instance number
+entered. If there are 5 instances now, and you add instance 10, the label will
+go in a new instance 6. INSTANCE=0 forces creation of a new instance. Default:
+1. 
+<LI><FONT FACE="Symbol">	</FONT><B>ULEN</B>:
+input, integer
+<BR>The
+length of an input string. This optional only applies if the FORMAT is STRING.
+For multi-valued items, ULEN is the maximum length of each string in the array,
+i.e. it is the size of the first dimension of the array. ULEN is required in
+some cases, and it is ignored in others. These are explained below. 
+<BR>There
+are two ways to pass strings: C char and FORTRAN CHARACTER. See the VALUE
+argument for an example of each. 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>C:
+</B>If
+NELEMENT is not 1 (multi-valued), then ULEN is required
+<B>.
+</B>If
+NELEMENT is 1, then ULEN is optional. If present, it is used, otherwise the
+length is the null-terminated length of the string. 
+<LI><FONT FACE="Symbol">	</FONT><B>FORTRAN
+CHARACTER: 
+</B>ULEN<B>
+</B>is
+always ignored.
+<B>
+</B>The
+length is obtained from the character descriptor. 
+</UL></UL><P ALIGN="LEFT"></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>MODE</B>:
+input, string
+<BR>Specifies
+what to do with labels that already exist. There are three allowable values:
+'ADD', 'INSERT', and 'REPLACE'. 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>'ADD':
+</B>this
+is the default action. If the label already exists, a DUPLICATE_KEY error is
+returned, and the label is not changed. If the label doesn't exist, it is
+created. 
+<LI><FONT FACE="Symbol">	</FONT><B>'INSERT'</B>:
+If the label does not exist in the file, a new one is created. If it does
+exist, then all elements that are added are inserted into the existing list of
+elements. All elements in the old label past the point of insertion are moved
+down to make room. For example, if the label has 4 elements, and you are adding
+2 elements (NELEMENT is 2) at position 3 (ELEMENT is 3), then the two new
+elements would become numbers 3 and 4, and the old 3 and 4 would get moved to
+numbers 5 and 6. 
+<LI><FONT FACE="Symbol">	</FONT><B>'REPLACE'</B>:
+If the label does not exist in the file, a new one is created. If it does
+exist, then all elements that are added replace any elements in the old label
+with the same sequence numbers (if any). For example, if the label has 5
+element s, and you are adding 2 elements (NELEMENT is 2) at position 3 (ELEMENT
+is 3), then the two new elements would replace the old element numbers 3 and 4.
+Items 1, 2, and 5 remain unchanged. 'REPLACE' is not a reliable way to replace
+the entire contents of a label, as you do not always know ahead of time how
+many elements are present. To do that, call 
+<B>x/zldel</B>
+and 
+<B>x/zladd</B>
+in sequence. 
+</UL><LI><FONT FACE="Symbol">	</FONT><B>PROPERTY</B>,
+string: The name of the property set that the label routine is accessing The
+PROPERTY optional argument is only valid if the TYPE argument of the above
+routines is set to &#8220;PROPERTY&#8221;. See 
+<A HREF="RTL_Manual-4_1.html#_Ref424721848">4.1.2.1</A>
+<A HREF="RTL_Manual-4_1.html#_Ref424721848">Using Property Labels</A>,
+for more information. 
+<a name="Heading74"></a><a name="_Toc425047533"></a><a name="_Toc425048088"></a><a name="_Toc425329701"></a><a name="_Toc453201426"></a></UL><A NAME="Heading63"></A><H3 ALIGN="LEFT">
+4.2.2	x/zldel&#8212;Remove
+a label item 
+</H3>
+
+<PRE>call xldel(unit, type, key, status, &lt;optionals&gt;, ' ')
+status = zldel(unit, type, key, &lt;optionals&gt;, 0);</PRE><BLOCKQUOTE>
+<B>x/zldel</B>
+removes a label item from a file that the user owns (an output file on a
+command line) or for which the user has update privilege. 
+<B>x/zldel</B>
+permits the partial deletion of values in a multi-value label item. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+input, integer
+<BR>Unit
+of associated file. 
+<LI><FONT FACE="Symbol">	</FONT><B>TYPE</B>:
+input, string
+<BR>&#180;PROPERTY',
+'HISTORY' or 'SYSTEM'. 
+<LI><FONT FACE="Symbol">	</FONT><B>KEY</B>:
+input, string
+<BR>The
+key word of the desired label item. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output integer
+<BR>Error
+status. The possible errors are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>
+(page 140). 
+</UL><P ALIGN="LEFT"><B>Optional
+arguments:
+</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>ERR_ACT:</B>
+input, string
+<BR>Indicates
+the action to be taken by the Executive when an error condition is raised as a
+result of a call to this routine. A valid string may contain one or more of
+three characters in any order, 'A', 'U', 'S'. The presence of each character
+has the following meanings: 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>A</B>:
+an error will cause an immediate program abort.
+<B>
+</B>Otherwise,
+the routine will return an error number in STATUS. 
+<LI><FONT FACE="Symbol">	</FONT><B>U</B>:
+an error will cause the string that the user has specified with the ERR_MESS
+optional to be printed. 
+<LI><FONT FACE="Symbol">	</FONT><B>S</B>:
+an error will cause a system message to be printed. 
+</UL></UL><P ALIGN="LEFT">The
+three values are independent of each other. Thus 'SA' will cause a system
+message to be printed and the program to abort if an error occurs. If ERR_ACT
+consists only of blanks, an error will cause routine to return an error number
+in STATUS. 
+<BR>If
+ERR_ACT is not specified, then the action defaults to the value of the LAB_ACT
+optional to 
+<B>x/zvopen</B>
+(the default for LAB_ACT is specified by 
+<B>x/zveaction</B>).
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>ERR_MESS:</B>
+input, string
+<BR>Holds
+the user message that the programmer wishes printed when an error occurs as
+directed by ERR_ACT. Default is specified by 
+<B>x/zveaction</B>.
+<BR>If
+the ERR_ACT option is not specified, and the LAB_ACT option given to 
+<B>x/zvopen</B>
+specifies a message be printed, the message given by LAB_MESS, 
+<I>not</I>
+ERR_MESS is printed. 
+<LI><FONT FACE="Symbol">	</FONT><B>ELEMENT</B>:
+input, integer
+<BR>For
+a multi-value item, the starting value to delete. Default: 1. 
+<LI><FONT FACE="Symbol">	</FONT><B>NELEMENT</B>:
+input, integer 
+<BR>The
+number of values to be deleted from a multi-value item. A value of -1 means to
+delete all the values. The default is -1, i.e. to delete all the values. 
+<LI><FONT FACE="Symbol">	</FONT><B>NRET</B>:
+output, integer
+<BR>The
+number of values actually deleted by the call to 
+<B>x/zldel</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>HIST</B>:
+input, string 
+<BR>If
+TYPE is 'HISTORY&#8217; then this argument holds the name of the processing
+task that identifies the particular history subset in which 'KEY' may be found;
+if not entered, it defaults to the current task. 
+<LI><FONT FACE="Symbol">	</FONT><B>INSTANCE</B>:
+input, integer
+<BR>If
+TYPE is 'HISTORY&#8217; and HIST has been entered, INSTANCE gives the sequence
+number of the particular instance of the processing task for the condition
+where a processing task occurs more than once in the history subsets. If TYPE
+is &#8216;PROPERTY&#8217; and PROPERTY has been entered, INSTANCE gives the
+sequence number of the particular instance of the property label for the
+condition where a property set with identical names occurs more than once.
+Default: 1. 
+<LI><FONT FACE="Symbol">	</FONT><B>PROPERTY</B>,
+string: The name of the property set that the label routine is accessing The
+PROPERTY optional argument is only valid if the type argument of the above
+routines is set to &#8220;PROPERTY&#8221;. See 
+<A HREF="RTL_Manual-4_1.html#_Ref424721848">4.1.2.1</A>
+<A HREF="RTL_Manual-4_1.html#_Ref424721848">Using Property Labels</A>,
+for more information. 
+<a name="Heading75"></a><a name="_Toc425047534"></a><a name="_Toc425048089"></a><a name="_Toc425329702"></a><a name="_Toc453201427"></a></UL><A NAME="Heading64"></A><H3 ALIGN="LEFT">
+4.2.3	x/zlget&#8212;Return
+the value of a label item 
+</H3>
+
+<PRE>call xlget(unit, type, key, value, status, &lt;optionals&gt;, ' ')
+status = zlget(unit, type, key, value, &lt;optionals&gt;, 0);</PRE><BLOCKQUOTE>
+<B>x/zlget</B>
+returns the value or values associated with a label item key word. VALUE may be
+an array; the optional argument NELEMENT will indicate the dimension of VALUE. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+input, integer
+<BR>Unit
+of associated file. 
+<LI><FONT FACE="Symbol">	</FONT><B>TYPE</B>:
+input, string
+<BR>&#180;PROPERTY',
+'HISTORY' or 'SYSTEM'. 
+<LI><FONT FACE="Symbol">	</FONT><B>KEY</B>:
+input, string
+<BR>The
+key word of the desired label item. 
+<LI><FONT FACE="Symbol">	</FONT><B>VALUE</B>:
+output, array (size:NELEMENT) Receives the values of the label item. The type
+of argument required depends on the FORMAT optional given. For single values,
+INT returns an integer, REAL returns floating point (single-precision), and
+STRING returns a simple string argument ( (char *) in C and CHARACTER in
+FORTRAN). For multi-valued items (if NELEMENT is not 1), INT and REAL take
+single-dimension arrays of integers or reals. ASTRING must be a two-dimensional
+array of characters in either FORTRAN or C. 
+</UL><BLOCKQUOTE>
+For
+example, if you wanted to have a string array capable of handling 10 elements,
+with 80 characters in each element, this is how you would declare it in C: 
+</BLOCKQUOTE>
+<PRE>char value[10][80];</PRE><BLOCKQUOTE>
+The
+standard C null string terminator is always returned in the string, so the
+above array could only hold 79 characters. You would still pass in the length
+(via ULEN) as 80.
+<BR>
+From
+C, ULEN is required for multivalued strings (string arrays), as it specifies
+the inner dimension of the array. For scalar strings (not an array), ULEN is
+not strictly required as the length of the string is not required. BUT, you
+will have no protection against overflowing the buffer. Specifying ULEN for a
+scalar string ensures that an exceptionally long string value will not exceed
+the size of your buffer. So it is a good idea to always specify ULEN from C,
+although it's only really required for a string array.
+</BLOCKQUOTE>
+<PRE>In FORTRAN you use a CHARACTER array: CHARACTER*80 VALUE (10) </PRE><BLOCKQUOTE>
+In
+this case ULEN is not required, as the character descriptor contains the length
+of each string. The space after the string itself is filled with blanks.
+</BLOCKQUOTE><UL>
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer
+<BR>Error
+status. The possible errors are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">10</A>
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>.
+</UL><P ALIGN="LEFT"><B>Optional
+arguments:
+</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>ERR_ACT:</B>
+input, string
+<BR>Indicates
+the action to be taken by the Executive when an error condition is raised as a
+result of this call. A valid string may contain one or more of three characters
+in any order, 'A', 'U', 'S'. The presence of each character has the following
+meanings:
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>A</B>:
+an error will cause an immediate program abort; otherwise, the routine will
+return with an error number in STATUS 
+<LI><FONT FACE="Symbol">	</FONT><B>U</B>:
+an error will cause the string that the user has specified with the ERR_MESS
+optional to print 
+<LI><FONT FACE="Symbol">	</FONT><B>S</B>:
+an error will cause a system message to print. 
+</UL></UL><P ALIGN="LEFT">The
+three values are independent of each other. Thus 'SA' will cause a system
+message to be printed and the program to abort if an error occurs. If ERR_ACT
+consists only of blanks, an error will cause routine to return an error number
+in STATUS. 
+<BR>If
+ERR_ACT is not specified, then the action defaults to the value of the LAB_ACT
+optional to 
+<B>x/zvopen</B>
+(the default for LAB_ACT is specified by 
+<B>x/zveactiion</B>).
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>ERR_MESS:</B>
+input, string
+<BR>Holds
+the user message that the programmer wishes printed when an error occurs as
+directed by ERR_ACT. Default is specified by 
+<B>x/zveaction</B>.
+<BR>
+if the ERR_ACT option is not specified, and the LAB_ACT option given to 
+<B>x/zvopen</B>
+specifies a message be printed, the message given by LAB_MESS, 
+<I>not</I>
+ERR_MESS is printed. 
+<LI><FONT FACE="Symbol">	</FONT><B>FORMAT</B>:
+input, format
+<BR>Indicates
+the format of the given label item value. Valid values are: 'INT', 'REAL',
+&#8216;DOUB&#8217; and 'STRING'. The VALUE array type should match FORMAT, i.e.
+float for REAL, double for DOUB, etc. See 
+<A HREF="RTL_Manual-2_3.html#_Ref393619550">Table 6: C Declarations for Run-Time Library Arguments</A>)
+for matching C declarations. See 
+<A HREF="RTL_Manual-2_4.html#_Ref393695027">Table 6: FORTRAN declarations for pixel types</A>
+for matching FORTRAN declarations.
+</UL><P ALIGN="LEFT">In<B>
+the present implementation, FORMAT is required. 
+</B>If
+the format does not match the format of the currently existing label item, the
+label item is changed to match what is given in this optional. If this is not
+possible (i.e., a non-numeric string being changed to an integer), an error is
+returned. 
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>INSTANCE</B>:
+input, integer
+<BR>If
+TYPE is 'HISTORY&#8217; and HIST has been entered, INSTANCE gives the sequence
+number of the particular instance of the processing task for the condition
+where a processing task occurs more than once in the history subsets. If TYPE
+is &#8216;PROPERTY&#8217; and PROPERTY has been entered, INSTANCE gives the
+sequence number of the particular instance of the property label for the
+condition where a property set with identical names occurs more than once.
+Default: 1. 
+<LI><FONT FACE="Symbol">	</FONT><B>LEVEL</B>:
+output, integer
+<BR>In
+the ADD routine, which allows label items to be added to a label, a level may
+be associated with a label item when that item is added. LEVEL returns the
+positive integer which is the level of the label item. (NOT YET AVAILABLE) 
+<LI><FONT FACE="Symbol">	</FONT><B>LENGTH</B>:
+output, integer
+<BR>The
+length of returned values. The length of 'INT' and 'REAL' formats is always 4.
+The length of a string item is the length of the longest string element, not
+including the null terminator (if present). 
+<LI><FONT FACE="Symbol">	</FONT><B>ELEMENT</B>:
+input, integer
+<BR>For
+a multi-value item, the starting value to return into VALUE. Default: 1. 
+<LI><FONT FACE="Symbol">	</FONT><B>NELEMENT</B>:
+input, integer
+<BR>The
+number of values to be returned of a multi-value item. A value of -1 means to
+return all elements. The default is 1. 
+<LI><FONT FACE="Symbol">	</FONT><B>NRET</B>:
+output, integer
+<BR>The
+number of values actually returned by the call to 
+<B>x/zlget</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>HIST</B>:
+input, string
+<BR>If
+TYPE is 'HISTORY' then this argument holds the name of the processing task that
+identifies the particular history subset in which 'KEY' may be found; if not
+entered it becomes the current task. 
+<LI><FONT FACE="Symbol">	</FONT><B>PROPERTY</B>,
+string: The name of the property set that the label routine is accessing The
+PROPERTY optional argument is only valid if the type argument of the above
+routines is set to &#8220;PROPERTY&#8221;. See 
+<A HREF="RTL_Manual-4_1.html#_Ref424721848">4.1.2.1</A>
+<A HREF="RTL_Manual-4_1.html#_Ref424721848">Using Property Labels</A>,
+for more information. 
+<LI><FONT FACE="Symbol">	</FONT><B>ULEN</B>:
+input, integer
+<BR>The
+length of an input string. This optional only applies if the FORMAT is STRING.
+For multi-valued items, ULEN is the maximum length of each string in the array,
+i.e. it is the size of the first dimension of the array. ULEN is required in
+some cases, and it is ignored in others. These are explained below. 
+<BR>There
+are two ways to pass strings: C char and FORTRAN CHARACTER. See the VALUE
+argument for an example of each. 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>C:
+</B>If
+NELEMENT is not 1 (multi-valued), then ULEN is required
+<B>.
+</B>If
+NELEMENT is 1, then ULEN is optional. If present, it is used, otherwise the
+length is the null-terminated length of the string. 
+<LI><FONT FACE="Symbol">	</FONT><B>FORTRAN
+CHARACTER: 
+</B>ULEN<B>
+</B>is
+always ignored.
+<B>
+</B>The
+length is obtained from the character descriptor. 
+<a name="Heading77"></a><a name="_Toc425047536"></a><a name="_Toc425048091"></a><a name="_Toc425329704"></a><a name="_Toc453201428"></a></UL></UL><A NAME="Heading65"></A><H3 ALIGN="LEFT">
+4.2.4	x/zlhinfo&#8212;Return
+history label information 
+</H3>
+
+<PRE>call xlhinfo(unit, tasks, instances, nhist, status, &lt;optionals&gt;, ' ')
+status = zlhinfo(unit, tasks, instances, nhist, &lt;optionals&gt;, 0);</PRE><BLOCKQUOTE>
+A
+history label is partitioned into subsets, one for each processing task that
+has 'read' or 'written' the data in the file described by the label. 
+<B>x/zlhinfo</B>
+returns the names and instances of the history label subsets for the file
+associated with UNIT. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+input, integer
+<BR>The
+unit number of the file described by the label of interest. 
+<LI><FONT FACE="Symbol">	</FONT><B>TASKS</B>:
+output, string, fixed length 32 FORTRAN, 33 in C bytes
+<BR>An
+array of the task names in order of occurrence. At the present time the length
+of a task name is still truncated to 8 ( only 8 are significant), but when
+calling 
+<B>x/zlhinfo</B>
+you should now provide a 32 character buffer (33 in C for the null terminator)
+in order to accomodate future expansion. 
+<LI><FONT FACE="Symbol">	</FONT><B>INSTANCES</B>:
+output, integer array
+<BR>An
+array with the same number of elements as TASKS giving the instance of each
+task. If, for instance, the task A is the first third and sixth element in
+TASKS, then INSTANCES (1)=1, INSTANCES (3)=2, and INSTANCES (6)=3. 
+<LI><FONT FACE="Symbol">	</FONT><B>NHIST</B>:
+input/output, integer
+<BR>On
+input, it is the max dimension of TASKS and INSTANCES. On output, it is the
+number of tasks in the current label. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer
+<BR>The
+error status. The values are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">10</A>
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>.
+</UL><P ALIGN="LEFT"><B>Optional
+arguments:
+</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>ERR_ACT:</B>
+input, string
+<BR>Indicates
+the action to be taken by the Executive when an error condition is raised as a
+result of this call. A valid string may contain one or more of three characters
+in any order, 'A', 'U', 'S'. The presence of each character has the following
+meanings :
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>A</B>:
+an error will cause an immediate program abort; otherwise, the routine will
+return with an error number in STATUS 
+<LI><FONT FACE="Symbol">	</FONT><B>U</B>:
+an error will cause the string that the user has specified with the ERR_MESS
+optional to print 
+<LI><FONT FACE="Symbol">	</FONT><B>S</B>:
+an error will cause a system message to print 
+</UL></UL><P ALIGN="LEFT">The
+three values are independent of each other. Thus 'SA' will cause a system
+message to be printed and the program to abort if an error occurs. If ERR_ACT
+consists only of blanks, an error will cause routine to return an error number
+in STATUS. 
+<BR>If
+ERR_ACT is not specified, then the action defaults to the value of the LAB_ACT
+optional to 
+<B>x/zvopen</B>
+(the default for LAB_ACT is specified by 
+<B>x/zveaction</B>).
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>ERR_MESS:</B>
+input, string
+<BR>Holds
+the user message that the programmer wishes printed when an error occurs as
+directed by ERR_ACT. Defaults is specified by 
+<B>x/zveaction</B>.
+<BR>
+if the ERR_ACT option is not specified, and the LAB_ACT option given to 
+<B>x/zvopen</B>
+specifies a message be printed, the message given by LAB_MESS, 
+<I>not</I>
+ERR_MESS is printed. 
+<LI><FONT FACE="Symbol">	</FONT><B>NRET</B><BR>Returns
+the total number of tasks in the label. This can differ from the NHIST argument
+if the buffers provided were too small. NRET returns the total number of tasks
+available, while NHIST returns the number actually in the buffers. 
+<LI><FONT FACE="Symbol">	</FONT><B>ULEN</B>
+specifies the length of each element in the TASKS array. You can specify any
+length (up to the maximum of 32 plus one for the terminator) for task names. In
+FORTRAN, the FORTRAN string length is used. In C, the length comes from ULEN
+(and defaults to 8 if ULEN is not given for backwards compatibility). Use a
+ULEN of at least 9 from C, in order to get all 8 characters with a null
+terminator. 
+<a name="Heading78"></a><a name="_Toc425047537"></a><a name="_Toc425048092"></a><a name="_Toc425329705"></a><a name="Heading126"></a><a name="_Toc425047598"></a><a name="_Toc425048153"></a><a name="_Toc453201429"></a></UL><A NAME="Heading66"></A><H3 ALIGN="LEFT">
+4.2.5	x/zlinfo&#8212;Return
+information about a single label item 
+</H3>
+
+<PRE>call xlinfo(unit,type,key,format,maxlen,nelement,status,&lt;optionals&gt;,' ')
+status = zlinfo(unit,type,key,format,maxlen,nelement,&lt;optionals&gt;, 0);</PRE><BLOCKQUOTE>
+<B>x/zlinfo</B>
+will return certain information about a single label item of given TYPE and KEY. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+input, integer
+<BR>Unit
+of associated file. 
+<LI><FONT FACE="Symbol">	</FONT><B>TYPE</B>:
+input, string
+<BR>&#180;PROPERTY',
+'HISTORY' or 'SYSTEM'. 
+<LI><FONT FACE="Symbol">	</FONT><B>KEY</B>:
+input, string
+<BR>The
+key word of the desired label item. 
+<LI><FONT FACE="Symbol">	</FONT><B>FORMAT</B>:
+output, string, maximum length 8
+<BR>FORMAT
+indicates the format of the label item. Valid values are: 'INT', 'REAL', or
+'STRING'. 
+<LI><FONT FACE="Symbol">	</FONT><B>MAXLENGTH</B>:
+output, integer
+<BR>Indicates
+the maximum length of any value associated with this key word. The length of
+'INT' and 'REAL' items is always 4, meaning 4 bytes. The length of a 'STRING'
+item does 
+<I>not</I>
+include the null terminator, so if you are dynamically allocating an array in C
+to hold the values,  dimension it to MAXLENGTH + 1 to leave room for the null
+terminator. 
+<LI><FONT FACE="Symbol">	</FONT><B>NELEMENT</B>:
+output, integer
+<BR>Returns
+the number of values associated with the entered key word. 
+<a name="Heading79"></a><a name="_Toc423243893"></a><LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer
+<BR>The
+error status. The values are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">10</A>
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>.
+</UL><P ALIGN="LEFT"><B>Optional
+arguments:
+</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>ERR_ACT:</B>
+input, string
+<BR>Indicates
+the action to be taken by the Executive when an error condition is raised as a
+result of this call. A valid string may contain one or more of three characters
+in any order, 'A', 'U', 'S'. The presence of each character has the following
+meanings:
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>A</B>:
+an error will cause an immediate program abort; otherwise, the routine will
+return with an error number in STATUS 
+<LI><FONT FACE="Symbol">	</FONT><B>U</B>:
+an error will cause the string that the user has specified with the ERR_MESS
+optional to print 
+<LI><FONT FACE="Symbol">	</FONT><B>S</B>:
+an error will cause a system message to print 
+</UL><LI><FONT FACE="Symbol">	</FONT>The
+three values are independent of each other. Thus 'SA' will cause a system
+message to be printed and the program to abort if an error occurs. If ERR_ACT
+consists only of blanks, an error will cause routine to return an error number
+in STATUS. 
+<BR>If
+ERR_ACT is not specified, then the action defaults to the value of the LAB_ACT
+optional to 
+<B>x/zvopen</B>
+(the default for LAB_ACT is specified by 
+<B>x/zveaction</B>).
+<LI><FONT FACE="Symbol">	</FONT><B>ERR_MESS:</B>
+input, string
+<BR>Holds
+the user message that the programmer wishes printed when an error occurs as
+directed by ERR_ACT. Default is specified by 
+<B>x/zveaction</B>.
+<BR>If
+the ERR_ACT option is not specified, and the LAB_ACT option given to 
+<B>x/zvopen</B>
+specifies a message be printed, the message given by LAB_MESS, 
+<I>not</I>
+ERR_MESS is printed. 
+<LI><FONT FACE="Symbol">	</FONT><B>MOD</B>:
+output, integer
+<BR>Indicates
+whether the label item is modifiable by the programmer. Values: 0 modifiable, 1
+not modifiable. (NOT YET AVAILABLE) 
+<LI><FONT FACE="Symbol">	</FONT><B>STRLEN</B>:
+output, integer
+<BR>This
+optional returns the maximum length of any label element when the elements are
+treated as strings. For STRING format labels, this is identical to MAXLENGTH.
+For INT or REAL formats, the label is treated as if the integer or real values
+were strings, and the length of the character representation of the value is
+returned. This is needed in combination with calling
+<B>
+x/zlget
+</B>
+with a FORMA T of STRING, which causes all items to be returned as strings.
+This is useful when printing the values, as no format conversion is required. 
+<LI><FONT FACE="Symbol">	</FONT><B>INSTANCE</B>:
+input, integer
+<BR>If
+TYPE is 'HISTORY&#8217; and HIST has been entered, INSTANCE gives the sequence
+number of the particular instance of the processing task for the condition
+where a processing task occurs more than once in the history subsets. If TYPE
+is &#8216;PROPERTY&#8217; and PROPERTY has been entered, INSTANCE gives the
+sequence number of the particular instance of the property label for the
+condition where a property set with identical names occurs more than once.
+Default: 1. 
+<LI><FONT FACE="Symbol">	</FONT><B>HIST</B>:
+input, string
+<BR>If
+TYPE is 'HISTORY' then this argument holds the name of the processing task that
+identifies the particular history subset in which 'KEY' may be found; if not
+entered, defaults to current task. 
+<LI><FONT FACE="Symbol">	</FONT><B>PROPERTY</B>,
+string: The name of the property set that the label routine is accessing The
+PROPERTY optional argument is only valid if the TYPE argument of the above
+routines is set to &#8220;PROPERTY&#8221;. See 
+<A HREF="RTL_Manual-4_1.html#_Ref424721848">4.1.2.1</A>
+<A HREF="RTL_Manual-4_1.html#_Ref424721848">Using Property Labels</A>,
+for more information. 
+<a name="_Toc453201430"></a></UL><A NAME="Heading67"></A><H3 ALIGN="LEFT">
+4.2.6	x/zlninfo&#8212;Return
+name of next key 
+</H3>
+<P ALIGN="LEFT"><TT><FONT FACE="Courier">call
+xlninfo(unit,key,format,maxlength,nelement,status,&lt;optionals&gt;,' ')
+</FONT></TT><BR><TT><FONT FACE="Courier">status
+= zlninfo(unit,key,format,maxlength,nelement,&lt;optionals&gt;, 0);
+</FONT></TT></P>
+<BLOCKQUOTE>
+<B>x/zlninfo</B>
+operates much like the routine 
+<B>x/zlinfo</B>
+except that 
+<B>x/zlninfo</B>
+does not expect an input for KEY. Instead, 
+<B>x/zlninfo</B>
+will return a string in KEY which holds the next label item key word in the
+sequence of label items for the given TYPE. In addition, 
+<B>x/zlninfo</B>
+will return the same information as 
+<B>x/zlinfo</B>.
+If the last available label item has already been returned then that condition
+will be indicated in STATUS. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+input, integer
+<BR>Unit
+of associated file. 
+<LI><FONT FACE="Symbol">	</FONT><B>KEY</B>:
+output, string, maximum length 32
+<BR>The
+key word of the next label item. 
+<LI><FONT FACE="Symbol">	</FONT><B>FORMAT</B>:
+output, string, maximum length 8
+<BR>Indicates
+the format of the label item. Values: 'INT', 'REAL', 'STRING'. 
+<LI><FONT FACE="Symbol">	</FONT><B>MAXLENGTH</B>:
+output, integer
+<BR>Indicates
+the maximum length of any value associated with this key word. The length of
+'INT' and 'REAL' items is always 4, meaning 4 bytes. The length of a 'STRING'
+item does 
+<I>not</I>
+include the null terminator, so if you are dynamically allocating an array in C
+to hold the values,  dimension it to MAXLENGTH + 1 to leave room for the null
+terminator. 
+<LI><FONT FACE="Symbol">	</FONT><B>NELEMENT</B>:
+output, integer
+<BR>Returns
+the number of values associated with the entered key word. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer
+<BR>The
+error status. The values are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">10</A>
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>.
+</UL><P ALIGN="LEFT"><B>Optional
+arguments:
+</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>ERR_ACT:</B>
+input, string
+<BR>Indicates
+the action to be taken by the Executive when an error condition is raised as a
+result of this call. A valid string may contain one or more of three characters
+in any order, 'A', 'U', 'S'. The presence of each character has the following
+meanings:
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>A</B>:
+an error will cause an immediate program abort; otherwise, the routine will
+return with an error number in STATUS 
+<LI><FONT FACE="Symbol">	</FONT><B>U</B>:
+an error will cause the string that the user has specified with the ERR_MESS
+optional to print 
+<LI><FONT FACE="Symbol">	</FONT><B>S</B>:
+an error will cause a system message to print 
+</UL><LI><FONT FACE="Symbol">	</FONT>The
+three values are independent of each other. Thus 'SA' will cause a system
+message to be printed and the program to abort if an error occurs. If ERR_ACT
+consists only of blanks, an error will cause routine to return an error number
+in STATUS. 
+<BR>If
+ERR_ACT is not specified, then the action defaults to the value of the LAB_ACT
+optional to 
+<B>x/zvopen</B>
+(the default for LAB_ACT is specified by 
+<B>x/zveaction</B>).
+<LI><FONT FACE="Symbol">	</FONT><B>ERR_MESS:</B>
+input, string
+<BR>Holds
+the user message that the programmer wishes printed when an error occurs as
+directed by ERR_ACT. Default is specified by 
+<B>x/zveaction</B>.
+<BR>If
+the ERR_ACT option is not specified, and the LAB_ACT option given to 
+<B>x/zvopen</B>
+specifies a message be printed, the message given by LAB_MESS, 
+<I>not</I>
+ERR_MESS is printed. 
+<LI><FONT FACE="Symbol">	</FONT><B>MOD</B>:
+output, integer
+<BR>Indicates
+whether the label item is modifiable by the programmer. Values: 0 modifiable, 1
+not modifiable. (NOT YET AVAILABLE) 
+<LI><FONT FACE="Symbol">	</FONT><B>STRLEN</B>:
+output, integer
+<BR>This
+optional returns the maximum length of any label element when the elements are
+treated as strings. For STRING format labels, this is identical to MAXLENGTH.
+For INT or REAL formats, the label is treated as if the integer or real values
+were strings, and the length of the character representation of the value is
+returned. This is needed in combination when calling
+<B>
+x/zlget
+</B>
+with a FORMAT of STRING, which causes all items to be returned as strings. This
+is useful when printing the values, as no format conversion is required. 
+<a name="_Toc453201431"></a></UL><A NAME="Heading68"></A><H3 ALIGN="LEFT">
+4.2.7	x/zlpinfo&#8212;Returns
+the names of property subsets in the given file 
+</H3>
+
+<PRE>call xlpinfo(unit, properties, nprop, status, &lt;optionals&gt;, ' ')
+status = zlpinfo(unit, properties, nprop, &lt;optionals&gt;, 0);</PRE><BLOCKQUOTE>
+Returns
+the names of property subsets in the given file. Property labels are broken up
+into subsets, each with a property name. This routine returns a list of all
+property names in the file specified by UNIT, which must be open. This routine
+is identical to 
+<B>xlhinfo</B>,
+except that it returns property names instead of task names and instances.
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:
+</B></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+integer, input
+<BR>UNIT
+is the unit number of an open file. The property names in the property label of
+this file are returned. 
+<LI><FONT FACE="Symbol">	</FONT><B>PROPERTIES</B>:
+string array, output
+<BR>PROPERTIES
+is a string array that gets the list of property names. When 
+<B>x/zlpinfo</B>
+is called from C, the size of each string in the array is given by the ULEN
+optional argument (which is required from C). There is no 8-character default
+as there is in 
+<B>zlhinfo</B>.
+From FORTRAN, ULEN is optional, since the string length is obtained from the
+array itself (which must be a CHARACTER*n array). Since property names can be
+up to 32 characters, you should declare a FORTRAN array to be at least
+CHARACTER*32, and a C array should be at least 33 characters long (one
+additional character for the null terminator). The number of strings in the
+array is specified by the NPROP argument. 
+<LI><FONT FACE="Symbol">	</FONT><B>NPROP</B>:
+integer, input/output
+<BR>On
+input, NPROP is the major dimension (maximum number of strings) in PROPERTIES.
+On output, it returns the number of properties returned in PROPERTIES. If there
+are more properties than the input NPROP allows, then the returned NPROP will
+be the same as the input since the maximum number of properties are returned.
+If you want the total number of properties in the label, regardless of the size
+of your supplied buffer, use the NRET optional argument. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer
+<BR>The
+error status. The values are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">10</A>
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>.
+</UL><P ALIGN="LEFT"><B>Optional
+Arguments:
+</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>ERR_ACT</B>:
+string, input
+<BR>Indicates
+the action to be taken by the RTL when an error occurs in this routine. A valid
+string may contain one or more of the characters listed below, in any order. 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>A</B>
+: Abort the program on error; otherwise the routine returns with STATUS set. 
+<LI><FONT FACE="Symbol">	</FONT><B>U</B>
+: Print the string specified in ERR_MESS if an error occurs. 
+<LI><FONT FACE="Symbol">	</FONT><B>S</B>
+: Print a system error message describing the error. 
+</UL></UL><P ALIGN="LEFT">The
+three values are independent of each other. Thus, &#8220;SA&#8221; will cause a
+system error message to be printed and the program to abort if an error occurs.
+If ERR_ACT is empty or contains only blanks, no action will be taken on error,
+and the error code will be returned in STATUS. 
+<BR>If
+ERR_ACT is not specified, then the action defaults to the value of the LAB_ACT
+optional to
+<B>
+x/zvopen
+</B>.
+The default for LAB_ACT is specified by 
+<B>x/zveaction</B>.
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>ERR_MESS:</B>
+string, input
+<BR>Specifies
+the user message to be printed when an error occurs as directed by ERR_ACT. If
+the ERR_ACT option is not specified, and the LAB_ACT option given to 
+<B>x/zvopen</B>
+specifies that a message be printed, the message given by LAB_ACT, 
+<I>not</I>
+ERR_MESS, is printed. 
+<LI><FONT FACE="Symbol">	</FONT><B>NRET</B>,
+integer, output
+<BR>NRET
+returns the total number of properties in the label. This can differ from the
+NPROP argument if the buffer provided was too small. NPROP returns the number
+actually in the buffer, while NRET returns the total number available. 
+<LI><FONT FACE="Symbol">	</FONT><B>ULEN</B>,
+integer, input
+<BR>ULEN
+specifies the length of each element in the PROPERTIES array. ULEN is required
+on 
+<B>x/zlpinfo</B>
+when called from C to define the inner dimension of the array. Make sure to
+leave space for the null terminator, so ULEN should be at least 33. From
+FORTRAN, ULEN is optional. If it is not given, the string length will be picked
+up from the string array itself. The CHARACTER*n variable should be at least 32
+characters. 
+<LI><FONT FACE="Symbol">	</FONT><B>INST_NUM</B>,
+integer array, output. 
+<BR>
+An array with the same number of elements as NPROPS giving the instance of each
+property. INST_NUM returns a list of instances that match the names already
+returned. For example, if the property A is the first third and sixth element
+in PROPERTIES, then INST_NUM (1)=1, INST_NUM (3)=2, and INST_NUM (6)=3. If
+INST_NUM is not supplied, you won't get instance numbers, but you will still
+get repeated occurrences of names in the property name list if multiple
+instances are present.
+</UL>
+<HR>
+
+<DIV ALIGN="LEFT"><A HREF="RTL_Manual-Label.html">Up</A> | 
+<A HREF="RTL_Manual-4_1.html">Previous</A> | 
+<A HREF="RTL_Manual-Paramete.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+</BODY>
+
+</HTML>

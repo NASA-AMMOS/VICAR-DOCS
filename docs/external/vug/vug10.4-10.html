@@ -1,0 +1,1488 @@
+<H2>10.4 VICAR Intrinsic Commands</H2>
+
+Intrinsic commands are predefined operations used to manage a session. <P>
+
+Commands are classified as procedure-oriented and/or
+interactive-oriented ("P" or "I"). <P>
+
+Square brackets, "[]", imbedded in a command indicate that the command
+may be abbreviated using at least all the characters prior to the
+brackets (i.e., COMPI[LE] indicates that both COMPILE or COMPI are
+valid).  In the case of hyphenated commands, the abbreviation rule
+applies to both portions (i.e., SH[OW]-A[SYNC] indicates that both
+SHOW-ASYNC and SH-A are valid).  Qualifiers completely enclosed by
+square brackets, [ ], are optional. <P>
+
+<PRE>
+<STRONG>VICAR			SYNTAX AND
+COMMAND	      CLASS	FUNCTION</STRONG>
+
+A[BORT]		I	Terminates a proc or an asynchronous job.
+			Default form is ABORT-SYNC.     
+
+A[BORT]-A[SYNC]	I	<STRONG>VICAR&gt;</STRONG>ABORT-ASYNC +
+			<STRONG>VICAR&gt;+</STRONG> JOB=<VAR>job_name_list</VAR>
+			Terminates an asynchronous job. 
+
+A[BORT]-B[ATCH]	I	<STRONG>VICAR&gt;</STRONG>ABORT-BATCH +
+			<STRONG>VICAR&gt;+</STRONG> JOBID=<VAR>job_number</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> QUEUE=<VAR>queue_name</VAR>
+			Terminates a batch job; same as
+			BATCH-DELETE. Only available in VMS VICAR. 
+
+A[BORT]-S[YNC]	I	<STRONG>VICAR-INTERRUPT&gt;</STRONG>ABORT-SYNC
+			Terminates the execution of the current proc. 
+			Only valid in "proc interrupt mode". Default
+			subcommand for ABORT.  
+
+ALLO[C]		I,P	<STRONG>VICAR&gt;</STRONG>ALLOC DEVICE=<VAR>device_name</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> NAME=<VAR>symbolic_name</VAR>
+			Allocates a device for exclusive use and
+			associates a symbolic name with it.  Only
+			available in VMS VICAR.  
+
+ASYNC-S[UBMIT]	I	<STRONG>VICAR&gt;</STRONG>ASYNC-SUBMIT +
+			<STRONG>VICAR&gt;+</STRONG> PROC=<VAR>proc_name</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> [SAVEFILE=<VAR>save_file_name</VAR>] +
+			<STRONG>VICAR&gt;+</STRONG> [JOBNAME=<VAR>job_name</VAR>] +
+			<STRONG>VICAR&gt;+</STRONG> [STDOUT=<VAR>output_file_name</VAR>]
+			Submits a procedure for asynchronous
+			execution.  
+
+AT[TACH]	I	<STRONG>VICAR&gt;</STRONG>ATTACH [<VAR>process_name</VAR>]
+			Attaches a terminal to a subprocess. Only
+			available in VMS VICAR. 
+
+BATCH		I	Used for batch queue manipulation. Default is
+			BATCH-STATUS. Only available in VMS VICAR. 
+
+BATCH-D[ELETE]	I	<STRONG>VICAR&gt;</STRONG>BATCH-DELETE +
+			<STRONG>VICAR&gt;+</STRONG> JOBID=<VAR>job_number</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> QUEUE=<VAR>queue_name</VAR>
+			Deletes the specified queue entry from the
+			named queue; same as ABORT-BATCH.  Only
+			available in VMS VICAR.  
+
+BATCH-R[ESUME]	I	<STRONG>VICAR&gt;</STRONG>BATCH-RESUME +
+			<STRONG>VICAR&gt;+</STRONG> QUEUE=<VAR>queue_name</VAR>
+			Resumes the operation of the named queue. Need 
+			OPERATOR privileges. Only available in VMS
+			VICAR.
+
+BATCH-ST[ATUS]	I	<STRONG>VICAR&gt;</STRONG>BATCH-STATUS +
+			<STRONG>VICAR&gt;+</STRONG> QUEUE=<VAR>queue_name</VAR>
+			Shows the status of batch jobs for the
+			specified queue.  Default subcommand for
+			BATCH.  Same as SHOW-BATCH.  Only available in
+			VMS VICAR. 
+
+BATCH-SUB[MIT]	I	<STRONG>VICAR&gt;</STRONG>BATCH-SUBMIT PROC=<VAR>name</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> [SAVEFILE=<VAR>save_file_name</VAR>] +
+			<STRONG>VICAR&gt;+</STRONG> [QUEUE=<VAR>queue_name</VAR>] +
+			<STRONG>VICAR&gt;+</STRONG> [STDOUT=<VAR>output_file</VAR>]
+			Aids in submitting a procedure for batch
+			execution. Only available in VMS VICAR. 
+
+BATCH-SUS[PEND]	I	<STRONG>VICAR&gt;</STRONG>BATCH-SUSPEND +
+			<STRONG>VICAR&gt;+</STRONG> QUEUE=<VAR>queue_name</VAR>
+			Suspends operation of the named queue. Need 
+			OPERATOR privilege.  Only available in VMS
+			VICAR.  
+
+BATCH-U[PDATE]	I	<STRONG>VICAR&gt;</STRONG>BATCH-UPDATE +
+			<STRONG>VICAR&gt;+</STRONG> JOBID =<VAR>job_number</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> PRIORITY=<VAR>priority</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> QUEUE=<VAR>queue_name</VAR>
+			Modifies the priority of a job.  Need
+			OPERATOR privilege.  Only available in VMS
+			VICAR.   
+
+BODY 		P	PROCEDURE [HELP=<VAR>help_location</VAR>]
+			    <VAR>declarations</VAR>
+			BODY
+			    <VAR>procedure body</VAR>
+			END-PROC
+			Signals the start of executable commands in a 
+			procedure.
+
+BREAK		P	Immediately exits the loop in a procedure. See
+			LOOP for an example.
+
+COMPI[LE]	I,P	<STRONG>VICAR&gt;</STRONG>COMPILE INPROC=<VAR>source.pdf</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> [OUTPROC=<VAR>compiled.cpd</VAR>] 
+			Compiles PDFs to improve execution
+			speed of procs.
+
+CONT[INUE]	I	<STRONG>VICAR-INTERRUPT&gt;</STRONG>CONTINUE
+			Continues the executing task when in 
+			VICAR "proc interrupt mode".
+
+DAL		I,P	<STRONG>VICAR&gt;</STRONG>DAL FILE=<VAR>symbolic_name</VAR>
+			Causes the deallocation of a memory file,
+			a file that resides in memory.  Only
+			available in VMS VICAR.  
+
+DCL		I,P	<STRONG>VICAR&gt;</STRONG>DCL +
+			<STRONG>VICAR&gt;+</STRONG> [<VAR>any_VMS/DCL_command</VAR>]
+			Takes all characters after "DCL" as the
+			command to be executed by VMS/DCL.
+			Control-C will cause VICAR to go into
+			"proc interrupt mode".  Only available
+			in VMS VICAR.  
+
+DCL-I[NTERRUPT]	I	<STRONG>VICAR&gt;</STRONG>DCL-INTERRUPT +
+			<STRONG>VICAR&gt;+</STRONG> [<VAR>any_VMS/DCL_command</VAR>]
+			Same as DCL. Only available in VMS VICAR. 
+
+DCL-N[OINTERRUPT] I	<STRONG>VICAR&gt;</STRONG>DCL-NOINTERRUPT +
+			<STRONG>VICAR&gt;+</STRONG> [<VAR>any_VMS/DCL_command</VAR>]
+			Takes all characters after "DCL" as the
+			command to be executed by VMS/DCL. 
+			Control-C will be handled by the VMS 
+			utility itself.  Only available in VMS VICAR. 
+
+DEA[LLOC]	I,P	<STRONG>VICAR&gt;</STRONG>DEALLOC [DEVICE=<VAR>dev_name</VAR>] +
+			<STRONG>VICAR&gt;+</STRONG> NAME=<VAR>name</VAR>
+			Deallocates a device that was previously
+			allocated using the ALLOC command.  Only
+			available in VMS VICAR.
+
+DEFC[MD]	I,P	<STRONG>VICAR&gt;</STRONG>DEFCMD COMMAND=<VAR>name</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> STRING=<VAR>replaced_string</VAR>
+			Defines a VICAR command or an equivalent
+			command.
+
+DEFG[BL]	I,P	<STRONG>VICAR&gt;</STRONG>DEFGBL +
+			<STRONG>VICAR&gt;+</STRONG> NAME=<VAR>variable_name_list</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> [TYPE=<VAR>type</VAR>] +
+			<STRONG>VICAR&gt;+</STRONG> [COUNT=<VAR>min:max</VAR>] +
+			<STRONG>VICAR&gt;+</STRONG> [INITIAL=<VAR>initial_value</VAR>] +
+			<STRONG>VICAR&gt;+</STRONG> [VALID=<VAR>valid_values</VAR>] +
+			<STRONG>VICAR&gt;+</STRONG> [ACCESS=<VAR>file_access_mode</VAR>]
+			Defines the following variable globally
+ 			throughout all procedures.  REFGBL is 	
+			required before usage of the variable.
+
+DEFL[OG]-A[DD]	I,P	<STRONG>VICAR&gt;</STRONG>DEFLOG-ADD <VAR>log_name_value</VAR>
+			Creates logical name. Only available in VMS
+			VICAR.  
+
+DEFL[OG]-D[ELETE] I,P	<STRONG>VICAR&gt;</STRONG>DEFLOG-DELETE <VAR>log_name_value</VAR>
+			Deletes a logical name.  Only available in VMS
+			VICAR.   
+
+DEFS[YM]-A[DD]	I,P	<STRONG>VICAR&gt;</STRONG>DEFSYM-ADD <VAR>symbol_value</VAR>
+			Creates symbol.  Only available in VMS VICAR.
+
+DEFS[YM]-D[ELETE] I,P	<STRONG>VICAR&gt;</STRONG>DEFSYM-DELETE <VAR>symbol_value</VAR>
+			Deletes a symbol.  Only available in VMS
+			VICAR.
+
+DELC[MD]	I,P	<STRONG>VICAR&gt;</STRONG>DELCMD COMMAND=<VAR>name</VAR>
+			Deletes a defined command; same as
+			DELETE-COMMAND. 
+
+DELE[TE]	I,P	<STRONG>VICAR&gt;</STRONG>DELETE NAME=<VAR>variable_name</VAR>
+			Deletes a single Global or Local variable.  
+
+DELE[TE]-C[OMMAND] I,P	<STRONG>VICAR&gt;</STRONG>DELETE-COMMAND +
+			<STRONG>VICAR&gt;+</STRONG> COMMAND=<VAR>name</VAR>
+			Deletes any command defined by using DEFCMD;
+			same as DELCMD. 
+
+DELE[TE]-G[LOBALS] I,P	<STRONG>VICAR&gt;</STRONG>DELETE-GLOBALS +
+			<STRONG>VICAR&gt;+</STRONG> PROC=<VAR>proc_name</VAR>
+			Deletes all the Globals defined in a GLOBAL
+			Proc Definition File. 
+
+DELE[TE]-L[OCALS] I,P	<STRONG>VICAR&gt;</STRONG>DELETE-LOCALS 
+			Deletes all the currently defined Local
+			variables. 
+
+DELE[TE]-V[ARIABLE] I,P	<STRONG>VICAR&gt;</STRONG>DELETE-VARIABLE +
+			<STRONG>VICAR&gt;+</STRONG> NAME=<VAR>variable_name</VAR>
+			Same as DELETE.
+
+DISABLE			Disable a TAE Function.
+
+DISA[BLE]-FO[RCE_LOWER] I,P <STRONG>VICAR&gt;</STRONG>DISABLE-FORCE_LOWER
+			Disables case conversion of all file
+			references from TM.  This is the default.
+			(Only available on UNIX systems.)
+
+DISA[BLE]-H[OST] I,P	<STRONG>VICAR&gt;</STRONG>DISABLE-HOST
+			Disables entry into Host Command Language. 
+
+DISA[BLE]-I[NTERRUPT] I,P <STRONG>VICAR&gt;</STRONG>DISABLE-INTERRUPT
+			Disables TAE/VICAR interrupt mode.
+
+DISA[BLE]-L[OG]	I,P	<STRONG>VICAR&gt;</STRONG>DISABLE-LOG
+			Disables TAE/VICAR session logging. Closes
+			SESSION.TSL for TAE and SESSION.LOG for VICAR. 
+
+DISA[BLE]-R[ECVAR] I,P	<STRONG>VICAR&gt;</STRONG>DISABLE-RECVAR
+			Disables the use of the RECVAR command by
+			deleting the input queue created by 
+			ENABLE-RECVAR.
+
+DISA[BLE]-T[OL]	I	<STRONG>VICAR&gt;</STRONG>DISABLE-TOL
+			Disables terminal output logging, initiated by
+			ENABLE-TOL. 
+
+DISM[OUNT]	I,P	<STRONG>VICAR&gt;</STRONG>DISMOUNT +
+			<STRONG>VICAR&gt;+</STRONG> [DEVICE=<VAR>device_name</VAR>] +
+			<STRONG>VICAR&gt;+</STRONG> NAME=<VAR>symbolic_name</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> [OPTION=<VAR>option</VAR>]
+			Causes the specified tape to be dismounted.
+
+<A NAME="DISPLAY">DISP[LAY]	I,P	<STRONG>VICAR&gt;</STRONG>DISPLAY +
+			<STRONG>VICAR&gt;+</STRONG> [VARIABLE=<VAR>variable_nam_lst</VAR>] 
+			Displays the value of a variable.</A>
+
+DISP[LAY]-A[LL]	I,P	<STRONG>VICAR&gt;</STRONG>DISPLAY-ALL
+			Displays all of the variables in current proc.
+
+DISP[LAY]-G[LOBALS] I,P	<STRONG>VICAR&gt;</STRONG>DISPLAY-GLOBALS
+			Displays all of the Global symbols and their
+			values. 
+
+DISP[LAY]-L[OCALS] I,P	<STRONG>VICAR&gt;</STRONG>DISPLAY-LOCALS
+			Displays all of the local symbols and their
+			values. 
+
+DISP[LAY]-PARF[ILE] I,P	<STRONG>VICAR&gt;</STRONG>DISPLAY-PARFILE +
+			<STRONG>VICAR&gt;+</STRONG> FILE=<VAR>file_name</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> [VARIABLE=<VAR>variable_list</VAR>]
+			Displays all or selected variables in a
+			parameter file.  
+
+DISP[LAY]-PARM[S] I,P	<STRONG>VICAR&gt;</STRONG>DISPLAY-PARMS
+			Displays all of the parameters and their
+			values. 
+
+DISP[LAY]-V[ARIABLE] I	<STRONG>VICAR&gt;</STRONG>DISPLAY-VARIABLE +
+			<STRONG>VICAR&gt;+</STRONG> [VARIABLE=<VAR>variable_nam_lst</VAR>]
+			Displays the value of a variable. Same as
+			DISPLAY. 
+
+ELSE		P	Executes the following commands if previous
+			logical expression is not true in a procedure.  
+			See IF for an example.
+
+ELSE-IF		P	Executes the following commands if previous
+			logical expression is not true and the following 
+			expression is true in a procedure.  See IF for
+			and example.
+
+EMACS		I	<STRONG>VICAR&gt;</STRONG>EMACS
+			Invokes Emacs editor.  Only available in VMS
+			VICAR.  
+
+EMIT		I,P	<STRONG>VICAR&gt;</STRONG>EMIT [$SFI=<VAR>integer</VAR>] +
+			<STRONG>VICAR&gt;+</STRONG> [$SKEY=<VAR>string</VAR>]
+			Sends values for $SFI and $SKEY from an
+			asynchronous job to the VICAR Supervisor. Allows
+			monitoring of an asynchronous job using
+			SHOW-ASYNC. Available only from an asynchronous
+			job. 
+
+ENABLE			Enable a TAE function.  There is no default
+			subcommand. 
+
+ENA[BLE]-FO[RCE_LOWER] I,P <STRONG>VICAR&gt;</STRONG>ENABLE-FORCE_LOWER
+			Enables the conversion to lower case of all
+			file references from TM (Only available on
+			UNIX systems.)
+
+ENA[BLE]-I[NTERRUPT] I,P <STRONG>VICAR&gt;</STRONG>ENABLE-INTERRUPT
+			Enables TAE/VICAR interrrupt mode.
+
+ENA[BLE]-L[OG]	I,P	<STRONG>VICAR&gt;</STRONG>ENABLE-LOG
+			Enables TAE/VICAR session logging. Outputs
+			SESSION.TSL for TAE and SESSION.LOG for VICAR. 
+
+ENA[BLE]-R[ECVAR] I,P	<STRONG>VICAR&gt;</STRONG>ENABLE-RECVAR +
+			<STRONG>VICAR&gt;+</STRONG> SIZE=<VAR>queue_size</VAR>
+			Creates an input queue for use by RECVAR. 
+
+ENA[BLE-S[CRIPT] I	<STRONG>VICAR&gt;</STRONG>ENABLE-SCRIPT +
+			<STRONG>VICAR&gt;+</STRONG> FILE=<VAR>script_file</VAR> +
+			<STRONG>VICAR&gt;+</STRONG>[COUNT=<VAR>integer</VAR>]
+			Redirects input to the specified script file.
+
+ENA[BLE-T[OL]	I	<STRONG>VICAR&gt;</STRONG>ENABLE-TOL FILE=<VAR>file_name</VAR>
+			Enables logging of all terminal output to the
+			specified file. 
+
+END-F[OR]	P	Ends a loop with a variable assignment in a
+			procedure. See FOR for an example.
+
+END-G[LOBALS]	P	May be used to terminate a Global PDF.
+			(END-PROC may also be used.)
+
+END-I[F]		P	Terminates an IF expression. See IF for an
+			example. 
+
+END-L[OOP]	P	Terminates an infinite loop. See LOOP for an
+			example. 
+
+END-P[ROC]	P	Last statement of a proc. See PROCEDURE for an
+			example.
+
+END-S[UBCMD]	P	SUBCMD NAME=<VAR>subcmd_name</VAR>
+			    <VAR>declarations</VAR>
+			END-SUBCMD
+			Terminates a subcommand declaration. 
+
+EX[IT		I	<STRONG>VICAR&gt;</STRONG>EXIT
+			Exits VICAR and return to the operating
+			system.
+
+FLAG		I,P	Symbolically sets the value of the $SWITCH TAE
+			global variable. Default subcommand is FLAG-SET. 
+
+FLAG-A[DD]	I,P	<STRONG>VICAR&gt;</STRONG>FLAG-ADD FLAGS=<VAR>flag_list</VAR>
+			Adds the named options to the list already
+			set for the $SWITCH Global.
+
+FLAG-D[ELETE]	I,P	<STRONG>VICAR&gt;</STRONG>FLAG-DELETE FLAGS=<VAR>flag_list</VAR>
+			Clears a list of options in the $SWITCH 
+			Global.
+
+FLAG-SE[T]	I,P	<STRONG>VICAR&gt;</STRONG>FLAG-SET FLAGS=<VAR>flag_list</VAR>
+			Sets the value of $SWITCH symbolically.  Default
+			subcommand for FLAG.
+
+FLAG-SH[OW]	I,P	<STRONG>VICAR&gt;</STRONG>FLAG-SHOW FLAGS=<VAR>flag_list</VAR>
+			Shows the value of $SWITCH. 
+
+<A NAME="for">FOR		P	FOR <VAR>variable_name</VAR>=<VAR>for-list</VAR>
+			    <VAR>loop body</VAR>
+			END-FOR
+			Introduces a loop with a variable assignment. </A>
+
+FREEDISP	I	<STRONG>VICAR&gt;</STRONG>FREEDISP [<VAR>device</VAR>]
+			Deallocates image display device allocated 
+			with USEDISP.  Only available in VMS VICAR. 
+
+GETPAR		P	GETPAR +
+			    PARMS=(<VAR>parm1</VAR>, <VAR>parm2</VAR>, ...) +
+			    [PREFACE=(<VAR>"string1"</VAR>, <VAR>"string2"</VAR>, ...)]
+			Within a procedure, initiates a user dialog 
+			and obtains parameters dynamically.
+
+GLOBAL[S]	I,P	GLOBALS [HELP=<VAR>help_location</VAR>]
+			    Global definitions
+			    Local definitions
+			    Global references
+			END-PROC
+			Declares global variables in a PDF.
+
+<A NAME="goto">GOTO		P	GOTO LABEL=<VAR>label</VAR>
+			Searchs forward in the PDF for the label and
+			then continues execution of the PDF from 
+			that location.</A>
+
+H[ELP]		I	<STRONG>VICAR&gt;</STRONG>HELP [<VAR>command/proc_name</VAR>]
+			Lists Help capabilities of VICAR/TAE
+			or Help on the specified name.
+
+H[ELP]-C[OMMAND] I	<STRONG>VICAR&gt;</STRONG>HELP-COMMAND +
+			<STRONG>VICAR&gt;+</STRONG> [COMMAND=<VAR>name</VAR>]
+			Displays the help information on a 
+			command.
+
+H[ELP]-GL[OBAL]	I	<STRONG>VICAR&gt;</STRONG>HELP-GLOBAL +
+			<STRONG>VICAR&gt;+</STRONG> VARIABLE=<VAR>global_name</VAR>
+			Displays the help information on a global
+			variable.
+
+H[ELP]-H[ARDCOPY] I	<STRONG>VICAR&gt;</STRONG>HELP-HARDCOPY PROC=<VAR>proc</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> [OUTPUT=<VAR>output_file_name</VAR>]
+			Writes out a file containing information on
+			the specified proc or command.  The
+			output file contains the help available
+			both from HELP-PROC and from TUTOR.
+
+H[ELP]-M[ESSAGE] I	<STRONG>VICAR&gt;</STRONG>HELP-MESSAGE +
+			<STRONG>VICAR&gt;+</STRONG> [KEY=<VAR>message_key</VAR>]
+			Displays the help information on an error 
+			message.
+
+H[ELP]-PA[RM]	I	<STRONG>VICAR&gt;</STRONG>HELP-PARM +
+			<STRONG>VICAR&gt;+</STRONG> PARM=<VAR>parameter_name</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> PROC=<VAR>proc or proc-subcommand</VAR>
+			Displays the help information on a
+			parameter from the specified procedure.
+
+H[ELP]-PR[OC]	I	<STRONG>VICAR&gt;</STRONG>HELP-PROC +
+			<STRONG>VICAR&gt;+</STRONG> PROC=<VAR>proc or proc-subcommand</VAR>
+			Displays the help information on the
+			specified proc or proc-subcommand.
+
+<A NAME="if">IF		P	IF (<VAR>logical-expression</VAR>)
+			    <VAR>if-part</VAR>
+			ELSE
+			    <VAR>else-part</VAR>
+			END-IF
+			Begins an IF-ELSE loop of a procedure.  
+			Provides conditional execution based upon 
+			evaluation of logical expression.</A>
+
+LET		I,P	<STRONG>VICAR&gt;</STRONG>LET <VAR>variable_name</VAR>=<VAR>expression</VAR>
+			Assigns an expression value to a variable.
+	
+LISTP[ROC]	I	<STRONG>VICAR&gt;</STRONG>LISTPROC <VAR>proc_name</VAR>
+			Lists the specified proc to the standard
+			output. 
+
+LOCAL		I,P	LOCAL +
+			    NAME=<VAR>variable_name_list</VAR> +
+			    [TYPE=<VAR>type</VAR>] +
+			    [COUNT=<VAR>min:max</VAR>] +
+			    [INITIAL=<VAR>initial_value</VAR>] +
+			    [VALID=<VAR>valid_values</VAR>] +
+			    [ACCESS=<VAR>file_access_mode</VAR>]
+			Defines the following variable  within this 
+			procedure only.
+
+LO[GOFF]	I	<STRONG>VICAR&gt;</STRONG>LOGOFF
+			Terminates the interactive session, logging
+			the user off VICAR and the host system.
+
+<A NAME="loop">LOOP		P	LOOP
+			    I = I + 1
+			    IF (I = 10)
+				BREAK
+			    END-IF
+			    GETIMAGE NEW = NEWIMAGE
+			    IF ($KEY = "IMG-BADIMAGE")
+				NEXT
+			    END-IF
+			    DSPIMAGE IMG = NEWIMAGE
+			END-LOOP
+			Designates the beginning of an infinite
+			loop step within a procedure.</A>
+
+MAL		I,P	<STRONG>VICAR&gt;</STRONG>MAL FILE=<VAR>symbolic_name</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> NL=<VAR>number_lines</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> NS=<VAR>number_samples</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> FORMAT=<VAR>data_format</VAR>
+			Allocates a memory file, a file that resides
+			entirely in memory.  Only available in
+			VMS VICAR.  
+
+M[ENU]		I	<STRONG>VICAR&gt;</STRONG>MENU [NAME=<VAR>menu_name</VAR>]
+			Puts VICAR in MENU mode.
+
+M[ENU]-C[LOSED]	I	<STRONG>VICAR&gt;</STRONG>MENU-CLOSED +
+			<STRONG>VICAR&gt;+</STRONG> [NAME=<VAR>menu_name</VAR>]	
+			Puts VICAR in MENU mode.  Disallows 
+			reentry into Command mode.
+
+MENU-O[PEN]		Same as <STRONG>MENU</STRONG>.
+
+MOUNT		I,P	<STRONG>VICAR&gt;</STRONG>MOUNT DEVICE=<VAR>dev_name</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> [LABEL=<VAR>volume_label</VAR>] +
+			<STRONG>VICAR&gt;+</STRONG> [NAME=<VAR>symbolic_name</VAR>] +
+			<STRONG>VICAR&gt;+</STRONG> [DENSITY=<VAR>bpi</VAR>] +
+			<STRONG>VICAR&gt;+</STRONG> [BLOCKING=(<VAR>blksiz</VAR>,<VAR>recsiz</VAR>)] +
+			<STRONG>VICAR&gt;+</STRONG> [COMMENT=<VAR>operator_msg</VAR>] +
+			<STRONG>VICAR&gt;+</STRONG> [PROTECT=<VAR>protection</VAR>] +
+			<STRONG>VICAR&gt;+</STRONG> [INIT=<VAR>initialization</VAR>]
+			Causes the specified tape to be mounted.
+
+NEXT		P	Forces a loop to the next iteration within a
+			procedure. See LOOP for an example.
+
+NOP		P	Accepts any parameters (including parameters
+			with invalid syntax) and does nothing.
+
+NOP[ASSTHRU]
+
+PARM		P	PARM NAME=<VAR>param_name_list</VAR> +
+			    [TYPE=<VAR>type</VAR>] +
+			    [COUNT=<VAR>min:max</VAR>] +
+			    [DEFAULT=<VAR>default_value</VAR>] +
+			    [VALID=<VAR>valid_values</VAR>] +
+			    [QUALS=<VAR>proc_name</VAR>]
+			Defines a parameter in a procedure.
+
+PARMSET		P	PARMSET [HELP=<VAR>help_location</VAR>]
+			    <VAR>parameter declarations</VAR>
+			END-PROC
+			With END-PROC, brackets a parameter set 
+			PDF.
+
+PAS[STHRU]		Used to turn <CODE>passthru</CODE> mode on and
+			off.  <CODE>Passthru</CODE> mode is the
+			ability to execute or pass-through a vicar
+			command from within an interactive
+			prompt-style program. 
+
+PROCEDURE	P	PROCEDURE [HELP=<VAR>help_location</VAR>]
+			    <VAR>declarations</VAR>
+			BODY
+			    <VAR>procedure body</VAR>
+			END-PROC
+			"The procedure follows:"
+
+PROCESS		P	PROCESS [EXECUTE=<VAR>file_spec</VAR>] +
+			    [HELP=<VAR>help_location</VAR>] +
+			    [OPTIONS=<VAR>interrupt_option</VAR>] +
+			    [NAME=<VAR>proc_name</VAR>]
+			<VAR>declarations</VAR>
+			END-PROC	
+			Names the executable image file for the 
+			process to execute.
+
+PUTMSG		P	    PUTMSG MESSAGE=<VAR>string</VAR> +
+				[KEY=<VAR>string</VAR>]
+			Writes a TCL message to the standard output 
+			device.  
+
+PUTMSG-TRACE	P	PUTMSG-TRACE MESSAGE=<VAR>string</VAR> +
+			    [KEY=<VAR>string</VAR>]
+			Same as PUTMSG, but includes line number
+			and proc_name with message.
+
+RECVAR		P	RECVAR variable=(<VAR>v1</VAR>, <VAR>v2</VAR>,...) +
+			    JOB=<VAR>job_name</VAR>
+			Receives a collection of variables (a
+			VBLOCK) from another job.
+
+RECVAR-D[ISABLE]
+
+RECVAR-E[NABLE]
+
+RECVAR-R[ECEIVE]
+
+REFGBL		I,P	REFGBL NAME=(<VAR>name-1</VAR>, <VAR>name-2</VAR>,...)
+			Informs procedure that the variable 
+			references a VICAR Global symbol.
+
+REMO[VE]	I	<STRONG>VICAR&gt;</STRONG>REMOVE JOB=<VAR>job_name_list</VAR>
+			Deletes completed, asynchronous job(s) 
+			from the VICAR asynchronous job list.
+
+REPL[Y]		I	<STRONG>VICAR&gt;</STRONG>REPLY [JOB=<VAR>job_name</VAR>]
+			Allows the user to supply values to an
+			asynchronous job that is waiting for
+			Dynamic parameters.
+
+REST[ORE]	I,P	<STRONG>VICAR&gt;</STRONG>RESTORE FILE=<VAR>save_file_name</VAR> + 
+			<STRONG>VICAR&gt;+</STRONG> [TARGET=<VAR>variable_list</VAR>] +
+			<STRONG>VICAR&gt;+</STRONG> [VARIABLE=<VAR>variable_list</VAR>]
+			Restores the parameters from a file issued
+			in an earlier SAVE command.  Same as
+			RESTORE-VARIABLE.
+
+REST[ORE]-A[LL]	I,P	<STRONG>VICAR&gt;</STRONG>RESTORE-ALL +
+			<STRONG>VICAR&gt;+</STRONG> FILE=<VAR>save_file_name</VAR>
+			Restores all variables from a parameter file.
+
+REST[ORE]-G[LOBALS] I,P	<STRONG>VICAR&gt;</STRONG>RESTORE-GLOBAL +
+			<STRONG>VICAR&gt;+</STRONG> FILE=<VAR>save_file_name</VAR>
+			Restores only the Global variables from the
+			save file.
+
+REST[ORE]-L[OCALS] I,P	<STRONG>VICAR&gt;</STRONG>RESTORE-LOCAL +
+			<STRONG>VICAR&gt;+</STRONG> FILE=<VAR>save_file_name</VAR>
+			Restores only the Local variables from the
+			save file.
+
+REST[ORE]-P[ARMS] I,P	<STRONG>VICAR&gt;</STRONG>RESTORE-PARM +
+			<STRONG>VICAR&gt;+</STRONG> FILE=<VAR>save_file_name</VAR>
+			Restores only parameters from the save file.
+
+REST[ORE]-V[ARIABLE] I,P <STRONG>VICAR&gt;</STRONG>RESTORE-VARIABLE +
+			<STRONG>VICAR&gt;+</STRONG> FILE=<VAR>save_file_name</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> [TARGET=<VAR>trgt_var_list</VAR>] +
+			<STRONG>VICAR&gt;+</STRONG> [VARIABLE=<VAR>rest_var_list</VAR>] 
+			Restores the parameters from a file issued
+			in an earlier SAVE command.  Same as
+			RESTORE.
+
+RETURN		P	RETURN [$SFI=<VAR>integer</VAR>] +
+			    [$SKEY=<VAR>string</VAR>]
+			Terminates procedure execution.
+
+REW[IND]	I,P	<STRONG>VICAR&gt;</STRONG>REWIND DEVICE=<VAR>symbolic_name </VAR>
+			Causes the specified tape to rewind.  Only
+			available in VMS VICAR.  
+
+RUN			
+
+SAVE		I,P	<STRONG>VICAR&gt;</STRONG>SAVE FILE=<VAR>save_file_name</VAR>
+			Saves all the parameters of a command in
+			a file.
+
+SAVE-A[LL]	I,P	<STRONG>VICAR&gt;</STRONG>SAVE-ALL +
+			<STRONG>VICAR&gt;+</STRONG> FILE=<VAR>save_file_name</VAR>save_file_name
+			Save all variables in a specified save file.
+
+SAVE-G[LOBALS]	I,P	<STRONG>VICAR&gt;</STRONG>SAVE-GLOBAL FILE=<VAR>file_name </VAR>
+			Save all Global variables in a specified
+			save file.
+
+SAVE-L[OCALS]	I,P	<STRONG>VICAR&gt;</STRONG>SAVE-LOCAL FILE=<VAR>file_name</VAR>
+			Save all Local variables in a specified save
+			file.
+
+SAVE-P[ARMS]	I,P	<STRONG>VICAR&gt;</STRONG>SAVE-PARM FILE=<VAR>file_name</VAR>
+			Saves current parameters in a specified save 
+			file.
+
+SAVE-V[ARIABLE]	I,P	<STRONG>VICAR&gt;</STRONG>SAVE-VARIABLE +
+			<STRONG>VICAR&gt;+</STRONG> FILE=<VAR>save_file_name</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> [VARIABLE=<VAR>variable_list</VAR>]
+			Saves all the parameters of a command in a
+			file.  Same as SAVE.
+
+SENDVAR		P	SENDVAR VARIABLE=(<VAR>v1</VAR>, <VAR>v2</VAR>,...) +
+			    JOB=<VAR>job_name</VAR>
+			Packages a collection of TCL variables 
+			into a message (a TAE VBLOCK) 
+			and sends the message to another job.
+
+SETL[IB]	I,P	<STRONG>VICAR&gt;</STRONG>SETLIB +
+			<STRONG>VICAR&gt;+</STRONG> LIBRARY=<VAR>library_name_list</VAR>
+			Defines a set of libraries to be used in the
+			search for a proc or a menu.
+
+SETL[IB]-A[DD]	I,P	<STRONG>VICAR&gt;</STRONG>SETLIB-ADD +
+			<STRONG>VICAR&gt;+</STRONG> LIBRARY=<VAR>library_name_list</VAR>
+			Adds another library to the previous libraries
+			to search through.
+
+SETL[IB]-D[ELETE] I,P	<STRONG>VICAR&gt;</STRONG>SETLIB-DELETE +
+			<STRONG>VICAR&gt;+</STRONG> LIBRARY=<VAR>library_name_list</VAR>
+			Deletes the specified library from the list
+			to search through.
+
+SETL[IB]-S[ET]
+
+SH[OW]		I,P	<STRONG>VICAR&gt;</STRONG>SHOW
+			Shows status of VICAR environment or 
+			display application library names.
+
+SH[OW]-A[SYNC]	I,P	<STRONG>VICAR&gt;</STRONG>SHOW-ASYNC +
+			<STRONG>VICAR&gt;+</STRONG> JOB=<VAR>job_name/list</VAR>] +
+			<STRONG>VICAR&gt;+</STRONG> [FORM=<VAR>list_format</VAR>]
+			Displays asynchronous job status.
+
+SH[OW]-B[ATCH]	I,P	<STRONG>VICAR&gt;</STRONG>SHOW-BATCH QUEUE=<VAR>name</VAR>
+			Displays batch queue status.  Only available
+			in VMS VICAR.  
+
+SH[OW]-L[IBRARY] I,P	<STRONG>VICAR&gt;</STRONG>SHOW-LIBRARY
+			Same as SHOW.
+
+SH[OW]-W[AITING] I,P	<STRONG>VICAR&gt;</STRONG>SHOW-WAITING
+			Displays asynchronous jobs waiting for 
+			dynamic parameters.
+
+STOP		P	STOP
+			Terminates all procedure levels.
+
+SUBCMD		P	SUBCMD NAME=<VAR>subcmd_name</VAR>
+			    <VAR>declarations</VAR>
+			END-SUBCMD
+			With END-SUBCMD, declares a 
+			set of variables (usually parameters) to be
+			associated with the named subcommand.
+			SUBCMD-DEFAULT makes the named
+			subcommand the default. 
+
+SWI[TCH]	I,P	SWITCH VALUE=<VAR>hexadecimal_value </VAR>
+			Sets the value of the bits in $SWITCH 
+			numerically.  Use with caution.
+
+T[UTOR]		I	<STRONG>VICAR&gt;</STRONG>TUTOR <VAR>proc_name</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> [<VAR>proc_parameters</VAR>]
+			Enters TUTOR in display mode indicated
+			by the Global $TUTOR.
+
+T[UTOR]-S[CREEN] I	<STRONG>VICAR&gt;</STRONG>TUTOR-SCREEN <VAR>proc_name</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> [<VAR>proc_parameters</VAR>]
+			Enters TUTOR in formatted screen mode.
+
+T[UTOR]-N[OSCREEN] I	<STRONG>VICAR&gt;</STRONG>TUTOR-NOSCREEN <VAR>proc_name</VAR> +
+			<STRONG>VICAR&gt;+</STRONG> [<VAR>proc_parameters</VAR>]
+			Enters TUTOR in no screen mode.
+
+USA[GE]		I,P	<STRONG>VICAR&gt;</STRONG>USAGE
+			Causes VICAR to display statistics of
+			resource usage.  Same as USAGE-SHOW.
+			Currently only available in VMS VICAR. 
+
+USA[GE]-S[HOW]	I,P	<STRONG>VICAR&gt;</STRONG>USAGE-SHOW
+			Causes VICAR to display statistics of
+			resource usage.  Same as USAGE.  Currently
+			only available in VMS VICAR.  
+
+USE[DISP]	I	<STRONG>VICAR&gt;</STRONG>USEDISP [<VAR>device</VAR>]
+			Allocates image display device.  Only
+			available in VMS VICAR. 
+
+USH		I,P	USH <VAR>any-UNIX/shell-command</VAR>
+			Executes the UNIX/shell as an application
+			process under TAE.  Only available in UNIX
+			VICAR. 
+
+WAIT-A[SYNC]	I	<STRONG>VICAR&gt;</STRONG>WAIT-ASYNC JOB=<VAR>job_name_list</VAR> 
+			Causes VICAR to wait for completion of the
+			specified asynchronous job(s).
+
+WPT		P	Window Programming Tools.
+
+WPT-B[EGINWAIT]	P	WPT-BEGINWAIT PANEL=<VAR>parameter-name</VAR>
+			Sets the "wait indictator", indicating to the
+			user that the specified panel is temporarily
+			in a wait state and is not available for
+			interaction.
+
+WPT-EN[DWAIT]	P	WPT-ENDWAIT PANEL=<VAR>parameter-name</VAR>
+			Removes the "wait indicator."
+
+WPT-ER[ASE]	P	WPT-ERASE PANEL=<VAR>panel-name</VAR>
+			Erases a panel from the screen.
+
+WPT-EV[ENT]	P	WPT-EVENT PARM=<VAR>parm-name</VAR> +
+			    [PANEL=<VAR>panel-name</VAR>] +
+			    [TIMEOUT=<VAR>seconds</VAR>]
+			Waits for the next WPT event and delivers
+			event information.  When an event is received
+			from a panel, the target variable identified
+			by WPT-PANEL is updated to reflect the current
+			values on the screen.
+
+WPT-I[NIT]	P	WPT-INIT [HOST=<VAR>host</VAR>] + 
+			    [DISPLAY=<VAR>display</VAR>] +
+			    [PROTOCOL=<VAR>protocol</VAR>]
+			Initializes the WPT package.  Should be
+			executed before any other WPT TCL command. 
+
+WPT-M[ESSAGE]	P	WPT-MESSAGE PANEL=<VAR>panel-name</VAR> +
+			    MESSAGE=<VAR>message</VAR>
+			Creates a dialog box for communicating
+			information to the user.
+
+WPT-PAN[EL]	P	WPT-PANEL VIEW=<VAR>view</VAR> +
+			    [TARGET=<VAR>target</VAR>] +
+			    [PANEL=<VAR>panel-name</VAR>] +
+			    [STATE=<VAR>state</VAR>]
+			Creates a WPT panel and enables the receipt of
+			events from the panel.  The panel may be
+			creates in one of several states. 
+
+WPT-PAR[MUPDATE] P	WPT-PARMUPDATE PANEL=<VAR>panel-name</VAR> +
+			    PARM=<VAR>parameter name</VAR>
+			Updates a parameter display.  The parameter
+			display may be given a new value, a new
+			selection or a new valid list. 
+
+WPT-REJ[ECT]	P	WPT-REJECT PANEL=<VAR>panel-name</VAR> +
+			    PARM=<VAR>parm-name</VAR> +
+			    MESSAGE=<VAR>message</VAR>
+			Generates a rejection message for a
+			user-supplied parameter value.
+
+WPT-REH[EARSE]	P	WPT-REHEARSE INTERVAL=<VAR>interval</VAR> +
+			    ORDER=<VAR>order</VAR> +
+			    CYCLES=<VAR>cycles</VAR>
+			Turns on or off the simulated update of all
+			Data Driven Objects (DDOs) on all visible
+			application panels.  The update interval and
+			style of updating may be specified. 
+
+WPT-S[ETPANELSTATE] P	WPT-SETPANELSTATE PANEL=<VAR>panel-name</VAR> +
+			    STATE=<VAR>state-name</VAR>
+			Changes the current display state of a panel. 
+
+WPT-V[IEWUPDATE] P	WPT-VIEWUPDATE PANEL=<VAR>panel-name</VAR> +
+			    PARM=<VAR>parm-name</VAR> +
+			    VIEW=<VAR>view</VAR>
+
+WRITE		P	WRITE STRING=<VAR>string</VAR>
+			Writes an ASCII string to the standard 
+			output device.
+
+?		I	<STRONG>VICAR&gt;</STRONG>?
+			Displays the help information on the most
+			recent error message.  Same as HELP-
+			MESSAGE without specified KEY.
+</PRE>
+
+
+<A NAME="10.5">
+<H2>10.5 VICAR Command Qualifiers</H2>
+</A>
+
+Defined in $TAEHELP/tm/commode.hlp and
+VICSYS:[VICAR121.TAE52_VAX-VMS.HELP.TM]COMMODE.HLP. <P> 
+
+<STRONG>ASYNCEND=<VAR>value</VAR></STRONG>
+<PRE>
+	ALLOWED VALUES:	NOTIFY
+			SILENT
+	DEFAULT:	SILENT
+</PRE>
+
+The <CODE>ASYNCEND</CODE> qualifier is only valid if the
+<CODE>RUNTYPE</CODE> qualifier is set to <CODE>ASYNC</CODE>.  It
+specifies whether notification of job completion is desired. <P>
+
+<STRONG>JOB=<VAR>job-name</VAR></STRONG>
+<PRE>
+	ALLOWED VALUES:	ASYNC <VAR>job_name</VAR>
+	DEFAULT:	derived from proc name
+</PRE>
+
+The <CODE>JOB</CODE> qualifier is an alternate way of specifying the
+name of an asynchronous job. <P>
+
+<STRONG>RESTORE=<VAR>file-specification</VAR></STRONG>
+<PRE>
+	ALLOWED VALUES:	a file spec
+	DEFAULT:	none
+</PRE>
+
+The <CODE>RESTORE</CODE> qualifier specifies a file (created with
+<CODE>SAVE</CODE>) that contains parameter values.  Values provided
+explicitly on the command line override values provided from the
+restored file. <P>
+
+<STRONG>RUNTYPE=(<VAR>mode</VAR>,<VAR>queue_name</VAR>)</STRONG>
+<PRE>
+	ALLOWED VALUES:	(BATCH, <VAR>queue_name</VAR>)
+			(ASYNC, <VAR>job_name</VAR>)
+			INTERACTIVE
+			NORUN
+	DEFAULT:	INTERACTIVE
+</PRE>
+
+The <CODE>RUNTYPE</CODE> qualifier specifies whether the proc is to be run
+interactively or submitted for batch or async execution. <P>
+<PRE>
+	RUNTYPE=(BATCH, <VAR>queue_name</VAR>)
+</PRE>
+This qualifier specifies that the proc is to be submitted to the queue
+<VAR>queue_name</VAR> and executed in batch. <P>
+<PRE>
+	RUNTYPE=ASYNC or
+	RUNTYPE=(ASYNC, <VAR>job_name</VAR>) 
+</PRE> 
+This qualifier specifies that the proc is to be executed
+asynchronously.  If <VAR>job_name</VAR> is present, then the specified
+name is assigned to the job.  If <VAR>job_name</VAR> is omitted, TAE
+constructs one.  <P>
+
+<STRONG>SAVE=<VAR>file-specification</VAR></STRONG>
+<PRE>
+	ALLOWED VALUES:	a file spec
+	DEFAULT:	none
+</PRE>
+
+The <CODE>SAVE</CODE> qualifier specifies a file for saving the values
+of the parameters to be accessed later with <CODE>RESTORE</CODE>. <P>
+
+<STRONG>STDOUT=file-name</STRONG>
+<PRE>
+	ALLOWED VALUES:	a file spec
+	DEFAULT:	user terminal
+</PRE>
+
+The <CODE>STDOUT</CODE> qualifier specifies the file or device to be
+used to receive data sent to the "standard output" file or device. <P>
+
+<A NAME="10.6">
+<H2>10.6 VICAR Intrinsic Global Variables</H2>
+</A>
+
+Defined in $taepdf/taegbl.pdf and $TAEPDF:TAEGBL.PDF <P>
+
+All global variables are implicitly referenced (no REFGBL command is
+required before use) on the interactive level.  All variables used in
+procedures must be declared using the REFGBL command except for those
+which are implicitly defined by VICAR and are marked by "+".
+Global variables defined by TCL which may be modified by the user are
+flagged with a "*".  To change the value of a Global variable, use
+HELP-GLOBAL<BR> $<VAR>global_name</VAR> or TUTOR TAEGBL. <P>
+
+<PRE>
+GLOBAL		MOD	
+VARIABLE	FLAG 	DEFINITION	
+
+$AECHO	   * 	Determines which lines, if any, in a PDF are
+		to be echoed as they are executed in an
+		asynchronous job.  The ith element of $AECHO
+		applies to the ith level, starting with level
+		1.  The last element entered will apply to all
+		subsequent levels. Level 0 will always be
+		echoed.  (Procedure invocation and resulting
+		levels are described at the end of this
+		Appendix.) Possible values:   
+
+		"NO"	- No echo 
+		"FULL"	- Declarations plus body are  echoed. 
+		"BODY"	- Body only is echoed. 
+		"YES"	- Equivalent to "BRIEF" 
+		"TRACE"	- List filespec of proc. 
+
+		Default:  ("YES", "NO"); level 1 echoed,
+		levels 2 thru n not echoed. 
+
+$APLIB	   *	Contains the names of the currently active
+		applications libraries.  $APLIB may be 
+		conveniently set with the tae setlib
+		command.
+		Default:  disk locations of V2$SYSLIB, R1LIB,
+		R2LIB and R3LIB. 
+
+$BECHO	   *	Determines which lines, if any, in a PDF are
+		to be echoed as they are executed in a batch 
+		job. The ith element of $BECHO applies to the
+		ith level, starting with level 1.  The last
+		element entered will apply to all subsequent
+		levels.  Level 0 will always be echoed.
+		(Procedure invocation and resulting levels are
+		described at the end of this Appendix.)
+		Possible values:    
+
+		"NO"	- No echo 
+		"FULL"	- Declarations plus body are echoed. 
+		"BODY"	- Body only is echoed. 
+		"YES"	- Equivalent to "BRIEF" 
+		"TRACE"	- List filespec of proc. 
+
+		Default:  ( "YES", "NO"); level 1 echoed,
+		levels 2 thru n not echoed. 
+
+$DEFCMD0   *	Contains a list of defined commands. $defcmd0
+		is set by the tae defcmd command.  Type
+		"help defcmd" for assistance in executing
+		the defcmd command.  Each element of $defcmd0
+		represents one defined command.  The '='
+		character separates the command name from the
+		replacement string.  If more than 50 commands
+		are defined, TAE creates additional global
+		variables (named $defcmd1, $defcmd2, ...)
+		as needed.
+
+$DYNTUT	   *	Selects the form of the Dynamic TUTOR session
+		on the user's terminal.  This may be set with
+		the "let" command. Possible values:  
+
+		"NOSCREEN"
+		"SCREEN"
+
+		Default: "SCREEN"
+
+$ECHO	   *	Controls which lines, if any, in a PDF are to
+		be echoed onto the terminal as they are
+		executed in interactive mode. The ith element
+		of $ECHO applies to the ith level, starting
+		with level  1.  The last element entered will
+		apply to all subsequent levels.  Level 0 will
+		always be echoed.  (Procedure invocation and
+		resulting levels are described at the end of
+		this Appendix.)  Possible values:   
+
+		"NO"	- No echo 
+		"FULL"	- Declarations plus body are echoed. 
+		"BODY"	- Body only is echoed. 
+		"YES"	- Equivalent to "BRIEF" 
+		"TRACE"	-List filespec of proc. 
+
+		Default:  "NO"; only level 0 will be echoed.
+
+$FILEVER   *	Determines whether file verification is
+		enabled.  If the value of $FILEVER is "YES"
+		then proc parameters of type FILE are
+		verified according to the ACCESS specifi-
+		cation.  If $filever is "NO", then no file
+		verification is performed and the ACCESS
+		specification for FILE parameters is 
+		ignored.  Possible values:
+
+		"YES"
+		"NO"
+
+$LASTCMD   *	This is an archive of the twenty most recent 
+		interactive commands.  You may turn off 
+		archiving by setting $LASTCMD to the null
+		value: let $LASTCMD = --
+
+$LOG	   *	Contains the name of the session log file
+		for the current TAE session.
+		Default: "session.tsl" 
+
+<A NAME="MENU">$MENUS	   *	This is the current menu stack.  It is used
+		by the TAE menu processor to find the next
+		menu to display, and to know the menu
+		history for the menu "back" command. Procs
+		that reference $menus can reset the "next"
+		menu for the menu user.</A>
+
+$MENUOPT   *	Sets the menu display options.  It is a 
+		vector of up to four strings and is 
+		validated for the following values:
+
+		"NO_NAME" - suppress the "menu:" portion
+			    of the display.
+		"NO_TAG" - suppress the menu name on the
+			    display
+		"NO_LIBRARY" - suppress the library name
+			    on the display.
+		"NO_PRESS_FOR_MENU" - suppress the 
+			    "Press return for menu"
+			    prompt and charge right into
+			    the menu screen.
+
+$MESSAGE   *	Controls the terminal action when an error or
+		informational message must be displayed.
+		Possible values:   
+
+		"SILENT" - no special action taken. 
+		"BELL"	- sounds the terminal "beep"
+		"PAUSE"	- user must hit "return" key before
+			proceeding. 
+		"ATTN"	- combination of "BELL" and
+			"PAUSE" 
+
+		Default:  "BELL"
+
+$PROMPT	   *	Contains the ASCII string for user's prompt.
+		Default:  "VICAR". 
+
+$RUNTYPE   *	Indicates the current job environment. The
+		values are:
+	
+		"INTERACTIVE" - interactive job
+		"BATCH" - batch job
+		"ASYNC" - asynchronous job
+
+$SESSION   *	A string that uniquely identifies the
+		current job among all other active jobs.
+		In VAX/VMS and UNIX systems, $SESSION
+		contains the process identification of
+		TAE's terminal monitor.
+
+$SFI	   *	Proc termination "success/fail" indicator.
+		When a proc terminates normally, $SFI is
+		set to a positive number by TAE. When
+		a proc terminates abnormally, $SFI is set
+		to a negative value by TAE.  Following
+		completion of a proc, you may display
+		$SFI with the following command:
+
+			DISPLAY $SFI
+
+$SKEY	   *	Proc termination status key.  This string
+		is set to return status information to
+		the invoking proc.
+
+$SWITCH	   *	$SWITCH is an integer of bit flags for use
+	        by application programmers.  TAE reserves
+	        the right-hand eight bits for its own use.
+	        Currently, the right-hand bit means "run
+	        all application programs using the VMS 
+	        /DEBUG qualifier".  Thus, a programmer
+	        may always LINK with the debugger and 
+	        enable the debugger only when needed. The 
+		second rightmost bit signals that for batch 
+		or async job, sys$output is to be assigned 
+		to a file of type SPL. The debug output is 
+		to be placed in a file of type TML.
+	        The third rightmost bit tells TM to initiate
+	        the async TM through the file []ASYNC.COM 
+	        and place the output in []TM.DAT.  This flag
+	        is used for async debugging. The fourth 
+		rightmost bit is no longer used. The fifth 
+		rightmost bit is used to request for
+                display of library in dynamic tutor.
+
+$SYSCHAR   *	Strings of system characteristics referenced
+		by help files to generate "conditional" help
+		text on various systems. 
+
+$SYSLIB	   *	Contains the name of the system library.
+		Default:  $TAELIB. 
+
+$TUTOPT	   *	This global sets tutor display options. It 
+	        is a vector of up to three strings and is 
+		validated for the following values:
+ 
+                "NO_TAG" - suppress the "TUTOR:" 
+                                portion of the display. 
+ 
+                "NO_NAME" - suppress the PDF name on the
+                                display.
+ 
+                "NO_LIBRARY" - suppress the library name  
+                                on the display. 
+ 
+                "NO_SELFTUTOR" - do not honor SELFTUTOR
+                                requests in PDFs.
+ 
+                "COMPRESS" - use the "compressed" form 
+				of tutor.
+
+$TUTOR	   *	Selects the form of the TUTOR session.
+		Possible values:  
+
+		"SCREEN" 
+		"NOSCREEN" 
+
+$TUTSELE   *	This global is only meaningful in TAE 
+		Facelift tutor mode.  It determines 
+		whether valids for a parm should be 
+		displayed in a separate valid panel.
+ 	        $TUTSELE may be set with the LET command. 
+		Possible values:
+
+		"YES"
+		"NO"
+
+$USERLIB   *	Contains the name of the user library.
+</PRE>
+
+Procedure invocation and resulting levels: <P>
+
+Procedures may contain invocations of other procedures.  Commands
+received from the asynchronous/batch/interactive user are said to be
+executing on the "primary level" (level 0).  A procedure invoked
+from level 0 executes at level 1.  A procedure executing on level 1
+may invoke another procedure, which executes at level 2, and so on.
+<P>  
+
+<A NAME="10.7">
+<H2>10.7 MENU Mode User Operations</H2>
+</A>
+
+<DL>
+
+<DT> <STRONG>Commands</STRONG>
+<DD> <STRONG>Description</STRONG>
+
+<HR>
+
+<DT> ?
+<DD> Help on the last message is displayed. <P>
+
+<DT> <VAR>n</VAR>
+<DD> Selects the proc or menu corresponding to item number
+"<VAR>n</VAR>". <P>
+
+<DT> Up Arrow
+<DD> Selects current entry -1 on current menu <P>
+
+<DT> Down Arrow
+<DD> Selects current entry +1 on current menu <P>
+
+<DT> B[ACK]
+<DD> Returns to previous menu. <P>
+
+<DT> C[OMMAND]
+<DD> Exits MENU mode and enters TAE command mode. <P>
+
+<DT> H[ELP]
+<DD>Displays general information on the operation of the VICAR MENU
+mode. <P>
+
+<DT> H[ELP] *
+<DD> Requests help information on the current menu. <P>
+
+<DT> H[ELP] <VAR>command</VAR>
+<DD> Requests help on the named TCL command. <P>
+
+<DT> H[ELP] <VAR>n</VAR>
+<DD> Requests help information on entry item number <VAR>n</VAR> of
+the current menu. <P>
+
+<DT> H[ELP] <VAR>proc</VAR>
+<DD> Requests help information on the named proc. <P>
+
+<DT> L[OGOFF]
+<DD> Logs user off the host system. <P>
+
+<DT> M[ENU]
+<DD> Re-displays current menu. <P>
+
+<DT> M[ENU] <VAR>menuname</VAR>
+<DD> Activates the named menu. The new menu is added to the menu
+path. A "BACK" from this menu returns the user to the previous
+menu. <P> 
+
+<DT> R[EPLY]
+<DD> Supply parameters to an executing asynchronous job. <P>
+
+<DT> T[OP]
+<DD> Returns to the root menu. <P>
+
+</DL>
+
+
+
+<A NAME="10.8">
+<H2>10.8 TUTOR Mode User Operations</H2>
+</A>
+
+NOTE:  All TUTOR commands may be abbreviated up to the sqaure
+brackets, "[]", as shown below. <P>
+
+<H3>TUTOR-SCREEN Mode</H3>
+
+<DL>
+
+<DT> <STRONG>Commands</STRONG>
+<DD> <STRONG>Description</STRONG>
+
+<HR>
+
+<DT> ?
+<DD> Displays help on the most recent message. <P>
+
+<DT> Carriage return
+<DD> Displays the next page of parameters. <P>
+
+<DT> E[XIT]
+<DD> Terminates a TUTOR mode session without executing the proc, and
+returns the user to MENU or command mode. <P>
+
+<DT> H[ELP]
+<DD> Displays help information on operation of TUTOR mode.  <P>
+
+<DT> H[ELP] -
+<DD> Displays detailed help on current proc subcommand.  <P>
+
+<DT> H[ELP] *
+<DD> Displays general help information for current proc.  <P>
+
+<DT> H[ELP] <VAR>parm</VAR>
+<DD> Displays detailed text describing the parameter
+<VAR>parm</VAR>. <P> 
+
+<DT> N[OSCREEN]
+<DD> Enters TUTOR-NOSCREEN mode. <P>
+
+<DT> P[AGE] <VAR>parm</VAR>
+<DD> Displays the page containing <VAR>parm</VAR>. <P>
+
+<DT> P[AGE] <VAR>i</VAR>
+<DD> Displays page number <VAR>i</VAR>.  If no page number is
+provided, the next page is displayed. <P>
+
+<DT> <VAR>parm</VAR>=
+<DD> Sets parameter <VAR>parm</VAR> to default value (if any exists).
+<P> 
+
+<DT> <VAR>parm</VAR>=<VAR>value</VAR>
+<DD> Assigns a new value(s) to parameter <VAR>parm</VAR>. <P>
+
+<DT> <VAR>parm</VAR>(<VAR>i</VAR>)=<VAR>value</VAR>
+<DD> Sets the <VAR>i</VAR>th element of multi-valued parameter
+<VAR>parm</VAR>. <P>
+
+<DT> Q[UALIFY] <VAR>parm</VAR>
+<DD> Requests TUTOR information on qualifiers for parameter
+<VAR>parm</VAR>. <P> 
+
+<DT> RE[STORE] <VAR>filename</VAR>
+<DD> Restores parameter value file. <P>
+
+<DT> RE[STORE] LAST
+<DD> Restore parameter values from last proc execution. <P>
+
+<DT> R[UN]
+<DD> Causes the proc to be executed. <P>
+
+<DT> SA[VE] <VAR>filename</VAR>
+<DD> Saves current parameter values in disk file
+<VAR>filename</VAR>. <P> 
+
+<DT> SE[T] <VAR>parm-list</VAR>
+<DD> Set parameter values using TCL syntax. <P>
+
+<DT> SH[OW] <VAR>parm</VAR>(<VAR>i</VAR>)
+<DD> Displays the <VAR>i</VAR>th element of multi-valued parameter
+<VAR>parm</VAR>.  This option is particularly useful when the
+parameter has more elements than will fit on one screen. Maximum value
+for <VAR>i</VAR> is 600. <P>
+
+</DL>
+
+<H3>TUTOR-NOSCREEN Mode</H3>
+
+<DL>
+
+<DT> <STRONG>Commands</STRONG>
+<DD> <STRONG>Description</STRONG>
+
+<HR>
+
+<DT> ?
+<DD> Displays help information on most recent TAE message. <P>
+
+<DT> D[ISPLAY]
+<DD> Displays all parms with brief description of each.  <P>
+
+<DT> E[XIT]
+<DD> Terminates a TUTOR session without executing the proc. <P>
+
+<DT> H[ELP]
+<DD> Displays general TUTOR-NOSCREEN help. <P>
+
+<DT> H[ELP] -
+<DD> Displays detailed help on current proc subcommand. <P>
+
+<DT> H[ELP] *
+<DD> Displays general help information for current proc. <P>
+
+<DT> H[ELP] <VAR>parm</VAR>
+<DD> Displays detailed help for parameter <VAR>parm</VAR>. <P>
+
+<DT> L[IST]
+<DD> Lists all parms for the proc along with current values. <P> 
+
+<DT> L[IST] <VAR>parm</VAR>
+<DD> Lists current values of parameter <VAR>parm</VAR>. <P>
+
+<DT> L[IST] (<VAR>parm-list</VAR>)
+<DD> Lists current values of specified parameters in list
+<VAR>parm-list</VAR>. <P>
+
+<DT> <VAR>parm</VAR>=
+<DD> Sets parameter "parm" to default value (if any). <P>
+
+<DT> <VAR>parm</VAR>=<VAR>value</VAR>
+<DD> Assigns a new value(s) to parameter <VAR>parm</VAR>.  <P>
+
+<DT> Q[UALIF] <VAR>parm</VAR>
+<DD> Requests TUTOR information on qualifiers for parameter
+<VAR>parm</VAR>.  <P>
+
+<DT> RE[STORE] <VAR>filename</VAR>
+<DD> Restores parameter values from file <VAR>filename</VAR>. <P>
+
+<DT> RE[STORE] LAST
+<DD> Restores parameter values from last proc execution. <P>
+
+<DT> R[UN]
+<DD> Causes proc to be executed. <P>
+
+<DT> SA[VE] <VAR>filename</VAR>
+<DD> Saves current parameter values in file <VAR>filename</VAR>. <P> 
+
+<DT> S[CREEN]
+<DD> Enters TUTOR-SCREEN mode. <P>
+
+<DT> SE[T] <VAR>parm-list</VAR>
+<DD> Set parameter values using TCL syntax. <P>
+</DL>
+
+
+<A NAME="10.9">
+<H2>10.9 TUTOR Mode Line Editing Keys</H2>
+</A>
+
+NOTE:   For VT100 Compatible Terminals only <P>
+
+<DL>
+
+<DT> <STRONG>Key</STRONG>
+<DD> <STRONG>Function</STRONG>
+
+<HR>
+
+<DT> UP-ARROW
+<DD> Moves one parameter value up on the screen, bringing the value to
+the user response line for editing. <P>
+
+<DT> DOWN-ARROW
+<DD> Moves one parameter value down on the screen, bringing the value
+to the user response line for editing. <P>
+
+<DT> RIGHT-ARROW
+<DD> Moves cursor one character to the right. <P>
+
+<DT> LEFT-ARROW
+<DD> Moves cursor one character to the left. <P>
+
+<DT> DELETE
+<DD> Deletes one character to the left of the cursor on the user
+response line. <P>
+
+<DT> Escape, Escape
+<DD> Clear user response line. <P>
+
+<DT> GOLD/PF1
+<DD> Preceding the DOWN-ARROW or UP-ARROW PF1 "exaggerates" the action
+taken.  For example: when the user enters the DOWN-ARROW within a
+multi-valued parameter, instead of only spacing down to the next
+element within the same parameter, it will space down to the next
+parameter. <P>
+
+<DT> HELP/PF2
+<DD> This key will only work for string parameters.  It displays on
+the prompt line one entry from the valid list of the current
+parameter.  Repeating PF2 will cause the next entry from the valid
+list to be displayed. <P>
+
+<DT> FNDNXT/PF3
+<DD> This key will only work for string parameters.  It displays on
+the prompt line one entry from the valid list of the current
+parameter.  Repeating PF3 will cause the previous entry from the valid
+list to be displayed. <P>
+
+</DL>
+
+<A NAME="10.10">
+<H2>10.10 Command Line Editing Keys</H2>
+</A>
+
+NOTE:    For VT100 Compatible Terminals only <P>
+
+<DL>
+
+<DT> <STRONG>Key</STRONG>
+<DD> <STRONG>Function</STRONG>
+
+<HR>
+
+<DT> UP-ARROW
+<DD> Displays the last command line issued.  If repeated, displays the
+previous command in the recall buffer.  The recall buffer holds the 20
+most recently issued commands.   <P>
+
+<DT> DOWN-ARROW
+<DD> Displays the next line in the recall buffer.  <P>
+
+<DT> RIGHT-ARROW
+<DD> Moves cursor one character to the right. <P>
+
+<DT> LEFT-ARROW
+<DD> Moves cursor one character to the left. <P>
+
+<DT> DELETE
+<DD> Deletes  the character to  the left of the cursor.  <P>
+
+<DT> RETURN
+<DD> Executes  command line (cursor need not be at the end of line).
+<P> 
+
+<DT> Control-U or Control-X
+<DD> Deletes entire line independent of cursor position.
+
+</DL>
+
+<HR>
+<A HREF="vug10.1-3.html"><IMG SRC="back.gif"></A>
+<A HREF="vug10.11-12.html"><IMG SRC="fwd.gif"></A>
+<P> 
+
+If you wish to return to the Contents page, click <A
+HREF="vugfinal.html#Contents">here</A>.
+
+

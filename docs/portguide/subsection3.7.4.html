@@ -1,0 +1,38 @@
+<HEAD>
+<TITLE>Pixel Sizes</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=814 HREF=subsection3.7.3.html><IMG SRC="/icons/previous.png"></A> <A NAME=816 HREF=section3.7.html><IMG SRC="/icons/up.png"></A>  <A NAME=812 HREF=subsection3.7.5.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=815 HREF=subsection3.7.3.html>Pixel Type Declarations</A>  <b>Up:</b> <A NAME=817 HREF=section3.7.html>Data Types and Host Representations</A>  <b>Next:</b> <A NAME=813 HREF=subsection3.7.5.html>Converting Data Types &amp; Hosts</A> <P>
+ <H2>Pixel Sizes</H2>
+<A NAME=pixelsizes><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+In the VMS-only world, pixels were always fixed sizes.  Many programs assumed
+that FULL (integer) was 4 bytes, DOUB was 8 bytes, HALF was 2 bytes, etc.
+This assumption is no longer valid.  A given machine may have different sized
+data types, such as 64-bit (8 byte) integers.  Although all current supported
+machines have the same sized data, it is still important to code programs
+such that they will work with different sizes.
+<P>
+There are really two aspects to pixel sizes.  The first is when you are
+dealing with files.  The file could be from a different machine, with different
+pixel sizes.  In this case, you must use one of the RTL pixel size routines,
+<b> x</b>/<b>  zvpixsize</b>, <b> x</b>/<b>  zvpixsizeu</b>, or <b> x</b>/<b>  zvpixsizeb</b>.  These routines give you the
+size of a pixel in bytes, given the data type and machine formats
+(<b> x</b>/<b>  zvpixsizeu</b> and <b> x</b>/<b>  zvpixsizeb</b> pick up the machine formats from an image
+label).  Do not simply assume that REALs are 4 bytes long, as that may not be
+the case on every supported machine.  The pixel size routines are designed to
+be easy to call.
+<P>
+The second is when you are dealing with internal buffers.  Since internal
+buffers are almost always in native format for the machine you are running on,
+you can use the C function <tt> sizeof()</tt> to get the size of an element in
+bytes.  Make sure that you use the proper data type for the pixel (see
+Table <A HREF=subsubsection3.5.4.2.html#cpixtype><IMG SRC="/icons/cross-ref.png"></A>).  Fortran has no <tt> sizeof()</tt> operator or equivalent,
+so you should use <b> xvpixsize</b> with machine formats of ``NATIVE'' or
+``LOCAL'' instead.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

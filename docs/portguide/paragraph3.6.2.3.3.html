@@ -1,0 +1,53 @@
+<HEAD>
+<TITLE><b> x</b>/<b>  zvcmdout</b></TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=656 HREF=paragraph3.6.2.3.2.html><IMG SRC="/icons/previous.png"></A> <A NAME=658 HREF=subsubsection3.6.2.3.html><IMG SRC="/icons/up.png"></A>  <A NAME=654 HREF=paragraph3.6.2.3.4.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=657 HREF=paragraph3.6.2.3.2.html><b> x</b>/<b>  zmove</b></A>  <b>Up:</b> <A NAME=659 HREF=subsubsection3.6.2.3.html>Miscellaneous Routines</A>  <b>Next:</b> <A NAME=655 HREF=paragraph3.6.2.3.4.html><b> x</b>/<b>  zvhost</b></A> <P>
+ <H4><b> x</b>/<b>  zvcmdout</b></H4>
+<P>
+<PRE><TT>
+call xvcmdout(command, status)
+status = zvcmdout(command);
+</TT></PRE>
+<P>
+Sends a command string to TAE to be executed, and returns output values in
+the interactive parblock, accessible by the <b> x</b>/<b>  zviparm</b> family of routines.
+The command must be a TAE intrinsic command, or a procedure PDF that uses
+only intrinsic commands, i.e. no processes, no DCL or shell.  This is mainly
+intended for running VIDS procedures from within a program, but it may have
+other applications as well.
+<P>
+This routine is quite similar to <b> x</b>/<b>  zvcommand</b>.  The only difference is that
+<b> x</b>/<b>  zvcmdout</b> makes any output variables accessible.  This is most useful
+with the VIDS JGET command, which returns values to the caller in TAE
+variables.  These variables are placed in the interactive parblock.
+<P>
+<b> Arguments:</b>
+<UL>
+<P>
+<LI> COMMAND: string, input
+<P>
+The command string to execute.  It may be a TAE intrinsic command or a
+procedure PDF which uses intrinsic commands only (this includes almost all
+VIDS PDF's).  All potential outputs from the executed command will be in the
+form of NAME parameters.  The values you wish returned should be declared as
+local variables in the PDF for the program (the one you're writing, not the
+one being called).  These local variables should then be passed in the
+COMMAND string as values for the NAME parameters in the executed command.
+The variables can then be accessed from the interactive parblock via the
+<b> x</b>/<b>  zviparm</b> family of routines.
+<P>
+<LI> STATUS: integer, output
+<P>
+The returned status value.  It is an argument in Fortran and the function
+return value in C.  Any value other than SUCCESS indicates that the command
+didn't execute or the outputs didn't get returned correctly, and the returned
+values should not be used.
+<P>
+</UL>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

@@ -1,0 +1,36 @@
+<HEAD>
+<TITLE>Character Strings</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=407 HREF=subsection3.5.3.html><IMG SRC="/icons/previous.png"></A> <A NAME=409 HREF=subsection3.5.3.html><IMG SRC="/icons/up.png"></A>  <A NAME=405 HREF=subsubsection3.5.3.2.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=408 HREF=subsection3.5.3.html>Fortran Calling Sequence</A>  <b>Up:</b> <A NAME=410 HREF=subsection3.5.3.html>Fortran Calling Sequence</A>  <b>Next:</b> <A NAME=406 HREF=subsubsection3.5.3.2.html>Fortran Data Types</A> <P>
+ <H3>Character Strings</H3>
+<P>
+Most RTL routines take characters strings as arguments.  They appear in
+parameter names, keywords, messages, and many other places.  Under the old
+RTL, strings could be passed in either of two ways:  as Fortran CHARACTER*n
+variables, or as BYTE or LOGICAL*1 arrays.  The array method will no longer
+work.
+<P>
+All Fortran-callable RTL routines now accept character strings <em> only</em>
+in Fortran CHARACTER*n format, which is the standard way of doing strings
+in Fortran.  CHARACTER*n variables and constants have a length associated
+with them (the ``n''), which the RTL uses to find the end of the string,
+and to make sure that buffer overflow does not occur on output strings.
+Byte arrays will not work, since there is no Fortran string length
+information, thus no standard way for the RTL to find the end of the string.
+Also, arrays of CHARACTER*1 will not work - the RTL will think the string
+being passed in is one character long.
+<P>
+This change will be most apparent in the <b> qprint</b> and <b> xvmessage</b>
+routines, which are often passed byte arrays in the current code.  This will
+not work.  Use the new SUBLIB routines <tt> mvcl</tt> or <tt> mvlc</tt> to convert
+between byte arrays and CHARACTER*n variables.  A better approach (and
+highly recommended) is to change the program to use CHARACTER*n throughout.
+Output formatting is actually much easier with CHARACTER*n variables.
+See Section <A HREF=subsection3.9.5.html#rdwrtftnstr><IMG SRC="/icons/cross-ref.png"></A>, READ &amp; WRITE to Strings, for details.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

@@ -1,0 +1,334 @@
+<H2>VRDI Overview}
+<H3>Allocation of Display Hardware}
+MIPL is expected to have a variety of image processing hardware.
+Resources are allocated and
+deallocated by functions of the VRDI.  The variety of MIPL image
+processing hardware allows for flexibility in meeting the MIPL users
+needs.  The user will be able to query the system about
+available resources and the current configuration of hardware
+allocated to the user.
+
+Allocation commands may be issued at any time after a MIPL user has
+logged onto the system.  Only physical display devices may be
+allocated.  A user gets all the resources associated with a display device.
+<H3>Workstations}
+A workstation is a physical location where a MIPL user
+works.  At that location is a table, chair, terminal,
+monitor and interactive IO devices.  A MIPL user may allocate
+a display device in a standard configuration by allocating that 
+particular workstation.  
+Interactive IO devices are associated with particular
+display devices.
+The user accesses the device by a unique unit number determined at
+allocation time.
+<H3>Display Devices}
+A standard display device may be allocated by a MIPL user.
+When a standard display device is allocated, the allocated
+hardware is configured into one of the standard configurations (full
+color, pseudo-color or monochrome).  The standard configuration
+includes the following:
+\begin{itemize}
+\item A number of image memory planes are assigned to the display device.
+\item The access window of all image memory planes is set to the complete
+image memory plane.
+\item The display window of all image memory planes is moved to
+the upper left hand corner of each image memory plane, coordinates (1,1).
+\item All cursors are set to type 1, autotracking, and turned off.
+\item The alphanumeric font generator is cleared and turned off.
+\item For full color devices, image memory planes are connected 1 to LUT 1
+(red), 2 to LUT 2 (green) and 3 to LUT 3 (blue).  Image memory plane
+4 is connected to the graphics overlay plane LUT.  All LUTs are set
+to no bypass and LUT section 1.
+\item For pseudo-color devices, image memory plane 1 is connected to LUT 1
+(red), LUT 2 (green) and LUT 3 (blue).  Image memory plane 2 is
+connected to the graphics overlay LUT.  All LUTs are set to no bypass
+and LUT section 1.
+\item For monochrome devices, image memory plane 1 is connected to LUT 1.
+Image memory plane 2 is
+connected to the graphics overlay plane LUT.  All LUTs are set to
+nobypass and LUT section 1.
+\item Display of the graphics overlay plane is turned off.
+\end{itemize}
+<H3>Coordinate System}
+There are two different coordinate systems used by the VRDI.  The
+first is raw, or screen, coordinates; the second is image memory
+plane coordinates.  In both cases, the coordinate system is the
+standard line/sample convention currently used for IPL images.  The
+upper left corner of the display device is coordinates (1,1) in
+raw coordinates, just as the upper left corner of the image memory
+plane is coordinates (1,1) in image memory plane coordinates.
+Coordinates increase downward and to the right.  Coordinates are
+integer values corresponding to individual pixels on the screen or
+in the image memory plane.  We provide further discussion of the
+two coordinate systems and translation between the two in
+section~\ref{coordinates}.
+<H3>Image Memory Planes}
+An image memory plane (IMP) in a display device is a two-dimensional
+array of 8-bit pixels.  This limits the number of different pixel
+values that may be displayed to 256 (0 to 255).  Image memory planes
+are logical entities having a given size and are numbered starting
+with one (1).  The display software maintains the connection between
+logical and physical image memory planes.  A user may query the
+system to obtain information about the number and size of the image
+memory planes allocated to a display device.  Some display devices
+allow the image memory planes to be configured into several sizes.
+Whatever the configuration, all image memory planes in the display
+device are the same size.
+<H3>Look-Up Tables}
+Image memory planes can be connected to Look-Up Tables (LUTs) which
+in turn are connected to Digital to Analog Converters (DACs) that
+output video signals to monitors.  By convention, LUT 1 is assumed to
+output the RED signal for full color and pseudo-color images.  LUT 2
+outputs GREEN and LUT 3 outputs BLUE.
+
+LUTs may be bypassed (pixel values sent directly to the DAC) or the
+pixel value may be passed through the LUT for conversion to another value
+before being sent to the DAC.  LUTs may also have more than one
+section or conversion table.  Although each section or table in a LUT
+has 256 entry points (one for each possible pixel value) it may have
+more than an 8-bit output value.  This difference is sometimes used
+to load the LUT with a more accurate gamma correction curve than 8
+bits will provide.  The user may query the system to obtain
+information about the number of sections in each LUT and the size of
+the output value.  Sections are numbered starting with one (1).
+<H3>Graphics Overlay Plane}
+The displaying of graphics overlay data is logically the same as
+displaying data in any image memory plane.  Any image memory plane
+may be used as a graphics overlay plane by connecting it to the
+graphics overlay LUT.  The graphics overlay LUT consists of three
+tables (red, green and blue) that look and act exactly like the
+regular LUT tables.  The overlay process is accomplished by replacing
+output pixels with overlay pixels.  This takes place only if the
+graphics pixel has a non-zero value.  The display of graphics overlay
+data may be turned on or off under software control.
+<H3>Cursors}
+A cursor in a display device is a group of pixels which overlay
+the data on the image memory planes.  Cursors work by pixel
+substitution and are written on top of the graphics overlay
+data.  Each cursor has a number of forms and blink rates, which
+are device-dependent.  The center of the cursor pattern may be
+moved over any pixel in any image memory plane.  The location
+of the cursor may be set or read (in either screen coordinates
+or image memory plane coordinates) by the VRDI cursor routines.
+In addition, the size and color of the cursor may be
+changed (for some devices) by the VRDI cursor routines.
+<H3>Subroutine Naming Convention}
+Each of the display interface routines contains both a C interface
+and a FORTRAN interface.  The first two letters in the name of each
+C routine are ``ZD''.  The first two letters in the name of each
+FORTRAN routine are ``XD''.  The remaining letters are the same for
+each of the interfaces.  The third letter in the name of each routine
+indicates the major function or hardware component with which the
+routine is  concerned.  The letters correspond to the following:
+\begin{itemize}
+\item A  -  Alphanumeric Font Generator
+\item C  -  Cursor Generator
+\item D  -  Device Configuration
+\item E  -  Error Handling
+\item F  -  Interprocess Communication Flags
+\item G  -  Graphics Overlay Plane
+\item I  -  Image Memory Planes
+\item L  -  Look-Up Tables
+\item S  -  Device Status
+\item T  -  Text Generation in Image Memory Planes
+\item X  -  Interactive IO Devices (tablets, joysticks, etc.)
+\end{itemize}
+The rest of the routine name describes the function of the routine.
+
+For example, the routine name ZDLREAD is translated as follows:
+\begin{tabbing}
+xxxxx\=xxxxxxxxxxxx\=xxxxxxxxxxxxxx\=\kill
+\>ZD\>Interface\>C Interface\\
+\>L\>Category\>Look-Up Table Routine\\
+\>READ\>Purpose\>Read Look-Up Table\\
+\end{tabbing}
+<H3>Subroutine Parameters}
+Section~\ref{routines} of this document describe the parameters to
+each of the VRDI subroutines.  These descriptions include whether the
+parameter is an input or output, its data type, its dimension, and a
+comment on its purpose.  Since the data types for FORTRAN and C are
+not necessarily alike, the descriptions include both types of data.
+The FORTRAN subroutine parameters are all passed by reference.  The
+C subroutine parameters are generally passed by value, except when
+the parameter is a string or is an output from the subroutine.  The
+description of each subroutine indicates whether the C parameters
+are passed by value or by reference.
+\subsubsection{C Interface}
+A parameter data type may fall into one of five categories:
+\begin{itemize}
+\item integer:  The C default for integer (int).
+\item real:  The C default for real (float).
+\item byte:  An 8-bit value (unsigned char).
+\item logical:  A parameter that is either TRUE (1) or FALSE (0).
+The C default for integer (int).
+\item string:	A null-terminated array of 8-bit characters (char),
+which may be passed as an array or as a pointer to the first element
+in the array.  Another parameter, usually named LENGTH, will accompany
+a parameter of type string.  This parameter will specify the number of
+characters in the string.  If the length parameter is zero (0), the
+string should be null-terminated to indicate the length of the string.
+\end{itemize}
+\subsubsection{FORTRAN Interface}
+A parameter data type may fall into one of five categories:
+\begin{itemize}
+\item integer:	The FORTRAN default for INTEGER (INTEGER*4).
+\item real:	The FORTRAN default for REAL (REAL*4).
+\item byte:	A single 8-bit value.  In FORTRAN it may be a BYTE,
+CHARACTER or LOGICAL*1.
+\item logical:	A parameter that is either TRUE (1) or FALSE (0).
+In FORTRAN this may be a LOGICAL or an INTEGER.
+\item string:	A string is an array of 8-bit characters and
+may be passed either by descriptor (CHARACTER*n), or by
+reference (BYTE, LOGICAL*1, or INTEGER array).
+
+Another parameter, usually named LENGTH, will accompany a parameter
+of type string.  This parameter will specify the number of characters
+in the string.  If the length parameter is zero (0), the string should
+be null terminated or the string should be passed by descriptor.
+
+If the string is passed by descriptor and the length parameter is
+not zero, the number of characters in the string will be the
+smaller of the two values (the length field in the descriptor or
+the length parameter).  If the length parameter is smaller, the
+string will be padded with blanks up to the length of the descriptor.
+If the length parameter is larger, the string will be truncated to
+fit into the descriptor.
+\end{itemize}
+<H3>Subroutine Returned Status Codes}
+Each of the display interface routines are functions.  They may be
+used as subroutines by just calling them or as functions by using
+them in expressions.  When used as functions, the returned status 
+is an integer value.  In most cases, the returned value is a code
+signifying the success or failure of the operation.
+
+The value returned by the routines determines the error that
+occurred.  Each possible error that can occur has its own unique
+value.  Most routines that complete successfully return a value of
+SUCCESS (1).  Exceptions are the flag routines, XDF* (which return TRUE
+or FALSE), and the status routines, XDS* (which return the requested
+information).  See appendix A for a list of possible errors, their
+values, and descriptions.
+
+Each error status falls into one of three categories:  WARNING,
+ERROR, or FATAL.  WARNINGs can be considered programmer/user
+information and should have little or no effect on the execution of
+the program.  ERRORs are really recoverable errors, i.e., things
+that go wrong but can later be ``fixed''.  FATALs are non-recoverable
+errors.  If one of these occurs the program should terminate
+immediately.
+
+Along with these returned error statuses are utilities routines to
+help the programmer handle the errors:  XDEACTION,
+XDESIGNAL, and XDELEVEL.  XDEACTION allows the programmer to set
+the action to perform for each category of error codes.  The actions
+that can be performed are:  1) return the status code, 2) issue a
+system error message and return the status code, or 3) issue a system
+error message and abort.  XDESIGNAL can be used to provide the system
+error message for a given status code.  XDELEVEL can be used to
+determine the error severity level for a given status code--i.e.,
+FATAL, ERROR, WARNING, or NO ERROR.
+
+The system error message returned by the VRDI includes a text code
+abbreviation corresponding to the particular error.  If the VRDI is
+being run interactively, you can obtain help on the error by typing
+"help-message vrdi-xxxxxxxxx", where "xxxxxxxxx" is the text code
+of the error in question.  This help is also available within VICAR.
+
+In most cases, an application program need only check the returned
+function value for SUCCESS (or lack thereof).  If you need to check
+for a particular error, the error codes and values are listed in
+appendix A.  Additionally, if you use the C interface, you may
+insert the following statements at the beginning of your program:
+
+\#include XDMAININC\\
+\#include xderrors\\
+
+and access the error codes by name.
+
+The constant name of each error code that can be returned by a
+particular function is listed under the function description in
+Section~\ref{routines}.
+<H3>Text Generation}
+In most cases the display devices do not have alphanumeric font
+generators.  Instead, a series of routines
+are supplied that will allow the user to write text directly into the
+image memory planes as pixel values.  In order to not modify the image,
+the text may be written into the overlay plane and displayed.
+
+The Hershey character fonts are supplied to give the user several
+fonts to choose.  Users may also design their own fonts.  See
+appendix F for further details.
+<H3>Access Window}
+Each image memory plane has an access window associated with it.  The
+access window defines the area of an image memory plane where the
+pixels may be modified.  Pixels outside the access window cannot be
+modified by the user.  The size and location of the access window into
+the image memory plane is application-defined.  The default access window
+is the entire image memory plane.
+<H3>Display Window}
+Each image memory plane has a display window associated with it.  The
+display window defines the location, in image plane coordinates, of the
+upper left corner of the video screen--i.e., the display window
+defines the offset of the image memory plane onto the screen.  For example,
+if the display window is set to be (100,100), then image memory plane
+pixel (100,100) will appear at screen location (1,1).  Every other
+image memory plane pixel will be offset in a similar manner.  The display
+window for each image memory plane is application-defined.  The default
+display window is (1,1).  Only the upper left corner of the display
+window is defined because the size of the window displayed on the monitor
+is determined by the hardware.
+<H3>Virtual Display Device}
+The software described in this document defines and describes display devices
+(frame buffers).  Many of the existing display devices do not have all
+of these capabilities.  In these cases the software simulates the
+desired functions to the best of its ability.  With some display
+devices it is not possible to simulate a function; in this case
+an appropriate error code is returned.
+
+The following is a description of the virtual display device defined
+by the software:
+\begin{itemize}
+\item A number of square eight (8) bit image memory planes.  The currently
+allowed sizes are $512 \times 512$, $1024 \times 1024$ or
+$2048 \times 2048$.  Image
+memory planes of larger sizes may be configured into smaller ones.
+Each image memory plane has an access window and a display window 
+associated with it.  Any image memory plane can be connected to any or
+all LUT/DACs including the graphics overlay LUT.
+\item Each display device has 1 or more (3 for full color) LUT/DACs.  Each
+LUT contains one or more pixel transformation tables (sections).
+Each table has 256 entries, one for every possible pixel value.  LUTs
+may be bypassed under software control, allowing pixel values to be
+sent directly to the DACs.  The LUT section is also under software control.
+\item The graphics overlay LUT is different from the standard LUTs in that
+it has three tables (red, green, blue) in full color display
+devices.  Graphics overlay works by pixel substitution.  If graphics
+overlay is ``ON'', non-zero overlay pixels are substituted for regular
+pixels before going to the the DACs.  In this way graphics overlay data
+is written on top of the output image.  Any of the image memory
+planes may be connected to the graphics overlay LUT.
+\item The alphanumeric font generator works the same way as the graphics
+overlay does (pixel substitution).  Font information is written on
+top of graphics overlay data.  No MIPL display device has a font generator.
+\item One or more cursors are available.  Cursors also work by pixel
+substitution and are written on top of the graphics overlay data.
+Each cursor has a number of forms and blink rates.  The cursor form
+also includes the color of the cursor.  The center of the cursor
+pattern may be moved over every pixel in any image memory plane.  The
+location of the cursor may be read or written by software.
+\item The display device has hardware which allows arithmetic and logical
+operations between image memory planes, area fill, histogram
+generation, and vector drawing.
+\item All LUT tables are readable and writeable by software.
+\item All device control registers are  readable  and  writeable  by
+software. 
+\item Aspect ratios of 1x1 and 4x3 are available.
+\item The location of the display window may be read and written by
+software.  The display window may be moved under software control so
+that every pixel in an image memory plane can be seen.
+\item Interactive IO devices may be connected to the display device.  The
+cursor or the display window may be set to automatically track one of
+the interactive IO devices.
+\end{itemize}
+\cleardoublepage
+

@@ -1,0 +1,56 @@
+<HEAD>
+<TITLE><b> x</b>/<b>  zvpstat</b></TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=578 HREF=paragraph3.6.2.1.6.html><IMG SRC="/icons/previous.png"></A> <A NAME=580 HREF=subsubsection3.6.2.1.html><IMG SRC="/icons/up.png"></A>  <IMG SRC="/icons/next.png">  <b>Previous:</b> <A NAME=579 HREF=paragraph3.6.2.1.6.html><b> x</b>/<b>  zvpone</b></A>  <b>Up:</b> <A NAME=581 HREF=subsubsection3.6.2.1.html>Parameter Routines</A>  <P>
+ <H4><b> x</b>/<b>  zvpstat</b></H4>
+<P>
+<PRE><TT>
+call xvpstat(name, count, def, maxlen, type)
+status = zvpstat(name, count, def, maxlen, type);
+</TT></PRE>
+<P>
+This routine returns information about a parameter without returning
+its value.  It is most useful to get the maximum length of any string
+and the number of strings in order to allocate a buffer before calling
+<b> x</b>/<b>  zvparm</b>.  This routine is also the only way to determine the data type
+of a parameter given only its name.  The program should know the type in the
+PDF, but there are situations where this could be useful.
+<P>
+<b> Arguments:</b>
+<UL>
+<P>
+<LI> NAME: string, input
+<P>
+NAME is the name of the parameter to get information about.
+<P>
+<LI> COUNT: integer, output
+<P>
+Returns the number of items in the parameter.  If 0, parameter is either not
+found or is null.
+<P>
+<LI> DEF: integer, output
+<P>
+Returns 1 if the parameter was defaulted, and 0 otherwise.
+<P>
+NOTE:  The DEF flag is obsolete and should not be used.
+<P>
+<LI> MAXLEN: integer, output
+<P>
+Returns the maximum length of any value in the parameter.  For REAL and INT,
+it is just the size of a REAL or INT.  For STRING, it is the length of the
+longest string in the parameter.  It does not include the null terminator,
+so you should add one before allocating a buffer in C.
+<P>
+<LI> TYPE: string, output
+<P>
+Returns the data type of the parameter.  The possible values are ``INT'', ``REAL'',
+and ``STRING''.
+<P>
+</UL>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

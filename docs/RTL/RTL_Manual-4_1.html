@@ -1,0 +1,347 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--
+This document was converted from RTF source: 
+By rtftohtml 4.17
+See http://www.sunpack.com/RTF
+Filename:WORD Ram Disk:RTL_Manual.rtf
+Application Directory:Data Disk:r2h4
+Subject:
+Author:Larry Bolef
+Operator:Larry Bolef
+Document Comments:
+Version Comments:
+Comments:
+Keywords:
+Translation Date:06/05/1999
+Translation Time:08:03:49
+Translation Platform:MacOS
+Number of Output files:59
+This File:WORD Ram Disk:RTL_Manual-4_1.html
+SplitDepth=2
+SkipNavPanel=0
+SkipLeadingToc=0
+SkipTrailingToc=1
+GenContents=1
+GenFrames=0
+GenIndex=0
+-->
+<HEAD lang="en"><META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<TITLE>4.1	Introduction </TITLE>
+</HEAD>
+
+<BODY ><DIV ALIGN="LEFT"><A HREF="RTL_Manual-Label.html">Up</A> | 
+<A HREF="RTL_Manual-Label.html">Previous</A> | 
+<A HREF="RTL_Manual-4_2.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+<HR>
+
+<UL>
+<A HREF="#Heading56">4.1.1	A Label Model</A><BR>
+<A HREF="#Heading57">4.1.2	Property Labels</A><BR>
+<UL>
+<A HREF="#Heading58">4.1.2.1	Using Property Labels </A><BR>
+<A HREF="#Heading59">4.1.2.2	Property Instance Numbers</A><BR>
+<A HREF="#Heading60">4.1.2.3	Property Names </A><BR>
+</UL>
+</UL>
+
+<a name="Heading69"></a><a name="_Toc425047526"></a><a name="_Toc425048081"></a><a name="_Toc453201421"></a><A NAME="Heading55"></A><H2 ALIGN="LEFT">
+4.1	Introduction
+</H2>
+<BLOCKQUOTE>
+This
+Section contains a programmer's guide for reading, adding, and deleting items
+in an image file label. A label describes the size, nature, processing history,
+origin and attributes of an associated image file. When an image is generated
+as an output file by an image processing task, the Executive will create an
+output label, combining items in the input file label with new label
+information derived from the current processing function. In this way, a
+history of the processing of the data contained in the output file will be
+maintained. In addition, the Executive will guarantee that required label
+information, such as the output image size, will be correctly produced. The
+user and owner of a file may also modify the label of that file from the
+command language. 
+<BR>
+A
+programmer may modify the label of any file that is written or updated by a
+program. The routines described in this Section permit the programmer to make
+such modifications.
+<a name="_Toc425047527"></a><a name="_Toc425048082"></a><a name="_Toc425329697"></a><a name="_Toc453201422"></a></BLOCKQUOTE><A NAME="Heading56"></A><H3 ALIGN="LEFT">
+4.1.1	A
+Label Model
+</H3>
+<BLOCKQUOTE>
+A
+label is composed of label items. A label item is a text key word of 32
+character maximum size that identifies the label item, and a value which is the
+information part of the label item. A value may be multi-valued, that is,
+contain more than one value. As an example, a label item for an image file may
+be the dimension of the image, comprised of a key word DIM, and a value, 3. For
+another example, consider as a label item the image size. The key word might be
+SIZE, and the value, (800,800,3). This label item is multi-valued. 
+<BR>
+The
+set of keyword-value label items that comprise a label is considered by the
+executive to be partitioned into three sets of items, the system, history and
+property. The system items consist of those items that are independent of the
+history of the file. These items will include the size of the image, its
+organization, its pixel format, and the blocksize. 
+<BR>
+The
+organization of the label into system, history and property, and the further
+breakdown of the history into subsets based on processing task reflects the
+model of the image label that programmers have found to be convenient at MIPL. 
+<BR>
+System
+labels are defined by the VICAR RTL and contain all the information necessary
+for the RTL to access the image, such as size, pixel type, and host format
+information. System label items are not normally modified once the image is
+created. Since they are defined by the RTL, application programmers may not add
+their own system label items. 
+<BR>
+History
+labels contain the processing history of the image. Each time a VICAR task is
+run on an image, a new history task gets added to the history label of the
+image. The history labels are copied from the &#8220;primary input&#8221; file
+(usually the first input file), and the new task is appended to the end.
+Application programs are free to add label items as they wish to the history
+label. 
+<BR>
+Property
+labels are used to describe the current state (or properties) of the image.
+They should eventually take over that function from the history labels, leaving
+the history labels to be 
+<I>only
+</I>history.
+This may take a while, due to the large amount of software and images that use
+the history labels, but the goal is to make property labels the only place for
+non-historical image labels. 
+<BR>
+Property
+labels are divided into named groups or sets called 
+<I>properties</I>,
+much like history labels are divided into named groups called 
+<I>tasks</I>.
+There is only one instance of each property name, unlike history tasks. For
+example, while there may be a half dozen LOGMOS tasks in the history label,
+there could be only one MIDR property in the property label. 
+<BR>
+Within
+each property group are individual label items. The label items look identical
+to their counterparts in the system and history labels. They may be string,
+integer, real, or double precision, and may have multiple values (i.e. an
+array). The keys for each label item must be unique within the property group,
+but may be duplicated between groups. The keys can be up to 32 characters long,
+just like any other label key. The label keys PROPERTY and TASK are reserved to
+separate property and history label sets, and may not be used by applications. 
+<BR>
+An
+example property label is listed (via 
+<TT><FONT FACE="Courier">label-list</FONT></TT>)
+below. The properties and names listed are examples, not official names.
+</BLOCKQUOTE>
+<PRE>----Property: TSTMAP ----
+PROJ='mercator'
+CENTER=(45.0, 12.7)
+LINE=5
+SAMP=5
+SCALE=10.0
+----Property: TSTLUT ----
+RED=(1, 2, 3, 4)
+GREEN=(4, 5, 6, 7)
+BLUE=(7, 8, 9, 10)<a name="_Toc425329698"></a><a name="_Toc453201423"></a></PRE><A NAME="Heading57"></A><H3 ALIGN="LEFT">
+4.1.2	Property
+Labels
+</H3>
+<BLOCKQUOTE>
+Before
+property labels were introduced, history labels served a dual role: they
+contained processing history (which tasks were run in what order) along with
+information about the image&#8217;s current state. A good example is the
+Magellan MIDR label. All descriptive information about the MIDR product is kept
+by convention in the first LOGMOS history task. They have no historical meaning
+whatsoever, as they are updated by later processing runs. They describe the
+current state of the image.
+<BR>
+Another
+example is map labels, which describe the image&#8217;s map projectio. A
+program that changes the projection adds a new map label entry to the history
+label. The last entry is the current projection. While in this case the map
+labels are historical, it is confusing to search through all the map labels to
+find the last (current) one. It is useful to keep a history of previous
+projections, but it is not clear to an inexperienced user which projection is
+current. 
+<BR>
+This
+dual role for history labels was confusing. Which of potentially several LOGMOS
+runs were the MIDR labels kept in? What task created the map labels? What was
+the actual processing history ? Since previous tasks were modified, some
+historical information was lost. These problems led to the creation of property
+labels. 
+<BR>
+Property
+labels are used in place of binary labels for most applications. Property
+labels do not suffer the same portability problems as binary labels, and may be
+written and read by standard VICAR RTL routines. They replace binary headers in
+most cases. Replacing binary prefixes may be more difficult. Although binary
+labels are still allowed replacing them with property labels is strongly
+encouraged. 
+<a name="Heading70"></a><a name="_Ref424721848"></a><a name="_Toc425047528"></a><a name="_Toc425048083"></a></BLOCKQUOTE><A NAME="Heading58"></A><H4 ALIGN="LEFT">
+4.1.2.1	Using
+Property Labels 
+</H4>
+<BLOCKQUOTE>
+Property
+labels are accessed in much the same way that history labels are. The routines
+<B>
+x/zladd
+</B>,<B>
+x/zldel
+</B>,<B>
+x/zlget
+</B>,
+and
+<B>
+x/zlinfo
+</B>
+have been modified to accept &#8220;PROPERTY&#8221; for the 
+<I>type</I>
+argument, as well as &#8220;SYSTEM&#8221; and &#8220;HISTORY&#8221;. Specify
+which property the label belongs to via the &#8220;PROPERTY&#8221; optional
+argument to these routines. Like history labels, property labels may have
+multiple instances, accessed through the &#8220;INSTANCE&#8221; keyword. The
+&#8220;HIST&#8221; key word is not used for property labels. In addition, a new
+routine, 
+<B>x/zlpinfo</B>,
+has been added to get a list of properties in the label, similar to 
+<B>x/zlhinfo</B>.
+<BR>
+Internally,
+property labels are stored in between the system and history labels. A property
+set starts with a 
+<TT><FONT FACE="Courier">PROPERTY=</FONT></TT><I>property-name</I>,
+label item, followed by all labels for that property. The property ends at the
+next PROPERTY key word or at the start of the history labels (indicated by a
+TASK key word). 
+<BR>
+Properties
+appear automatically when a label item for that property is added. There is no
+explicit creation step to add a new property; just add a label item in that
+property and it will be created with an instance number of 1. The same is not
+true for deletion (via the RTL): if you want to delete an entire property
+delete all the elements from it and then delete the PROPERTY marker (using
+PROPERTY as the key word to delete from the property set). The 
+<TT><FONT FACE="Courier">label-delete</FONT></TT>
+program can do this. It is important to that this is exactly the way history
+labels work: tasks are created automatically when programs are run, but to
+delete a task delete all the key words for that task, including the marker
+labels (TASK, DAT_TIM, and USER). 
+<BR>
+Property
+labels, like history labels, are automatically copied from the primary input
+file to the output file. This is done because most properties will not change
+in a typical program run. Programs should update any properties that do
+change,. The copying of property labels can be controlled via 
+<B>x/zvselpi</B>
+which allows you to change the source for the primary input file.
+<BR>
+If
+you are implementing something new, like a look-up table or a new flight label,
+then you can use the property labels without problem. However, if you are
+moving an image that used to use history labels to the property label, like the
+map projection or an old flight label, you have to make sure that you can read
+files with the information either in the property label or in the history
+label. Old images with the information in the history label exist and will be
+used. For this case, you might want to adopt a similar strategy to the reading
+of other host's data: read the label from either the property or history label
+(wherever it is), but only write out property labels. 
+<a name="_Toc425047529"></a><a name="_Toc425048084"></a><a name="_Toc425329699"></a></BLOCKQUOTE><A NAME="Heading59"></A><H4 ALIGN="LEFT">
+4.1.2.2	Property
+Instance Numbers
+</H4>
+<BLOCKQUOTE>
+Properties
+record the current state of an image, while history labels record the
+operations that have been performed on an image. Property instances are used
+when multiple &#8220;current states" are valid. For example, when different
+methods may be used for to generate pointing correction, or different people do
+this manually, different pointing corrections will be obtained.  These
+corrections are all valid for their intended use; since there is no way to
+determine the correct pointing, they are all simultaneously valid. Each
+pointing correction is stored as an instance of a single property.
+<BR>
+There
+is no change to the label format in the file; a property instance is just
+another property set with the same name as a previous instance.  There is no
+explicit identifier in the label.  We suggest that you create a special label
+item in each multi-instance property type that identifies the type. Then you
+have two choices for finding a specific instance of a property. You can use 
+<I>
+</I><B>x/zlpinfo</B>
+to get a list, then cycle through all the instances of the property you care
+about, looking for the special label item. The alternative is to use 
+<B>x/zlget</B>
+on the identifier for the property in question, incrementing the instance
+number until an error is returned, indicating that no more instances of this
+property exist.
+</BLOCKQUOTE><A NAME="Heading60"></A><H4 ALIGN="LEFT">
+4.1.2.3	Property
+Names 
+</H4>
+<BLOCKQUOTE>
+The
+RTL does no error or valid value checking on the name of a property, other than
+to ensure that it is 32 characters or less and is composed of printable ASCII
+characters. Any name at all can be used as a property name. However, there must
+be some control over property names, and the items that go in the property, or
+chaos will result. 
+<BR>
+It
+is up to the application programmer community to define how the property labels
+will be used, what they will be called, and what will go in them. The property
+name should be a short description of what the property is. For example, good
+names might be MAP, LUT, GLL-SSI, MGN-MIDR, or VIEWING-GEOMETRY (these
+examples, not official names). If it can be general purpose, make it so,
+otherwise include the project name in the property name. It is possible to put
+a version number in the property name if necessary, such as &#8220;MAP V2.
+0&#8221;, but this should be done only if a major revision redefines the
+existing label items. Label items can be added to an existing property without
+changing a version number. And if you have a version number in the name, all
+existing code that wants to find that property will have to be changed to
+include the version number. 
+<BR>
+In
+order to maintain a consistent set of names, a name registry (similar to the
+one for BLTYPE) has been established for properties. Every property name must
+be entered into this registry, with a pointer to documentation describing the
+label items that can appear in the property. If you want to create a new
+property, simply tell the keeper of the registry what name you want to use and
+what the label items that make it up are (either explicitly or by referring to
+a document). The registrar will check for duplicates, approve your request, and
+enter your name into the registry. 
+<BR>
+At
+the present time, the keeper of this registry is the VICAR system programmer. 
+<BR>
+The
+name registry system is voluntary; the RTL makes no checks on the validity of
+the names used. It is the responsibility of each individual programmer to make
+sure that they use this system. Failure to do so may result in your program not
+being accepted for delivery. 
+</BLOCKQUOTE>
+<HR>
+
+<DIV ALIGN="LEFT"><A HREF="RTL_Manual-Label.html">Up</A> | 
+<A HREF="RTL_Manual-Label.html">Previous</A> | 
+<A HREF="RTL_Manual-4_2.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+</BODY>
+
+</HTML>

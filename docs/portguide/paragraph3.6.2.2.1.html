@@ -1,0 +1,64 @@
+<HEAD>
+<TITLE><b> x</b>/<b>  zvtrans</b></TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=596 HREF=subsubsection3.6.2.2.html><IMG SRC="/icons/previous.png"></A> <A NAME=598 HREF=subsubsection3.6.2.2.html><IMG SRC="/icons/up.png"></A>  <A NAME=594 HREF=paragraph3.6.2.2.2.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=597 HREF=subsubsection3.6.2.2.html>Translation Routines</A>  <b>Up:</b> <A NAME=599 HREF=subsubsection3.6.2.2.html>Translation Routines</A>  <b>Next:</b> <A NAME=595 HREF=paragraph3.6.2.2.2.html><b> x</b>/<b>  zvtrans_in</b></A> <P>
+ <H4><b> x</b>/<b>  zvtrans</b></H4>
+<P>
+<PRE><TT>
+call xvtrans(buf, source, dest, npix)
+zvtrans(buf, source, dest, npix);
+</TT></PRE>
+<P>
+Translate pixels from one format to another.  One of the translation setup
+routines must have been called first to set up the translation buffer.
+This routine is the only standard way to translate data in the VICAR system,
+both between host representations (e.g. VAX to IEEE) and between data types
+(e.g. integer to real).  Any other routines to do translations should be
+merely syntactic sugar for this routine.
+<P>
+This routine is coded to be very efficient, so it may be called inside
+a tight loop with very little performance penalty.
+<P>
+<b> Arguments:</b>
+<UL>
+<P>
+<LI> BUF: integer-array(12), input
+<P>
+BUF is the translation buffer that describes the translation to be performed.
+It is initialized by one of the translation setup routines.  The internals of
+this buffer are unknown to the application program, with one exception,
+described below.  <em> Any</em> other access to the internals of the buffer
+may cause your program to break in the future, as the structure may change
+without notice.
+<P>
+If the first integer in the translation buffer is NULL (0), then <b> x</b>/<b>  zvtrans</b>
+merely moves the data from the source to the destination, without any
+conversion.  This can happen often when reading a file, where you don't
+know ahead of time what host representation the input data is in.  If it
+turns out to be the native representation, no translation is necessary, and
+the first integer of the buffer will be 0.  This fact can sometimes be used
+to avoid copying the data, making the program more efficient.
+<P>
+<LI> SOURCE: pixel-buffer, input
+<P>
+SOURCE is the source data buffer.
+<P>
+<LI> DEST: pixel-buffer, output
+<P>
+DEST is the destination data buffer.  Note that it may <em> not</em> be the same
+as SOURCE, i.e. you can't translate in place or with overlapping buffers.
+<P>
+<LI> NPIX: integer, input
+<P>
+NPIX is the number of pixels to translate.  Both SOURCE and DEST must be large
+enough to hold this many pixels; no checking is done.  Note that this is the
+number of <em> pixels</em>, not the number of <em> bytes</em>, to translate.
+<P>
+</UL>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

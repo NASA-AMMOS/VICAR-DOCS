@@ -1,0 +1,51 @@
+<HEAD>
+<TITLE>Application Packer</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=1163 HREF=subsection3.13.1.html><IMG SRC="/icons/previous.png"></A> <A NAME=1165 HREF=section3.13.html><IMG SRC="/icons/up.png"></A>  <A NAME=1161 HREF=subsection3.13.3.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=1164 HREF=subsection3.13.1.html><tt> vimake</tt></A>  <b>Up:</b> <A NAME=1166 HREF=section3.13.html>Creating Applications</A>  <b>Next:</b> <A NAME=1162 HREF=subsection3.13.3.html>Test Routines</A> <P>
+ <H2>Application Packer</H2>
+<A NAME=vpack><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+A typical VICAR application program, procedure, or SUBLIB subroutine is made
+up of several different files.  These files include source code, include files,
+PDFs, imakefiles, test files, documentation files, and others.  In order to
+better manage all these files, they are packed into one file so they can be
+treated as a unit.  These files are called COM files due to the ``.com''
+filename extension.
+<P>
+Previously, there were two types of COM files.  The first was hand-built,
+and simply included each module after a DCL <tt> create</tt> command.  The build
+procedure was included as an integral part of this COM file.  The second
+was created by the program <tt> mipl_arch</tt> (which was never delivered).
+<tt> mipl_arch</tt> took the individual files and put them in the COM file in a
+form suitable for a stream editor, but they were hard for people to read.
+It also included a checksum on each file so the COM file could not be directly
+edited.  It was slow, and included a large amount of DCL code so the file
+would be self-unpacking.
+<P>
+There is now a third scheme for generating COM files that combines the best
+of both systems, and creates files that can be packed and unpacked under both
+VMS and Unix.  The build procedure is a separate file, the COM file is
+automatically created, and the COM files are standardized as in
+<tt> mipl_arch</tt>.  But, the COM file is easy for people to read, can be
+edited without unpacking, has minimal header information, and is fast, like
+the hand COM files.  These new COM files are created and used via a pair of
+programs called <tt> vpack</tt> and <tt> vunpack</tt> (the ``V'' is for ``VICAR'').
+<P>
+<tt> vpack</tt> and <tt> vunpack</tt> are complementary, cross-platform programs
+which are designed to pack and unpack application COM files.  A COM file
+typically includes source code, an imakefile, and a PDF file.  The COM file
+may also include test files and other, application-specific files.  Under VMS,
+the COM file is self-extracting and self-executing (i.e., automatically
+compiling and linking the code), as the previous COM files were.  Under Unix,
+the <tt> vunpack</tt> program is needed to extract the files from the COM file.
+<P>
+<P>___________________________________________________<UL> 
+<LI> <A NAME=1167 HREF=subsubsection3.13.2.1.html><tt> vpack</tt></A>
+<LI> <A NAME=1168 HREF=subsubsection3.13.2.2.html><tt> vunpack</tt></A>
+</UL>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

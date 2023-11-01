@@ -1,0 +1,43 @@
+<HEAD>
+<TITLE>Passing Numeric Arguments</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=978 HREF=subsection3.11.2.html><IMG SRC="/wstutor/previous.png"></A> <A NAME=980 HREF=section3.11.html><IMG SRC="/wstutor/up.png"></A>  <A NAME=976 HREF=subsection3.11.4.html><IMG SRC="/wstutor/next.png"></A>  <b>Previous:</b> <A NAME=979 HREF=subsection3.11.2.html>Naming Subroutines</A>  <b>Up:</b> <A NAME=981 HREF=section3.11.html>Mixing Fortran and C</A>  <b>Next:</b> <A NAME=977 HREF=subsection3.11.4.html>Passing Strings</A> <P>
+ <H2>Passing Numeric Arguments</H2>
+<P>
+The passing of numeric arguments and arrays between Fortran and C is fairly
+straightforward.  The data type equivalences are listed in Table <A HREF=subsection3.11.3.html#ftncarg><IMG SRC="/wstutor/cross-ref.png"></A>.
+A routine that receives data of one type must be passed the equivalent type
+of data if called from the other language.  The bridge may of course change
+the data type between the caller and the routine if desired, but the
+subroutine interface that actually spans the language change (caller-bridge
+for Fortran to C, bridge-routine for C to Fortran) must pay attention to this
+table.
+<P>
+<A NAME=1206><IMG SRC="/wstutor/invis_anchor.png"></A><P><A NAME=ftncarg><IMG SRC="/wstutor/invis_anchor.png"></A><P>
+<P>
+For numeric arguments, keep in mind that Fortran passes arguments by reference
+in all cases, while C normally passes input arguments by value.  Such arguments
+must be converted in the bridge routine.  A Fortran to C bridge would declare
+all arguments as pointers, then put asterisks (*) in front of the appropriate
+arguments to dereference them when calling the main routine.  A C to Fortran
+bridge would declare the appropriate arguments as values (not pointers), and
+use an ampersand (&amp;) in the call to the Fortran routine to convert them to
+pointers.  This is shown in the examples in the previous section.
+<P>
+Be careful with the arguments, since not all C arguments are passed by value.
+If a pointer comes in, such as for an output variable or an array, then the
+pointer can normally be passed unchanged to the subroutine.
+<P>
+Two-dimensional (or higher) arrays can be a major problem, since Fortran
+treats things in column-major order, while C uses row-major order.  This means
+the order of the subscripts is reversed.  This can be handled either by copying
+the array and reshuffling it in the bridge (which can be quite inefficient), or
+by documenting the fact that the subscripts need to be reversed in the other
+language to call the routine properly.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

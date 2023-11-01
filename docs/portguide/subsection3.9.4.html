@@ -1,0 +1,64 @@
+<HEAD>
+<TITLE>CHARACTER*n for Strings</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=914 HREF=subsection3.9.3.html><IMG SRC="/icons/previous.png"></A> <A NAME=916 HREF=section3.9.html><IMG SRC="/icons/up.png"></A>  <A NAME=912 HREF=subsection3.9.5.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=915 HREF=subsection3.9.3.html>No EQUIVALENCE for Type Conversion</A>  <b>Up:</b> <A NAME=917 HREF=section3.9.html>Porting Fortran</A>  <b>Next:</b> <A NAME=913 HREF=subsection3.9.5.html>READ &amp; WRITE to Strings</A> <P>
+ <H2>CHARACTER*n for Strings</H2>
+<P>
+Possibly the biggest challenge specific to porting VICAR Fortran code is in
+the area of character strings.  Formerly, BYTE or LOGICAL*1 arrays (or even
+INTEGER arrays) were commonly used to store character strings (the term
+``BYTE arrays'' here refers to all three).  These strings were created with
+SUBLIB routines like <tt> outcon</tt> and <tt> mvl</tt>, and were used in
+<b> qprint</b> and <tt> incon</tt>.  They were used interchangeably with
+CHARACTER*n strings as arguments to many subroutines, especially the RTL.
+This was made possible by the fact that CHARACTER*n variables were passed by
+descriptor under VMS, which meant that the called subroutine could tell
+whether it was a CHARACTER*n variable or a BYTE array (actually, the methods
+used were nondeterministic and failed on occasion, but they worked most of
+the time and were used anyway).
+<P>
+The Fortran standard does not support the use of BYTE arrays as character
+strings.  They must be declared as CHARACTER*n variables.  Moreover,
+descriptors are not used on most machines, so there is no way to tell the
+difference between a BYTE and a CHARACTER*n variable.  Since CHARACTER*n
+variables have a declared length associated with them, and BYTE arrays do
+not, any routine expecting a length will get garbage if a BYTE variable
+is passed in.
+<P>
+The RTL expects that <em> all</em> strings will be CHARACTER*n variables.  An
+attempt to pass in another type of array will cause your program to crash
+because the RTL expects string lengths on all strings (it will work under
+VMS due to backward compatibility, but on no other machine).  This applies
+to all RTL routines, but is especially important for the output routines
+<b> qprint</b> and <b> xvmessage</b> (<b> xvmessage</b> is preferred over
+<b> qprint</b> for new code), since those routines are often passed BYTE arrays
+for output.  All strings destined for output must be CHARACTER*n variables.
+The next section, Section <A HREF=subsection3.9.5.html#rdwrtftnstr><IMG SRC="/icons/cross-ref.png"></A>, READ &amp; WRITE to Strings,
+discusses how to do output conversion to create the strings (instead of
+<tt> outcon</tt> <i> et al</i>).
+<P>
+While changing output strings to CHARACTER*n is possible (it's a chore, but
+it's not hard), there are many areas in the code, in files and data structures,
+where strings are stored in BYTE arrays, and it is not practical to change.
+For that reason, character strings in BYTE arrays may be used if it is embedded
+too deeply to change.  The SUBLIB routines <tt> mvcl</tt> and <tt> mvlc</tt> have
+been provided to convert between BYTE arrays and CHARACTER*n variables.  Do
+<em> not</em> just copy data directly to a CHARACTER*n variable from a BYTE array,
+or vice-versa, since that will fail if there are descriptors present (some
+other machines have descriptors, but they are formatted differently than the
+VAX).  You must use <tt> mvcl</tt> or <tt> mvlc</tt> to convert strings.
+<P>
+Subroutines that expect strings should in general expect CHARACTER*n strings.
+In the cases mentioned above where it is impractical to change, then only
+BYTE arrays may be passed in.  Passing a CHARACTER*n where a BYTE array is
+expected is just as bad as the opposite.  If possible, include separate entry
+points to the routine that accept both types.  For example, the routine
+<tt> vic1lab</tt> returns data in a character string, while <tt> vic1labx</tt>
+returns data in a BYTE array.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

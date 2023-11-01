@@ -1,0 +1,388 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--
+This document was converted from RTF source: 
+By rtftohtml 4.17
+See http://www.sunpack.com/RTF
+Filename:WORD Ram Disk:RTL_Manual.rtf
+Application Directory:Data Disk:r2h4
+Subject:
+Author:Larry Bolef
+Operator:Larry Bolef
+Document Comments:
+Version Comments:
+Comments:
+Keywords:
+Translation Date:06/05/1999
+Translation Time:08:02:13
+Translation Platform:MacOS
+Number of Output files:59
+This File:WORD Ram Disk:RTL_Manual-1_7.html
+SplitDepth=2
+SkipNavPanel=0
+SkipLeadingToc=0
+SkipTrailingToc=1
+GenContents=1
+GenFrames=0
+GenIndex=0
+-->
+<HEAD lang="en"><META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<TITLE>1.7	Using Binary Labels </TITLE>
+</HEAD>
+
+<BODY ><DIV ALIGN="LEFT"><A HREF="RTL_Manual-Introduc.html">Up</A> | 
+<A HREF="RTL_Manual-1_6.html">Previous</A> | 
+<A HREF="RTL_Manual-Programm.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+<HR>
+
+<UL>
+<A HREF="#Heading11">1.7.1	Separate Host Types </A><BR>
+<A HREF="#Heading12">1.7.2	Programming and Binary Labels </A><BR>
+<A HREF="#Heading13">1.7.3	Binary Label Types </A><BR>
+</UL>
+
+<a name="Heading10"></a><a name="_Toc425047489"></a><a name="_Toc425048044"></a><a name="_Toc425750568"></a><a name="_Toc453201379"></a><A NAME="Heading10"></A><H2 ALIGN="LEFT">
+1.7	Using
+Binary Labels 
+</H2>
+<BLOCKQUOTE>
+The
+use of binary labels are not portable across computer architectures. Property
+labels should be used instead. They serve the same function as binary headers,
+though possibly not binary prefixes. Binary labels are allowed, but before
+creating a new format, stop to consider if property labels might be a better
+approach. See 
+<A HREF="RTL_Manual-4_1.html#Heading70">4.1.2.1</A>
+<A HREF="RTL_Manual-4_1.html#_Ref424721848">Using Property Labels</A>,
+for details. 
+<BR>
+Binary
+labels are application-defined extensions to a VICAR image used to store
+information about the image. They have two parts: binary headers: extra records
+at the beginning of the image, and binary prefixes: extra bytes at the
+beginning of each image record. Binary labels are not part of image data. An
+application will never see the binary label data unless it specifically asks
+for it via a COND BINARY optional to 
+<B>x/zvopen</B>.
+<BR>
+Binary
+headers are extra records that appear at the beginning of the file, between the
+standard label and the image. The number of records is specified by the NLB
+(Number of Lines of Binary) system label item. Binary headers are often thought
+of as extra &#8220;lines&#8221; of data, but depending on the file organization
+they can actually be extra lines, samples, or bands. The size of each binary
+header record is exactly the same as the size of each image record. The headers
+specified by NLB occur exactly once in the file, not once per band (BSQ
+organization) or once per line (BIL or BIP organization). 
+<BR>
+Binary
+prefixes are extra bytes that appear at the beginning of each image record. The
+number of bytes is specified by the NBB (Number of Bytes of Binary) system
+label item. The image record consists of NBB bytes of binary prefix data,
+followed by the samples that make up one line (for BSQ organization). Other
+file organizations label the units differently: a record for BIL is NBB plus
+the samples that make up one band, while a record for BIP is NBB plus the bands
+that make up one sample. NBB is specified in terms of bytes, 
+<I>not</I>
+in terms of pixels, even if the pixels are larger than one byte. 
+<BR>
+Binary
+labels (both headers and prefixes) pose a problem: the data stored in them is
+application-defined. The RTL can&#8217;t  determine what types of data are
+stored in a binary label, and therefore cannot automatically convert the data
+to the native host format as it does for image data. The application program
+has sole responsibility for converting binary data to the native host format
+when it is read. 
+<BR>
+Few
+application programs understand any given kind of binary label. For example,
+the Voyager project has a definition for what goes in the binary label of its
+images. The Voyager-specific processing programs know how to interpret these
+labels and make use of them. The Galileo project also has a definition for its
+binary labels. Galileo-specific programs can interpret the Galileo binary
+labels. However, the two kinds of binary labels are different, and programs
+written for one cannot make use of the other. The Magellan project has its own
+binary labels in yet another format. 
+<BR>
+The
+variety of binary labels poses a problem for a general-purpose application.
+They could certainly be ignored, but then the information would be lost.
+Therefore, many general-purpose programs copy the binary labels from the input
+to the output, thereby preserving the information. As long as the information
+is only copied, not used, the application need not know any details. 
+<BR>
+But
+what happens when you mix machine types? A file with binary labels was written
+on a VAX. You want to run COPY on the file from a Sun. COPY reads the input
+image, and writes the output image. The RTL automatically converts the image
+data from VAX to Sun format on input, and so the file gets written in Sun
+format. The system labels also say it is in Sun format. COPY also reads the
+binary labels, and writes them to the output file. The binary labels cannot be
+converted, as neither the RTL nor the COPY program know what data types are in
+the binary labels. Therefore, the binary labels get written out in the only way
+possible: in VAX format. 
+<BR>
+The
+problem is that the system labels say the file is in Sun format, but the binary
+labels are still in VAX format. 
+<a name="Heading11"></a><a name="_Toc425047490"></a><a name="_Toc425048045"></a><a name="_Toc425329673"></a><a name="_Toc425750569"></a><a name="_Toc453201380"></a></BLOCKQUOTE><A NAME="Heading11"></A><H3 ALIGN="LEFT">
+1.7.1	Separate
+Host Types 
+</H3>
+<BLOCKQUOTE>
+The
+solution to the binary label problem is 
+<I>separate</I>
+host formats for the image and the binary label. The system labels HOST,
+INTFMT, and REALFMT describe the host formats for the image host type, while
+the system labels BHOST, BINTFMT, and BREALFMT describe the host formats for
+the binary .
+<BR>
+It
+is possible to generate files that have data in two different host formats: one
+for the image itself and one for the binary labels. This is not particularly
+desirable, but there is no practical alternative. As long as applications make
+sure they use the binary label host formats while accessing the binary labels,
+there&#8217;s no problem. However, this does place a burden on application
+programmers to make sure they access binary labels correctly. 
+<BR>
+UPDATE
+mode changes a file in place (rather than by copying) but does not convert it
+to native format. The application must write out any binary label updates in
+the format of the file, or it must read and re-write the entire binary label in
+a native format. The RTL handles the conversion automatically for image data. 
+<BR>
+A
+set of subroutines should be written for each type of binary label to
+read/write/update that label. If all applications used this set of subroutines,
+it wouldn't matter what format the binary labels were kept in. The subroutines
+would be able to adapt and hide the details from the application program. If
+changes were made to the binary labels, or even if they were converted to
+property labels, the only code that would need to change would be the
+subroutines that access them. 
+<a name="Heading12"></a><a name="_Toc425047491"></a><a name="_Toc425048046"></a><a name="_Toc425329674"></a><a name="_Toc425750570"></a><a name="_Toc453201381"></a></BLOCKQUOTE><A NAME="Heading12"></A><H3 ALIGN="LEFT">
+1.7.2	Programming
+and Binary Labels 
+</H3>
+<BLOCKQUOTE>
+This
+Section shows how application programs make use of the binary label support
+features provided by the RTL.
+<BR>
+The
+use of binary labels is discouraged, due to portability problems. Where
+possible, property labels should be used instead. They usually serve the same
+function as binary headers, though possibly not binary prefixes. Binary labels
+are allowed, but before creating a new format, stop to consider if property
+labels might be a better approach. See 
+<A HREF="RTL_Manual-4_1.html#_Ref424721848">4.1.2.1</A>
+<A HREF="RTL_Manual-4_1.html#_Ref424721848">Using Property Labels</A>,
+for details. 
+<BR>
+The
+first problem is to open the file. Opening a file for input, update, and output
+will be covered separately, as the behavior is slightly different. All modes
+make use of 
+<B>x/zvadd</B>
+and 
+<B>x/zvopen</B>
+to open the files. The optional arguments mentioned may be used with either
+routine. 
+<BR>
+For
+an input file, binary label host formats are obtained from the BHOST, BINTFMT,
+and BREALFMT system labels in the input file. The host formats thus obtained
+are used for the 
+<B>x/zvpixsizeb</B>
+and 
+<B>x/zvtrans_in</B>
+routines, as well as for 
+<B>x/zvget</B>.
+The labels in the file are assumed to be correct, so there is no real override.
+If you need an override, you can always use the host formats directly through 
+<B>x/zvpixsize</B>
+or 
+<B>x/zvtrans_in</B>.
+If the input file does not have the BHOST, etc. labels (for older images), then
+VAX format is assumed. If the input file has no label at all (COND NOLABELS),
+then the binary host formats are obtained from the BHOST, BINTFMT, and BREALFMT
+optional arguments to 
+<B>x/zvadd</B>
+or 
+<B>x/zvopen</B>.
+<BR>
+For
+an update file, binary label host formats are also obtained from the file. The
+only difference is if you wish to change the binary label type of the file. You
+would need to re-write all the binary labels in the new format (be careful
+because the size might change), but you would also need to change the binary
+label format system label items (BHOST, BINTFMT, and BREALFMT) via 
+<B>x/zladd</B>.
+If you use 
+<B>x/zladd</B>
+to change these items, then do 
+<I>not</I>
+use 
+<B>x/zvget</B>
+on them, or use 
+<B>x/zvpixsizeb</B>
+or 
+<B>x/zvtrans_in</B>
+at all, as these routines may still use the original binary label format. The 
+<B>x/zlget</B>
+routine would get the new values. 
+<BR>
+The
+BLTYPE optional argument is not used for input or update files. You may change
+the BLTYPE system label on an update file via 
+<B>x/zladd</B>,
+however. See the next section for a description of BLTYPE. 
+<BR>
+Output
+files are more complex. There are two basic cases: either you convert the
+binary labels to native format, or you leave them alone. Which option you
+choose is controlled by the BIN_CVT optional argument. 
+<BR>
+If
+you set BIN_CVT to ON,  write the binary labels in the native host format. The
+BHOST, BINTFMT, and BREALFMT system label items are set automatically to the
+native host formats. There is no override; the corresponding optional arguments
+are disabled when BIN_CVT is ON.
+<BR>
+Turn
+BIN_CVT ON if you are writing a new file with binary labels in native format.
+Although the name implies &#8220;convert&#8221;, it applies to any binary
+labels written in native format. If BIN_CVT is ON, then the application must
+know the kind of binary label being written. To do this, set the BLTYPE label
+using the BLTYPE optional argument. See the next section for a description of
+BLTYPE. 
+<BR>
+If
+BIN_CVT is OFF (default), then the assumption is that you are copying the
+binary label without converting it. The binary label host formats used are
+those of the primary input file. If the primary input is not available, the
+default is VAX format. The primary input may be changed with 
+<B>x/zvselpi</B>.<BR>
+BIN_CVT
+OFF is the appropriate mode to use for general-purpose applications that do not
+know the format of the binary label. The BHOST, BINTFMT, and BREALFMT optional
+arguments to 
+<B>x/zvadd</B>
+and
+<B>
+x/zvopen
+</B>
+will override any other settings, so you could write binary labels in an
+arbitrary format by setting to OFF and setting the three optional arguments to
+appropriate values.
+<BR>
+If
+you need to write specifically in VAX format, then do not depend on the default
+being VAX format (as mentioned above). That may not be reliable, depending on
+the primary input. If you want to write in a specific format, specify that
+format in the optional arguments. Do not use 
+<B>x/zladd</B>
+to change the binary label system label items on an output file. Specify them
+when you open the file. 
+<BR>
+The
+BLTYPE optional argument is active if is OFF. Set it if you know the kind of
+binary label being written. BLTYPE comes from the primary input if you do not
+specify it. See the next section for a description of BLTYPE. 
+<BR>
+Once
+a file is open, translate the binary label data you read and/or write to/from
+native format. The actual translations are performed in the same way as
+described in the rest of . Section 
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>
+(page 9), except using the BHOST, BINTFMT, and BREALFMT labels and the 
+<B>x/zvpixsizeb</B>
+and 
+<B>x/zvtrans_inb</B>
+routines.
+<BR>
+As
+mentioned previously, 
+<I>all</I>
+binary label data read in must be converted to native format before being used.
+There are no exceptions to this rule. 
+<BR>
+Binary
+labels written out to a file may be in either native or foreign formats, as
+discussed previously. 
+<a name="Heading13"></a><a name="_Toc425047492"></a><a name="_Toc425048047"></a><a name="_Toc425329675"></a><a name="_Toc425750571"></a><a name="_Toc453201382"></a></BLOCKQUOTE><A NAME="Heading13"></A><H3 ALIGN="LEFT">
+1.7.3	Binary
+Label Types 
+</H3>
+<BLOCKQUOTE>
+BLTYPE
+improves the documentation of files and makes the VICAR system more robust.
+Everyone using binary labels is encouraged to make use of BLTYPE. 
+<BR>
+BLTYPE
+is a string that describes the kind of binary label in the file. It may be set
+with 
+<B>x/zvadd</B>
+or 
+<B>x/zvopen</B>,
+or by calling 
+<B>x/zladd</B>
+on an already open file. No error checking or range of valid values are
+enforced by the RTL.
+<BR>
+The
+BLTYPE should be a short (maximum 32 characters) string that names the binary
+label type. It does not attempt to describe the fields in the binary label at
+all, but merely provides a pointer to how the fields could be determined. Some
+of the currently registered names are &#8220;GLL_SSI_EDR&#8221;,
+&#8220;IBIS&#8221;, and &#8220;M94_HRSC&#8221;. 
+<BR>
+To
+maintain a consistent set of names, a name registry (similar to the one for
+properties) has been established for BLTYPE. Possible values for BLTYPE must be
+entered into this registry, with a pointer to documentation describing the
+format of the binary label. To create a new kind of binary label, tell the
+keeper of the registry what name you want to use and the format, either
+explicitly or by stating that it is in document 
+<I>X</I>.
+The registrar will check for duplicates, approve your request and enter your
+name into the registry.
+<BR>
+The
+keeper of this registry is the VICAR system programmer. 
+<BR>
+The
+RTL makes no checks on the validity of the names used. It is the responsibility
+of each individual programmer to make sure that they use this system. Failure
+to do so may result in your program not being accepted for delivery. 
+<BR>
+Application
+programs that expect a certain kind of binary label should check the value of
+BLTYPE to make sure that they have been given the correct type, and issue an
+error message if it is incorrect. If BLTYPE is not present or blank, assume
+that the binary label is of the correct type for backwards compatibility. 
+<BR>
+More
+sophisticated application programs could use the BLTYPE field to read several
+different kinds of binary labels. These could be different versions of the same
+basic binary label (e. g. a type of &#8220;X V2. 0&#8221; for version 2 of the
+X label type), or labels from different projects. Widespread use of BLTYPE will
+allow a general-purpose program to be written that understands most binary
+label types. 
+</BLOCKQUOTE>
+<HR>
+
+<DIV ALIGN="LEFT"><A HREF="RTL_Manual-Introduc.html">Up</A> | 
+<A HREF="RTL_Manual-1_6.html">Previous</A> | 
+<A HREF="RTL_Manual-Programm.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+</BODY>
+
+</HTML>

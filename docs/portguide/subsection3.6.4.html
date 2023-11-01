@@ -1,0 +1,131 @@
+<HEAD>
+<TITLE>Deprecated RTL Functionality</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=753 HREF=subsection3.6.3.html><IMG SRC="/icons/previous.png"></A> <A NAME=755 HREF=section3.6.html><IMG SRC="/icons/up.png"></A>  <A NAME=751 HREF=subsection3.6.5.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=754 HREF=subsection3.6.3.html>New Features in Old Routines</A>  <b>Up:</b> <A NAME=756 HREF=section3.6.html>RTL Routine Changes</A>  <b>Next:</b> <A NAME=752 HREF=subsection3.6.5.html>Obsolete Routines</A> <P>
+ <H2>Deprecated RTL Functionality</H2>
+<P>
+This section lists subroutines and capabilities of the RTL that are deprecated,
+meaning they should be avoided if possible.  Deprecated functionality is still
+supported and may be used for compatibility with old code, but it should not
+be used for new code.  Features on this list are candidates for becoming
+obsolete in the future if they are no longer needed.
+<P>
+<UL>
+<P>
+<LI> Parameter default flag
+<P>
+Some of the parameter routines return a default flag, which indicates whether
+the parameter was input by the user or defaulted.  This flag should not be
+used.  It is maintained for compatibility reasons, but the parameter count
+should be used instead.
+<P>
+The major problem with using the default flag is that there is no way to
+reset the flag under TAE.  If the parameter was entered, and saved in a
+parameter file, there is no way for the user to reset the flag, even if the
+default values are re-entered.
+<P>
+The parameter count should be used instead.  If you want to have a
+program-supplied default, then allow the parameter to be nullable.  If there
+are no values entered, then you can provide a default value in the program.
+Otherwise, the defaults in the PDF should be real default values, and it
+shouldn't matter whether the user entered them or not.
+<P>
+<LI> ULEN default to <b> zlhinfo</b>
+<P>
+The ULEN optional argument to <b> zlhinfo</b> should not be defaulted.  The
+default value is 8 for backwards compatibility.  However, a value of 8 does
+not leave room for a C string null terminator, so task names get run together
+unless special care is taken.  Use at least 9 for ULEN to guarantee a null
+terminator.
+<P>
+<LI> Using non-CHARACTER variables for Fortran strings
+<P>
+Although it is possible to treat strings in Fortran as BYTE or INTEGER arrays
+rather than as CHARACTER*n variables, this is highly discouraged.  It is
+non-standard Fortran to use arrays for string manipulation and should be
+avoided.  The RTL will not accept arrays for string arguments (except on
+the VAX for backwards compatibility).  The practice should be avoided in all
+Fortran code.
+<P>
+<LI> WORD, LONG, and COMPLEX data types
+<P>
+The data types WORD, LONG, and COMPLEX are recognized by the RTL routines that
+accept data types, for backwards compatibility.  However, they should never
+be used in new code.  Use the standard set BYTE, HALF, FULL, REAL, DOUB, and
+COMP instead.
+<P>
+<LI> <b> qprint</b>/<b> zqprint</b>
+<P>
+These routines should not be used, as they require numeric string lengths
+and use Fortran carriage control, both of which are no longer necessary.
+Use <b> x</b>/<b>  zvmessage</b> instead.
+<P>
+<LI> <b> x</b>/<b>  zlgetlabel</b>
+<P>
+These routines should be replaced with explicit calls to the other label
+routines to retrieve only the labels of interest.  Reading the entire label
+buffer and searching through it for a keyword (the common usage of
+<b> x</b>/<b>  zlgetlabel</b>) is prone to error as the given keyword might exist as part
+of some other, unrelated label.  It is permissible (if the label contents
+are set up this way) to read a set of labels into a buffer and search that
+buffer, but do not use <b> x</b>/<b>  zlgetlabel</b> for this.
+<P>
+<LI> <b> x</b>/<b>  zvend</b>
+<P>
+These routines should not be called from user code.  To abnormally terminate
+a program, use <b> abend</b>/<b> zabend</b>.  To exit a program normally, simply
+return from the <tt> main44</tt> subroutine.
+<P>
+<LI> <b> xvpblk</b>
+<P>
+The routine <b> xvpblk</b> is not portable and should not be used.  It is
+retained only for backwards compatibility.  The reason it is not portable
+is the same as the reason array I/O is not portable - the lack of pointers
+in Fortran.  The C routine, <b> zvpblk</b>, is portable and can be used.
+It could be used in a Fortran program in a manner similar to that used for
+array I/O.  See Section <A HREF=subsection3.9.6.html#arrayio><IMG SRC="/icons/cross-ref.png"></A>, Array I/O, for details.
+<P>
+<LI> <b> x</b>/<b>  zvsfile</b>
+<P>
+This routine is not needed.  Call <b> x</b>/<b>  zvadd</b> with the U_FILE optional instead,
+which is completely equivalent.
+<P>
+<LI> <b> x</b>/<b>  zvsptr</b>
+<P>
+The parameter processing routines (<b> x</b>/<b>  zvparm</b> <i> et al</i>) will, in the
+absense of string length information, return multivalued string arrays in
+a packed format which must be unpacked using <b> x</b>/<b>  zvsptr</b>.  This packed format
+(and <b> x</b>/<b>  zvsptr</b>) should not be used.  Provide the parameter processing routine
+with a CHARACTER*n array in Fortran, or a two-dimensional array of characters
+with a non-zero LENGTH parameter in C, instead.  A normal array of strings
+will then be returned, and <b> x</b>/<b>  zvsptr</b> will not be needed.
+<P>
+<LI> PARMS files
+<P>
+The PARMS files created by <b> x</b>/<b>  zvpopen</b>, <b> x</b>/<b>  zvpout</b>, and <b> x</b>/<b>  zvpclose</b> should
+be avoided if possible.  PARMS files are used to communicate parameters between
+programs (the receiver has a PARMS parameter to receive the file).  They work
+and are portable, but the internal implementation is necessarily non-standard.
+Other communication methods, such as TCL variables or IBIS interface files,
+are recommended instead.
+<P>
+<LI> Direct RTL tape support
+<P>
+The routines <b> x</b>/<b>  zvfilpos</b>, <b> x</b>/<b>  zvtpinfo</b>, <b> x</b>/<b>  zvtpmode</b>, and <b> x</b>/<b>  zvtpset</b> are
+used to directly manipulate 9-track tapes from within a program.  The use
+of tapes in this way directly from a program is somewhat problematical under
+Unix, so it is discouraged.  While this method of access is allowed, the
+underlying implementation is not portable, and currently only runs on Suns,
+and only on one brand of tape drive.  It is recommended that all processing
+be done from disk files, with only operating system or special-purpose
+utilities accessing the tape (these utilities would only transfer files to/from
+tape, with no processing).
+<P>
+</UL>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

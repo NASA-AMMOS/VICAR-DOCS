@@ -1,0 +1,1182 @@
+# Starting with rtftohtml 2.7, all html-trans files have a version number
+# The version number must appear before any other tables.
+.Version,6
+
+#ifmatch '$htmlTranPass;' 2
+
+# Set the Language Dependant strings
+.Strings
+#ifmatch '$Language;' 1036
+'LangTag','fr'
+'Next','Next'
+'Previous','Previous'
+'Index','Index'
+'Contents','Sommaire'
+'Titlep','Titre'
+'Up','hoch'
+#else
+#ifmatch '$Language;' 1031
+'LangTag','de'
+'Next','Next'
+'Previous','Previous'
+'Index','Index'
+'Contents','Inhaltsverzeichnis'
+'Titlep','Titelseite'
+'Up','Remonter'
+#else
+#ifmatch '$Language;' 1040
+'LangTag','it'
+'Next','Next'
+'Previous','Previous'
+'Index','Indice'
+'Contents','Sommario'
+'Titlep','Titolo'
+'Up','Risalire'
+#else
+#ifmatch '$Language;' 1034
+'LangTag','es'
+'Next','Next'
+'Previous','Previous'
+'Index','Indice'
+'Contents','Contenido'
+'Titlep','TÌtulo'
+'Up','Anterior'
+#else
+'LangTag','en'		# defaults to English (1033)
+'Next','Next'
+'Previous','Previous'
+'Index','Index'
+'Contents','Contents'
+'Titlep','Title Page'
+'Up','Up'
+#endif				# end 1040
+#endif				# end 1040
+#endif				# end 1031
+#endif				# end 1036
+
+#ifmatch '$NavHeadings;' 1
+'Next','$NextFileH;'
+'Previous','$PrevFileH;'
+'Up','$ParentFileH;'
+#endif
+
+# Set the correct title
+.Strings
+#ifmatch $FirstHeading; '^$'
+'DefTitle','$BaseName(InputFile).$HtmlExt;'  # Can be overridden on cmd line
+#else
+'DefTitle','$StripPN(FirstHeading)'
+#endif
+
+#ifmatch $rtfTitle; '^$'
+'Title','$DefTitle;'	  
+#else
+'Title','$rtfTitle;'
+#endif                    
+
+# This sets the title to just a plain title if only one page is generated
+
+#ifmatch $NumFiles; 1
+'p1title','$Title;'
+#else
+'p1title','$Title; - $Titlep;'
+#endif
+
+
+#else   # PASS 1 Stuff goes here!
+
+# Debugging flags.
+#  DB1 Debug&1
+#  DB2 Debug&(1<<1)
+#  DBTrans Debug&(1<<2)
+#  DBTbl Debug&(1<<3)
+#  DBExpand Debug&(1<<4)
+#  DBMem Debug&(1<<5)
+#  DBGRP Debug&(1<<15)
+#  DBTOKEN Debug&(1<<16)
+
+.Functions
+Function WarnNotDef
+DBPrint 'Warning - Variable $1; Used but not defined\n'
+Set ''
+# end of WarnNotDef
+
+Function CExpand
+Ifelse '$1;','.','$2;','$3;'
+# end of CExpand
+
+Function IsZero
+Ifelse '$1;','^0$','$2;','$3;'
+# end of IsZero
+
+Function BaseName
+Sub '^.*[\\:/]',''
+Sub '\\.[^.]*$',''
+# end of Basename
+
+Function GenFileSuffix
+Sub '^ *[0-9]+\\.\t',''
+Sub '[\t ].*',''
+Gsub '[^a-zA-Z0-9]','_'
+Sub '(........).*','\\1'
+# end of GenFileSuffix
+
+Function ImageRef
+Sub '^.*[\\:/]',''			# Strip lead
+Sub '\\.[^.]*$',''
+Encode " $&=+\"\\';/#?:"
+# end of ImageRef
+
+Function PickImgExt
+Sub '^[^.]*',''			# Strip everything except extension
+Lower                   # drop to lower case
+Ifelse '$0;','^.gif$','!$0;','$0;'     # mark .gif as acceptable
+Ifelse '$0;','^.jpg$','!$0;','$0;'     # mark .jpg as acceptable
+Ifelse '$0;','^!','$0;','!.$ImageExt;'  # if not marked, use default
+Sub '!',''              # strip mark
+# end of PickImgExt
+
+Function EncodeDirPath
+#ifmatch '$TransPlatform;','MacOS'
+Gsub ':','/'
+#else
+#ifmatch '$TransPlatform;','Win'
+Gsub '\\\\','/'
+#endif
+#endif
+Encode " $&=+\"\\';#?"
+# end of EncodeDirPath
+
+Function RelName
+Sub '^.*[\\:/]',''
+# end of RelName
+
+Function StripPN
+Sub '^ *[0-9IixXVv.]+[.)][\t ]',''
+# end of StripPN
+
+Function DBVar
+DBPrint '$1;'
+# End of DBVar 
+
+
+#
+# Everything in htmlTranPass==1 is done prior to processing your
+# RTF input file. Anything that depends on your input file
+# should be moved to the section for pass2 ( Above )
+# In general, put as much stuff in pass 1 as you can. 
+
+.Strings
+'TRUE',1
+'FALSE',0
+Empty,""
+
+# These are 'packages' of options - an attempt to simplify the
+# choices for users
+#
+
+'SkipNavPanel','1'    # No navigation panels is the default
+
+#ifmatch $simple; 1
+'SplitDepth',0
+'SkipNavPanel','1' 
+'SkipLeadingToc','1'
+'SkipTrailingToc','1'
+'GenContents','0' 
+'GenFrames','0' 
+'GenIndex','0' 
+#else
+#ifmatch $framed; 1
+'SplitDepth',1
+'SkipNavPanel','0' 
+'SkipLeadingToc','0'
+'SkipTrailingToc','1'
+'GenContents','1' 
+'GenFrames','1' 
+'GenIndex','1' 
+#else
+#ifmatch $classic; 1
+'SplitDepth',0
+'SkipNavPanel','1' 
+'SkipLeadingToc','1'
+'SkipTrailingToc','0'
+'GenContents','0' 
+'GenFrames','0' 
+'GenIndex','0' 
+'legacy','1'
+'truepar',1
+'redlinks',0
+'OutMap','html-map.v3'
+#endif
+#endif
+#endif
+
+'Pass2Start','$AtPass2Start()'
+
+# Paragraph Style Tags table
+# Format:
+#'name','starttag','endtag','col2mark','tabmark','parsep',
+#'linetag',allowtext,cannest,DeleteCol1,fold,TocStyl,generate_emptypar
+.PTag
+# The following entries are required and must be in this order - do not modify
+'_Literal','','\n','\t','\t','<P></P>\n','<BR>',1,0,0,1,0,0
+'_Discard','','\n','\t','\t','<P></P>\n','<BR>',1,0,0,1,0,0
+'_Name','','\n','\t','\t','<P></P>\n','<BR>',1,0,0,1,0,0
+'_Link','','\n','\t','\t','<P></P>\n','<BR>',1,0,0,1,0,0
+'_HRef','','\n','\t','\t','<P></P>\n','<BR>',1,0,0,1,0,0
+'_Hot','','\n','\t','\t','<P></P>\n','<BR>',1,0,0,1,0,0
+'_FootNote','','\n','\t','\t','<P></P>\n','<BR>',1,0,0,1,0,0
+# The remaining styles
+'Normal','<$Ptype; ALIGN="$AlignLookUp(PAlign)">','$Ebrk;</$Ptype;>\n','\t','\t',\
+ '$Ebrk;</$Ptype;><$Ptype; ALIGN="$AlignLookUp(PAlign)">','<BR>',1,0,0,1,0,1
+'h1','<H1 ALIGN="$AlignLookUp(PAlign)">\n','</H1>\n','\t','\t','<BR>','<BR>',0,0,0,1,1,0
+'h2','<H2 ALIGN="$AlignLookUp(PAlign)">\n','</H2>\n','\t','\t','<BR>','<BR>',0,0,0,1,2,0
+'h3','<H3 ALIGN="$AlignLookUp(PAlign)">\n','</H3>\n','\t','\t','<BR>','<BR>',0,0,0,1,3,0
+'h4','<H4 ALIGN="$AlignLookUp(PAlign)">\n','</H4>\n','\t','\t','<BR>','<BR>',0,0,0,1,4,0
+'h5','<H5 ALIGN="$AlignLookUp(PAlign)">\n','</H5>\n','\t','\t','<BR>','<BR>',0,0,0,1,5,0
+'h6','<H6 ALIGN="$AlignLookUp(PAlign)">\n','</H6>\n','\t','\t','<BR>','<BR>',0,0,0,1,6,0
+'ul','<UL>\n<LI>','</UL>','\t','\t','<LI>','<BR>',1,1,0,1,0,0
+'ul-d','<UL>\n<LI>','</UL>','\t','\t','<LI>','<BR>',1,1,1,1,0,0
+'ol','<OL>\n<LI>','</OL>','\t','\t','<LI>','<BR>',1,1,0,1,0,0
+'ol-d','<OL>\n<LI>','</OL>','\t','\t','<LI>','<BR>',1,1,1,1,0,0
+'dl','<DL>\n<DT>','</DL>','\n<DD>','\t','\n<DT>','<BR>',1,1,0,1,0,0
+'TERM','<DL>\n<DT>','</DL>','\t','\t','<DT>','<BR>',1,1,0,1,0,0
+'DEF','<DD>','','\t','\t','<BR>','\n<BR>',1,1,0,1,0,0
+'dir','<DIR>\n<LI>','</DIR>','\t','\t','\n<LI>','<BR>',1,1,0,1,0,0
+'menu','<MENU>\n<LI>','</MENU>','\t','\t','\n<LI>','<BR>',1,1,0,1,0,0
+'address','<ADDRESS>\n','</ADDRESS>','\t','\t','<BR>\n','<BR>',1,0,0,1,0,1
+'blockquote','<BLOCKQUOTE>\n','</BLOCKQUOTE>','\t','\t','<BR>\n','<BR>',1,0,0,1,0,1
+'pre','\n<PRE>','</PRE>','\t','\t','\n','\n',0,0,0,0,0,1
+'hr','<HR>','','','','','',1,0,0,1,0,1
+'newgloss','<TABLE><TR VALIGN="TOP"><TD>','</TR></TABLE>','</TD><TD>','\t',\
+'</TR><TR VALIGN="TOP"><TD>',\
+'\n<BR>',1,0,0,1,0,1
+
+.Strings
+'OverrideDefs','1'				# Forces these settings files into override mode
+#cinclude '$BaseName(InputFile).trn'  # conditionally include file specific settings
+#cinclude 'trnflag.trn'               # Conditionally include users local settings
+.Strings
+'OverrideDefs','0'				# No longer in force mode
+
+
+.Functions
+Function CheckColor		 
+#ifmatch '$RGBColors;','1'
+Ifelse '$TextRGB;','#000000','',' COLOR="$TextRGB;"'
+#else
+Ifelse '$TextRGB;','#000000','',' COLOR="$TextColor;"'
+#endif
+
+Function CheckSize
+Sub "^3$",""                           # Don't generate SIZE for 3 (the default)
+Ifelse '$0;','^$','',' SIZE=$FontSize;'
+
+Function CheckFace
+Lower
+# Add a line here for each font to be ignored 
+Sub "^times new roman$",""     # Do not add FACE attributes for this font
+Sub "^new york$",""     	   # Do not add FACE attributes for this font
+Sub "^times$",""               # Do not add FACE attributes for this font
+
+# This converts all courier fonts to use 
+Sub "^courier.*$","Courier"    # Use FACE="Courier" for these fonts
+
+Ifelse '$0;','^$','',' FACE="$Font;"'
+
+
+Function CheckFont
+Set "$CheckFace(Font)$CheckSize(FontSize)$CheckColor()"
+Save 'Tmp1',"$0;"
+Ifelse '$0;','^$','','</FONT>'
+Save 'EndFontT',"$0;"
+Ifelse '$0;','^$','','<FONT$Tmp1;>'
+
+
+.Strings
+# These are 'packages' of options - an attempt to simplify the
+# choices for users
+#
+
+
+#ifmatch $simple; 1
+'SplitDepth',0
+'SkipNavPanel','1' 
+'SkipLeadingToc','1'
+'SkipTrailingToc','1'
+'GenContents','0' 
+'GenFrames','0' 
+'GenIndex','0' 
+#else
+#ifmatch $framed; 1
+'SplitDepth',1
+'SkipNavPanel','0' 
+'SkipLeadingToc','0'
+'SkipTrailingToc','1'
+'GenContents','1' 
+'GenFrames','1' 
+'GenIndex','1' 
+#else
+#ifmatch $classic; 1
+'SplitDepth',0
+'SkipNavPanel','0' 
+'SkipLeadingToc','1'
+'SkipTrailingToc','0'
+'GenContents','0' 
+'GenFrames','0' 
+'GenIndex','0' 
+'legacy','1'
+'truepar',1
+'redlinks',0
+'OutMap','html-map.v3'
+'VShortFileDigits','2'
+#endif
+#endif
+#endif
+
+#ifmatch '$GenFrames;',1
+'GenContents',1					# require Contents on a frames generation
+'TitlePageComplete','$GenFrames()'
+#else
+'TitlePageComplete',''
+#endif
+
+#ifmatch '$GenFrames;',1
+'ExtTarget',' TARGET="_top"'
+'TLeft',' TARGET="LeftFrame"'
+'TRight',' TARGET="RightFrame"'
+#else
+'ExtTarget',''
+'TLeft',''
+'TRight',''
+#endif
+'Base',''
+
+#ifndef Pass1Start
+'Pass1Start',''
+#endif
+
+
+#ifndef TranslationEnd
+'TranslationEnd',''
+#endif
+
+#ifndef Pass1End
+'Pass1End',''
+#endif
+
+#ifndef GraphicWritten
+'GraphicWritten',''
+#endif
+
+#ifndef GraphicFound
+'GraphicFound',''
+#endif
+
+#ifmatch '$ShortNames;' 1
+'HtmlExt', 'htm'
+'CSuffix','_c'
+'ISuffix','_i'
+'TSuffix','_t'
+'FCSuffix','fc'
+'FISuffix','fi'
+#endif
+
+
+
+#ifmatch "$TransPlatform;$AutoConvertGraphics;" "MacOS1"  # Put Macintosh specific definitions here
+"GraphicWritten","$CvtGraphic()"
+
+
+.Functions
+Function CvtGraphic
+Set "$Picfilename;"
+Sub ".pict",".gif"
+Set "\
+-- Converting $Picfilename; to $0;\r\
+-- PicGoalHt=$PicGoalHt;\r\
+-- PicGoalWid=$PicGoalWid;\r\
+-- PicHt=$PicHt;\r\
+-- PicWid=$PicWid;\r\
+-- PicScaleX=$PicScaleX;\r\
+-- PicScaleY=$PicScaleY;\r\
+-- PictType=$PictType;\r\
+-- PicCropt=$PicCropt;\r\
+-- PicCropb=$PicCropb;\r\
+-- PicCropr=$PicCropr;\r\
+-- PicCropl=$PicCropl;\r\
+-- PicEmbedded=$PicEmbedded;\r\
+-- Picwidth=$Picwidth;\r\
+-- Picheight=$Picheight;\r\
+-- PicChecksum=$PicChecksum;\r\
+tell application \"clip2gif\"\r\
+	save file \"$Picfilename;\" as GIF ¬\r\
+		in file \"$0;\"¬\r\
+		maximum size {$Picwidth;, $Picheight;}\r\
+end tell\r\
+"
+#DBPrint "$0;"
+Ifelse "$PictType;","^2$","$0;","display dialog \"Non-pict graphic found - not converted:$Picfilename;\""
+Script "$0;"
+
+#endif
+
+.Functions
+Function AtPass2Start
+#ifmatch '$GenContents;' 1
+Save 'WhichI','$_index_file_framed_;'
+Save Base "<BASE $TRight;>\n"
+Ifelse '$GenFrames;',1,'$GenTOC(TRUE)',''
+Save Base ""
+Save 'WhichI','$_index_file_;'
+Set '$GenTOC(FALSE)'
+#endif 
+#ifmatch '$GenIndex;' 1
+Save 'WhichC','$_contents_file_framed_;'
+Save Base "<BASE $TRight;>\n"
+Ifelse '$GenFrames;',1,'$GenIndex(TRUE)',''
+Save 'WhichC','$_contents_file_;'
+Save Base ""
+Set '$GenIndex(FALSE)'
+#endif 
+# end of AtPass2Start
+
+Function ProcessField
+Save Tmp1 $0;
+Ifelse '$Tmp1;',"HYPERLINK ",'$ProcessHYPERLINK(Tmp1)',''
+Ifelse '$Tmp1;',"^ *REF ",'$ProcessREF(Tmp1)','$0;'
+# end of ProcessField
+
+Function ProcessHYPERLINK
+Sub '^ *HYPERLINK *([^\\]*).*$','\\1'        # toss HYPERLINK and all switches
+Gsub '"',''								   # remove quotes
+Sub ' *$',''					# Trim trailing spaces
+Encode " "
+Save Tmp3   $0; # Anything left is the first parameter
+# Divert the HyperLink result text into SaveTextStr
+Save SaveText,1
+# Get \\l switch value if it exists
+Ifelse '$1;','\\\\l','$1;',''  
+Sub '^.*\\\\l ([^\\\\]*)','\\1'        # strip all but \\l argument
+Sub ' *$',''					# Trim trailing spaces
+Gsub '"',''								   # remove quotes
+Encode " "
+Ifelse '$0;','.','<A HREF="$Tmp3;#$0;">','<A HREF="$Tmp3;">'
+Save SaveTextStr,'$0;'
+Set 0
+
+Function ProcessREF
+# Strip REF and any switches and output start of hypertext link
+Save SaveText,1
+Set $1;
+Sub ' *REF +([^ ]+) .*','#\\1'
+Save Tmp1 $0;
+AnchorFile '$0;'
+Save SaveTextStr,'<A HREF="$0;$Tmp1;">'
+Set "0"
+
+Function EndResult
+# Get target within file
+Ifelse '$SaveText;','1','$SaveTextStr;</A>','$0;'
+Save Tmp1,$0;
+Save SaveText 0
+Set $Tmp1;
+
+Function AlignLookUp
+Ifelse '$1;','0','LEFT','$0;'
+#Ifelse '$1;','1','JUSTIFY','$0;'
+Ifelse '$1;','1','LEFT','$0;'        # Netscape does really ugly Justify. Use left
+Ifelse '$1;','2','RIGHT','$0;'
+Ifelse '$1;','3','CENTER','$0;'
+# end of AlignLookup
+
+Function VAlignLookUp
+Ifelse '$1;','0','TOP','$0;'
+Ifelse '$1;','1','MIDDLE','$0;'
+Ifelse '$1;','2','BOTTOM','$0;'
+# end of VAlignLookup
+
+Function PNOverrideFunction
+#          numbers or letters indicate a numbered list
+#ifmatch '$KeepPN;' '1'
+Set 'small gloss'
+#else
+Ifelse '$0;','^[A-Z0-9a-z]','numbered list','bullet list' 
+#endif
+#          If the nesting level of this paragraph is >0 reset to current paragraph style
+Ifelse '$NestLevel;','^0$','$0;','$MatchName;'      
+#          If the matched style is not 'Normal' (means no styles used, or registered)
+#          reset to current paragraph style
+Ifelse '$MatchName;','^Normal$','$0;','$MatchName;'      
+# end of PNOverrideFunction
+
+
+
+.Colors
+# These derived from MSWord on Macintosh
+# color,r,g,b
+#ifdef MSColors
+'Black',0,0,0
+'Blue',0,0,212
+'Cyan',2,171,234
+'Green',31,183,20
+'Magenta',242,8,132
+'Red',221,8,6
+'Yellow',252,243,5
+'White',255,255,255
+'Dark Blue',0,0,128
+'Dark Cyan',0,128,128
+'Dark Green',0,100,17
+'Dark Magenta',128,0,128
+'Dark Red',128,0,0
+'Dark Yellow',128,128,0
+'Dark Gray',128,128,128
+'Light Gray',192,192,192
+#endif
+# Following are the Official HTML colors
+'Black',0,0,0
+'Green',0,128,0
+'Silver',192,192,192
+'Lime',0,255,0
+'Gray',128,128,128
+'Olive',128,128,0
+'White',255,255,255
+'Yellow',255,255,0
+'Maroon',128,0,0
+'Navy',0,0,128
+'Red',255,0,0
+'Blue',0,0,255
+'Purple',128,0,128
+'Teal',0,128,128
+'Fuchsia',255,0,255
+'Aqua',0,255,255
+
+                              
+.Charsets
+#
+# Charset Table
+#
+# charset,font,filename
+# Where charset is
+#  0 - Ansi   (used on Windows)
+#  1 - Mac (used on Macintosh)
+#  2 - pc  (I think that this is DOS)
+#  3 - pca (I've never seen pca....)
+0,'Symbol','ansi-sym'
+1,'Symbol','mac-sym'
+2,'Symbol','pc-sym'
+3,'Symbol','pca-sym'
+1,'','mac-gen'
+2,'','pc-gen'
+3,'','pca-gen'
+0,'','ansi-gen'   		# default entry (Ansi character set)
+
+#
+# Markup Section
+#
+
+#
+#  Markup unique to the first page
+#
+.Strings
+'_HEADING','$Title;'   # initialize first heading to title
+
+'TitlePageHead','$infostr;<TITLE>$p1title;</TITLE>$Base;\n\
+</HEAD>\n\
+$GenPageBody;'
+
+'TitlePageBody',''
+
+
+'FramePageHead','$infostr;$_title_fpage_;</HEAD>\n<FRAMESET COLS="40%,60%">\n\n<NOFRAMES>\n'
+'FramePageBody','$_body_start_;'
+'FramePageEnd','$_end_frame_;'
+'_title_fpage_','<TITLE>$Title;</TITLE>\n'
+'_end_frame_','</NOFRAMES>\n\n<FRAME SRC="$_TOC_HREF_;" NAME="LeftFrame">\n\
+<FRAME SRC="$_TITLE_HREF_;" NAME="RightFrame">\n</FRAMESET>\n$GenPageEnd;'
+
+#
+#  Markup unique to the Index file
+#
+
+
+'IndexHead','$infostr;<TITLE>$Title; - $Index;</TITLE>$Base;\n\
+</HEAD>\n'
+'IndexBody','$_body_start_;$IdxNavPanelTop;$_heading_ipage_;'
+'_heading_ipage_','<H1>$Title; - $Index;</H1>'
+
+# index page begins with a list of first letters with links to the appropriate entry
+'_ipanel_start_','<H2><HR>'
+
+'_ipanel_entry_','<A HREF="$_LINK_;">$_HOTTEXT_;</A>\n'
+'_ipanel_entry_framed_','<A HREF="$_LINK_;" TARGET="_self">$_HOTTEXT_;</A>\n'
+'_ipanel_sep_',' , '
+
+'_ipanel_end_','</H2>\n<HR>\n'
+
+# next come the entries themselves
+'_index_letter_entry_','<DIV ALIGN="CENTER"><FONT SIZE="+2"><B><A NAME="$_NAME_;">$_TEXT_;</A></B></FONT></DIV>\n' # starts an set of entries for a letter
+
+# start of a sublist
+'SIStart','<DL><DT>$SIText;'
+'SISep','<DD>'
+'SIEnd','</DL>'
+'SXRef','$SIText;. <I>$SXRefText;</I>'
+'SIRStart','$SIText;'
+'SIREnt',', <A HREF="$_LINK_;">$_HOTTEXT_;</A>'
+'SIREnd',''
+'SIRSep',''
+'IESep','<BR>\n'
+
+'IndexEnd','\n$IdxNavPanelBot;</BODY>\n</HTML>\n'
+
+#
+#ifmatch $SkipNavPanel; 0
+#ifmatch '$GenContents;' 1
+'IdxNavPanel','<DIV ALIGN="CENTER">\
+$_title_file_;\
+$WhichC;\
+</DIV>'
+#else
+'IdxNavPanel','<DIV ALIGN="CENTER">\
+$_title_file_;\
+</DIV>'
+#endif
+
+'IdxNavPanelTop','\
+$IdxNavPanel;$HorizontalLine;\n\
+'
+'IdxNavPanelBot','\
+$HorizontalLine;\n$IdxNavPanel;\
+'
+#else
+'IdxNavPanel',''
+#endif
+
+#
+#  Markup unique to the Contents file
+#
+
+'ContentsPageHead','$infostr;<TITLE>$Title; - $Contents;</TITLE>$Base;\n\
+</HEAD>\n'
+'ContentsPageBody','$_body_start_;$TOCNavPanelTop;\
+<H1>$Title; - $Contents; </H1>\n\
+<H2><A HREF="$RelName(TitleFile)">$Title; - $Titlep; </A></H2>\n\
+'
+'ContentsPageEnd','$TOCNavPanelBot;</BODY>\n</HTML>\n'
+
+#ifmatch $SkipNavPanel; 0
+'TOCNavPanel','<DIV ALIGN="LEFT">\
+$_title_file_;\
+$IsZero(NumIndexEntries,Empty,WhichI)\
+</DIV>'
+'TOCNavPanelTop','<DIV ALIGN="LEFT">\
+$TOCNavPanel;$HorizontalLine;\n\
+</DIV>'
+'TOCNavPanelBot','\
+$HorizontalLine;\n$TOCNavPanel;\
+'
+#else
+'TOCNavPanel',''
+#endif
+
+# Also used in table of contents at the start or end of general files
+
+'_head_list_start_','<UL>\n'
+#ifmatch "$StripHeadNo;",1
+'_head_list_entry_','<LI><A HREF="$_LINK_;">$StripPN(_HOTTEXT_)</A>\n'
+#else
+'_head_list_entry_','<A HREF="$_LINK_;">$_HOTTEXT_;</A><BR>\n'
+#endif
+'_head_list_end_','</UL>\n'
+
+
+#
+#  Markup used in General files
+#
+
+'GenPageHead','$infostr;<TITLE>$FileFirstHeading;</TITLE>$Base;\n\
+</HEAD>\n'
+
+#ifmatch $SkipLeadingToc; 0
+'GenPageBody','$_body_start_;$GenNavPanelTop;\
+$GenLocalTOC()\n\
+'
+#else
+'GenPageBody','$_body_start_;$GenNavPanelTop;'
+#endif
+
+#ifmatch $SkipTrailingToc; 0
+'GenPageBodyEnd','\
+$GenLocalTOC()\n\
+$GenNavPanelBot;\n\
+</BODY>\n'
+#else
+'GenPageBodyEnd','\
+$GenNavPanelBot;\n\
+</BODY>\n'
+#endif
+
+'GenPageEnd','\n</HTML>\n'
+
+#
+# General Navigation Panel
+#
+
+#ifmatch $SkipNavPanel; 0
+'GenNavPanel','<DIV ALIGN="LEFT">\
+$CExpand(ParentFile,_up_file_,Empty)\
+$CExpand(PrevFile,_previous_file_,Empty)\
+$CExpand(NextFile,_next_file_,Empty)\n\
+$_title_file_;\
+$IsZero(NumIndexEntries,Empty,_index_file_)\
+$IsZero(GenContents,Empty,_contents_file_)\
+</DIV>'
+'GenNavPanelTop','\
+$GenNavPanel;$HorizontalLine;\n\
+'
+'GenNavPanelBot','\
+$HorizontalLine;\n$GenNavPanel;\
+'
+#else
+'GenNavPanel',''
+'GenNavPanelTop',''
+'GenNavPanelBot',''
+#endif
+
+'_head_start_','\n<HEAD>\n'
+'_head_end_','\n</HEAD>\n'
+
+'_heading_cpage_','<H1>$Title; - $Contents;</H1>'
+
+#ifmatch '$Background;', '.'
+'_background_',' BACKGROUND="$Background;"'
+#else
+#ifmatch '$BColor;','.'
+'_background_',' BGCOLOR="$BColor;"'
+#endif
+#endif
+#ifmatch '$TxtColor;','.'
+'_textcolor_',' TEXT="$TxtColor;"'
+#endif
+#ifmatch '$LColor;','.'
+'_linkcolor_',' LINK="$LColor;"'
+#endif
+#ifmatch '$VColor;','.'
+'_vlinkcolor_',' VLINK="$VColor;"'
+#endif
+#ifmatch '$AColor;','.'
+'_alinkcolor_',' ALINK="$AColor;"'
+#endif
+
+#ifmatch "$TextNav;",1
+'_previous_file_','<A HREF="$RelName(PrevFile)"$TRight;>$Previous;</A> | \n'
+'_next_file_','<A HREF="$RelName(NextFile)"$TRight;>$Next;</A> | \n'
+'_up_file_','<A HREF="$RelName(ParentFile)"$TRight;>$Up;</A> | \n'
+'_title_file_','<A HREF="$RelName(TitleFile)">$Titlep;</A> | \n'
+
+'_contents_file_','<A HREF="$RelName(ContentsFile)">$Contents;</A>\n'
+'_contents_file_framed_','<A HREF="$RelName(FContentsFile)" TARGET="_self">$Contents;</A>\n'
+#ifmatch $GenIndex; 1
+'_index_file_','<A HREF="$RelName(IndexFile)">$Index;</A>\n'
+'_index_file_framed_','<A HREF="$RelName(FIndexFile)" TARGET="_self">$Index;</A>\n'
+#endif
+#else
+'btndir','granite/'
+
+'_previous_file_','<A HREF="$RelName(PrevFile)"$TRight;><IMG SRC="$ImgDir;$btndir;prev.$ImageExt;" ALT="$Previous; " border=0></A>\n'
+'_next_file_','<A HREF="$RelName(NextFile)"$TRight;><IMG SRC="$ImgDir;$btndir;next.$ImageExt;" ALT="$Next; " border=0></A>\n'
+'_up_file_','<A HREF="$RelName(ParentFile)"$TRight;><IMG SRC="$ImgDir;$btndir;up.$ImageExt;" ALT="$Up; " border=0></A>\n'
+'_title_file_','<A HREF="$RelName(TitleFile)"><IMG SRC="$ImgDir;$btndir;first.$ImageExt;" ALT="$Titlep; " border=0></A>\n'
+
+'_contents_file_','<A HREF="$RelName(ContentsFile)"><IMG SRC="$ImgDir;$btndir;contents.$ImageExt;" ALT="$Contents; " border=0></A>\n'
+'_contents_file_framed_','<A HREF="$RelName(FContentsFile)" TARGET="_self"><IMG SRC="$ImgDir;$btndir;contents.$ImageExt;" ALT="$Contents; " border=0></A>\n'
+#ifmatch $GenIndex; 1
+'_index_file_','<A HREF="$RelName(IndexFile)"><IMG SRC="$ImgDir;$btndir;index.$ImageExt;" ALT="$Index; " border=0></A>\n'
+'_index_file_framed_','<A HREF="$RelName(FIndexFile)" TARGET="_self"><IMG SRC="$ImgDir;$btndir;index.$ImageExt;" ALT="$Index; " border=0></A>\n'
+#endif
+#endif
+
+#
+#  Markup common to all files
+#
+
+#ifmatch '$TransPlatform;','MacOS'
+	'PathSep',':'
+#else    
+	#ifmatch '$TransPlatform;','Win32'
+		'PathSep',':'
+	#else
+		#ifmatch '$TransPlatform;','DOS/Win3.1'
+			'PathSep',':'
+		#else
+			'PathSep','/'
+		#endif
+	#endif
+#endif 
+
+#ifmatch '$progPath;','.'
+	'ImgDir','file:///$EncodeDirPath(progPath)/docs/images/'
+#else
+	'ImgDir',''
+#endif
+'infostr','<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">\n\
+<HTML>\n\
+<!--\n\
+This document was converted from RTF source: \n\
+By rtftohtml $RTFtoHTMLVersion;\n\
+See http://www.sunpack.com/RTF\n\
+Filename:$InputFile;\n\
+Application Directory:$progPath;\n\
+Subject:$Subject;\n\
+Author:$Author;\n\
+Operator:$Operator;\n\
+Document Comments:$DocComments;\n\
+Version Comments:$VersComments;\n\
+Comments:$Comments;\n\
+Keywords:$Keywords;\n\
+Translation Date:$Date;\n\
+Translation Time:$Time;\n\
+Translation Platform:$TransPlatform;\n\
+Number of Output files:$NumFiles;\n\
+This File:$ThisFile;\n\
+SplitDepth=$SplitDepth;\n\
+SkipNavPanel=$SkipNavPanel;\n\
+SkipLeadingToc=$SkipLeadingToc;\n\
+SkipTrailingToc=$SkipTrailingToc;\n\
+GenContents=$GenContents;\n\
+GenFrames=$GenFrames;\n\
+GenIndex=$GenIndex;\n\
+-->\n\
+<HEAD lang="$LangTag;">\
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">\n\
+'
+
+'_body_start_','\n\
+<BODY $_background_;\
+$_textcolor_;\
+$_linkcolor_;\
+$_vlinkcolor_;\
+$_alinkcolor_;>'
+
+# This line is inserted before Footnotes at the end of the page
+'FNSep','<HR>'
+'_footnote_ref_start_','<A NAME="$_NAME_;" HREF="$_LINK_;">['
+'_footnote_ref_end_',']</A>'
+
+#ifndef AllBorders
+AllBorders 0
+#endif
+
+.Strings
+#ifmatch $truepar; 1
+Ptype "P"
+Ebrk ""
+Extrabrk ""
+#else
+Ptype "DIV"
+Ebrk "<BR>"
+Extrabrk ""
+#endif
+
+# Table Processing
+.Functions
+
+Function ExitTable
+#ifmatch $truepar; 1
+Save Ptype "P"
+#else
+Save Ptype "DIV"
+#endif
+# end of ExitTable
+
+Function TableBorders
+Save Ptype "DIV"
+#ifmatch '$AllBorders;' 1
+Set 'BORDER'
+#else
+#ifmatch '$HTML;' '4'
+Ifelse '$_TableRules_;','^0$','none',''
+Ifelse '$_TableRules_;','^1$','groups','$0;'
+Ifelse '$_TableRules_;','^2$','cols','$0;'
+Ifelse '$_TableRules_;','^3$','all','$0;'
+Save _tRules_ 'rules="$0;"'
+Ifelse '$_TableFrame_;','^0$','void',''
+Ifelse '$_TableFrame_;','^1$','above','$0;'
+Ifelse '$_TableFrame_;','^2$','lhs','$0;'
+Ifelse '$_TableFrame_;','^4$','rhs','$0;'
+Ifelse '$_TableFrame_;','^8$','below','$0;'
+Ifelse '$_TableFrame_;','^6$','vsides','$0;'
+Ifelse '$_TableFrame_;','^9$','hsides','$0;'
+Ifelse '$0;','','box','$0;'  
+Set '$_tRules_; border=$_TableBorderWeight_; frame="$0;"''
+#else
+Ifelse '$_TableRules_;$_TableFrame_;','00','','BORDER'
+#endif
+#endif
+# end of TableBorders
+
+.Strings
+'_table_start_','<DIV ALIGN="$AlignLookUp(_TABLEALIGN_)"><TABLE $TableBorders()>\n'
+'_table_end_','</TABLE></DIV>\n$ExitTable()'
+'_row_start_','<TR VALIGN="TOP">\n'
+'_row_end_','</TR>\n'
+'_empty_cell_tag_','<BR>'
+'_header_cell_start_','<TH WIDTH=$_COLWIDTH_; COLSPAN=$_COLSPAN_; ROWSPAN=$_ROWSPAN_; VALIGN="$VAlignLookUp(_CELLVALIGN_)">\n'
+'_header_cell_end_','</TH>\n'
+'_data_cell_start_','<TD WIDTH=$_COLWIDTH_; COLSPAN=$_COLSPAN_; ROWSPAN=$_ROWSPAN_; VALIGN="$VAlignLookUp(_CELLVALIGN_)">\n'
+'_data_cell_end_','</TD>\n'
+#'_thead_start_','<THEAD>\n'
+#'_thead_end_','</THEAD>\n<TBODY>\n'
+#'_tfoot_start_','</TBODY>\n<TFOOT>\n'
+#'_tfoot_end_','</TFOOT>\n'
+#ifmatch '$HTML;' '4'
+'_ColGroupStart_','<COLGROUP>\n'
+'_ColGroupEnd_','</COLGROUP>\n'	
+'ColEntry','      <COL width="$_COLWIDTH_;">\n'
+#else
+'_ColGroupStart_',''
+'_ColGroupEnd_',''	
+'ColEntry',''
+#endif
+
+
+'HorizontalLine','\n<HR>\n'
+
+'_hr_','<HR SIZE=4>'
+'_xref_','<A HREF="$_LINK_;">$_HOTTEXT_;</A>'
+'_Ext_xref_','<A HREF="$_LINK_;" TARGET="_top">$_HOTTEXT_;</A>'
+'_anchor_entry_','<A NAME="$_LINK_;">$EmptyAnchorText;</A>'
+
+'EmptyAnchorText',''
+'_anchor_start_','<A HREF="#$_LINK_;">'
+'_anchor_end_','</A>'
+'_inline_image_ref_','<IMG HEIGHT=$_IMAGE_HEIGHT_; WIDTH=$_IMAGE_WIDTH_; SRC="$ImageRef(_IMAGE_FILENAME_)$PickImgExt(_IMAGE_FILENAME_)">'
+'_image_ref_','<A HEIGHT=$_IMAGE_HEIGHT_; WIDTH=$_IMAGE_WIDTH_; HREF="$ImageRef(_IMAGE_FILENAME_)$PickImgExt(_IMAGE_FILENAME_)">Click here for Picture </A>'
+"LinkedInlineIMG","<IMG  SRC=\"$ImageRef(_LinkFile).$ImageExt;\">"
+'LinkedIMG','<A HREF="$ImageRef(_LinkFile).$ImageExt;">Click here for Picture </A>'
+'_xref_link_','<A HREF="$_LINK_;">'
+'_xref_hot_start_','<A>'
+'_xref_hot_end_','</A>'
+'_href_start_','<A HREF="'
+
+
+
+
+'_line_in_hdr_','<BR>'
+'_titlep_header_','<H1>$Title;</H1>\n'
+'_toc_entry_','<UL>\n<LI><A HREF="$_HEADING_TARGET_;">$_HEADING_TEXT_;</A>\n</UL>\n'
+
+
+# Text STyle Tags table
+# Format
+# 'name','Starttag','Endtag'
+.TTag
+# The following entries are required and must be in this order - do not modify
+'_Literal','',''
+'_Discard','',''
+'_Name','',''
+'_Link','',''
+'_HRef','',''
+'_Hot','',''
+'_FootNote','',''
+# regular .TTag entries follow - you may modify/add/delete below
+'b','<B>','</B>'
+'i','<I>','</I>'
+'u','<U>','</U>'
+'em','<EM>','</EM>'
+'cite','<CITE>','</CITE>'
+'tt','<TT>','</TT>'
+'strong','<STRONG>','</STRONG>'
+'code','<CODE>','</CODE>'
+'samp','<SAMP>','</SAMP>'
+'kbd','<KBD>','</KBD>'
+'var','<VAR>','</VAR>'
+'dfn','<DFN>','</DFN>'
+'sup','<SUP>','</SUP>'
+'sub','<SUB>','</SUB>'
+'strike','<STRIKE>','</STRIKE>'
+'font','$CheckFont()','$EndFontT;'
+
+# Text Match Table
+# Format:
+# 'Font',FontSize,MatchStyle,'color','CharStyle','TextStyleName'
+# '' is don't care for fonts
+# 0 is don't care for font size
+# Special names for TextStyleName
+# _Discard - text will not be output
+# _Name    - text will be used for an named anchor
+# _Link    - text will be used as a link to a heading, http: or mailto:
+# _HRef    - text is an href
+# _Hot     - end of this text marks the end of hot text
+# _Literal - text is sent thorough without any translation
+# The MatchStyle string contains any combination of these attributes
+# optionally preceded by 'Not'. 
+# 
+#    Bold
+#    Italic
+#    StrikeThrough
+#    Outline
+#    Shadow
+#    SmallCaps
+#    AllCaps
+#    Hidden
+#    Underline
+#    WordUnderline
+#    DottedUnderline
+#    DoubleUnderline
+#    SuperScript
+#    SubScript
+#
+# For example 'Bold Not StrikeThrough Italic'
+# will match on any Bold Italic text except when it is also StrikeThrough
+# 
+.TMatch
+#
+# First do specials, because they are higher priority than other matches
+# 
+#ifmatch $legacy; 1
+'',0,'DoubleUnderline Not Hidden','','','_Hot'
+'',0,'DoubleUnderline Hidden','','','_HRef'
+'',0,'Hidden Shadow','','','_Literal'
+'',0,'Hidden StrikeThrough','','','_Literal'
+'',0,'Hidden Outline','','','_Name'
+'',0,'Hidden SuperScript','','','_Name'
+#ifmatch $redlinks; 1
+'',0,'','Red','','_Link'
+#endif
+#endif
+'',0,'','','Hyperlink','_Link'
+'',0,'','','HTMLRef','_Link'
+'',0,'','','Hot','_Hot'
+'',0,'','','HRef','_HRef'
+'',0,'','','Literal','_Literal'
+'',0,'','','Anchor','_Name'
+
+'',0,'','','Discard','_Discard'
+'',0,'Hidden','','','_Discard'
+'',0,'SuperScript','','','sup'
+'',0,'SubScript','','','sub'
+
+# Regular matches - You can have multiple of these active
+
+# monospace fonts -> tt
+'Courier',0,'','','','tt'
+'Courier New',0,'','','','tt'
+'Monaco',0,'','','','tt'
+#ifmatch $NoFont; 1
+#else
+'',0,'','','','font'
+#endif
+'',0,'Bold','','','b'
+'',0,'Italic','','','i'
+'',0,'WordUnderline','','','u'
+'',0,'DoubleUnderline','','','u'
+'',0,'DottedUnderline','','','u'
+'',0,'Underline','','','u'
+'',0,'StrikeThrough','','','strike' 
+'',0,'Outline','','','em'
+'',0,'Shadow','','','em'
+
+# Format:
+# 'Paragraph Style',NestLevel,'ParagraphStyleName'
+.PMatch
+# First Entry is the default if no style match. Should be level 0 
+# point to a Paragraph style with no markup
+'Normal',0,'Normal'
+#
+'heading 1',0,'h1'
+'heading 2',0,'h2'
+'heading 3',0,'h3'
+'heading 4',0,'h4'
+'heading 5',0,'h5'
+'heading 6',0,'h6'
+'ol',0,'ol'
+'ol 1',1,'ol'
+'ol 2',2,'ol'
+'ol 3',3,'ol'
+'ol 4',4,'ol'
+'ol 5',5,'ol'
+'ul',0,'ul'
+'ul 1',1,'ul'
+'ul 2',2,'ul'
+'ul 3',3,'ul'
+'ul 4',4,'ul'
+'ul 5',5,'ul'
+'numbered list',0,'ol-d'
+'numbered list 1',1,'ol-d'
+'numbered list 2',2,'ol-d'
+'numbered list 3',3,'ol-d'
+'numbered list 4',4,'ol-d'
+'numbered list 5',5,'ol-d'
+'bullet list',0,'ul-d'
+'bullet list 1',1,'ul-d'
+'bullet list 2',2,'ul-d'
+'bullet list 3',3,'ul-d'
+'bullet list 4',4,'ul-d'
+'bullet list 5',5,'ul-d'
+'dir',0,'dir'
+'dir 1',1,'dir'
+'dir 2',2,'dir'
+'dir 3',3,'dir'
+'dir 4',4,'dir'
+'dir 5',5,'dir'
+'small gloss',0,'newgloss'
+'small gloss 1',1,'newgloss'
+'small gloss 2',2,'newgloss'
+'small gloss 3',3,'newgloss'
+'small gloss 4',4,'newgloss'
+'small gloss 5',5,'newgloss'
+'glossary',0,'dl'
+'glossary 1',1,'dl'
+'glossary 2',2,'dl'
+'glossary 3',3,'dl'
+'glossary 4',4,'dl'
+'glossary 5',5,'dl'
+'menu',0,'menu'
+'menu 1',1,'menu'
+'menu 2',2,'menu'
+'menu 3',3,'menu'
+'menu 4',4,'menu'
+'menu 5',5,'menu'
+'pre',0,'pre'
+'blockquote',0,'blockquote'
+'address',0,'address'
+'hr',0,'hr'
+# the following paragraph styles will be discarded
+'toc 1',0,'_Discard'
+'toc 2',0,'_Discard'
+'toc 3',0,'_Discard'
+'toc 4',0,'_Discard'
+'toc 5',0,'_Discard'
+'toc 6',0,'_Discard'
+'TOC heading 1',0,'_Discard'
+'TOC heading 2',0,'_Discard'
+'title 1',0,'_Discard'
+'table of figures',0,'_Discard'
+'index 1',0,'_Discard'
+'index 2',0,'_Discard'
+'index 3',0,'_Discard'
+'index 4',0,'_Discard'
+'index 5',0,'_Discard'
+'index heading',0,'_Discard'
+'TERM',0,'TERM'
+'DEF',1,'DEF'
+'TERM 1',1,'TERM'
+'DEF 1',2,'DEF'
+'TERM 2',2,'TERM'
+'DEF 2',3,'DEF'
+'HTML',0,'_Literal'
+'footnote text',0,'Normal'
+'banner1',0,'Normal'
+'header',0,'Normal'
+'banner2',0,'Normal'
+'Title',0,'Normal'
+'Normal Indent',0,'blockquote'
+'Code',0,'pre'
+'TableSpace',0,'Normal'
+'TableRow',0,'Normal'
+'TableSubHead',0,'h3'
+'Normal Note',0,'Normal'
+
+#endif				# end of pass 1

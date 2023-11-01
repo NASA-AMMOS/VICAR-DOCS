@@ -1,0 +1,247 @@
+<HEAD>
+<TITLE>New Optional Keywords</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=486 HREF=section3.6.html><IMG SRC="/icons/previous.png"></A> <A NAME=488 HREF=section3.6.html><IMG SRC="/icons/up.png"></A>  <A NAME=484 HREF=subsection3.6.2.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=487 HREF=section3.6.html>RTL Routine Changes</A>  <b>Up:</b> <A NAME=489 HREF=section3.6.html>RTL Routine Changes</A>  <b>Next:</b> <A NAME=485 HREF=subsection3.6.2.html>New Routines</A> <P>
+ <H2>New Optional Keywords</H2>
+<A NAME=optkeyword><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+Several new optional keywords have been added to some of the RTL routines.
+These are listed and described below.  They are valid in both the Fortran
+and C calling sequences.
+<P>
+<UL>
+<LI> HOST, string:  The type of computer used to generate the image.  The
+value for HOST appears in the system image label.  It is used only for
+documentation; the RTL uses the INTFMT and REALFMT label items to determine
+the representation of the pixels in the file.  HOST will default to the type
+of computer the program is running on, so it normally will not be needed.  It
+is used to write a file in a host format other than the native one.  While
+this is not recommended (the general rule is read anything, write native
+format), it is allowed.  See Section <A HREF=section3.7.html#datatypes><IMG SRC="/icons/cross-ref.png"></A>, Data Types and Host
+Representations, for more information.  HOST is available in the routines
+<b> x</b>/<b>  zvadd</b>, <b> x</b>/<b>  zvopen</b>, and <b> x</b>/<b>  zvget</b>.  For output files, the HOST optional
+to <b> x</b>/<b>  zvopen</b> or <b> x</b>/<b>  zvadd</b> unconditionally sets the output's HOST label.
+For input files, the HOST optional to <b> x</b>/<b>  zvopen</b> or <b> x</b>/<b>  zvadd</b> has no effect
+unless the input file is unlabeled (i.e. the HOST in the input file overrides).
+<P>
+New values for HOST will appear every time the RTL is ported to a new
+machine, so no checking is done on the string.  However, the currently
+accepted values, and what they represent, are listed in Table <A HREF=subsection3.7.2.html#hostlabel><IMG SRC="/icons/cross-ref.png"></A>.
+In addition, the following values are also accepted:
+<P>
+<DL>
+<DT>NATIVE
+<DD>: The host type of the currently running machine
+<DT>LOCAL
+<DD>: Same as NATIVE
+<P>
+ </DL>
+<P>
+<LI> INTFMT, string:  The format used to represent integers in the file.
+INTFMT, REALFMT, and HOST should all match, so if you change one please
+change all three.  INTFMT is a system label item in the image used by the
+RTL to automatically convert data read in, via <b> x</b>/<b>  zvread</b>, to the native
+integer representation.  It defaults to the representation of the machine
+the program is running on, so it only needs to be set when writing in a
+non-native format.  If you are reading a file in such a way that the RTL
+does <em> not</em> automatically convert data types, such as Array I/O or
+CONVERT OFF, you must pay attention to the INTFMT label (via <b> x</b>/<b>  zvget</b>)
+and use the <b> x</b>/<b>  zvtrans</b> family of routines to translate to the native
+representation (for binary labels see BINTFMT below).  See
+Section <A HREF=section3.7.html#datatypes><IMG SRC="/icons/cross-ref.png"></A>,Data Types and Host Representations, for
+more information.  INTFMT is available in the routines <b> x</b>/<b>  zvadd</b>,
+<b> x</b>/<b>  zvopen</b>, and <b> x</b>/<b>  zvget</b>.  For output files, the INTFMT optional
+to <b> x</b>/<b>  zvopen</b> or <b> x</b>/<b>  zvadd</b> unconditionally sets the output's INTFMT
+label. For input files, the INTFMT optional to <b> x</b>/<b>  zvopen</b> or <b> x</b>/<b>  zvadd</b> has no
+effect unless the input file is unlabeled (i.e. the INTFMT in the input file
+overrides).
+<P>
+The valid values of INTFMT may change as the RTL is ported to new machines.
+However, the currently valid values are listed in Table <A HREF=subsection3.7.2.html#intfmtlabel><IMG SRC="/icons/cross-ref.png"></A>.
+In addition, the following values are also accepted:
+<P>
+<DL>
+<DT>NATIVE
+<DD>: The integer format of the currently running machine.
+<DT>LOCAL
+<DD>: Same as NATIVE.
+<P>
+ </DL>
+<P>
+The valid values of REALFMT may change as the RTL is ported to new machines.
+However, the currently valid values are listed in Table <A HREF=subsection3.7.2.html#realfmtlabel><IMG SRC="/icons/cross-ref.png"></A>.
+In addition, the following values are also accepted:
+<P>
+<DL>
+<DT>NATIVE
+<DD>: The floating point format of the currently running machine.
+<DT>LOCAL
+<DD>: Same as NATIVE.
+<P>
+ </DL>
+<P>
+<LI> BHOST, string:  The type of computer used to generate the binary labels.
+The value for BHOST appears in the system image label.  It is used only for
+documentation; the RTL uses the BINTFMT and BREALFMT label items to determine
+the representation of the binary labels in the file.  For input (or update)
+files, the BHOST optional is used if the BHOST label is not present in the
+file (if neither are present it defaults to VAX-VMS).  For output files, the
+BHOST optional is used if BIN_CVT is OFF (if not present the file's BHOST
+comes from the primary input, or defaults to VAX-VMS).  If BIN_CVT is ON,
+the BHOST optional is ignored since the file's BHOST gets set to the native
+host.  See Section <A HREF=section3.7.html#datatypes><IMG SRC="/icons/cross-ref.png"></A>, Data Types and Host Representations, for
+more information.  BHOST is available in the routines <b> x</b>/<b>  zvadd</b>, <b> x</b>/<b>  zvopen</b>,
+and <b> x</b>/<b>  zvget</b>.
+<P>
+The valid values for BHOST are exactly the same as for HOST above (including
+NATIVE and LOCAL).
+<P>
+<LI> BINTFMT, string:  The format used to represent integers in the binary
+label.  BINTFMT, BREALFMT, and BHOST should all match, so if you change one
+please change all three.  BINTFMT is a system label item in the image made
+available by the RTL to help applications to convert binary labels read or
+written to the file.  For input (or update) files, the BINTFMT optional is
+used if the BINTFMT label is not present in the file (if neither are present
+it defaults to the integer format for VAX-VMS).  For output files, the BINTFMT
+optional is used if BIN_CVT is OFF (if not present the file's BINTFMT comes
+from the primary input, or defaults to the integer format for VAX-VMS).
+If BIN_CVT is ON, the BINTFMT optional is ignored since the file's BINTFMT
+gets set to the native host integer format.  See Section <A HREF=section3.7.html#datatypes><IMG SRC="/icons/cross-ref.png"></A>,
+Data Types and Host Representations, for more information.  BINTFMT is
+available in the routines <b> x</b>/<b>  zvadd</b>, <b> x</b>/<b>  zvopen</b>, and <b> x</b>/<b>  zvget</b>.
+<P>
+Applications using binary labels should pay close attention to BINTFMT,
+as they are responsible for doing their own data format conversions.
+<P>
+The valid values for BINTFMT are exactly the same as for INTFMT above
+(including NATIVE and LOCAL).
+<P>
+<LI> BREALFMT, string:  The format used to represent real numbers in the
+binary label.  BREALFMT, BINTFMT, and BHOST should all match, so if you change
+one please change all three.  BREALFMT is a system label item in the image made
+available by the RTL to help applications to convert binary labels read or
+written to the file.  For input (or update) files, the BREALFMT optional is
+used if the BREALFMT label is not present in the file (if neither are present
+it defaults to the floating-point format for VAX-VMS).  For output files, the
+BREALFMT optional is used if BIN_CVT is OFF (if not present the file's
+BREALFMT comes from the primary input, or defaults to the floating-point format
+for VAX-VMS).  If BIN_CVT is ON, the BREALFMT optional is ignored since the
+file's BREALFMT gets set to the native host floating-point format.  See
+Section <A HREF=section3.7.html#datatypes><IMG SRC="/icons/cross-ref.png"></A>, Data Types and Host Representations, for more
+information.  BREALFMT is available in the routines <b> x</b>/<b>  zvadd</b>, <b> x</b>/<b>  zvopen</b>,
+and <b> x</b>/<b>  zvget</b>.
+<P>
+Applications using binary labels should pay close attention to BREALFMT,
+as they are responsible for doing their own data format conversions.
+<P>
+The valid values for BREALFMT are exactly the same as for REALFMT above
+(including NATIVE and LOCAL).
+<P>
+<LI> BLTYPE, string:  The type of the binary label.  The value for BLTYPE
+appears in the system image label.  This is not type in the sense of data
+type, but is a string identifying the kind of binary label in the file.
+The RTL does not do any interpretation or checking of BLTYPE.  It is intended
+mainly for documentation, so people looking at the image will know what
+kind of binary label is present.  It may also be used by application programs
+to make sure they can process the given type of binary label, or to make sure
+it is processed correctly.  For input (or update) files, the BLTYPE optional
+is used if the BLTYPE label is not present in the file (not that ``used'' in
+this sense means only being made available to <b> x</b>/<b>  zvget</b>).  For output files,
+the BLTYPE optional is used for the BLTYPE system label of the file (regardless
+of the BIN_CVT setting).  If the optional is not present, the file's BLTYPE
+comes from the primary input.  See Section <A HREF=section3.7.html#datatypes><IMG SRC="/icons/cross-ref.png"></A>, Data Types and
+Host Representations, for more information.  BLTYPE is available in the
+routines <b> x</b>/<b>  zvadd</b>, <b> x</b>/<b>  zvopen</b>, and <b> x</b>/<b>  zvget</b>.
+<P>
+The valid values of BLTYPE are maintained in a name registry, so that all
+possible kinds of binary labels can be documented in one place.  Although
+the RTL does no checking on the given name, only names that are registered
+should be used in BLTYPE.  See Section <A HREF=subsubsection3.7.6.3.html#bltype><IMG SRC="/icons/cross-ref.png"></A>, Binary Label Type, for
+more details.
+<P>
+<LI> CONVERT, string:  The valid values for CONVERT are ``ON'' and ``OFF''.
+The default is ``ON''.  Normally, the RTL will automatically convert pixels
+that are read from a file to the native host representation, and to the data
+type specified in U_FORMAT.  Setting CONVERT to ``OFF'' turns off both of
+these conversions, giving you the bit patterns that are in the file directly.
+When writing a file, host conversion is possible (although not normally used),
+but the U_FORMAT data type conversion is normally performed.  Setting CONVERT
+to ``OFF'' turns off both of these conversions as well, writing the bit patterns
+that are in memory directly to the file.  Note:  Be careful!  If you turn
+CONVERT OFF, you are responsible for doing your own data type conversions.
+Any given program should be able to read files written on any machine, so if
+you turn off CONVERT you should make use of the <b> x</b>/<b>  zvtrans</b> family of routines.
+See Section <A HREF=section3.7.html#datatypes><IMG SRC="/icons/cross-ref.png"></A>, Data Types and Host Representations, for details.
+CONVERT is available in the routines <b> x</b>/<b>  zvadd</b> and <b> x</b>/<b>  zvopen</b>.
+<P>
+<LI> BIN_CVT, string:  The valid values for BIN_CVT are ``ON'' and ``OFF''.
+The default is ``OFF''.  BIN_CVT is used to inform the RTL whether or not
+you will be converting binary labels to the native host representation.
+If BIN_CVT is ON, then the host formats in the output file (BHOST, BINTFMT,
+and BREALFMT) will be set to the native machine's host formats.  This will
+be the standard case for applications that know how to interpret the binary
+label.  Since the binary label type is known, the application can convert
+the data to the native format before writing the file.
+<P>
+If the application does not know the binary label type, however (such as a
+general-purpose application), then it cannot convert the host format.  In
+this case, set BIN_CVT to OFF.  This means the output file will receive the
+binary label host types of the primary input file, defaulting to VAX-VMS if
+not available.  The general-purpose application may then simply transfer the
+binary labels over to the output file without re-formatting them.  The BHOST,
+BINTFMT, and BREALFMT optional arguments will override this setting, but
+<em> only</em> if BIN_CVT is OFF (they are ignored if BIN_CVT is on).
+<P>
+BIN_CVT is available in the routines <b> x</b>/<b>  zvopen</b> and <b> x</b>/<b>  zvadd</b>.  BIN_CVT is
+ignored for input files.  See Section <A HREF=subsection3.7.6.html#binlabel><IMG SRC="/icons/cross-ref.png"></A>, Dealing with Binary
+Labels, for more information.
+<P>
+<LI> PROPERTY, string:  The name of the property set that the label routine
+is accessing.  PROPERTY is available on <b> x</b>/<b>  zladd</b>, <b> x</b>/<b>  zldel</b>, <b> x</b>/<b>  zlget</b>, and
+<b> x</b>/<b>  zlinfo</b>.  The PROPERTY optional argument is only valid if the TYPE argument
+of the above routines is set to ``PROPERTY''.  See Section <A HREF=subsection3.6.6.html#proplabel><IMG SRC="/icons/cross-ref.png"></A>, 
+Property Labels, for more information.
+<P>
+</UL>
+<P>
+Several previously existing optionals for the label routines are now valid
+in other routines.  The new combinations are:
+<P>
+<UL>
+<P>
+<LI> NRET is now available in <b> x</b>/<b>  zlhinfo</b>, where it returns the total
+number of tasks in the label.  This can differ from the NHIST argument if
+the buffers provided were too small.  NRET returns the total number of
+tasks available, while NHIST returns the number actually in the buffers.
+<P>
+<LI> ULEN is now available in <b> x</b>/<b>  zlhinfo</b>, where it specifies the length
+of each element in the TASKS array.  Formerly, TASKS was constrained to be
+8 characters and only 8 characters.  If a task name was exactly 8 characters
+long, there would not be a null terminator in the TASKS array.  This has been
+fixed, so now you can specify any length (up to the maximum of 32 plus one for
+the terminator) for task names.  In Fortran, the Fortran string length is
+used.  In C, the length comes from ULEN (and defaults to 8 if ULEN is not
+given for backwards compatibility).  You are <em> strongly</em> urged to use a
+ULEN of at least 9 from C, in order to get all 8 characters with a null
+terminator.
+<P>
+<LI> ERR_ACT is now available in <b> x</b>/<b>  zlhinfo</b> and <b> x</b>/<b>  zlninfo</b>, where
+it works just like all the other ERR_ACT's.
+<P>
+<LI> ERR_MESS is also now available in <b> x</b>/<b>  zlhinfo</b> and <b> x</b>/<b>  zlninfo</b>,
+where it works just like all the other ERR_MESS's.
+<P>
+<LI> STRLEN is now available in <b> x</b>/<b>  zlninfo</b>, where it works just like
+STRLEN does in <b> x</b>/<b>  zlinfo</b>.
+<P>
+<LI> MOD is now available as an optional argument to <b> x</b>/<b>  zlninfo</b> as well as
+<b> x</b>/<b>  zlinfo</b>, but it is still not implemented.
+<P>
+</UL>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

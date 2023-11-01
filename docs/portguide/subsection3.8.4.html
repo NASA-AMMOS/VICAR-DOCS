@@ -1,0 +1,201 @@
+<HEAD>
+<TITLE>Machine Dependencies</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=875 HREF=subsection3.8.3.html><IMG SRC="/icons/previous.png"></A> <A NAME=877 HREF=section3.8.html><IMG SRC="/icons/up.png"></A>  <IMG SRC="/icons/next.png">  <b>Previous:</b> <A NAME=876 HREF=subsection3.8.3.html>VMS-Specific Code</A>  <b>Up:</b> <A NAME=878 HREF=section3.8.html>Porting C</A>  <P>
+ <H2>Machine Dependencies</H2>
+<A NAME=machdepc><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+There will be times where machine dependencies cannot be avoided, and will
+be required in the code.  These dependencies can be based on the operating
+system (VMS vs. Unix), or they can be based on the actual machine type or
+flavor of Unix that is running.  Not all variants of Unix are created equal,
+and sometimes there can be significant differences among machines.  This
+section describes how to handle such machine dependencies in your code.
+<P>
+There are two major ways of dealing with machine dependencies.  The
+first is to isolate them into separate source files, and compile only the
+one that applies to the machine you're on.  The second is to have the
+machine-dependent code in-line, and use the C preprocessor to select the
+appropriate version.
+<P>
+The first solution, separate source files, is appropriate when there are
+whole routines that are implemented differently under the different operating
+systems.  This option is normally used for differences between VMS and Unix;
+only rarely will you have separate source files for variants of Unix.  The
+RTL uses this method internally quite often.  The filenames should then
+by convention end in an underscore and the OS name, for example,
+``open_input_file_vms.c'' and ``open_input_file_unix.c''.
+<P>
+Once you have the files separate, you must somehow get the appropriate one
+to compile during a build.  This is handled in the imakefile (see
+Section <A HREF=subsection3.13.1.html#vimake><IMG SRC="/icons/cross-ref.png"></A>, <tt> vimake</tt>, for details on the imakefile).  The
+MODULE_LIST (or other appropriate macro) would be defined differently
+based on the machine type.  Since <tt> vimake</tt> uses the C preprocessor, the
+rules listed below for machine-dependent preprocessor symbols should be used.
+For example, a program named ``prog.c'' calls a routine that is OS-dependent,
+named ``sub_vms.c'' and ``sub_unix.c''.  The module list for the imakefile
+would look like this:
+<P>
+<PRE><TT>
+#if VMS_OS
+#define MODULE_LIST prog.c sub_vms.c
+#define CLEAN_OTHER_LIST sub_unix.c
+#else
+#define MODULE_LIST prog.c sub_unix.c
+#define CLEAN_OTHER_LIST sub_vms.c
+#endif
+</TT></PRE>
+<P>
+The CLEAN_OTHER_LIST macro is needed to make sure that the source code
+for the module not compiled is deleted during a clean-source operation.
+See Section <A HREF=subsection3.13.1.html#vimake><IMG SRC="/icons/cross-ref.png"></A>, <tt> vimake</tt>, for details.
+<P>
+The second solution to the machine dependency problem is to use the C
+preprocessor to conditionally compile parts of the code.  This method is
+more appropriate for small differences and for handling differences between
+various flavors of Unix.  The necessary preprocessor symbols are defined
+in xvmaininc.h.
+<P>
+For differences between VMS and Unix, use the symbols ``VMS_OS'' and
+``UNIX_OS''.  They are defined as 0 or 1, so use ``#if'' instead of
+``#ifdef''.  You may use a ``#else'' to select the other operating system,
+but if you do, the else clause should apply to Unix.  In other words, put
+``VMS_OS'' on the if statement.
+<P>
+For example, to open a standard text file with the <tt> fopen()</tt> routine, VMS
+requires that you give some RMS file type arguments to <tt> fopen()</tt>.
+Otherwise, EDT will not be able to access the file properly.  This could be
+coded as:
+<P>
+<PRE><TT>
+/* Open an output text file */
+#if VMS_OS
+   file = fopen(filename, &quot;w&quot;, &quot;rat=cr&quot;, &quot;rfm=var&quot;);
+#else
+   file = fopen(filename, &quot;w&quot;);
+#endif
+</TT></PRE>
+<P>
+Differences between various flavors of Unix are a little more involved.
+The file xvmaininc.h defines symbols for all the types of machines VICAR runs
+on, like ``VAX_ARCH'', ``SUN4_ARCH'', ``MAC_AUX_ARCH'', etc.  <em> These
+must not be used in program code!</em>  Think what would happen when an attempt
+was made to port VICAR to a new machine if they were.  This new machine is
+likely to have dependencies that are different than any other machine.  So,
+someone would have to go through <em> every</em> program and subroutine in the
+system, examine all the #if statements, and add the new machine to each and
+every one of them in the appropriate place.  That would be a horrendous job,
+and would make VICAR virtually impossible to port.
+<P>
+There is a solution.  Differences in machines are not really the issue here.
+Differences in <em> features</em> are.  For example, the <tt> fstat()</tt> system
+routine returns the optimal blocksize on some machines, but not on others.  The
+Sun 4 and DECstation have it, but the Silicon Graphics and HP do not.  When
+you want to get the optimal blocksize, you don't care what machines have it,
+just whether or not the feature you want is present.  Another feature, the
+<tt> mmap()</tt> command, is available on Sun 4 and Silicon Graphics, but not on
+DECstation or HP.  Note that the groupings are not the same.  If you code
+machine dependencies based on <em> features</em>, rather than <em> machines</em>,
+then porting to a new machine means simply determining whether or not it has
+the feature in question, and setting up the include files properly.
+<P>
+The file xvmaininc.h defines many of these machine dependencies that are
+relevant for the RTL.  For example, the symbol ``FSTAT_BLKSIZE_OS'' defines
+whether or not <tt> fstat()</tt> returns the optimal blocksize.
+``MMAP_AVAIL_OS'' defines whether or not the <tt> mmap()</tt> routine is
+present.  These and other <em> feature defines</em>, which all end in ``_OS''
+by convention, must be the only ones used to handle machine dependencies.
+Please make sure all such defines do end in ``_OS'', so searches through
+the code to find the machine dependencies will be easier.  This leads to
+the following general statement:
+<P>
+<blockquote> 
+Conditional compilation statements to handle machine dependencies shall
+never use machine names or types.  They shall instead use names of specific
+features that are required in the code.  These names shall be defined in
+standard include files based on the machine type.
+</blockquote>
+<P>
+Where do these feature defines come from?  As mentioned previously, all the
+ones needed by the RTL are in xvmaininc.h.  You should examine that file to
+see what machine dependencies are currently known, and check it from time
+to time, as it will change.  You will come across other areas of machine
+dependencies that aren't listed in xvmaininc.h.  There are two ways to deal
+with these.  The first is to contact the VICAR system programmer to add
+the dependency to xvmaininc.h.  This is required if you need to use the
+dependency in an imakefile, as xvmaininc.h is the only include file an
+imakefile can use.
+<P>
+Since xvmaininc.h is under the control of the VICAR system programmer, it is
+not always convenient for an application programmer to change the file.  For
+that reason, an include file is provided in the portable includes (p2$inc
+on VMS and $P2INC on Unix), called ``vmachdep.h'', that contains dependencies
+that are needed only by application programs.  Use the style of xvmaininc.h
+when adding new dependencies, and make sure you find out the correct setting
+for every architecture VICAR supports.  If you can't find out, contact the
+system programmer, and if you still can't, make note of the unknowns in the
+include file.  Due to the unique nature of ``vmachdep.h'', please try not to
+keep it reserved for very long.  Reserve it, add your definition, and
+redeliver it, even if your application isn't ready for delivery.  That way,
+other programmers can modify the file as well.
+<P>
+Do not define any feature dependencies anywhere other than these two files
+(xvmaininc.h and vmachdep.h).  That will make porting VICAR much easier in the
+future.
+<P>
+Some examples are in order.  These are paraphrased from the RTL source, but the
+same rules apply.  If your definition is in vmachdep.h, the only difference
+is that vmachdep.h needs to be included in your source.
+<P>
+<PRE><TT>
+#if FTRUNCATE_AVAIL_OS
+   if (ftruncate(devstate-&gt;dev.disk.channel, j) != 0)
+      status = errno;
+   else
+#endif
+      status = SUCCESS;
+<P>
+...
+<P>
+#if OPEN_PROTECT_OS
+   file = open(filename, O_RDWR|O_CREAT, 0666);
+#else
+   file = open(filename, O_RDWR|O_CREAT);
+#endif
+<P>
+...
+<P>
+/* This example shows finding the EOF with and without fstat */
+<P>
+#if FSTAT_AVAIL_OS
+#if VMS_OS
+#include &lt;stat.h&gt;
+#else
+#include &lt;sys/types.h&gt;
+#include &lt;sys/stat.h&gt;
+#endif
+#else
+#include seek_include
+#endif
+...
+#if FSTAT_AVAIL_OS
+   struct stat statbuf;
+#endif
+...
+#if FSTAT_AVAIL_OS
+   status = fstat(file, &amp;statbuf);
+   if (status != 0) return errno;
+   eof = statbuf.st_size;
+#else                                      /* fstat not available */
+   status = lseek(file, 0, SEEK_END);
+   if (status == -1) return errno;
+   eof = status;
+#endif
+</TT></PRE>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

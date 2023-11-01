@@ -1,0 +1,933 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--
+This document was converted from RTF source: 
+By rtftohtml 4.17
+See http://www.sunpack.com/RTF
+Filename:WORD Ram Disk:RTL_Manual.rtf
+Application Directory:Data Disk:r2h4
+Subject:
+Author:Larry Bolef
+Operator:Larry Bolef
+Document Comments:
+Version Comments:
+Comments:
+Keywords:
+Translation Date:06/05/1999
+Translation Time:08:04:17
+Translation Platform:MacOS
+Number of Output files:59
+This File:WORD Ram Disk:RTL_Manual-5_2.html
+SplitDepth=2
+SkipNavPanel=0
+SkipLeadingToc=0
+SkipTrailingToc=1
+GenContents=1
+GenFrames=0
+GenIndex=0
+-->
+<HEAD lang="en"><META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<TITLE>5.2	Parameter I/O API </TITLE>
+</HEAD>
+
+<BODY ><DIV ALIGN="LEFT"><A HREF="RTL_Manual-Paramete.html">Up</A> | 
+<A HREF="RTL_Manual-5_1.html">Previous</A> | 
+<A HREF="RTL_Manual-5_3.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+<HR>
+
+<UL>
+<A HREF="#Heading72">5.2.1	x/zvintract&#8212;Prompt user for interactive command </A><BR>
+<A HREF="#Heading73">5.2.2	x/zviparm&#8212;Return interactive parameter values </A><BR>
+<A HREF="#Heading74">5.2.3	x/zvip&#8212;Interactive version of x/zvp; abbreviated version of x/zviparm </A><BR>
+<A HREF="#Heading75">5.2.4	x/zviparmd&#8212;Interactive version of x/zvparmd </A><BR>
+<A HREF="#Heading76">5.2.5	x/zvipcnt&#8212;Return the count of a parameter. </A><BR>
+<A HREF="#Heading77">5.2.6	x/zvipone&#8212;Interactive version of x/zvpone </A><BR>
+<A HREF="#Heading78">5.2.7	x/zvipstat&#8212;Interactive version of x/zvpstat </A><BR>
+<A HREF="#Heading79">5.2.8	x/zviptst&#8212;Interactive version of x/zvptst </A><BR>
+<A HREF="#Heading80">5.2.9	x/zvp&#8212;Abbreviated version of x/zvparm </A><BR>
+<A HREF="#Heading81">5.2.10	x/zvparm&#8212;Return a parameter value </A><BR>
+<A HREF="#Heading82">5.2.11	x/zvparmd&#8212;Double-precision version of x/zvparm </A><BR>
+<A HREF="#Heading83">5.2.12	x/zvpcnt&#8212;Return the count of a parameter. </A><BR>
+<A HREF="#Heading84">5.2.13	x/zvpone&#8212;Single value from a multivalued parameter </A><BR>
+<A HREF="#Heading85">5.2.14	x/zvpstat&#8212;Information about a parameter </A><BR>
+<A HREF="#Heading86">5.2.15	x/zvptst Indicate whether key word was specified </A><BR>
+</UL>
+
+<a name="Heading84"></a><a name="_Toc425047540"></a><a name="_Toc425048095"></a><a name="_Toc453201434"></a><A NAME="Heading71"></A><H2 ALIGN="LEFT">
+5.2	Parameter
+I/O API 
+</H2>
+<P ALIGN="LEFT">VICAR
+has sixteen parameter retrieval routines that may be called from an application
+program: 
+<a name="Heading85"></a><a name="_Toc425047541"></a><a name="_Toc425048096"></a><a name="_Toc425329706"></a><a name="Parameter"></a><a name="_Toc453201435"></a></P>
+<A NAME="Heading72"></A><H3 ALIGN="LEFT">
+5.2.1	x/zvintract&#8212;Prompt
+user for interactive command 
+</H3>
+
+<PRE>call xvintract( subcmd, prompt) 
+zvintract( subcmd, prompt) </PRE><BLOCKQUOTE>
+A
+call to this subroutine initiates a TAE interactive parameter session and
+returns in a buffer the parameters input by the user. This buffer is not
+visible to the program, but these parameters can be retrieved by the program
+using subroutine 
+<B>x/zviparm</B>.
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>SUBCMD</B>:
+input, string
+<BR>Subcommand
+in the PDF. The string may contain up to 9 characters, and it maybe specified
+either as a FORTRAN CHARACTER type (by descriptor) or as a char* for C. If it's
+an empty string or a single blank, the entire PDF is used. This string may
+include the leading dash (&#8220;-&#8221;); one will be added if the programmer
+omits it. If this string only contains a dash, then the user will be required
+to specify a subcommand name as the first interactive input item. 
+<LI><FONT FACE="Symbol">	</FONT><B>PROMPT</B>:
+input, string
+<BR>Prompt
+string to be used in the interactive parameter session. The string may contain
+up to 20 characters, and it may be specified either as a FORTRAN CHARACTER
+type(by Descriptor) ) or as a char* for C. If it's an empty string or a single
+blank, the TAE default (a list of the parameters) is used. 
+<a name="Heading86"></a><a name="_Toc425047542"></a><a name="_Toc425048097"></a><a name="_Toc425329707"></a><a name="_Toc453201436"></a></UL><A NAME="Heading73"></A><H3 ALIGN="LEFT">
+5.2.2	x/zviparm&#8212;Return
+interactive parameter values 
+</H3>
+
+<PRE>call xviparm(name, value, count, def, maxcnt)
+status = zviparm(name, value, count, def, maxcnt, length);</PRE><BLOCKQUOTE>
+<B>x/zviparm</B>
+returns information about the value(s) specified for a parameter interactively,
+given a parameter name. The returned information includes: 
+</BLOCKQUOTE><UL>
+<LI><FONT FACE="Symbol">	</FONT>The
+value(s) specified by the user or by default. 
+<LI><FONT FACE="Symbol">	</FONT>The
+count, i.e. number of values specified for the parameter. 
+<LI><FONT FACE="Symbol">	</FONT>The
+default flag. This flag should not be used. It is maintained for compatibility
+reasons, but the parameter count should be used instead. 
+</UL><BLOCKQUOTE>
+Both
+the parameter name and, if it is a character string, the value may be specified
+as CHARACTER*n type for FORTRAN or char for C.
+<BR>
+For
+multivalued strings, the value should be a two-dimensional array of char (C) or
+an array of CHARACTER*n (Fortran).  For C, the length of the inner dimension
+must be specified via the "length" parameter. If the length is 0, or a BYTE
+array is passed in Fortran, then the strings will be returned in the old
+x/zvsptr format, which has been deprecated and should no longer be used.
+<BR>
+A
+call to subroutine 
+<B>x/zvintract</B>
+is required before this routine is called, in order to initiate an interactive
+parameter session. 
+<BR>
+If
+an error occurs, such as the parameter wasn't found, then COUNT is returned as
+0, and the action specified by 
+<B>x/zveaction</B>
+is taken. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>NAMARG</B>:
+input, string, maximum length 8
+<BR>NAMARG
+specifies the parameter name as given in the PDF. 
+<LI><FONT FACE="Symbol">	</FONT><B>VALARG</B>:
+output, string
+<BR>If
+integer/real: parameter value(s) returned. This may be an array of string:
+argument for returned string. CHARACTER*n type for FORTRAN or char for C. For
+multivalued strings, the value should be a two-dimensional array of char (C) or
+an array of CHARACTER*n (Fortran).  For C, the length of the inner dimension
+must be specified via the "length" parameter.
+<LI><FONT FACE="Symbol">	</FONT><B>COUNT</B>:
+output, integer
+<BR>COUNT
+gives the number of parameter values returned. If zero, the parameter was not
+found. 
+<LI><FONT FACE="Symbol">	</FONT><B>DEF</B>:
+output, integer
+<BR>DEF
+is the default flag. If DEF = 0, then values are user-specified. If DEF = 1,
+then values are PDF defaults. This flag should not be used. It is maintained
+for compatibility reasons, but the parameter count should be used instead. If
+you want to have a program-supplied default, then allow the parameter to be
+nullable. If there are no values entered, then you can provide a default value
+in the program. Otherwise, the defaults in the PDF should be real default
+values, and it shouldn't matter whether the user entered them or not. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer
+<BR>Error
+status code. A value of one indicates success. The error codes are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">10</A>
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>
+.
+</UL><P ALIGN="LEFT"><B>Optional
+arguments:
+</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>MAXCNT</B>:
+input, integer
+<BR>The
+maximum number of parameter values to be returned. This should be the dimension
+of the parameter array in the calling routine. 
+<a name="Heading87"></a><a name="_Toc425047543"></a><a name="_Toc425048098"></a><a name="_Toc425329708"></a><a name="Heading97"></a><a name="_Toc425047553"></a><a name="_Toc425048108"></a><a name="_Toc425329718"></a><a name="_Toc453201437"></a></UL><A NAME="Heading74"></A><H3 ALIGN="LEFT">
+5.2.3	x/zvip&#8212;Interactive
+version of x/zvp; abbreviated version of x/zviparm 
+</H3>
+
+<PRE>call xvip(name, value, count) 
+status = zvip(name, value, count);</PRE><BLOCKQUOTE>
+Interactive
+version of 
+<B>x/zvp</B>;
+abbreviated version of 
+<B>x/zviparm</B>.
+Returns the value(s) of the given interactive parameter, and the number of
+values. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:
+</B></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>NAME</B>:
+string, input
+<BR>NAME
+is the name of the interactive parameter to get values from.
+<LI><FONT FACE="Symbol">	</FONT><B>VALUE</B>:
+parameter&#8212;value-array, output
+<BR>The
+value of the parameter is returned in the VALUE array. The type of the value
+depends on the type of the parameter, which is either INTEGER, STRING or REAL
+(single-precision). 
+<BR>There
+is no provision for providing a string length under C. Therefore, 
+<B>zvip</B>
+should 
+<I>not</I>
+be used for a string array. It is okay for a single string value, but if you
+want to get a multi-valued string, use 
+<B>zviparm</B>
+instead. If you do get a multi valued string with 
+<B>zvip</B>,
+it is returned in the 
+<B>zvsptr</B>
+packed format, which is obsolete and should not be used. In FORTRAN, this
+restriction does not apply, since the string length for each element can be
+obtained from the string itself. 
+<BR>There
+is no way to specify the size of the value buffer, so make sure it is big
+enough to handle the maximum count allowed in the PDF. 
+<LI><FONT FACE="Symbol">	</FONT><B>COUNT</B>:
+integer, output
+<BR>The
+number of values in the parameter is returned in COUNT. 
+<BR>Warning:
+In 
+<B>xvp</B>,
+the value of COUNT is set to 0 if the parameter has been defaulted. This is
+actually a design flaw, but has been retained for compatibility. The other
+three routines, 
+<B>zvp</B>,
+<B>xvip</B>,
+and 
+<B>zvip</B>,
+do not have this flaw. Being new routines, they can be done correctly without
+compatibility problems. The COUNT parameter returns the actual number of
+parameters in the value parameter, whether they are defaults or not. However,
+the variant behavior of 
+<B>xvp</B>
+is likely to cause some confusion. Do not depend on this behavior in 
+<B>xvp</B>,
+as it may change to be consistent in the future. If you are using 
+<B>xvp</B>,
+either construct the PDF such that this problem won't matter, or use 
+<B>xvpcnt</B>
+to get the actual count. This is a design flaw for two reasons: With the count
+returned as 0, there is no way to know if there is anything valid in the VALUE
+parameter, so it becomes useless. Second, the default flag should never be
+used; it is maintained for compatibility purposes only. The count of the
+parameter should be used instead. 
+<a name="Heading98"></a><a name="_Toc425047554"></a><a name="_Toc425048109"></a><a name="_Toc425329719"></a><LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer
+<BR>Error
+status code. A value of one indicates success. The error codes are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">10</A>
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>
+.
+<a name="_Toc453201438"></a></UL><A NAME="Heading75"></A><H3 ALIGN="LEFT">
+5.2.4	x/zviparmd&#8212;Interactive
+version of x/zvparmd 
+</H3>
+
+<PRE>call xviparmd(name, value, count, def, maxcnt) 
+status = zviparmd(name, value, count, def, maxcnt, length);</PRE><BLOCKQUOTE>
+Interactive
+version of 
+<B>x/zvparmd</B>.
+<BR>
+This
+routine is exactly like 
+<B>x/zviparm</B>,
+except that if the interactive parameter being returned is REAL, the VALUE
+parameter is returned in double precision format. 
+<B>x/zviparm</B>
+returns the value in single precision. Although VALUE supports integers and
+strings as well, 
+<B>x/zviparmd</B>
+should generally be used only for double-precision numbers. 
+<B>x/zviparm</B>
+should be used for integers and strings. 
+<BR>
+This
+routine replaces the functionality of the R8FLAG parameter that was previously
+on 
+<B>x/zviparm.
+</B></BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:
+</B></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>NAME</B>:
+string, input
+<BR>NAME
+is the name of the interactive parameter to get values from.
+<LI><FONT FACE="Symbol">	</FONT><B>VALUE</B>:
+parameter&#8212;value-array, output
+<BR>The
+value of the parameter is returned in the VALUE array. The type of the value
+depends on the type of the parameter, which is either INTEGER, STRING, or REAL
+(double-precision). 
+<LI><FONT FACE="Symbol">	</FONT><B>COUNT</B>:
+integer, output
+<BR>Reports
+the number of values returned in the VALUE parameter. A COUNT of 0 means the
+parameter either had a null value or was not found. 
+<LI><FONT FACE="Symbol">	</FONT><B>DEF</B>:
+integer, output
+<BR>Returns
+1 if the parameter was defaulted, and 0 otherwise. 
+<BR>NOTE:
+The DEF flag is obsolete and should not be used. 
+<LI><FONT FACE="Symbol">	</FONT><B>MAXCNT</B>:
+integer, input
+<BR>Specifies
+the maximum number of values to return. 0 means no limit. 
+<LI><FONT FACE="Symbol">	</FONT><B>LENGTH</B>:
+integer, input
+<BR>Specifies
+the length of each string if a string array is passed in for VALUE. Useful only
+from C; FORTRAN gets string lengths automatically. If the parameter is not a
+string, or is only a single string, set LENGTH to 0. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer
+<BR>Error
+status code. A value of one indicates success. The error codes are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">10</A>
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>
+.
+<a name="_Toc453201439"></a></UL><A NAME="Heading76"></A><H3 ALIGN="LEFT">
+5.2.5	x/zvipcnt&#8212;Return
+the count of a parameter. 
+</H3>
+
+<PRE>call xvipcnt(name, count)
+status = zvipcnt(name, count);</PRE><BLOCKQUOTE>
+<B>x/zvpcnt</B>
+returns the parameter size information for an interactive parameter whose name
+is passed in the NAMARG parameter. 
+<BR>
+If
+only two arguments are given, the actual count, or dimension of the parameter
+is passed back in COUNT. 
+<BR>
+If
+an error occurs, such as the parameter wasn't found, then COUNT is returned as
+0, and the action specified by 
+<B>x/zveaction</B>
+is taken. 
+<BR>
+<B>x/zvipcnt</B>
+may only be called after the user is prompted with 
+<B>x/zvintract</B>.
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>NAMARG</B>:
+input, string
+<BR>The
+name of the parameter whose count is desired. NAMARG may be passed either by
+descriptor ( FORTRAN character) or by reference. 
+<LI><FONT FACE="Symbol">	</FONT><B>COUNT</B>:
+output, integer 
+<BR>The
+actual count of the parameter. For example, if the parameter is declared in the
+PDF file as having a count of up to 3, as in 
+<TT><FONT FACE="Courier">PARM
+I TYPE=INTEGER COUNT=1:3, 
+</FONT></TT>and
+if the user specifies I=(4,7), then COUNT will be returned as 2. 
+<a name="Heading88"></a><a name="_Toc425047544"></a><a name="_Toc425048099"></a><a name="_Toc425329709"></a><a name="Heading100"></a><a name="_Toc425047556"></a><a name="_Toc425048111"></a><a name="_Toc425329721"></a><a name="Heading99"></a><a name="_Toc425047555"></a><a name="_Toc425048110"></a><a name="_Toc425329720"></a><LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer
+<BR>Error
+status code. A value of one indicates success. The error codes are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">10</A>
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>
+.
+<a name="_Toc453201440"></a></UL><A NAME="Heading77"></A><H3 ALIGN="LEFT">
+5.2.6	x/zvipone&#8212;Interactive
+version of x/zvpone 
+</H3>
+
+<PRE>status = xvipone(name, value, instance, maxlen) 
+status = zvipone(name, value, instance, maxlen);</PRE><BLOCKQUOTE>
+Interactive
+version of 
+<B>x/zvpone</B>.
+<BR>
+This
+routine returns a single value from a multi-valued interactive parameter. It is
+most useful to get a string from a list of strings without having to mess with
+string arrays, but can be used for integer or real (single-precision) values as
+well. Note that
+<B>
+x/zvipone
+</B>
+is a FORTRAN function with a status return, which differs from most FORTRAN RTL
+routines
+<B>.
+</B></BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:
+</B></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>NAME</B>:
+string, input
+<BR>NAME
+is the name of the interactive parameter to get a value from.
+<LI><FONT FACE="Symbol">	</FONT><B>VALUE</B>:
+parameter&#8212;value, output
+<BR>The
+value of the parameter is returned in VALUE. The type of the value depends on
+the type of the parameter, which is either INTEGER, STRING, or REAL
+(single-precision). There is no equivalent to 
+<B>x/zvipone</B>
+for double precision floating point; use 
+<B>x/zviparmd</B>
+instead. 
+<LI><FONT FACE="Symbol">	</FONT><B>INSTANCE</B>:
+integer, input
+<BR>INSTANCE
+specifies which  value you want. INSTANCE starts counting at 1, so the fifth
+value would have an INSTANCE of 5. 
+<LI><FONT FACE="Symbol">	</FONT><B>MAXLEN</B>:
+integer, input
+<BR>MAXLEN
+specifies the maximum length of the string buffer if the parameter is a string.
+It is used to avoid overflowing your buffer. If the parameter is not a string,
+or you don't care, set MAXLEN to 0. MAXLEN is rarely needed in FORTRAN, since
+string lengths are available from the strings themselves. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer
+<BR>Error
+status code. A value of one indicates success. The error codes are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">10</A>
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>
+.
+<a name="_Toc453201441"></a></UL><A NAME="Heading78"></A><H3 ALIGN="LEFT">
+5.2.7	x/zvipstat&#8212;Interactive
+version of x/zvpstat 
+</H3>
+
+<PRE>call xvipstat(name, count, def, maxlen, type) 
+status = zvipstat(name, count, def, maxlen, type);</PRE><BLOCKQUOTE>
+This
+routine returns information about an interactive parameter without returning
+its value. It is most useful to get the maximum length of any string and the
+number of strings in order to allocate a buffer before calling x/zviparm. This
+routine is also the only way to determine the data type of a parameter given
+only its name. The program should know the type in the PDF, but there are
+situations where this could be useful. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:
+</B></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>NAME</B>:
+string, input
+<BR>NAME
+is the name of the interactive parameter to get information about. 
+<LI><FONT FACE="Symbol">	</FONT><B>COUNT</B>:
+integer, output
+<BR>Returns
+the number o f items in the parameter. If 0, parameter is either not found or
+is null. 
+<LI><FONT FACE="Symbol">	</FONT><B>DEF</B>:
+integer, output
+<BR>Returns
+1 if the parameter was defaulted, and 0 otherwise. 
+<BR>NOTE:
+The DEF flag is obsolete and should not be used. 
+<LI><FONT FACE="Symbol">	</FONT><B>MAXLEN</B>:
+integer, output
+<BR>Returns
+the maximum length of any value in the parameter. For REAL and INT, it is just
+the size of a REAL or INT. For STRING, it is the length of the longest string
+in the parameter. It does not include the null terminator, so you should add
+one before allocating a buffer in C. 
+<LI><FONT FACE="Symbol">	</FONT><B>TYPE</B>:
+string, output
+<BR>Returns
+the data type of the parameter. The possible values are &#8220;INT&#8221;,
+&#8220;REAL&#8221;, and &#8220;STRING&#8221;. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer
+<BR>Error
+status code. A value of one indicates success. The error codes are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">10</A>
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>
+.
+<a name="_Toc453201442"></a></UL><A NAME="Heading79"></A><H3 ALIGN="LEFT">
+5.2.8	x/zviptst&#8212;Interactive
+version of x/zvptst 
+</H3>
+
+<PRE>GIVEN = xviptst ( KEY )
+GIVEN = zviptst ( KEY ); </PRE><BLOCKQUOTE>
+The
+interactive version of x/zvptst. This function returns true if a key word was
+specified and false if not. For example, a program could check if the value
+&#8220;HALF&#8221; was given for a key word parameter with the code: 
+</BLOCKQUOTE>
+<PRE>logical lhalf,xviptst
+
+      lhalf = xviptst('HALF')
+      if (lhalf) then
+        .
+        .
+        .</PRE><P ALIGN="LEFT">The
+key word must be a value specified for a parameter of type KEY WORD. 
+</P><P ALIGN="LEFT"><B>xviptst</B>
+must be declared LOGICAL in a FORTRAN program calling it. 
+</P><P ALIGN="LEFT"><B>x/zviptst</B>,
+like the other 
+<B>x/zvi</B>
+routines, may only be called after the user is prompted with 
+<B>x/zvintract</B>.
+</P><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>KEY</B>:
+input, string
+<BR>Name
+of key word to be tested for. Note this is not the parameter name, but one of
+the valid values for the key word parameter. Passed either by descriptor in
+FORTRAN (if CHARACTER string is passed) or reference in C (if char* is passed). 
+<a name="Heading89"></a><a name="_Toc425047545"></a><a name="_Toc425048100"></a><a name="_Toc425329710"></a><a name="_Toc453201443"></a></UL><A NAME="Heading80"></A><H3 ALIGN="LEFT">
+5.2.9	x/zvp&#8212;Abbreviated
+version of x/zvparm 
+</H3>
+
+<PRE>call xvp(name, val, count) 
+status = zvp(name, val, count) </PRE><BLOCKQUOTE>
+<B>x/zvp</B>
+returns information about the value(s) specified for a parameter whenthe
+program was run, given a parameter name. It is an abbreviated version of 
+<B>x/zvparm</B>,
+for user convenience. The returned information includes: 
+</BLOCKQUOTE><UL>
+<LI><FONT FACE="Symbol">	</FONT>The
+value(s) specified by the user or by default. 
+<LI><FONT FACE="Symbol">	</FONT>The
+count, i.e. number of values specified for the parameter. 
+</UL><BLOCKQUOTE>
+Both
+the parameter name and, if it is a character string, the value may be specified
+as CHARACTER*n type for FORTRAN or char for C.
+<BR>
+For
+multivalued strings, the value should be a two-dimensional array of char (C) or
+an array of CHARACTER*n (Fortran).  For C, the length of the inner dimension
+must be specified via the "length" parameter. If the length is 0, or a BYTE
+array is passed in Fortran, then the strings will be returned in the old
+x/zvsptr format, which has been deprecated and should no longer be used.
+<BR>
+If
+an error occurs, such as the parameter wasn't found, then COUNT is returned as
+0, and the action specified by 
+<B>x/zveaction</B>
+is taken. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>NAME</B>:
+input, string
+<BR>NAME
+is the parameter name argument. This specifies the parameter name. It maybe
+either a descriptor, if a FORTAN CHARACTER type is passed, or reference (memory
+address), if a char (C) array is passed). 
+<LI><FONT FACE="Symbol">	</FONT><B>VALARG</B>:
+output, string
+<BR>If
+integer/real: parameter value(s) returned. This may be an array of string:
+argument for returned string. CHARACTER*n type for FORTRAN or char for C. For
+multivalued strings, the value should be a two-dimensional array of char (C) or
+an array of CHARACTER*n (Fortran).  For C, the length of the inner dimension
+must be specified via the "length" parameter.
+<LI><FONT FACE="Symbol">	</FONT><B>COUNT</B>:
+output, integer
+<BR>COUNT
+gives the number of parameter values returned. If zero, the parameter was not
+found or the parameter was defaulted by the user. If the parameter was
+defaulted (given a default in the PDF but not by the user), then COUNT is
+returned as 0, regardless of the actual number of parameters in the defaulted
+value. This is a design flaw that must be maintained for historical reasons. 
+<a name="Heading90"></a><a name="_Toc425047546"></a><a name="_Toc425048101"></a><a name="_Toc425329711"></a><LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer
+<BR>Error
+status code. A value of one indicates success. The error codes are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">10</A>
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>
+.
+<a name="_Toc453201444"></a></UL><A NAME="Heading81"></A><H3 ALIGN="LEFT">
+5.2.10	x/zvparm&#8212;Return
+a parameter value 
+</H3>
+
+<PRE>call xvparm( namarg, valarg, count, def, maxcnt) 
+status = zvparm( namarg, valarg, count, def, maxcnt, length) </PRE><BLOCKQUOTE>
+<B>x/zvparm</B>
+returns information about the value(s) specified for a parameter when the
+program was run, given a parameter name. The returned information includes: 
+</BLOCKQUOTE><UL>
+<LI><FONT FACE="Symbol">	</FONT>The
+value(s) specified by the user or by default. 
+<LI><FONT FACE="Symbol">	</FONT>The
+count, i.e. number of values specified for the parameter. 
+<LI><FONT FACE="Symbol">	</FONT>The
+default flag. This flag should not be used. It is maintained for compatibility
+reasons, but the parameter count should be used instead. 
+</UL><BLOCKQUOTE>
+Both
+the parameter name and, if it is a character string, the value may be specified
+as CHARACTER*n type for FORTRAN or char for C.
+<BR>
+For
+multivalued strings, the value should be a two-dimensional array of char (C) or
+an array of CHARACTER*n (Fortran).  For C, the length of the inner dimension
+must be specified via the "length" parameter. If the length is 0, or a BYTE
+array is passed in Fortran, then the strings will be returned in the old
+x/zvsptr format, which has been deprecated and should no longer be used.
+<BR>
+If
+an error occurs, such as the parameter wasn't found, then COUNT is returned as
+0, and the action specified by 
+<B>x/zveaction</B>
+is taken. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>NAMARG</B>:
+input, string
+<BR>NAMARG
+is the parameter name argument. It specifies the parameter name. It may be
+either a descriptor, if a CHARACTER (FORTRAN) type is passed, or reference
+(memory address), if a char (C) array is passed. 
+<LI><FONT FACE="Symbol">	</FONT><B>VALARG</B>:
+output, string
+<BR>If
+integer/real: parameter value(s) returned. This may be an array of string:
+argument for returned string. CHARACTER*n type for FORTRAN or char for C. For
+multivalued strings, the value should be a two-dimensional array of char (C) or
+an array of CHARACTER*n (Fortran).  For C, the length of the inner dimension
+must be specified via the "length" parameter.
+<LI><FONT FACE="Symbol">	</FONT><B>COUNT</B>:
+output, integer
+<BR>COUNT
+gives the number of parameter values returned. If zero, the parameter was not
+found. 
+<LI><FONT FACE="Symbol">	</FONT><B>DEF</B>:
+output, integer
+<BR>DEF
+is the default flag. If DEF = 0, then values are user-specified. If DEF = 1,
+then values are PDF defaults. This flag should not be used. It is maintained
+for compatibility reasons, but the parameter count should be used instead. If y
+o u want to have a program-supplied default, then allow the parameter to be
+nullable. If there are no values entered, then you can provide a default value
+in the program. Otherwise, the defaults in the PDF should be real default
+values, and it shouldn't matter whether the user entered them or not. 
+<LI><FONT FACE="Symbol">	</FONT><B>MAXCNT</B>:
+input, integer
+<BR>MAXCNT
+is the maximum number of parameter values to be returned. This should be the
+dimension of the parameter array in the calling routine. 
+<a name="Heading92"></a><a name="_Toc425047548"></a><a name="_Toc425048103"></a><a name="_Toc425329713"></a><a name="Heading101"></a><a name="_Toc425047557"></a><a name="_Toc425048112"></a><a name="_Toc425329722"></a><LI><FONT FACE="Symbol">	</FONT><B>LENGTH</B>:
+integer, input
+<BR>Specifies
+the length of each string if a string array is passed in for VALUE. Useful only
+from C; FORTRAN gets string lengths automatically. If the parameter is not a
+string, or is only a single string, set LENGTH to 0. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer
+<BR>Error
+status code. A value of one indicates success. The error codes are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">10</A>
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>
+.
+<a name="_Toc453201445"></a></UL><A NAME="Heading82"></A><H3 ALIGN="LEFT">
+5.2.11	x/zvparmd&#8212;Double-precision
+version of x/zvparm 
+</H3>
+
+<PRE>call xvparmd(name, value, count, def, maxcnt) 
+status = zvparmd(name, value,count, def, maxcnt, length);</PRE><BLOCKQUOTE>
+Double-precision
+version of 
+<B>x/zvparm</B>.
+<BR>
+This
+routine is exactly like 
+<B>x/zvparm</B>,
+except that if the parameter being returned is REAL, the VALUE parameter is
+returned in double precision format. 
+<B>x/zvparm</B>
+returns the value in single precision. Although VALUE supports integers and
+strings as well, 
+<B>x/zvparmd</B>
+should generally be used only for double-precision numbers. 
+<B>x/zvparm</B>
+should be used for integers and strings. 
+<BR>
+This
+routine replaces the functionality of the R8FLAG parameter that was previously
+on 
+<B>x/zvparm.
+</B></BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:
+</B></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>NAME</B>:
+string, input
+<BR>NAME
+is the name of the parameter to get values from. 
+<LI><FONT FACE="Symbol">	</FONT><B>VALUE</B>:
+parameter&#8212;value-array, output
+<BR>The
+value of the parameter is returned in the VALUE array. The type of the value
+depends on the type of the parameter, which is either INTEGER, STRING, or REAL
+(double-precision). 
+<LI><FONT FACE="Symbol">	</FONT><B>COUNT</B>:
+integer, output
+<BR>Reports
+the number of values returned in the VALUE parameter. A COUNT of 0 means the
+parameter either had a null value or was not found. 
+<LI><FONT FACE="Symbol">	</FONT><B>DEF</B>:
+integer, output
+<BR>Returns
+1 if the parameter was defaulted, and 0 otherwise. 
+<BR>NOTE:
+The DEF flag is obsolete and should not be used. 
+<LI><FONT FACE="Symbol">	</FONT><B>MAXCNT</B>:
+integer, input
+<BR>Specifies
+the maximum number of values to return. 0 means no limit. 
+<LI><FONT FACE="Symbol">	</FONT><B>LENGTH</B>:
+integer, input
+<BR>Specifies
+the length of each string if a string array is passed in for VALUE. Useful only
+from C; FORTRAN gets string lengths automatically. If the parameter is not a
+string, or is only a single string, set LENGTH to 0. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer
+<BR>Error
+status code. A value of one indicates success. The error codes are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">10</A>
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>
+.
+<a name="_Toc453201446"></a></UL><A NAME="Heading83"></A><H3 ALIGN="LEFT">
+5.2.12	x/zvpcnt&#8212;Return
+the count of a parameter. 
+</H3>
+
+<PRE>call xvpcnt( namarg, count) 
+status = zvpcnt( namarg, count) </PRE><BLOCKQUOTE>
+<B>x/zvpcnt</B>
+returns the parameter size information for a given parameter whose name is
+passed in the NAMARG parameter. 
+<BR>
+If
+an error occurs, such as the parameter wasn't found, then COUNT is returned as
+0, and the action specified by 
+<B>x/zveaction</B>
+is taken. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>NAMARG</B>:
+input, string
+<BR>The
+name of the parameter whose count is desired. NAMARG may be passed either by
+descriptor ( FORTRAN character) or by reference. 
+<LI><FONT FACE="Symbol">	</FONT><B>COUNT</B>:
+output, integer
+<BR>The
+actual count of the parameter. For example, if the parameter is declared in the
+PDF file as having a count of up to 3, as in 
+<TT><FONT FACE="Courier">PARM
+I TYPE=INTEGER COUNT=1:3, 
+</FONT></TT>and
+if the user specifies I=(4,7), then COUNT will be returned as 2. 
+<a name="Heading94"></a><a name="_Toc425047550"></a><a name="_Toc425048105"></a><a name="_Toc425329715"></a><a name="Heading103"></a><a name="_Toc425047559"></a><a name="_Toc425048114"></a><a name="_Toc425329724"></a><a name="Heading102"></a><a name="_Toc425047558"></a><a name="_Toc425048113"></a><a name="_Toc425329723"></a><LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer
+<BR>Error
+status code. A value of one indicates success. The error codes are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">10</A>
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>
+.
+<a name="_Toc453201447"></a></UL><A NAME="Heading84"></A><H3 ALIGN="LEFT">
+5.2.13	x/zvpone&#8212;Single
+value from a multivalued parameter 
+</H3>
+
+<PRE>status = xvpone(name, value, instance, maxlen) 
+status = zvpone(name, value,instance, maxlen);</PRE><BLOCKQUOTE>
+This
+routine returns a single value from a multi-valued parameter. It is most useful
+to get a string from a list of strings without having to mess with string
+arrays, but can be used for integer or real (single-precision) values as well. 
+<B>xvpone</B>
+is a FORTRAN function with a status return, which differs from most FORTRAN RTL
+routines
+<B>.
+</B></BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:
+</B></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>NAME</B>:
+string, input
+<BR>NAME
+is the name of the parameter to get a value from. 
+<LI><FONT FACE="Symbol">	</FONT><B>VALUE</B>:
+parameter&#8212;value, output
+<BR>The
+value of the parameter is returned in VALUE. The type of the value depends on
+the type of the parameter, which is either INTEGER, STRING, or REAL
+(single-precision). There is no equivalent to 
+<B>x/zvpone</B>
+for double precision floating point; use 
+<B>x/zvparmd</B>
+instead. 
+<LI><FONT FACE="Symbol">	</FONT><B>INSTANCE</B>:
+integer, input
+<BR>INSTANCE
+specifies which value you want. INSTANCE starts counting at 1, so the fifth
+value would have an INSTANCE of 5. 
+<LI><FONT FACE="Symbol">	</FONT><B>MAXLEN</B>:
+integer, input
+<BR>MAXLEN
+specifies the maximum length of the string buffer if the parameter is a string.
+It is used to avoid overflowing your buffer. If the parameter is not a string,
+or you don't care, set MAXLEN to 0. MAXLEN is rarely needed in FORTRAN, since
+string lengths are available from the strings themselves. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer
+<BR>Error
+status code. A value of one indicates success. The error codes are listed in 
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">10</A>
+<A HREF="RTL_Manual-Appendix-2.html#_Ref395971271">Appendix B: Error Messages</A>
+.
+<a name="_Toc453201448"></a></UL><A NAME="Heading85"></A><H3 ALIGN="LEFT">
+5.2.14	x/zvpstat&#8212;Information
+about a parameter 
+</H3>
+
+<PRE>call xvpstat(name, count, def, maxlen, type) 
+status = zvpstat(name, count,def, maxlen, type);</PRE><BLOCKQUOTE>
+This
+routine returns information about a parameter without returning its value. It
+is most useful to get the maximum length of any string and the number of
+strings in order to allocate a buffer before calling 
+<B>x/zvparm</B>.
+This routine is also the only way to determine the data type of a parameter
+given only its name. The program should know the type in the PDF, but there are
+situations where this could be useful
+<B>.
+</B></BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:
+</B></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>NAME</B>:
+string, input
+<BR>NAME
+is the name of the parameter to get information about. 
+<LI><FONT FACE="Symbol">	</FONT><B>COUNT</B>:
+integer, output
+<BR>Returns
+the number of items in the parameter. If 0, parameter is either not found or is
+null. 
+<LI><FONT FACE="Symbol">	</FONT><B>DEF</B>:
+integer, output
+<BR>Returns
+1 if the parameter was defaulted, and 0 otherwise. 
+<BR>NOTE:
+The DEF flag is obsolete and should not be used. 
+<LI><FONT FACE="Symbol">	</FONT><B>MAXLEN</B>:
+integer, output
+<BR>Returns
+the maximum length of any value in the parameter. For REAL and INT, it is just
+the size of a REAL or INT. For STRING, it is the length of the longest string
+in the parameter. It does not include the null terminator, so you should add
+one before allocating a buffer in C. 
+<LI><FONT FACE="Symbol">	</FONT><B>TYPE</B>:
+string, output
+<BR>Returns
+the data type of the parameter. The possible values are &#8220;INT&#8221;,
+&#8220;REAL&#8221;, and &#8220;STRING&#8221;. 
+<a name="_Toc453201449"></a></UL><A NAME="Heading86"></A><H3 ALIGN="LEFT">
+5.2.15	x/zvptst
+Indicate whether key word was specified 
+</H3>
+
+<PRE>GIVEN = xvptst( key ) 
+GIVEN = zvptst( key ); </PRE><BLOCKQUOTE>
+This
+function returns true if a key word was specified and false if not. For
+example, a program could check if the value &#8220;HALF&#8221; was given for a
+key word parameter with the code: 
+</BLOCKQUOTE>
+<PRE>logical lhalf,xviptst
+
+      lhalf = xviptst('HALF')
+      if (lhalf) then
+        .
+        .
+        .</PRE><P ALIGN="LEFT">The
+key word must be a value specified for a parameter of type KEYWORD. 
+<B>Note:</B>
+Should be declared as a LOGICAL function in FORTRAN, as in the above example. 
+</P><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>KEY</B>:
+input, string
+<BR>Name
+of key word to be tested for. Note this is not the parameter name, but one of
+the valid values for the key word parameter. Passed either by descriptor in
+FORTRAN (if CHARACTER string is passed) or reference in C (if char* array is
+passed). 
+</UL>
+<HR>
+
+<DIV ALIGN="LEFT"><A HREF="RTL_Manual-Paramete.html">Up</A> | 
+<A HREF="RTL_Manual-5_1.html">Previous</A> | 
+<A HREF="RTL_Manual-5_3.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+</BODY>
+
+</HTML>

@@ -1,0 +1,108 @@
+<HEAD>
+<TITLE>Using Binary Labels</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=839 HREF=subsubsection3.7.6.1.html><IMG SRC="/icons/previous.png"></A> <A NAME=841 HREF=subsection3.7.6.html><IMG SRC="/icons/up.png"></A>  <A NAME=837 HREF=subsubsection3.7.6.3.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=840 HREF=subsubsection3.7.6.1.html>Separate Host Types</A>  <b>Up:</b> <A NAME=842 HREF=subsection3.7.6.html>Dealing with Binary Labels</A>  <b>Next:</b> <A NAME=838 HREF=subsubsection3.7.6.3.html>Binary Label Type</A> <P>
+ <H3>Using Binary Labels</H3>
+<A NAME=usebinlab><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+This section discusses how application programs make use of the binary label
+support features provided by the RTL.  All these features are documented
+individually in Section <A HREF=section3.6.html#rtlroutchg><IMG SRC="/icons/cross-ref.png"></A>, RTL Routine Changes, but an attempt
+is made to tie them all together here.
+<P>
+It should be noted that the use of binary labels is discouraged, due to the
+many portability problems outlined above.  Where possible, property labels
+should be used instead, as they can usually serve the same function as binary
+headers (but possibly not binary prefixes).  Binary labels are allowed, but
+before creating a new format, stop to consider if property labels might be a
+better approach.  See Section <A HREF=subsection3.6.6.html#proplabel><IMG SRC="/icons/cross-ref.png"></A>, Property Labels, for details.
+<P>
+The first problem is to open the file.  Opening a file for input, update, and
+output will be covered separately, as the behavior is slightly different.
+All modes make use of <b> x</b>/<b>  zvadd</b> and <b> x</b>/<b>  zvopen</b> to open the files, and the
+optional arguments mentioned may be used with either routine.
+<P>
+For an input file, the binary label host formats are obtained from the
+BHOST, BINTFMT, and BREALFMT system labels in the input file.  The host
+formats thus obtained are used for the <b> x</b>/<b>  zvpixsizeb</b> and <b> x</b>/<b>  zvtrans_inb</b>
+routines, as well as for <b> x</b>/<b>  zvget</b>.  The labels in the file are assumed to
+be correct, so there is no real override.  If you need an override, you
+can always use the host formats directly through <b> x</b>/<b>  zvpixsize</b> or
+<b> x</b>/<b>  zvtrans_in</b>.  If the input file does not have the BHOST, etc. labels
+(which could happen with older images), then VAX format is assumed.
+If the input file has no label at all (COND NOLABELS), then the binary
+host formats are obtained from the BHOST, BINTFMT, and BREALFMT optional
+arguments to <b> x</b>/<b>  zvadd</b> or <b> x</b>/<b>  zvopen</b>.
+<P>
+For an update file, the binary label host formats are obtained from the
+file, just like for input files.  The only difference is if you wish to
+change the binary label type of the file.  You of course would need to
+re-write all the binary labels in the new format (be careful because the size
+might change!), but you would also need to change the binary label format
+system label items (BHOST, BINTFMT, BREALFMT) via <b> x</b>/<b>  zladd</b>.  If you use
+<b> x</b>/<b>  zladd</b> to change these items, then do <em> not</em> use <b> x</b>/<b>  zvget</b> on them, or
+use <b> x</b>/<b>  zvpixsizeb</b> or <b> x</b>/<b>  zvtrans_inb</b> at all, as these routines may still
+use the original binary label format.  The <b> x</b>/<b>  zlget</b> routine would get the
+new values, however.
+<P>
+The BLTYPE optional argument is not used for input or update files.  You
+may change the BLTYPE system label on an update file via <b> x</b>/<b>  zladd</b>, however.
+See the next section for a description of BLTYPE.
+<P>
+Output files are a little more complex.  There are two basic cases:  either
+you are converting the binary labels to native format, or you are leaving them
+alone.  Which option you choose is controlled by the BIN_CVT optional
+argument.
+<P>
+If you set BIN_CVT to ON, then you must write the binary labels in the
+native host format.  The BHOST, BINTFMT, and BREALFMT system label items
+get set automatically to the native host formats.  There is no override;
+the corresponding optional arguments are disabled when BIN_CVT is ON.
+You should also turn BIN_CVT ON if you are writing a new file with binary
+labels in native format (although the name implies ``convert'', it really
+applies to any binary labels written in native format).  If BIN_CVT is ON,
+then the application must know the kind of binary label being written, so
+please set the BLTYPE label using the BLTYPE optional argument.  See the
+next section for a description of BLTYPE.
+<P>
+If BIN_CVT is OFF (which is the default), then the assumption is that you
+are copying the binary label without converting it.  The binary label host
+formats used will come from the primary input file.  If the primary input
+is not available, they default to VAX format.  The primary input may of
+course be changed with <b> x</b>/<b>  zvselpi</b>.  BIN_CVT OFF is the appropriate mode
+to use for general-purpose applications that do not know the format of
+the binary label.  The BHOST, BINTFMT, and BREALFMT optional arguments to
+<b> x</b>/<b>  zvadd</b> and <b> x</b>/<b>  zvopen</b> will override any other settings, so you could write
+binary labels in an arbitrary format by setting BIN_CVT to OFF and setting
+the three optional arguments to appropriate values.  If you need to write
+specifically in VAX format, then do not depend on the default being VAX
+format (as mentioned above).  That may not be reliable, depending on the
+primary input.  If you want to write in a specific format, then make sure
+you specify that specific format in the optional arguments.  You should not
+use <b> x</b>/<b>  zladd</b> to change the binary label system label items on an output
+file.  Specify them when you open the file.
+<P>
+The BLTYPE optional argument is active if BIN_CVT is OFF, and you should set
+it if you know the kind of binary label being written.  BLTYPE will be picked
+up from the primary input if you do not specify it.  See the next section for
+a description of BLTYPE.
+<P>
+Once you have opened the file, then you must translate the data you read and/or
+write to/from native format.  The actual translations are performed in the
+same way as described in the rest of Section <A HREF=section3.7.html#datatypes><IMG SRC="/icons/cross-ref.png"></A>, Data Types and
+Host Representations, except you are using the BHOST, BINTFMT, and BREALFMT
+labels, and the <b> x</b>/<b>  zvpixsizeb</b> and <b> x</b>/<b>  zvtrans_inb</b> routines.
+<P>
+As mentioned previously, <em> all</em> binary label data read in must be converted
+to native format before it can be used.  There can be no exceptions to this
+rule.
+<P>
+Binary labels written out to a file may be in either native or foreign formats,
+as discussed previously.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

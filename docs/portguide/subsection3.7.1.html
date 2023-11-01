@@ -1,0 +1,116 @@
+<HEAD>
+<TITLE>VICAR File Representations</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=796 HREF=section3.7.html><IMG SRC="/icons/previous.png"></A> <A NAME=798 HREF=section3.7.html><IMG SRC="/icons/up.png"></A>  <A NAME=794 HREF=subsection3.7.2.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=797 HREF=section3.7.html>Data Types and Host Representations</A>  <b>Up:</b> <A NAME=799 HREF=section3.7.html>Data Types and Host Representations</A>  <b>Next:</b> <A NAME=795 HREF=subsection3.7.2.html>VICAR Data Type Labels</A> <P>
+ <H2>VICAR File Representations</H2>
+<A NAME=vicfilerep><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+This section addresses how pixel data is stored in a VICAR file so it may
+be accessed by different machines, and the reasoning behind that decision.
+<P>
+Conversion among hosts would be greatly simplified if everything were stored
+in ASCII instead of in a binary representation.  In fact, that is how the
+image labels are stored.  However, that is terribly inefficient in both time
+and space for image data.  Image data must be stored in a binary
+representation.  The question is, which one?
+<P>
+A standard, canonical representation could be chosen, for example that
+everything must be stored in Sun format (which is big-endian, IEEE floating
+point).  That would simplify the file format a little, but it would lead to
+very inefficient operation on other machines with different formats.  If you
+were doing processing locally on a VAX, and every pixel had to be converted
+to Sun format every time it got read in or written out for every processing
+step, there wouldn't be enough coffee in the world to keep you awake while
+waiting!  Besides, due to the huge quantity of existing images written in
+VAX format, the canonical representation would have to be VAX format, which
+is not desirable in the long run.
+<P>
+Since most processing is done locally on one machine, and transfers between
+machine architectures are comparatively less frequent, the solution is to use
+the native format of whatever machine you are running on, and to identify that
+machine in the image label.  That way, local operations are done efficiently,
+and conversion is done only when switching machines.
+<P>
+Should the user be responsible for converting the data when moving to a
+different machine, or should it be automatic?  In the first VICAR conversion,
+from the IBM to the VAX, the user was responsible for running a conversion
+program.  This was reasonable at the time, since there was no direct
+connection between the machines, and data from the old format had to be
+read off tape.  Since that is a manual operation, an extra manual step
+was acceptable.
+<P>
+In this port, however, the situation is very different.  MIPL will have a
+heterogeneous operating environment, with many different computers and
+different data representations running simultaneously.  It is quite likely
+that they will share the same disk farm over the network, so the same data
+is transparently available on all the machines.  The user may not be aware
+of what machine the file was created on.  Therefore, it is unreasonable to
+expect the user to do his/her own translations.  It must be handled
+automatically, and be completely transparent to the user.  The user may
+notice a slowdown if the conversion is being performed, but the operation
+will still take place as expected.
+<P>
+This places the burden of data format translation squarely on the shoulders
+of the programmers.  Applications <em> must</em> be able to do data format
+translations automatically.  In order to ease the burden somewhat, the
+following conventions have been adopted:
+<P>
+<blockquote> 
+<b> Applications shall be able to read files from any host representation.</b>
+</blockquote>
+<blockquote> 
+<b> Applications shall normally write files in the native host representation
+of the machine on which they are currently running.</b>
+</blockquote>
+<P>
+Placing the burden only on the read side greatly simplifies the write side,
+while still ensuring that the translations will take place in all cases.
+Some special-purpose applications may choose to write in a non-native
+format on occasion; however, <em> all applications must be able to read all
+formats, without exception</em>.
+<P>
+The Run-Time Library relieves a large part of this burden.  When the standard
+I/O routines are called (<b> x</b>/<b>  zvread</b> and <b> x</b>/<b>  zvwrit</b>), the translations as
+stated above are performed automatically for the image data.  The application
+merely calls <b> x</b>/<b>  zvread</b> and it receives the data in the native format, ready
+for processing.  It calls <b> x</b>/<b>  zvwrit</b>, and the data is written out in the
+native format (which is what the buffer is in).
+<P>
+There are cases where applications will have to do their own conversion,
+however.  The major ones are listed below.
+<P>
+<UL>
+<P>
+<LI> Binary labels:  Binary labels (both headers and prefixes) are a major
+concern, enough that they have their own section below.
+<P>
+<LI> Array I/O:  Any program using Array I/O will get the data as it exists
+in the file, <em> without</em> any translation.  Applications using Array I/O are
+responsible for doing their own data format translations on the data they read.
+This makes Array I/O much less attractive in many cases, but it is necessary.
+<P>
+<LI> Convert OFF:  It is possible for an application to turn off the RTL's
+automatic conversion.  This should not normally be done, but is available
+for special cases.  If this option is selected, the application must do its
+own translation.
+<P>
+</UL>
+<P>
+In all cases the <b> x</b>/<b>  zvtrans</b> family of RTL routines should be used
+to do the translations.  Do <em> not</em> attempt to write your own data format
+conversion routines, even if you think it's only byte-swapping.  Although at
+the present time byte-swapping is the only integer conversion, this may not
+always be the case.  Other integer representations exist, such as
+one's-complement and sign-magnitude, that cannot be translated by a simple
+byte swap.  By having only one set of conversion routines, porting
+to a new platform with a different data format is easier.  Plus, the
+translations are standardized, and thoroughly debugged.  The <b> x</b>/<b>  zvtrans</b>
+routines are coded to be efficient, especially for simple byte-swapping,
+so there is no need to write your own.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

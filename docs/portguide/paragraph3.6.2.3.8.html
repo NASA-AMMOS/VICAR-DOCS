@@ -1,0 +1,67 @@
+<HEAD>
+<TITLE><b> x</b>/<b>  zvselpi</b></TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=684 HREF=paragraph3.6.2.3.7.html><IMG SRC="/icons/previous.png"></A> <A NAME=686 HREF=subsubsection3.6.2.3.html><IMG SRC="/icons/up.png"></A>  <IMG SRC="/icons/next.png">  <b>Previous:</b> <A NAME=685 HREF=paragraph3.6.2.3.7.html><b> x</b>/<b>  zvpixsizeu</b></A>  <b>Up:</b> <A NAME=687 HREF=subsubsection3.6.2.3.html>Miscellaneous Routines</A>  <P>
+ <H4><b> x</b>/<b>  zvselpi</b></H4>
+<P>
+<PRE><TT>
+call xvselpi(instance)
+zvselpi(instance);
+</TT></PRE>
+<P>
+Selects the file to use as the primary input.  The primary input is normally
+the first file given in the ``INP'' parameter.  It is used for a couple of
+things.  If you don't give file attributes like size, type, etc. when you
+open a file, the defaults are taken from the primary input.  Also, when you
+create a new output file, the history and property labels for the new file
+are copied from the primary input, in order to maintain the processing history
+and file attributes.
+<P>
+In the rare cases where the first ``INP'' file is not appropriate for the
+primary input, calling <b> x</b>/<b>  zvselpi</b> allows you to change the file that is
+used as the primary input, or to disable the primary input altogether.
+The file selected must still be one of the files in the ``INP'' parameter.
+For example, you might be taking  input files and creating  output files
+after doing the same processing to each.  You would want to set the primary
+input for each output file to the corresponding input file, in order to preserve
+the history labels.  Or, you may want to create a file with no history
+labels whatsoever (except for the current task of course).
+<P>
+This routine should be called before the <b> x</b>/<b>  zvopen</b> of the output file you
+want associated with the input.  The only routines that use the primary input
+directly are <b> x</b>/<b>  zvopen</b>, <b> x</b>/<b>  zvsize</b>, and <b> x</b>/<b>  zvbands</b>.  The primary input
+in effect at the time each of these routines is called determines which input
+file is used.  You may change <b> x</b>/<b>  zvselpi</b> after the <b> x</b>/<b>  zvopen</b> statement,
+even if you do more processing to the file.  It will still use the primary
+input in effect at the time the file was opened.
+<P>
+It is slightly more efficient to call <b> x</b>/<b>  zvselpi</b> before you open the
+primary input file for other reasons, because it avoids an extra file open.
+However, this should not have a big impact.
+<P>
+There is no status return from this routine.
+<P>
+<b> Arguments:</b>
+<UL>
+<P>
+<LI> INSTANCE: integer, input
+<P>
+Determines which instance of the ``INP'' parameter to use as the primary
+input.  Numbering starts at one, so you may restore the default behavior
+by calling <b> x</b>/<b>  zvselpi</b> with an INSTANCE of 1.  An INSTANCE of 4 would
+mean the fourth item in the INP parameter, etc.
+<P>
+If INSTANCE is zero, then the primary input is disabled.  You must provide
+all necessary file size and type parameters to <b> x</b>/<b>  zvopen</b>, since there are
+no defaults.  The history labels also will not be copied, so the current task
+will be the first (and only) task in the new file's label.  This is the
+primary reason for disabling the primary input.
+<P>
+</UL>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

@@ -1,0 +1,35 @@
+<HEAD>
+<TITLE>Fortran vs. C</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=1030 HREF=subsection3.12.3.html><IMG SRC="/icons/previous.png"></A> <A NAME=1032 HREF=section3.12.html><IMG SRC="/icons/up.png"></A>  <A NAME=1028 HREF=subsection3.12.5.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=1031 HREF=subsection3.12.3.html>Calling Sequences</A>  <b>Up:</b> <A NAME=1033 HREF=section3.12.html>SUBLIB Subroutine Library</A>  <b>Next:</b> <A NAME=1029 HREF=subsection3.12.5.html>Other-Language Bridges</A> <P>
+ <H2>Fortran vs. C</H2>
+<A NAME=ftnvsc><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+When porting a SUBLIB subroutine, an important consideration is what language
+to write it in.  Many of the old SUBLIB routines are written in Fortran.
+You should consider rewriting some of them in C.
+<P>
+Many of these Fortran subroutines do system calls to perform some function
+(for example, <tt> ostime</tt>, <tt> datfmt</tt>, and <tt> daydat</tt> all use VMS
+system services to obtain the date in various ways).  The VMS system services
+do not exist in Unix, so the code will have to be changed to make Unix system
+calls.  However, Unix system calls from Fortran are not well standardized,
+whereas they are much more so when called from C.  Also, VMS and Unix code will
+have to be separate, and machine-specific code may have to be used to get around
+differences in different variants of Unix.  It is very difficult to do
+machine-specific code in Fortran due to the lack of a preprocessor, while it
+is easy in C.  Therefore, any code that calls the operating system directly
+should be written in C.
+<P>
+For subroutines that do not call the operating system, the case is less clear,
+and Fortran is acceptable.  However, writing a C bridge for a Fortran routine
+is much more difficult than writing a Fortran bridge for a C routine, especially
+if there are strings in the argument list.  Any routine that accepts strings
+in the argument list could definitely benefit from being written in C.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

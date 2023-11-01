@@ -1,0 +1,123 @@
+<HEAD>
+<TITLE>Summary of Major Portability Rules</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=1197 HREF=section3.15.html><IMG SRC="/icons/previous.png"></A> <A NAME=1199 HREF=portguide.html><IMG SRC="/icons/up.png"></A>  <A NAME=1195 HREF=section3.17.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=1198 HREF=section3.15.html>Application Examples</A>  <b>Up:</b> <A NAME=1200 HREF=portguide.html>VICAR Porting Guide</A>  <b>Next:</b> <A NAME=1196 HREF=section3.17.html>Summary of Calling Sequences</A> <P>
+ <H1>Summary of Major Portability Rules</H1>
+<P>
+This section contains a brief summary of the major portability rules spelled
+out in this document, and a reference to the sections where the rules are
+discussed in more detail.  <em> This is not a complete list and must not be
+used as a substitute for reading this document!</em>  For example, rules for
+calling specific routines are not described, nor are the more minor suggestions
+and recommendations.  This section is intended only as a reminder of the
+major topics.  Rationale for the rules is not described here; see the
+referenced sections for more details.
+<P>
+<UL>
+<P>
+<LI> Portability
+<P>
+All VICAR software must run on all platforms that MIPL supports.
+[Section <A HREF=subsection3.3.2.html#whatsaport><IMG SRC="/icons/cross-ref.png"></A>]
+<P>
+<LI> Separate Fortran and C Interfaces
+<P>
+All subroutines must have separate Fortran and C calling sequences, with
+different names.  [Sections <A HREF=subsection3.4.4.html#mixlangint><IMG SRC="/icons/cross-ref.png"></A>, <A HREF=section3.11.html#mixfortc><IMG SRC="/icons/cross-ref.png"></A>, <A HREF=subsection3.11.2.html#mixnamesub><IMG SRC="/icons/cross-ref.png"></A>]
+<P>
+Subroutines must call only the appropriate language interface.
+[Sections <A HREF=subsection3.5.3.html#ftncallseq><IMG SRC="/icons/cross-ref.png"></A>, <A HREF=subsubsection3.5.3.2.html#ftndatatype><IMG SRC="/icons/cross-ref.png"></A>, <A HREF=subsection3.9.1.html#rtldiff><IMG SRC="/icons/cross-ref.png"></A>, <A HREF=section3.11.html#mixfortc><IMG SRC="/icons/cross-ref.png"></A>]
+<P>
+<LI> No Optional Arguments
+<P>
+Routines accepting pure optional arguments are not allowed.
+[Section <A HREF=subsection3.4.1.html#vararg><IMG SRC="/icons/cross-ref.png"></A>]
+<P>
+Keyword-value style arguments are permissable in C only.
+[Sections <A HREF=subsection3.4.1.html#vararg><IMG SRC="/icons/cross-ref.png"></A>, <A HREF=subsection3.5.2.html#nooptarg><IMG SRC="/icons/cross-ref.png"></A>]
+<P>
+<LI> Data Formats and I/O
+<P>
+Applications shall be able to read files written in any host representation.
+[Section <A HREF=subsection3.7.1.html#vicfilerep><IMG SRC="/icons/cross-ref.png"></A>]
+<P>
+Applications shall normally write files in the native host representations
+of the machine on which they are currently running.  [Section <A HREF=subsection3.7.1.html#vicfilerep><IMG SRC="/icons/cross-ref.png"></A>]
+<P>
+Programs reading binary labels must be able to read any host format, and
+convert it to native format before using.
+[Sections <A HREF=subsubsection3.7.6.1.html#sephosttype><IMG SRC="/icons/cross-ref.png"></A>, <A HREF=subsubsection3.7.6.2.html#usebinlab><IMG SRC="/icons/cross-ref.png"></A>]
+<P>
+<LI> Data Format Translation
+<P>
+Do not write your own pixel data type or host representation conversion
+routines.  The routine <b> x</b>/<b>  zvtrans</b> is the only standard way to translate
+data among different host representations and pixel data types in VICAR.
+[Sections <A HREF=subsection3.6.2.html#newroutines><IMG SRC="/icons/cross-ref.png"></A>, <A HREF=subsection3.7.1.html#vicfilerep><IMG SRC="/icons/cross-ref.png"></A>]
+<P>
+<LI> Pixel Sizes
+<P>
+Do not assume the size in bytes of a pixel or other data; it may be different
+on different machines.  Use one of the <b> x</b>/<b>  zvpixsize</b> routines, or <tt> sizeof</tt>
+from C, to determine the size of a data element.  [Section <A HREF=subsection3.7.4.html#pixelsizes><IMG SRC="/icons/cross-ref.png"></A>]
+<P>
+<LI> Name Registries
+<P>
+Every property name or BLTYPE name used must be entered into the appropriate
+name registry.  [Sections <A HREF=subsubsection3.6.6.2.html#propnames><IMG SRC="/icons/cross-ref.png"></A>, <A HREF=subsubsection3.7.6.3.html#bltype><IMG SRC="/icons/cross-ref.png"></A>]
+<P>
+<LI> Operating System Calls
+<P>
+All OS-specific code must be eliminated or isolated, and should be written
+in C if possible.  [Sections <A HREF=subsection3.8.3.html#vmscodec><IMG SRC="/icons/cross-ref.png"></A>, <A HREF=subsection3.9.8.html#vmscodeftn><IMG SRC="/icons/cross-ref.png"></A>, <A HREF=subsection3.12.4.html#ftnvsc><IMG SRC="/icons/cross-ref.png"></A>]
+<P>
+<LI> Conditional Compilation
+<P>
+Conditional compilation statements to handle machine dependencies must never
+use machine names or types.  They shall instead use names of specific features
+that are defined in standard include files based on the machine type.
+[Section <A HREF=subsection3.8.4.html#machdepc><IMG SRC="/icons/cross-ref.png"></A>]
+<P>
+Feature dependencies must be defined only in xvmaininc.h or vmachdep.h.
+[Section <A HREF=subsection3.8.4.html#machdepc><IMG SRC="/icons/cross-ref.png"></A>]
+<P>
+The symbols VMS_OS and UNIX_OS may be used for differences between VMS and
+Unix operating systems only.  [Section <A HREF=subsection3.8.4.html#machdepc><IMG SRC="/icons/cross-ref.png"></A>]
+<P>
+<LI> No Terminal I/O
+<P>
+<LI> Fortran 77 Standard
+<P>
+All Fortran code must conform to the ANSI Fortran-77 standard, with the
+exception of the allowed extensions listed in the reference.
+[Section <A HREF=subsection3.9.7.html#ftnext><IMG SRC="/icons/cross-ref.png"></A>]
+<P>
+<LI> Fortran Strings
+<P>
+All Fortran-callable subroutines written in C must use the RTL string
+conversion routines (<b> sfor2c</b> <i> et al</i>) to handle CHARACTER*n arguments.
+[Sections <A HREF=subsubsection3.6.2.4.html#ftnstrconv><IMG SRC="/icons/cross-ref.png"></A>, <A HREF=subsection3.11.4.html#passstr><IMG SRC="/icons/cross-ref.png"></A>]
+<P>
+<LI> Separate SUBLIBs
+<P>
+Applications cannot use both the unportable and the portable SUBLIB libraries
+at the same time.  [Section <A HREF=subsection3.12.1.html#oldsublib><IMG SRC="/icons/cross-ref.png"></A>]
+<P>
+<LI> <tt> vimake</tt>
+<P>
+Standard VICAR application software must use imakefiles compatible with
+<tt> vimake</tt> to create their build files.  [Section <A HREF=subsection3.13.1.html#vimake><IMG SRC="/icons/cross-ref.png"></A>]
+<P>
+<LI> <tt> vpack</tt>
+<P>
+Standard VICAR application software must be packed into a COM file using the
+<tt> vpack</tt> command.  [Section <A HREF=subsection3.13.2.html#vpack><IMG SRC="/icons/cross-ref.png"></A>]
+<P>
+</UL>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

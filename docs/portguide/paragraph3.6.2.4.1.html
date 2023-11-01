@@ -1,0 +1,165 @@
+<HEAD>
+<TITLE>Common Features</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=703 HREF=subsubsection3.6.2.4.html><IMG SRC="/icons/previous.png"></A> <A NAME=705 HREF=subsubsection3.6.2.4.html><IMG SRC="/icons/up.png"></A>  <A NAME=701 HREF=paragraph3.6.2.4.2.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=704 HREF=subsubsection3.6.2.4.html>Fortran String Conversion Routines</A>  <b>Up:</b> <A NAME=706 HREF=subsubsection3.6.2.4.html>Fortran String Conversion Routines</A>  <b>Next:</b> <A NAME=702 HREF=paragraph3.6.2.4.2.html><b> sc2for</b></A> <P>
+ <H4>Common Features</H4>
+<P>
+All the string conversion routines place great emphasis on the argument list
+of the C routine that is directly called by Fortran.  Certain rules apply to
+that argument list, and many of the common parameters reference it.  All of
+these apply to the routine called <em> directly</em> by Fortran.  Suppose a Fortran
+routine calls routine a(), which then calls routine b(), and b() wants to
+call one of these string conversion routines.  <em> All</em> of the parameters
+and rules will apply only to a()'s argument list.  Routine b() will need much
+of the information passed in from a() in order to call the string conversion
+routines, but all the information is relative to a()'s argument list.
+In general, it's usually easier to have a() do all the conversion and let
+b() deal only with C strings, but sometimes that is impractical.
+<P>
+<b> Include file</b>
+<P>
+In order to use any of the routines, you must include the file ``ftnbridge.h''.
+As with other RTL includes, you must include xvmaininc.h first, and the names
+must be enclosed in double quotes and end in the ``.h'' extension (you don't
+need xvmaininc.h if ``vicmain_c'' is included).  Example:
+<P>
+<PRE><TT>
+#include &quot;xvmaininc.h&quot;
+#include &quot;ftnbridge.h&quot;
+</TT></PRE>
+<P>
+<b> Imakefile</b>
+<P>
+The flag FTN_STRING must be defined in the imakefile for the program unit
+if any C routine accepts Fortran strings.  This applies to both the
+direct-called routine, and the routine that ultimately calls one of the
+conversion routines.  The FTN_STRING flag causes the compiler to use a
+lower level of optimization, which is required on some machines in order to
+access the argument list.  See Section <A HREF=subsection3.13.1.html#vimake><IMG SRC="/icons/cross-ref.png"></A>, <tt> vimake</tt>, for details
+on the imakefile.
+<P>
+<b> FORSTR_PARAM and FORSTR_DEF macros</b>
+<P>
+In most routines (see below for the exception), you must include the macro
+FORSTR_PARAM in the argument list of the directly called routine, and you
+must put FORSTR_DEF at the end of the formal parameter declaration list,
+just before the opening brace of the procedure.  FORSTR_DEF should not have
+a semicolon after it, as the semicolon (if needed) is included in the macro
+definition.  These macros are no-ops on many machines, but are required on
+some in order to get at the Fortran string lengths.
+<P>
+The exception is routines that use the &lt;varargs.h&gt; variable argument
+mechanism.  User subroutines should not normally use varargs, but it is used
+fairly extensively inside the RTL to handle the keyword-value argument pairs.
+If you use &lt;varargs.h&gt;, follow all the standard C rules for that mechanism,
+and you should not use the FORSTR_PARAM or FORSTR_DEF macros.
+<P>
+Examples:
+<P>
+<PRE><TT>
+int constargs(a, s1, s2, b, FORSTR_PARAM)
+  int *a, *b;
+  char *s1, *s2;
+  FORSTR_DEF
+{ ...
+}
+<P>
+int varargs(va_alist)
+  va_dcl
+{ ...
+}
+</TT></PRE>
+<P>
+<b> Argument restrictions</b>
+<P>
+All arguments to the direct-called routine must be the size of a generic
+pointer.  Since Fortran passes everything by reference anyway, all of your
+arguments will be pointers, so this should not cause a problem.
+<P>
+<b> Arguments to Fortran string conversion routines</b>
+<P>
+The arguments to the Fortran string conversion routines all apply to the
+argument list of the routine that is directly called by Fortran, not to any
+intermediary routines.
+<P>
+<UL>
+<P>
+<LI> FOR_STRING:  in/out, pointer to char
+<P>
+FOR_STRING should be the name of the argument that contains the Fortran string.
+It should be declared as type ``char *'' in the argument list.  Simply pass
+in the name of the argument, without any extra &amp;'s or *'s or anything.
+The Fortran routine must declare the string as CHARACTER*n.  String arrays
+(handled with the routines <b> sc2for_array</b> and <b> sfor2c_array</b>)
+must be declared as single-dimension arrays of CHARACTER*n, but are still
+declared as ``char *'' in the C routine.
+<P>
+<LI> ARGPTR:  input, generic pointer
+<P>
+ARGPTR should be the address of the first argument, whatever it is.  It does
+not matter what the data type of the first argument is, or if it is already
+a pointer to something else.  Simply put an ampersand (&amp;) followed by the
+name of the first argument in the argument list.
+<P>
+<LI> NARGS:  input, integer
+<P>
+NARGS is simply the total number of arguments passed in to the routine.
+Do <em> not</em> count FORSTR_PARAM as one of the arguments.  If you are using
+&lt;varargs.h&gt;, pass in the actual number of arguments sent to the routine.
+<P>
+<LI> ARGNO:  input, integer
+<P>
+ARGNO is the number of the argument that contains the string to be converted.
+If the string is the first argument in the list, ARGNO would be 1.  If it
+is the fifth argument, ARGNO would be 5.
+<P>
+<LI> STRNO:  input, integer
+<P>
+STRNO is the string count for the string to be converted.  It is similar to
+ARGNO, but counts only strings.  So, if the string you are converting is the
+third argument, but only the second string in the argument list (because the
+first one is an integer), then ARGNO would be 3 but STRNO would be 2.
+<P>
+</UL>
+<P>
+Some examples may help to clarify things.  The routine <b> sfor2c</b> is used
+in these examples, but the principles apply to all the string conversion
+routines.  The calling sequence for <b> sfor2c</b> is
+sfor2c(c_string, max_length, for_string, argptr, nargs, argno, strno).
+<P>
+<PRE><TT>
+int constargs(a, s1, s2, b, FORSTR_PARAM)
+  int *a, *b;
+  char *s1, *s2;
+  FORSTR_DEF
+{ char cs1[11], cs2[20];
+  sfor2c(cs1, 10, s1, &amp;a, 4, 2, 1);
+  sfor2c(cs2, 19, s2, &amp;a, 4, 3, 2);
+}
+<P>
+int constargs2(s1, s2, a, s3, b, s4, FORSTR_PARAM)
+  char *s1, *s2, *s3, *s4;
+  int *a, *b;
+{ char cs1[101], cs2[31], cs3[80], cs4[5];
+  sfor2c(cs1, 100, s1, &amp;s1, 6, 1, 1);
+  sfor2c(cs2, 30,  s2, &amp;s1, 6, 2, 2);
+  sfor2c(cs3, 79,  s3, &amp;s1, 6, 4, 3);
+  sfor2c(cs4, 4,   s4, &amp;s1, 6, 6, 4);
+}
+<P>
+int varargs(va_alist)
+  va_dcl
+{ char cs[11];
+  /* set nargs = number of arguments, argno=argument #, and strno=string # */
+  /* which all come from knowing what to expect in the argument list */
+  forstr = va_arg(ap, char *);
+  sfor2c(cs, 10, forstr, &amp;va_alist, nargs, argno, strno);
+}
+</TT></PRE>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

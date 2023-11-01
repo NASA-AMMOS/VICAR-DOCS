@@ -1,0 +1,107 @@
+<HEAD>
+<TITLE>READ &amp; WRITE to Strings</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=920 HREF=subsection3.9.4.html><IMG SRC="/icons/previous.png"></A> <A NAME=922 HREF=section3.9.html><IMG SRC="/icons/up.png"></A>  <A NAME=918 HREF=subsection3.9.6.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=921 HREF=subsection3.9.4.html>CHARACTER*n for Strings</A>  <b>Up:</b> <A NAME=923 HREF=section3.9.html>Porting Fortran</A>  <b>Next:</b> <A NAME=919 HREF=subsection3.9.6.html>Array I/O</A> <P>
+ <H2>READ &amp; WRITE to Strings</H2>
+<A NAME=rdwrtftnstr><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+The conversion of strings from BYTE to CHARACTER*n implies that the methods
+used to do input and output to strings must change as well.  Previous code
+often set up a buffer, then used <tt> outcon</tt> to put numeric values in the
+string.  The result would then be printed.  For example (taken from the
+program <tt> amos</tt>):
+<P>
+<PRE><TT>
+      REAL*8 VRES, VRAD, VTAN
+      LOGICAL*1 MS1(52)/' ','V','E','L','=','*','*','*','*','*','.','*',
+     &amp;'*',' ',' ','(','V','R','A','D',',','V','T','A','N',')','=','(',
+     &amp;'+','*','*','*','.','*','*',',','+','*','*','*','*','*','.','*',
+     &amp;'*',')',' ','M','/','S','E','C'/
+      CALL OUTCON(VRES,MS1(14),9,2)
+      CALL OUTCON(VRAD,MS1(35),7,2)
+      CALL OUTCON(VTAN,MS1(45),9,2)
+      CALL QPRINT(MS1,52)
+</TT></PRE>
+<P>
+<tt> outcon</tt> (and its counterpart, <tt> incon</tt>) have many serious portability
+problems. They would have to be converted to output to CHARACTER*n variables
+instead of BYTE arrays, since the output would be printed via <b> qprint</b> or
+<b> xvmessage</b> anyway.  <tt> outcon</tt> and <tt> incon</tt> were originally
+created to avoid using the Fortran I/O library in the days on the IBM mainframe
+when memory was at a premium.  That is no longer a constraint.  The Fortran
+I/O library is more portable, and easier to use.  For these reasons,
+<tt> outcon</tt> and <tt> incon</tt> will not be supported in the portable system.
+<P>
+To perform input and output conversion, simply use the Fortran I/O package
+on what is called an ``internal file''.  An internal file to Fortran is simply
+a CHARACTER*n variable.  Just give the name of the variable (it may be a
+substring if you wish) instead of the unit number in a Fortran READ or WRITE
+statement.  Note that you must still write to a string and send the string
+to <b> qprint</b> or <b> xvmessage</b>.  Do not attempt to write directly to
+the terminal.  Any messages written directly to the terminal will not appear
+in the session log, and could very well be printed in unexpected ways due to
+interaction with VICAR I/O.  Also, messages written directly will not be
+handled properly by the forthcoming VICAR GUI.
+<P>
+Here is one way to code the above example (the leading blank is not required
+in <b> xvmessage</b>):
+<P>
+<PRE><TT>
+      REAL*8 VRES, VRAD, VTAN
+      CHARACTER*80 MS1
+      WRITE (MS1,1001) VRES, VRAD, VTAN
+ 1001 FORMAT ('VEL=', F9.2, ' (VRAD,VTAN)=(', F7.2, ',', F9.2, ') M/SEC')
+      CALL XVMESSAGE(MS1, ' ')
+</TT></PRE>
+<P>
+Since an internal file may be a substring as well, you can do a more direct
+conversion (although the previous example is generally the preferred method):
+<P>
+<PRE><TT>
+      REAL*8 VRES, VRAD, VTAN
+      CHARACTER*80 MS1
+      DATA MS1 /'VEL=******.** (VRAD,VTAN)=(+***.**,+*****.**) M/SEC'/
+      WRITE (MS1(5:13), '(F9.2)') VRES
+      WRITE (MS1(28:34), '(F7.2)') VRAD
+      WRITE (MS1(36:44), '(F9.2)') VTAN
+      CALL XVMESSAGE(MS1, ' ')
+</TT></PRE>
+<P>
+There are three things to note about this example.  First, the DATA
+statement is separate from the declaration.  Putting initialization data on
+the declaration line is not portable.  Second, the format specifier may be
+put in-line in the WRITE statement if you wish.  Last, the numbers changed
+from the <tt> outcon</tt> call because the leading blank was eliminated.  The
+<b> xvmessage</b> routine always prints the first character, with no carriage
+control.  So, all the character position numbers are one less than in the
+<tt> outcon</tt> example.
+<P>
+Conversion of data from string to numeric form using READ is similar.
+Use standard Fortran I/O using the CHARACTER*n variable as the internal
+file.  Substrings are much more useful on READ to read only the portion
+you are interested in.  For example, the following call form <tt> able86</tt> is
+typical:
+<P>
+<PRE><TT>
+      CALL INCON(NPAR, %REF(ALABEL(OFF+I+5:)),PAR,20)
+      BUF(2) = PAR(1)                 !Frame number
+</TT></PRE>
+<P>
+where ALABEL is the input string (already a CHARACTER*n variable), BUF(2)
+is an integer receiving the value, and NPAR is ignored.  The value is an
+integer in the range 0 to 99 (obtained from the documentation), so this call
+could be converted to:
+<P>
+<PRE><TT>
+      READ (ALABEL(OFF+I+5:),'BN,I2') BUF(2)
+</TT></PRE>
+<P>
+You may want to make use of the ERR=n clause on reads in order to trap errors
+such as a decimal point being present in an integer.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

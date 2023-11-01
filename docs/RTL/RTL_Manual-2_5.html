@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--
+This document was converted from RTF source: 
+By rtftohtml 4.17
+See http://www.sunpack.com/RTF
+Filename:WORD Ram Disk:RTL_Manual.rtf
+Application Directory:Data Disk:r2h4
+Subject:
+Author:Larry Bolef
+Operator:Larry Bolef
+Document Comments:
+Version Comments:
+Comments:
+Keywords:
+Translation Date:06/05/1999
+Translation Time:08:02:26
+Translation Platform:MacOS
+Number of Output files:59
+This File:WORD Ram Disk:RTL_Manual-2_5.html
+SplitDepth=2
+SkipNavPanel=0
+SkipLeadingToc=0
+SkipTrailingToc=1
+GenContents=1
+GenFrames=0
+GenIndex=0
+-->
+<HEAD lang="en"><META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<TITLE>2.5	Include Files </TITLE>
+</HEAD>
+
+<BODY ><DIV ALIGN="LEFT"><A HREF="RTL_Manual-Programm.html">Up</A> | 
+<A HREF="RTL_Manual-2_4.html">Previous</A> | 
+<A HREF="RTL_Manual-2_6.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+<HR>
+
+
+<a name="_Ref395927055"></a><a name="_Ref395927103"></a><a name="_Toc425047500"></a><a name="_Toc425048055"></a><a name="_Toc425750579"></a><a name="_Toc453201391"></a><A NAME="Heading22"></A><H2 ALIGN="LEFT">
+2.5	Include
+Files 
+</H2>
+<BLOCKQUOTE>
+There
+are five major classes of include files: system, VICAR main, VICAR system,
+VICAR subroutine, and local. 
+<BR>
+Include
+only those files needed. Some includes require that other files be included
+first. Extra includes in your program don't gain you anything, but slow down
+your compiles. They also make system maintenance difficult, since the source
+code must occasionally be searched to see what programs use an include, and all
+programs that use an include must be recompiled when it changes (even if it's
+not really used). 
+<BR>
+System
+include files are provided by the operating system. Many are OS-specific, but
+there are a few that are standard across platforms. Make sure the ones you need
+are available in both operating systems, or isolate them in machine-dependent
+code. System include files should be enclosed in angle brackets and have the
+&#8220;.h&#8221; extension. Some known portable includes are:
+</BLOCKQUOTE>
+<PRE>#include &lt;varargs.h&gt;
+#include &lt;math.h&gt;
+#include &lt;ctype.h&gt;
+#include &lt;stdio.h&gt;</PRE><BLOCKQUOTE>
+
+One known 
+<I>non</I>-portable
+file is 
+<TT><FONT FACE="Courier">&lt;unistd.h&gt;</FONT></TT>.
+If you need symbolic constants for the lseek() arguments(which are often
+contained in 
+<TT><FONT FACE="Courier">unistd.h</FONT></TT>),
+use the definitions provided in xvmaininc.h. 
+<BR>
+The
+VICAR main include file, which all VICAR programs should start with, must be in
+lower case, with double quotes. The name of the main include is
+&#8220;vicmain_c&#8221;, with no directory specifiers and no &#8220;.h&#8221;
+extension.
+<BR>
+Any
+modules other than the main program module that need VICAR definitions should
+include 
+<TT><FONT FACE="Courier">xvmaininc.h</FONT></TT>,
+in lower case, with double quotes and the &#8220;.h&#8221; extension
+xvmaininc.h is automatically included with vicmain_c. 
+</BLOCKQUOTE>
+<PRE>#include &#8220;vicmain_c&#8221; 
+&#8212; or &#8212;
+#include &#8220;xvmaininc.h&#8221;</PRE><BLOCKQUOTE>
+VICAR
+system includes are provided as part of the RTL. Their names should be in lower
+case, with quotes and the &#8220;.h&#8221; extension. The valid ones are listed
+below. Only a few of these should ever be used in application code, notably
+zvproto.h, ftnbridge.h, errdefs.h, and applic.h. The rest should only be needed
+in very unusual circumstances. They should generally be in the order listed
+below. 
+<BR>
+Include
+<I>only
+</I>those
+needed. Extraneous include files will only slow down your compile and make
+system maintenance harder. TAE includes are handled as specified in the TAE
+documentation. They should be in double quotes, with the &#8221;.inc&#8221; or
+&#8220;.inp&#8221; extensions as appropriate. The first four listed below are
+TAE includes:
+</BLOCKQUOTE>
+<PRE>#include &#8220;taeconf.inp&#8221; 
+#include &#8220;symtab.inc&#8221; 
+#include &#8220;parblk.inc&#8221; 
+#include &#8220;pgminc.inc&#8221; 
+#include &#8220;zvproto.h&#8221; 
+#include &#8220;defines.h&#8221; 
+#include &#8220;declares.h&#8221; 
+#include &#8220;externs.h&#8221; 
+#include &#8220;applic.h&#8221; 
+#include &#8221;errdefs.h&#8221; 
+#include &#8220;ftnbridge.h&#8221; 
+#include &#8220;xviodefs.h&#8221;</PRE><BLOCKQUOTE>
+VICAR
+subroutine include files (class 2 and 3 SUBLIB, VRDI, etc.) should be in double
+quotes, with no path names, and should include the &#8220;.h&#8221; extension,
+like VICAR system includes. For these includes, the directories containing the
+includes must be available to the compiler. This is normally handled
+transparently, but some libraries will require a LIB_* macro in the imakefile
+to access the includes.
+</BLOCKQUOTE>
+<PRE>#include &#8220;vmachdep.h&#8221; 
+#include &#8220;gll_ssi_edr.h&#8221; 
+#include &#8220;xderrors.h&#8221;</PRE><BLOCKQUOTE>
+Local
+includes, which are delivered as part of the COM file and are used only by that
+application, should be in double quotes, with no path names. Include the
+&#8220;.h&#8221; extension, just as for VICAR system and subroutine includes.
+Local includes must be listed in the INCLUDE_LIST macro in the imakefile so
+they can be cleaned up properly.
+</BLOCKQUOTE>
+<PRE>#include &#8220;my_inc.h&#8221; </PRE>
+<HR>
+
+<DIV ALIGN="LEFT"><A HREF="RTL_Manual-Programm.html">Up</A> | 
+<A HREF="RTL_Manual-2_4.html">Previous</A> | 
+<A HREF="RTL_Manual-2_6.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+</BODY>
+
+</HTML>

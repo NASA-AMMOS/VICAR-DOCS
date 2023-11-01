@@ -1,0 +1,330 @@
+<HEAD>
+<TITLE>Creating and Using a VICAR Imakefile</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=1087 HREF=subsection3.13.1.html><IMG SRC="/icons/previous.png"></A> <A NAME=1089 HREF=subsection3.13.1.html><IMG SRC="/icons/up.png"></A>  <A NAME=1085 HREF=subsubsection3.13.1.2.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=1088 HREF=subsection3.13.1.html><tt> vimake</tt></A>  <b>Up:</b> <A NAME=1090 HREF=subsection3.13.1.html><tt> vimake</tt></A>  <b>Next:</b> <A NAME=1086 HREF=subsubsection3.13.1.2.html>Valid <tt> vimake</tt> Commands</A> <P>
+ <H3>Creating and Using a VICAR Imakefile</H3>
+<P>
+Since <tt> vimake</tt> is based on the C preprocessor, every line in an imakefile
+will be a C preprocessor command.  Most lines will be ``#define'', with some
+comments and ``#if'' statements on occasion.  Comments are allowed, in the
+standard C style (enclosed in /* ... */).
+<P>
+It may be easier to start with an example.  Here is the imakefile for the
+program <tt> gen</tt>:
+<P>
+<PRE><TT>
+#define PROGRAM gen
+<P>
+#define MODULE_LIST gen.c
+<P>
+#define MAIN_LANG_C
+#define USES_C
+<P>
+#define R2LIB
+<P>
+#define LIB_RTL
+#define LIB_TAE
+</TT></PRE>
+<P>
+The first two lines define macros with values.  PROGRAM specifies that this
+is an application program, rather than a subroutine.  It also specifies the
+name of the application.  MODULE_LIST tells <tt> vimake</tt> what source code
+modules make up the application.
+<P>
+The rest of the lines simply define switches; there are no values associated
+with them.  MAIN_LANG_C tells <tt> vimake</tt> that the main program is written
+in C (or ANSI C).  USES_C says that some (non-ANSI) C is used in the
+application (that may sound redundant but is needed when there is more than
+one module with mixed languages).  R2LIB says that this application goes in
+R2LIB.  The LIB_RTL and LIB_TAE switches indicate which libraries to link
+with, in this case the RTL and TAE libraries.
+<P>
+Due to the internals of how <tt> vimake</tt> operates, there is unfortunately no
+real error checking.  You have to be sure to spell the macros correctly, or they
+will simply be ignored.  This may cause surprising results.  If <tt> vimake</tt> is
+not operating the way you expect, first check to make sure that all the
+preprocessor macros are spelled correctly.
+<P>
+<tt> vimake</tt> can also handle some machine dependencies.  All the macros
+defined in xvmaininc.h are available for use in #if statements.  This is
+typically used to compile a VMS-specific module only under VMS, and its
+Unix-specific counterpart only under Unix.  See Section <A HREF=subsection3.8.4.html#machdepc><IMG SRC="/icons/cross-ref.png"></A>,
+Machine Dependencies, in the Porting C section, for details on what
+preprocessor macros are available from xvmaininc.h.
+<P>
+To use an imakefile, simply type the command <tt> vimake</tt> followed by the name
+of the imakefile.  Note that imakefiles must have a ``.imake'' extension, but
+you should not give the extension on the <tt> vimake</tt> command.  The command is
+the same under both VMS and Unix.
+<P>
+<PRE><TT>
+vimake gen
+</TT></PRE>
+<P>
+If you are running VMS, a file called ``gen.bld'' will be created (although
+it is a DCL COM file, a ``.com'' extension would confuse it with the
+packed application file).  This file can be executed to compile and link
+the program:
+<P>
+<PRE><TT>
+$ @gen.bld
+</TT></PRE>
+<P>
+There are many options you can give on the command line to control the build,
+which are described in Section <A HREF=subsubsection3.13.1.3.html#usebld><IMG SRC="/icons/cross-ref.png"></A>, Using the Generated VMS Build File.
+<P>
+If you are running Unix, a file called ``gen.make'' will be created when you
+run <tt> vimake</tt>.  This file can be submitted to <tt> make</tt> to compile and
+link the program:
+<P>
+<PRE><TT>
+% make -f gen.make
+</TT></PRE>
+<P>
+There are many different build targets you can give to control the build
+process, which are described in Section <A HREF=subsubsection3.13.1.4.html#usemake><IMG SRC="/icons/cross-ref.png"></A>, Using the Generated
+Unix Makefile.
+<P>
+The imakefile is actually composed of several parts.  These parts are
+described below, with some examples.  Although they can be in any order,
+the parts should generally follow the order listed below for consistency.
+For a complete list of valid #define's, see the next section.
+<P>
+<UL>
+<P>
+<LI> Type and name of program unit.  The valid types are PROGRAM, SUBROUTINE,
+and PROCEDURE.  One of these must be defined.  The value for the definition is
+the name of the program or subroutine.  The type of the program unit determines
+which of the other <tt> vimake</tt> features are available.  There is currently
+not much to be done for a PROCEDURE, but an imakefile must still be present,
+for consistency.  Documentation may still need to be built with procedures.
+<P>
+<PRE><TT>
+#define PROGRAM logmos
+<P>
+#define SUBROUTINE knuth
+<P>
+#define PROCEDURE midrarch
+</TT></PRE>
+<P>
+<LI> List of modules and includes.  The names of all source code modules
+must be defined (this does not apply to PROCEDUREs).  MODULE_LIST should
+contain the names of all the compilable source code, with the appropriate
+extension.  Note that Fortran modules must end in ``.f'', <em> not</em> ``.for''.
+Unix cares about such things.  The modules are listed in the order
+they should be linked; i.e. the main module should be first (this can be
+overridden by LINK_LIST).  INCLUDE_LIST should contain the names of
+all include files that are local to the program or subroutine, i.e. ones
+that are in the application COM file and not in p2$inc ($P2INC in Unix).
+They should also have the appropriate filename extension.  Both lists should
+be space-separated lists of names.  Don't use tabs, use spaces.  All the
+names <em> must</em> be in lower case.  If you run out of room on a line, the
+standard C preprocessor continuation character can be used, which is a
+backslash (``'') at the end of the line, or use continuation lists.
+<P>
+Fortran system includes are a special case.  They should be listed in the
+FTNINC_LIST macro, even though they are not a part of the program unit.
+See Section <A HREF=subsection3.9.2.html#ftninc><IMG SRC="/icons/cross-ref.png"></A>, Include Files, under Porting Fortran, for a
+description of which includes go in FTNINC_LIST.  Note that local includes,
+which are part of the application, go in INCLUDE_LIST instead.
+<P>
+<PRE><TT>
+#define MODULE_LIST copy.f
+<P>
+#define MODULE_LIST logmos.c logmos_subs.c logmos_mosaic.c
+#define INCLUDE_LIST logmos_defines.h logmos_structures.h logmos_globals.h
+<P>
+#if VMS_OS
+#define MODULE_LIST amosids.f camosids.c amosufo_vms.mar
+#define CLEAN_OTHER_LIST amosufo_unix.c
+#else
+#define MODULE_LIST amosids.f camosids.c amosufo_unix.c
+#define CLEAN_OTHER_LIST amosufo_vms.mar
+#endif
+<P>
+#define MODULE_LIST prog.f
+#define INCLUDE_LIST myinc.fin
+#define FTNINC_LIST errdefs sublib_inc
+<P>
+#define MODULE_LIST view.c utils.c image.c vdt.c plot.c host.c  
+  overlap.c vprofile.c
+</TT></PRE>
+<P>
+Note that VMS macro (.mar) and array processor files (.vfc) are allowed by
+<tt> vimake</tt>, but they are of course VMS specific.  Also, when MODULE_LIST is
+defined differently for different machines, make sure the unused source code
+is listed in CLEAN_OTHER_LIST.  This is so a clean-source operation can
+find all the source code to delete.
+<P>
+<LI> Main language.  If the application is of type PROGRAM, then the language
+the main program is written in must be defined.  This is used by the Unix
+version of <tt> vimake</tt> to determine which command to use to link the program.
+The main program is defined as the one that the <tt> main44</tt> subroutine is
+written in.  The languages that any other modules are written in do not matter.
+<P>
+<PRE><TT>
+#define MAIN_LANG_C
+<P>
+#define MAIN_LANG_FORTRAN
+</TT></PRE>
+<P>
+<LI> Languages used.  For every different language used, you must define a
+USES macro.  If any modules are written in Kernighan and Ritchie (K&amp;R) C
+(which is the case for most VICAR code), then define USES_C.  If the modules
+are written in ANSI C, then define USES_ANSI_C.  Note that USES_C and
+USES_ANSI_C are mutually exclusive.  If any modules are written in Fortran,
+then define USES_FORTRAN.  You must define both if you use both languages.
+USES_MACRO and USES_VFC are also available, but of course they are
+VMS-specific.
+<P>
+<PRE><TT>
+#define USES_C
+#define USES_FORTRAN
+#if VMS_OS
+#define USES_MACRO
+#endif
+</TT></PRE>
+<P>
+<LI> Class of program unit.  If you are working with a type PROGRAM, then
+you must define either R1LIB, R2LIB, R3LIB, or HWLIB to indicate the class of
+the program.  If it is a portable SUBROUTINE, then define either P1_SUBLIB,
+P2_SUBLIB, P3_SUBLIB, or HW_SUBLIB to indicate the class.  For unported,
+VMS-specific subrouines, you can define OLD_SUBLIB or OLD_SUBLIB3. (these
+are <em> only</em> to allow <tt> vimake</tt> to be used with the current system.  Just
+because a subroutine has VMS-specific parts does not mean it goes in
+OLD_SUBLIB, as long as there are Unix-specifiic parts that do the same thing).
+The program class is used to select which library a subroutine goes in, to
+pick up the proper include directories, and to allow error checking on
+programs (e.g. a R2LIB program cannot use R3LIB subroutines), although the
+error checking is not yet implemented.
+<P>
+<PRE><TT>
+#define R2LIB
+<P>
+#define P3_SUBLIB
+</TT></PRE>
+<P>
+<LI> Documentation files for the module.  This applies to all types of
+modules, and is in fact the only real use most PROCEDURES have for the
+imakefile.  Any documentation that requires building should go in this
+section.  Currently, the only type implemented is a TAE error message file
+(.msg file), which is built using the <tt> msgbld</tt> program in TAE.  Error
+message files are specified using TAE_ERRMSG.  Other types of documentation
+will be implemented in the future.  If no supported documentation types are
+supplied with the module, then do not define any of the documentation macros.
+<P>
+<PRE><TT>
+#define TAE_ERRMSG sffac
+</TT></PRE>
+<P>
+<LI> Libraries needed for link.  This mostly applies to PROGRAMs, although
+SUBROUTINEs might need it on occasion.  Every library you need to link to
+should be specified by defining the appropriate LIB macro.  This normally
+includes LIB_RTL and LIB_TAE for most VICAR programs.  The C run-time
+library is automatic, so you don't need to include it.  The order is
+arbitrary, since they are only #define's, but you should try to keep
+them in order of highest-level to lowest-level, just to be consistent.
+For a complete list of all LIB macros currently defined, see the next section.
+<P>
+It is quite likely, especially at first, that you will need a library that is
+not available via <tt> vimake</tt>.  If so, contact the VICAR system programmer,
+and the library will be added.  It is not hard or time-consuming to do.
+Although some mechanisms have been included to allow you to set up your own
+library names for testing, this is <em> highly</em> discouraged, and is
+system-dependent in any case.  The VICAR system programmer needs to keep
+track of what libraries are in use, so they are not missed when VICAR is
+ported to a new system or delivered to an external site.
+<P>
+Some of the libraries have _DEBUG forms, which link the program with the
+debuggable version of that library.  These should be used only during testing.
+When the program is ready for delivery, it must not use any debuggable
+libraries.
+<P>
+Some of the LIB macros also set up include directories for the C compiler.
+In unusual circumstances, you might need to include a LIB macro in a SUBROUTINE
+in order to pick up an include file.
+<P>
+<PRE><TT>
+#define LIB_P2SUB
+#define LIB_MATH77
+#define LIB_RTL
+#define LIB_TAE
+</TT></PRE>
+<P>
+</UL>
+<P>
+Here are some more examples of VICAR imakefiles.  A simple C program,
+<tt> gen</tt>, was listed previously.  Here is a simple Fortran program:
+<P>
+<PRE><TT>
+#define PROGRAM copy
+<P>
+#define MODULE_LIST copy.f
+<P>
+#define MAIN_LANG_FORTRAN
+#define USES_FORTRAN
+<P>
+#define R2LIB
+<P>
+#define LIB_RTL
+#define LIB_TAE
+</TT></PRE>
+<P>
+The following is an example subroutine that uses several different languages
+and has VMS-specific code.  It illustrates how existing VMS macro code can
+be retained for efficiency while still having portable C code for other
+machines.  Although the subroutine has not yet been ported, the example shows
+what the imakefile could look like when it does get ported.
+<P>
+<PRE><TT>
+#define SUBROUTINE amosids
+<P>
+#if VMS_OS
+#define MODULE_LIST amosids.f camosids.c amosufo_vms.mar
+#define CLEAN_OTHER_LIST amosufo_unix.c
+#else
+#define MODULE_LIST amosids.f camosids.c amosufo_unix.c
+#define CLEAN_OTHER_LIST amosufo_vms.mar
+#endif
+<P>
+#define P2_SUBLIB
+<P>
+#define USES_C
+#define USES_FORTRAN
+#if VMS_OS
+#define USES_MACRO
+#endif
+</TT></PRE>
+<P>
+The last example is for a more complex program, that has lots of modules,
+mixed languages, and uses several subroutine libraries.  Again, the program
+has not yet been ported, but this is what the imakefile could look like.
+<P>
+<PRE><TT>
+/* C-style comments are okay if you really feel the need */
+<P>
+#define PROGRAM mgncorr
+<P>
+#define MODULE_LIST mgncorr.f mgncorr_fort.f mgncorr_support.c  
+ mgncorr_correl.f mgncorr_interact.c mgncorr_graphics.c mgncorr_vdt.c  
+ mgncorr_logs.c
+<P>
+#define MAIN_LANG_FORTRAN
+#define USES_C
+#define USES_FORTRAN
+<P>
+#define R2LIB
+<P>
+#define LIB_P2SUB
+#define LIB_VRDI
+#define LIB_MATH77
+#define LIB_RTL
+#define LIB_TAE
+</TT></PRE>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

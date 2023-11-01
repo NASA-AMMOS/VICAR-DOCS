@@ -1,0 +1,628 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--
+This document was converted from RTF source: 
+By rtftohtml 4.17
+See http://www.sunpack.com/RTF
+Filename:WORD Ram Disk:RTL_Manual.rtf
+Application Directory:Data Disk:r2h4
+Subject:
+Author:Larry Bolef
+Operator:Larry Bolef
+Document Comments:
+Version Comments:
+Comments:
+Keywords:
+Translation Date:06/05/1999
+Translation Time:08:04:41
+Translation Platform:MacOS
+Number of Output files:59
+This File:WORD Ram Disk:RTL_Manual-8_2.html
+SplitDepth=2
+SkipNavPanel=0
+SkipLeadingToc=0
+SkipTrailingToc=1
+GenContents=1
+GenFrames=0
+GenIndex=0
+-->
+<HEAD lang="en"><META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<TITLE>8.2	Utility API</TITLE>
+</HEAD>
+
+<BODY ><DIV ALIGN="LEFT"><A HREF="RTL_Manual-Utility.html">Up</A> | 
+<A HREF="RTL_Manual-8_1.html">Previous</A> | 
+<A HREF="RTL_Manual-Appendix.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+<HR>
+
+<UL>
+<A HREF="#Heading119">8.2.1	abend/zabend&#8212;Terminate processing abnormally </A><BR>
+<A HREF="#Heading120">8.2.2	x/zmove&#8212;Move bytes from one buffer to another </A><BR>
+<A HREF="#Heading121">8.2.3	x/zvbands&#8212;Return band usage information </A><BR>
+<A HREF="#Heading122">8.2.4	x/zvcmdout&#8212;Sends a command string to TAE to be executed </A><BR>
+<A HREF="#Heading123">8.2.5	x/zvcommand&#8212;Execute a VICAR command string </A><BR>
+<A HREF="#Heading124">8.2.6	x/zvfilename&#8212;Returns a filename suitable for use with a system open() call </A><BR>
+<A HREF="#Heading125">8.2.7	x/zvfilpos&#8212;Return the current tape position </A><BR>
+<A HREF="#Heading126">8.2.8	x/zvmessage&#8212;Log a user message </A><BR>
+<A HREF="#Heading127">8.2.9	x/zvselpi&#8212;Selects the file to use as the primary input </A><BR>
+<A HREF="#Heading128">8.2.10	x/zvselpiu&#8212;Selects the file to use as primary input </A><BR>
+<A HREF="#Heading129">8.2.11	x/zvsize&#8212;Return image size values </A><BR>
+</UL>
+
+<a name="_Ref424702506"></a><a name="_Ref424714787"></a><a name="_Toc425047582"></a><a name="_Toc425048137"></a><a name="_Toc453201476"></a><A NAME="Heading118"></A><H2 ALIGN="LEFT">
+8.2	Utility
+API
+<a name="Heading111"></a><a name="_Toc425047583"></a><a name="_Toc425048138"></a><a name="_Toc425329738"></a><a name="Utility"></a><a name="_Toc453201477"></a></H2>
+<A NAME="Heading119"></A><H3 ALIGN="LEFT">
+8.2.1	abend/zabend&#8212;Terminate
+processing abnormally 
+</H3>
+
+<PRE>call abend() 
+zabend() </PRE><BLOCKQUOTE>
+<B>abend</B>
+issues a message indicating that 
+<B>abend</B>
+was called, and then calls 
+<B>x/zvend</B>
+with a status of zero to indicate a program failure. Any open VICAR files are
+closed and write buffers flushed before termination. 
+<a name="Heading115"></a><a name="_Toc425047587"></a><a name="_Toc425048142"></a><a name="_Toc425329739"></a><a name="Heading127"></a><a name="_Toc425047599"></a><a name="_Toc425048154"></a><a name="_Toc453201478"></a></BLOCKQUOTE><A NAME="Heading120"></A><H3 ALIGN="LEFT">
+8.2.2	x/zmove&#8212;Move
+bytes from one buffer to another 
+</H3>
+
+<PRE>call xmove(from, to, len) 
+zmove(from, to, len);</PRE><BLOCKQUOTE>
+Move
+bytes from one buffer to another. Overlapping moves are handled correctly,
+unlike the C routine 
+<TT><FONT FACE="Courier">memcpy()</FONT></TT>.</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>FROM</B>:
+pixel-array, input
+<BR>FROM
+is the buffer to move the bytes from (the source). It may 
+<I>not</I>
+be a FORTRAN CHARACTER*n variable. 
+<LI><FONT FACE="Symbol">	</FONT><B>TO</B>:
+pixel-array, input
+<BR>TO
+is the buffer to move the bytes to (the destination). It may 
+<I>not</I>
+be a FORTRAN CHARACTER*n variable. 
+<LI><FONT FACE="Symbol">	</FONT><B>LEN</B>:
+integer, input
+<BR>The
+number of bytes to move. There is no restriction on how many bytes can be
+moved, except  available memory. LEN is measured in 
+<I>bytes</I>,
+not 
+<I>pixels.
+</I><a name="_Toc453201479"></a></UL><A NAME="Heading121"></A><H3 ALIGN="LEFT">
+8.2.3	x/zvbands&#8212;Return
+band usage information 
+</H3>
+
+<PRE>call xvbands(sb, nb, nbi)
+zvbands(sb, nb, nbi);</PRE><P ALIGN="LEFT"><B>x/zvbands</B>
+is analogous to 
+<B>x/zvsize</B>
+in its usage. It returns information from the command line given in either the
+BANDS or the SB, NB parameters, or, if the parameters were not specified, from
+the input file size. 
+</P><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>SB</B>:
+output, integer
+<BR>The
+starting band for processing. If the BANDS parameter (BANDS = (SB, NB))was
+given, the first element of BANDS is used. If BANDS was not given, and the SB
+parameter was given, SB is used. Otherwise, the default is 1. 
+<LI><FONT FACE="Symbol">	</FONT><B>NB</B>:
+output, integer
+<BR>The
+number of bands for processing. If the BANDS parameter was given, the second
+element of BANDS is used. If BANDS was not given, and the NB parameter was
+given, NB is used. Otherwise, the default value is the number of bands in the
+primary input. 
+<LI><FONT FACE="Symbol">	</FONT><B>NBI</B>:
+output, integer
+<BR>The
+number of bands in the primary input file. 
+<a name="Heading116"></a><a name="_Toc425047588"></a><a name="_Toc425048143"></a><a name="_Toc425329740"></a><a name="Heading128"></a><a name="_Toc425047600"></a><a name="_Toc425048155"></a><a name="_Toc453201480"></a></UL><A NAME="Heading122"></A><H3 ALIGN="LEFT">
+8.2.4	x/zvcmdout&#8212;Sends
+a command string to TAE to be executed 
+</H3>
+
+<PRE>call xvcmdout(command, status) 
+status = zvcmdout(command);</PRE><BLOCKQUOTE>
+Sends
+a command string to TAE to be executed, and returns output values in the
+interactive parblock, accessible by the 
+<B>x/zviparm</B>
+family of routines. The command must be a TAE intrinsic command, or a procedure
+PDF that uses only intrinsic commands, i.e. no processes, no DCL or shell. This
+is mainly intended for running VIDS procedures from within a program, but it
+may have other applications as well. 
+<BR>
+This
+routine is quite similar to 
+<B>x/zvcommand</B>.
+The only difference is that 
+<B>x/zvcmdout</B>
+makes any output variables accessible. This is most useful with the VIDS JGET
+command, which returns values to the caller in TAE variables. These variables
+are placed in the interactive parblock. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>COMMAND</B>:
+string, input
+<BR>The
+command string to execute. It may be a TAE intrinsic command or a procedure PDF
+which uses intrinsic commands only ( this includes almost all VIDS PDF's). All
+potential outputs from the executed command will be in the form of NAME
+parameters. The values you wish returned should be declared as local variables
+in the PDF for the program (the one you're writing, not the one being called).
+These local variables should then be passed in the COMMAND string as values for
+the NAME parameters in the executed command. The variables can then be accessed
+from the interactive parblock via the 
+<B>x/zviparm
+</B>family
+of routines. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+integer, output
+<BR>The
+returned status value. It is an argument in FORTRAN and the function return
+value in C. Any value other than SUCCESS indicates that the command didn't
+execute or the outputs didn't get returned correctly, and the returned values
+should not be used.
+<a name="_Toc453201481"></a></UL><A NAME="Heading123"></A><H3 ALIGN="LEFT">
+8.2.5	x/zvcommand&#8212;Execute
+a VICAR command string 
+</H3>
+
+<PRE>call xvcommand(command,status) 
+status =zvcommand(command,status) </PRE><P ALIGN="LEFT"><B>x/zvcommand</B>
+passes a command string on to the VICAR supervisor (TAE) for execution. 
+</P><P ALIGN="LEFT">The
+command may be a VICAR intrinsic command or a procedure PDF that uses only
+VICAR intrinsic commands (or other procedure PDF's). Process PDF's and DCL
+commands are not allowed. Examples of commands that are allowed are VIDS
+commands and tape mounting commands (but NOT tape initialization since it uses
+DCL commands). 
+</P><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>COMMAND</B>:
+input, string
+<BR>The
+command string is passed in exactly as the user would type it on the command
+line. It may be either a FORTRAN or a C string. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+output, integer
+<BR>Error
+status code. A value of one indicates success. The error code may be
+XVCOMMAND_ERROR ( meaning an internal error with interprocess communications)
+or it will be a success/failure indicator (either it's equal to SUCCESS or it's
+not). The actual error code from the command may be returned for some types of
+commands, but all you can count on is a success/fail indication. 
+<BR>If
+an error occurs, the action specified by 
+<B>x/zveaction</B>
+is performed. Even if 'S' is not specified in the
+<B>
+x/zveaction
+</B>
+call (which tells VICAR not to print system messages), the executed program
+will still print error messages from the executed command. The only message
+that 'S' controls is the message from VICAR saying that 
+<B>x/zvcommand</B>
+failed. 
+<a name="Heading118"></a><a name="_Toc425047590"></a><a name="_Toc425048145"></a><a name="_Toc425329742"></a><a name="Heading129"></a><a name="_Toc425047601"></a><a name="_Toc425048156"></a><a name="_Toc453201482"></a></UL><A NAME="Heading124"></A><H3 ALIGN="LEFT">
+8.2.6	x/zvfilename&#8212;Returns
+a filename suitable for use with a system open() call 
+</H3>
+
+<PRE>call xvfilename(in_name, out_name, status) 
+status = zvfilename(in_name,out_name, out_len);</PRE><BLOCKQUOTE>
+Given
+a filename as input by the user, this function returns a filename suitable for
+use with a system 
+<TT><FONT FACE="Courier">open()</FONT></TT>
+call or other non-VICAR file operation. For UNIX, this means that environment
+variables and 
+<TT><FONT FACE="Courier">~username</FONT></TT>
+are expanded. For VMS, this means the old-style temporary filename suffix. Z 
+<I>xx</I>
+is added. For both systems, the &#8220;
+<TT><FONT FACE="Courier">+</FONT></TT>
+&#8220; form of temporary file is expanded. 
+<BR>
+This
+function does not need to be called if the RTL is used for I/O (it is called
+internally by 
+<B>x/zvopen</B>).
+But, any program that gets a filename from the user for use in non-RTL I/O
+should make use of this function. 
+<BR>
+Because
+this function is only intended for use with non-VICAR I/O, only diskfile names
+are supported. Names specifying tape files or memory files will be treated as
+if they were disk files, which could provide surprising results. &#8220;
+<TT><FONT FACE="Courier">*</FONT></TT>&#8221;
+as a wildcard character is legal in this function, and is passed through
+unchanged (so the output has a &#8220;
+<TT><FONT FACE="Courier">*</FONT></TT>&#8221;
+in it). 
+<BR>
+For
+UNIX, the expansions are as follows: 
+</BLOCKQUOTE><UL>
+<LI><FONT FACE="Symbol">	</FONT><TT><FONT FACE="Courier"><B>$var</B></FONT></TT>:Expand
+environment variable &#8220;
+<TT><FONT FACE="Courier">var</FONT></TT>&#8221;.
+<LI><FONT FACE="Symbol">	</FONT><TT><FONT FACE="Courier"><B>${var}</B></FONT></TT>:Expand
+environment variable &#8220;
+<TT><FONT FACE="Courier">var</FONT></TT>&#8221;.
+<LI><FONT FACE="Symbol">	</FONT><TT><FONT FACE="Courier"><B>~user</B></FONT></TT>:
+Expand to home directory of user&#8221;
+<TT><FONT FACE="Courier">user</FONT></TT>&#8221;.
+<LI><FONT FACE="Symbol">	</FONT><TT><FONT FACE="Courier"><B>~</B></FONT></TT>:
+Expand to home directory of current user (
+<TT><FONT FACE="Courier">$HOME</FONT></TT>).
+<LI><FONT FACE="Symbol">	</FONT><TT><FONT FACE="Courier"><B>$$</B></FONT></TT>:
+Insert a single 
+<TT><FONT FACE="Courier">$</FONT></TT>
+(no environment variable). 
+<LI><FONT FACE="Symbol">	</FONT><TT><FONT FACE="Courier"><B>+</B></FONT></TT>:
+Expand to translation of 
+<TT><FONT FACE="Courier">&#8221;$VTMP/</FONT></TT>&#8221;
+for temporary files. 
+</UL><BLOCKQUOTE>
+For
+VMS, the expansions are as follows: 
+</BLOCKQUOTE><UL>
+<LI><FONT FACE="Symbol">	</FONT><TT><FONT FACE="Courier"><B>+</B></FONT></TT>:
+Expand to &#8220;
+<TT><FONT FACE="Courier">vtmp:</FONT></TT>&#8221;
+(if subdirectory present) or &#8220;
+<TT><FONT FACE="Courier">vtmp:[000000]</FONT></TT>&#8221;(if
+no subdirectory) for temporary files. 
+<LI><FONT FACE="Symbol">	</FONT><B>no
+</B><TT><FONT FACE="Courier"><B>+</B></FONT></TT><B>
+and no suffix
+</B>:
+Append &#8220;. Z 
+<I>xx</I>&#8221;
+(where 
+<I>xx</I>
+comes from 
+<TT><FONT FACE="Courier">v2$pidcode</FONT></TT>)
+for old-style temporary names. 
+</UL><BLOCKQUOTE>
+Under
+VMS, both expansions may occur on the same name. 
+<BR>
+The
+temporary filename locations (
+<TT><FONT FACE="Courier">$VTMP</FONT></TT>
+and 
+<TT><FONT FACE="Courier">vtmp</FONT></TT>)
+are set up in vicset2.
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>IN_NAME:</B>
+string, input
+<BR>IN_NAME
+is the input filename that you want converted. 
+<LI><FONT FACE="Symbol">	</FONT><B>OUT_NAME:</B>
+string, output
+<BR>The
+resultant converted string is returned in OUT_NAME. 
+<LI><FONT FACE="Symbol">	</FONT><B>OUT_LEN:</B>
+integer, input
+<BR>This
+argument specifies the length of the output string buffer OUT_NAME (to avoid
+overflow). A length of 0 means the buffer is unlimited, and it is the caller's
+responsibility to make sure there is no overflow. OUT_LEN is only present in
+the C interface. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+integer, output
+<BR>The
+returned status value. It is an argument in FORTRAN and the function return
+value in C. Any value other than SUCCESS indicates that the filename did not
+translate properly, and the returned value should not be used. 
+<a name="_Toc453201483"></a></UL><A NAME="Heading125"></A><H3 ALIGN="LEFT">
+8.2.7	x/zvfilpos&#8212;Return
+the current tape position 
+</H3>
+
+<PRE>POSITION = x/zvfilpos(UNIT) </PRE><BLOCKQUOTE>
+<B>x/zvfilpos</B>
+looks up the current file position of the given unit if it is a tape, and
+returns it in POSITION. If the file is not on tape, -1 is returned. 
+<BR>
+This
+routine assumes that file UNIT has already been opened with 
+<B>x/zvopen</B>.
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+input, integer
+<BR>The
+unit number of the tape from 
+<B>x/zvunit</B>.
+UNIT must have already been opened with a call to 
+<B>x/zvopen</B>.
+<a name="Heading119"></a><a name="_Toc425047591"></a><a name="_Toc425048146"></a><a name="_Toc425329743"></a><a name="_Toc453201484"></a></UL><A NAME="Heading126"></A><H3 ALIGN="LEFT">
+8.2.8	x/zvmessage&#8212;Log
+a user message 
+</H3>
+
+<PRE>call xvmessage(message, key) 
+zvmessage(message, key) </PRE><BLOCKQUOTE>
+<B>x/zvmessage</B>
+is the primary subroutine to be used to print messages on the user terminal or
+in log files. It will work whether or not the program is under the VICAR
+supervisor, and allows the specification of a &#8220;key&#8221; for help on the
+message. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>MESSAGE</B>:
+input, string
+<BR>The
+message to be logged. May be either a C or FORTRAN string.
+<LI><FONT FACE="Symbol">	</FONT><B>KEY</B>:
+input, string
+<BR>KEY
+is an optional argument used to give a 
+<I>message
+key
+</I>.
+A message key is used to look up help information for an error message. It
+consists of a string of the form &#8220;
+<I>facility-key</I>&#8221;,
+where 
+<I>facility</I>
+is the same for all error messages described in one package, and 
+<I>key</I>
+is a unique identifier for that error messages. 
+<BR>For
+example, a program named COPY could have a series of error messages, all of
+which would begin with the facility name &#8220;COPY&#8221;, using keys such as
+&#8220;COPY-NO INPUT&#8221; or &#8220;COPY-END OFFILE&#8221;. The error
+messages would then be stored in a file called COPYFAC. MSG in the standard TAE
+error message file format. The user could then use HELP-MESSAGE or the
+&#8220;?&#8221; command to get help on any error messages received. Details on
+the use of message files can be found in the 
+<I>TAE
+Application Programmer's Reference Manual
+</I>.
+<BR>A
+null value (empty string) or a single blank given for KEY is equivalent to not
+specifying the argument. 
+<a name="Heading134"></a><a name="_Toc425047606"></a><a name="_Toc425048161"></a><a name="_Toc453201485"></a></UL><A NAME="Heading127"></A><H3 ALIGN="LEFT">
+8.2.9	x/zvselpi&#8212;Selects
+the file to use as the primary input 
+</H3>
+
+<PRE>call xvselpi(instance) 
+zvselpi(instance);</PRE><BLOCKQUOTE>
+Selects
+the file to use as the primary input. The primary input is normally the first
+file given in the INP parameter. It is used for several purposes. If file
+attributes like size, type, etc. aren&#8217;t specified when opening a file,
+defaults are taken from the primary input. When creating a new output file,
+history and property labels for it are copied from the primary input, in order
+to maintain the processing history and file attributes. 
+<BR>
+In
+the rare cases where the first INP file is not appropriate for the primary
+input, calling 
+<B>x/zvselpi</B>
+allows you to change the file that is used as the primary input, or to disable
+the primary input altogether. The file selected must still be one of the files
+in the INP parameter. For example, you might be taking 
+<I>n</I>
+input files and creating 
+<I>n</I>
+output files after doing the same processing to each. You would want to set the
+primary input for each output file to the corresponding input file, in order to
+preserve the history labels. Or, you may want to create a file with no history
+labels whatsoever (except for the current task). 
+<BR>
+This
+routine should be called before the 
+<B>x/zvopen</B>
+of the output file you want associated with the input. The only routines that
+use the primary input directly are 
+<B>x/zvopen</B>,
+<B>x/zvsize</B>,
+and 
+<B>x/zvbands</B>.
+The primary input in effect at the time each of these routines is called
+determines which input file is used. You may change 
+<B>x/zvselpi</B>
+after the 
+<B>x/zvopen</B>
+statement, even if you do more processing to the file. It will still use the
+primary input in effect at the time the file was opened. 
+<BR>
+It
+is slightly more efficient to call 
+<B>x/zvselpi</B>
+before you open the primary input file for other reasons, because it avoids an
+extra file open. However, this should not have a big impact. 
+<BR>
+There
+is no status return from this routine.
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>INSTANCE</B>:
+integer, input
+<BR>Determines
+which instance of the INP parameter to use as the primary input. Numbering
+starts at one, so you may restore the default behavior by calling 
+<B>x/zvselpi</B>
+with an INSTANCE of 1. An INSTANCE of 4 would mean the fourth item in the INP
+parameter, etc. 
+<BR>If
+INSTANCE is zero, then the primary input is disabled. Provide all necessary
+file size and type parameters to 
+<B>x/zvopen</B>,
+since there are no defaults. The history labels also will not be copied, so the
+current task will be the first (and only) task in the new file's label. This is
+the primary reason for disabling the primary input. 
+<a name="_Toc425047607"></a><a name="_Toc425048162"></a><a name="Heading122"></a><a name="_Toc423428559"></a><a name="_Toc453201486"></a></UL><A NAME="Heading128"></A><H3 ALIGN="LEFT">
+8.2.10	x/zvselpiu&#8212;Selects
+the file to use as primary input 
+</H3>
+
+<PRE>call xvselpiu(unit) 
+zvselpiu(unit);</PRE><BLOCKQUOTE>
+Selects
+the file to use as the primary input. The primary input is normally the first
+file given in the INP parameter. It is used for several purposes. If file
+attributes like size, type, etc. aren&#8217;t specified when opening a file,
+defaults are taken from the primary input. When creating a new output file,
+history and property labels for it are copied from the primary input, in order
+to maintain the processing history and file attributes. 
+<BR>
+In
+the rare cases where the first INP file is not appropriate for the primary
+input, calling 
+<B>x/zvselpiu</B>
+allows you to change the file that is used as the primary input. This unit then
+becomes the primary input.  This allows any file, not just one associated with
+the INP parameter, to be the primary input.  The file associated with the unit
+may be open or closed,but you should not free the unit (CLOS_ACT, FREE) as long
+as it is the primary input. A primary input unit of 0 is valid.  To disable the
+primary input completely, call 
+<B>x/zvselpi</B>(0);
+do not use 
+<B>x/zvselpiu</B>()
+for this case.
+<BR>
+This
+routine should be called before the 
+<B>x/zvopen</B>
+of the output file you want associated with the input. The only routines that
+use the primary input directly are 
+<B>x/zvopen</B>,
+<B>x/zvsize</B>,
+and 
+<B>x/zvbands</B>.
+The primary input in effect at the time each of these routines is called
+determines which input file is used. You may change 
+<B>x/zvselpiu</B>
+after the 
+<B>x/zvopen</B>
+statement, even if you do more processing to the file. It will still use the
+primary input in effect at the time the file was opened. 
+<BR>
+It
+is slightly more efficient to call 
+<B>x/zvselpiu</B>
+before you open the primary input file for other reasons, because it avoids an
+extra file open. However, this should not have a big impact. 
+<BR>
+There
+is no status return from this routine.
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+input, integer 
+<BR>Unit
+number of file from 
+<B>x/zvunit</B>.
+<a name="_Toc453201487"></a></UL><A NAME="Heading129"></A><H3 ALIGN="LEFT">
+8.2.11	x/zvsize&#8212;Return
+image size values 
+</H3>
+
+<PRE>call xvsize(sl, ss, nl, ns, nli, nsi)
+zvsize(sl, ss, nl, ns, nli, nsi); </PRE><BLOCKQUOTE>
+<B>x/zvsize</B>
+searches the user parameters and the first input file for image size values.
+The values are returned as described below under &#8220;arguments&#8221;. If
+there is an input file, it must be opened before calling 
+<B>x/zvsize</B>.
+<BR>
+For
+3 dimensional files 
+<B>x/zvsize</B>
+must be supplimented with 
+<B>x/zvbands</B>,
+which returns infomation about bands.. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>SL</B>:
+output, integer
+<BR>SL
+is the starting line which should be used when reading the input. If the SIZE
+parameter was given, SL is taken from the first element in the size field. If
+SIZE was not given, but the SL parameter was, SL is taken from the SL
+parameter. Otherwise, SL defaults to a value of one. 
+<LI><FONT FACE="Symbol">	</FONT><B>SS</B>:
+output, integer
+<BR>SS
+is the starting sample which should be used when reading the input. If the SIZE
+parameter was given, SS is taken from the second element in the size field. If
+SIZE was not given, but the SS parameter was, SS is taken from the SS
+parameter. Otherwise, SS defaults to a value of one. 
+<LI><FONT FACE="Symbol">	</FONT><B>NL</B>:
+output, integer
+<BR>NL
+is the number of lines which should be read from the input and written to the
+output. If the SIZE parameter was given, NL is taken from the third element in
+the size field. If SIZE was not given, but the NL parameter was, NL is taken
+from the NL parameter. Otherwise, NL defaults to the size of the primary input. 
+<BR>
+a value of zero for NL is treated as if no value was given. 
+<LI><FONT FACE="Symbol">	</FONT><B>NS</B>:
+output, integer
+<BR>NS
+is the number of samples per line which should be read from the input and
+written to the output. If the SIZE parameter was given, NS is taken from the
+fourth element in the size field. If SIZE was not given, but the NS parameter
+was, NS is taken from the NS parameter. Otherwise, NS defaults to the size of
+the primary input. A value of zero for NS is treated as if no value was given. 
+<LI><FONT FACE="Symbol">	</FONT><B>NLI</B>:
+output, integer
+<BR>NLI
+is the number of lines in the primary input. It is obtained from the NL
+optional to 
+<B>x/zvget</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>NSI</B>:
+output, integer
+<BR>NSI
+is the number of samples per line in the primary input. It is obtained from the
+NS optional to 
+<B>x/zvget</B>.
+</UL>
+<HR>
+
+<DIV ALIGN="LEFT"><A HREF="RTL_Manual-Utility.html">Up</A> | 
+<A HREF="RTL_Manual-8_1.html">Previous</A> | 
+<A HREF="RTL_Manual-Appendix.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+</BODY>
+
+</HTML>

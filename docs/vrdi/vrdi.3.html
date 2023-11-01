@@ -1,0 +1,168 @@
+<H2>VRDI Application Program Guidelines}
+\label{guidelines}
+As systems become more interactive and more user-friendly, they also
+typically become more complex to program.  With an interactive display
+program such as VIDS running, the user is in control and can do anything
+to the display device at any time.  This has the potential for interfering
+with an application program unless careful attention is paid.  For
+this reason, application programs that use the VRDI should follow a few
+simple rules in order to coexist peacefully with VIDS and other display
+programs.  Several routines have been added to the VRDI to make these
+rules as simple and painless as possible.
+<H3>Never Assume Anything}
+The most basic rule is:  ``Never Assume Anything''.  You cannot assume that
+because you set a zoom factor, the zoom will be the same the next time
+you need to use it.  The solution to this is simple:  always call the
+VRDI to read the state of the display rather than relying on a saved
+local variable.  There are VRDI routines that return
+information, like XDDINFO or XDLREAD.  In addition, there is a whole
+class of VRDI routines, the XDS* (status) routines, which return
+information.  These routines return the value as the function return
+instead of a parameter.  Thus, you can do a direct substitution of the
+function call any time you would normally use a local variable.
+
+There are times when it is appropriate to save information locally.
+For example, the size of the image planes will not change often.  Furthermore,
+when the size does change, the XDFCONFIG flag will be set, so you can check it.
+For items like these, where there is a flag available to indicate changes,
+you may save the items locally and only update them when
+the flag is set.  Additionally, items that are used many times in
+succession, e.g., in an extended calculation or in a loop, may be saved
+locally.
+<H3>Check the Flags}
+There are several flags that indicate when something has changed.  These
+should be checked after every XVINTRACT call to determine if the device
+configuration has changed.  They may also be checked after every direct
+call to VIDS by the application.  However, since the application issued
+the call to VIDS, it should know the effect of the call, and checking
+the flags may not be necessary.  The flags are cleared automatically
+every time they are checked.
+
+The most important flag is XDFCONFIG, which indicates that the display
+device configuration has been modified, e.g., changing the size of the
+image planes, changing what planes are displayed, or changing the display
+mode (monochrome/pseudo-color/full color).  If this flag is set, you have
+two choices:  1) reset the configuration, or 2) determine what changed
+and use the new configuration.  For example, if the user changes the
+monochrome image memory plane from 1 to 2, the application may reset it
+to plane 1 or use plane 2.
+
+The XDFLUT flag is not important for most applications.  It is used
+primarily by VIDS.  Most applications, if they need to know the look-up
+tables at all, will need it only infrequently.  Thus, they can read the
+tables from the hardware every time, using XDLREAD, and not use this flag.
+
+The XDFGLUT flag is similar in use to the XDFLUT flag.  However, if
+it is critical that your graphics be displayed in some non-standard
+graphics look-up table, you can monitor the XDFGLUT flag and reset the
+grpahics look-up table if it changes.
+
+The XDFIMAGE flag will be important for some applications and not for
+others.  If you need to check, you should first check with a plane number
+of 0, which lets you know if any planes have changed.  If they have, you
+can check each plane to determine which has changed.  For each changed
+image plane, the application may either refresh the screen, thereby
+redrawing the image, or could just note the fact that a change has
+occurred, and continue.
+
+Note that the change may be what the user wants, i.e., the
+user displayed a part of another image in a small area on the screen for
+reference.  For this reason, you should not indiscriminately refresh the
+image.  Many applications will not need to check this flag, as they can
+assume the user knows what he is doing.
+<H3>Allow User Flexibility}
+This is not a rule, but rather a suggestion.  Allow the user as much
+flexibility as you can.  You should have as few restrictions as possible.
+
+The user should be in charge of his interactive session.  If something
+has changed, there was probably a reason for the change.  You
+should respect the user's choice, if at all possible, and not arbitrarily
+change it back.  Sometimes this is not possible, e.g., you can only
+handle color images and the user changed to monochrome.  But, in
+general, you should honor the choices the user makes, even if it makes
+your task a little more difficult.
+
+For example, if your application works in monochrome mode, and the
+user sets pseudo-color mode, you should allow this.  If the user changes
+the current monochrome plane, you can either use the new plane, or
+change it back.
+
+As another example, do not change the cursor that the user has selected.
+Use the XDCSHOW and XDCOFF routines to turn the cursor on and off
+without changing the user's form and blink rate selection.  In other
+words, you should never call XDCON (which changes the form and blink
+rate of the cursor as well as turning it on) unless the user specifically
+requests that the cursor be changed.
+
+Similarly, if the user sets the device to a different resolution, you
+should use the new resolution if at all possible.  The user
+changed resolutions for a reason, and you should not ignore it.
+
+You should always provide some kind of refresh command, which redraws the
+application's image and associated graphics.  This allows the user to
+quickly display something else and then return to what the application
+was doing with a simple refresh command.
+<H3>Graphics Plane}
+Do not change the default graphics look-up table unless you must.  The
+default table (set by XDGLINIT) contains most of the colors you
+will need in the graphics plane.  Plus, by using the default table,
+your graphics will retain their color after your application exits, and
+other graphics that the user has selected will still display correctly.
+
+As a corollary to this, you should never use XDGLCONSTANT.  It sets up
+a look-up table in which everything is the same color.  You should also
+avoid using XDGLWRITE to write your own table, since
+it will interfere with other applications that use the default graphics
+look-up table.  If you do need to change the graphics look-up table,
+it would be courteous to reset it before your program exits.
+
+Just because you use the default table does not mean you can assume you
+know what the default table is.  It will be different on different devices
+due to hardware differences.  The particular DN value you use for red may
+not be the DN value for red on another device.  There are two
+routines to assist you in finding the right DN value to use.  They are
+XDGCOLOR, which accepts a string of color names and returns the DN
+value that best matches, and XDRGB, which accepts an RGB triple and
+returns the DN value that best matches.  One note of caution:  on a
+small, limited look-up table the best match to your color value may
+not be a very good match.  If you require a specific color, you may
+need to use XDGLWRITE to obtain it.
+<H3>Coordinates}
+\label{coordinates}
+There are two different coordinate systems used by the VRDI.  They are
+raw, or screen, coordinates, and image plane coordinates.  You need to
+be careful to make the distinction correctly.
+
+Screen coordinates are always the size of the video display.  The upper
+left corner of the monitor is always location (1,1).  The screen
+coordinates are never zoomed, either, so the bottom right corner is
+always the size of the video (e.g., (512,512) or (1024,1024), etc.).
+Screen coordinates are used primarily for the cursor, as the cursor
+can not move off-screen.  The only routines that use screen coordinates
+are XDCLOCATION, XDCSET, XDCIMP2RAW, and XDCRAW2IMP.  Everything
+else uses image plane coordinates.  If you are reading the cursor location
+to find a pixel in a particular image, you should use image plane
+coordinates, either with XDCILOCATION or with the coordinate translation
+routine XDCRAW2IMP.
+
+Image plane coordinates are always the size of the image planes.  The
+upper left corner of the image plane is always location (1,1).  However,
+that location may or may not be the upper left of the screen.  If a
+hardware pan is in effect, the upper left corner of the screen will not
+be (1,1) in image plane coordinates.  Likewise, the number of pixels on
+the screen will change with different zooms.  For example, if the video
+size is $512 \times 512$, at zoom 1 there will be $512 \times 512$
+image plane pixels
+displayed.  At zoom 2, however, there will only be $256 \times 256$ pixels.
+So, there is not a one-to-one correspondence between image plane and screen
+coordinates.  Also, the coordinates for different image planes may not
+line up on the screen, due to differing pans and zooms on each image
+memory plane.  The VRDI routines, XDCRAW2IMP and XDCIMP2RAW, were
+created to translate between raw (screen) and image memory plane
+coordinates specifically to deal with the difficulties described above.
+
+It should be noted that the screen and image memory plane coordinate
+systems are exactly the ones used by VIDS.  VIDS has one extra system,
+file coordinates, but the other two are identical.
+\cleardoublepage
+

@@ -1,0 +1,50 @@
+<HEAD>
+<TITLE>No Optional Arguments</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=393 HREF=subsection3.5.1.html><IMG SRC="/icons/previous.png"></A> <A NAME=395 HREF=section3.5.html><IMG SRC="/icons/up.png"></A>  <A NAME=391 HREF=subsection3.5.3.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=394 HREF=subsection3.5.1.html>Terminator</A>  <b>Up:</b> <A NAME=396 HREF=section3.5.html>RTL Calling Conventions</A>  <b>Next:</b> <A NAME=392 HREF=subsection3.5.3.html>Fortran Calling Sequence</A> <P>
+ <H2>No Optional Arguments</H2>
+<A NAME=nooptarg><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+Another change in the RTL calling sequence is the elimination of ``pure''
+optional arguments, which are arguments at the end of the list that
+formerly could be omitted.  Examples of this are <b> xvparm</b> and
+<b> xvmessage</b>.  The <em> only</em> optional arguments allowed in the VICAR
+system are keyword-value style arguments such as the ones in some of the
+RTL routines.  They can be handled in a portable way, but ``pure'' optional
+arguments cannot.
+<P>
+In general, all arguments must be given.  This will require the addition
+of arguments to many of the calls to the affected routines.  For each
+argument that now must be included, there is a value to pass in that has
+the same meaning as the argument not being there, typically 0 or an empty
+string.  See the documentation for the individual routines for details.
+<P>
+The affected routines are listed in Table <A HREF=subsection3.5.2.html#varargs><IMG SRC="/icons/cross-ref.png"></A>, with the number of
+arguments that are required in the Fortran and C calling sequences.  The
+minimum number of arguments in the old RTL are listed as well.
+<P>
+<A NAME=185><IMG SRC="/icons/invis_anchor.png"></A><P><A NAME=varargs><IMG SRC="/icons/invis_anchor.png"></A><P>
+<P>
+Note that for <b> xvparm</b> and <b> xviparm</b>, the last argument has been
+removed, while the last two have been removed from <b> xvpcnt</b> and
+<b> xvipcnt</b>.  The function of the ``r8flag'' parameter of <b> xvparm</b>
+and <b> xviparm</b> has been replaced with the routines <b> x</b>/<b>  zvparmd</b> and
+<b> x</b>/<b>  zviparmd</b>, which return double-precision floating point values.  The
+function of the ``def'' parameter on <b> xvpcnt</b> and <b> xvipcnt</b> has
+been replaced with the ``def'' parameter on the new routines <b> x</b>/<b>  zvpstat</b>
+and <b> x</b>/<b>  zvipstat</b>, while the ``nbytes'' parameter is no longer useful.
+All of these parameters were rarely if ever used in existing code.  Note
+that the ``default'' parameter semantics should not be used; use the count
+of the parameter instead (because once set in TAE tutor, a parameter can not
+be returned to the default state).
+<P>
+Note also that the last argument to <b> xvpout</b> (the maximum string length)
+has been removed.  It was never used in existing code, and is not needed for
+the Fortran call.  The length argument is, however, required for <b> zvpout</b>.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

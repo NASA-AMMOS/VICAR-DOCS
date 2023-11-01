@@ -1,0 +1,170 @@
+<HTML><HEAD>
+<!-- This document was created from RTF source by rtftohtml version 3.9.3 -->
+<TITLE>Introduction - 2.3 Using the Generated VMS Build File </TITLE></HEAD>
+<BODY BACKGROUND="" BGCOLOR="#FFFFFF" TEXT="#000000">
+<A HREF="Build_VICAR_Apps-2.2.html"> Prev </A>
+|<A HREF="Build_VICAR_Apps-2.4.html"> Next </A>
+|<A HREF="Build_VICAR_Apps-2.html"> Up </A>
+|<A HREF="Build_VICAR_Apps.html"> Title </A>
+|<A HREF="Build_VICAR_Apps-Contents.html"> Contents </A>
+<hr size=4>
+<H2>
+2.3 Using the Generated VMS Build File </H2>
+<blockquote>This section describes the options you can use to control the build
+process using the generated VMS build file<br><br>
+The VMS build files will look different depending on whether you are building a
+PROGRAM,SUBROUTINE, or PROCEDURE, and what languages you use. All options are
+described below. Some may not apply, depending on what you are building.
+<br><br>
+The VMS build file is executed with the "<tt>@</tt> " command. The build file
+can have three arguments. The first is the primary option, the second is the
+secondary option list, and the third is a module list. All three parameters are
+optional. In the lists below, the capitalized letters are required (although
+they may be in lowercase on the command line), and the lower case letters are
+optional. Most options can be abbreviated. </blockquote><p>The primary options
+are: </p>
+<ul>
+<li>	<b>COMPile</b>: Compiles some or all source code modules. Valid for
+PROGRAM and SUBROUTINE only .<br><br>
+<li>	<b>DOC</b>: Builds the documentation files for the unit. Currently, the
+only supported type of documentation file is a TAE error message file, although
+other types will be added. Valid for PROGRAM,SUBROUTINE, and PROCEDURE. <br><br>
+<li>	<b>LINK</b>: Links the program. Valid for PROGRAM only. <br><br>
+<li>	<b>INST</b>all: Installs modules in the object library. Valid for
+SUBROUTINE only. <br><br>
+<li>	<b>STD</b>: Builds a private version (" standard ") of the unit in the
+current directory. It is the default if no primary option is given. It is valid
+for PROGRAM, SUBROUTINE, and PROCEDURE. For PROGRAM, it is equivalent to the
+COMPile and LINK steps together. For SUBROUTINE, it is equivalent to the
+COMPile and INSTall-LOCAL steps together. For PROCEDURE, it is a no-op. <br><br>
+<li>	<b>ALL</b>: Builds a private version of the unit in the current directory,
+including documentation. It is valid for PROGRAM, SUBROUTINE, and PROCEDURE.
+For PROGRAM, it is equivalent to the COMPile, DOC, and LINK steps together. For
+SUBROUTINE, it is equivalent to the COMPile, DOC, and INSTall-LOCAL steps
+together. For PROCEDURE, it performs the DOC step. <br><br>
+<li>	<b>SYS</b>tem: Performs a system build of the unit. This option should
+only be used by Configuration Management to build the VICAR system. It is valid
+for PROGRAM, SUBROUTINE, and PROCEDURE. For PROGRAM, it is equivalent to
+COMPile, DOC, LINK, CLEAN-OBJ, and CLEAN-SRC. For SUBROUTINE, it is equivalent
+to COMPile, DOC, INSTall-SYSTEM, CLEAN-OBJ, and CLEAN-SRC. For PROCEDURE, it is
+equivalent to DOC and CLEAN-SRC. <br><br>
+<li>	<b>CLEAN</b>: Deletes and/or purges files that are used during the build
+but are not needed during program execution. It is valid for
+PROGRAM,SUBROUTINE, and PROCEDURE. </ul><blockquote>The default primary option
+is STD, which may be omitted. If so, then the secondary option list becomes the
+first argument to the BLD file, and the module list becomes the second
+argument. <br><br>
+The secondary option list is a list of options, separated by commas and with no
+blanks, that modify how the primary options are performed. They are associated
+with a primary option, so the corresponding primary must be given for the
+secondary to take effect (unless the primary is the default STD). <br><br>
+Some primaries, such as STD, ALL, and SYStem, are combinations of other
+primaries. The secondary options apply in these cases as well. For example, the
+secondaries for COMPile and LINK may be given for STD. <br><br>
+There is one secondary that does not need a primary: </blockquote><ul>
+<li>	<b>NORMal</b>: Used only as a placeholder if no secondary options are
+needed but the module list is. If you need to use the module list, but have no
+secondary options,  give the secondary option NORMal. It is rarely used.
+</ul><p>The secondary options for the COMPile primary option are: </p>
+<ul>
+<li>	<b>DEBug</b>: Compiles the source code for use with the debugger. The
+options "<tt>/debug/noopt</tt>" are passed to the compiler ( only
+"<tt>/debug</tt>" is passed to the VMS MACRO assembler). <br><br>
+<li>	<b>PROfile</b>: Compiles the source code for use with PCA, the Performance
+and Coverage Analyzer. The option " <tt>/debug</tt>" is given to the compiler.
+<br><br>
+<li>	<b>LISt</b>: Generates a list file. The option "<tt>/list</tt>" is given
+to the compiler. <br><br>
+<li>	<b>LISTALL</b>: Generates a full list. The option "<tt>/show=all</tt>" is
+given to the compiler. LISTALL implies LIST, so you need not give both. <br><br>
+<li>	<b>LISTXREF</b>: Generates a cross reference listing. The option "
+<tt>/cross_ref</tt>" is passed to the compiler. LISTXREF implies LIST, so you
+need not give both. <br><br>
+<li>	<b>LINT</b>: Runs the <tt>lint</tt> syntax checker for C. This option is
+not currently implemented. </ul><p>The secondary options for the LINK primary
+option are: </p>
+<ul>
+<li>	<b>DEBug</b>: Links the code for use with the debugger. The option "
+<tt>/debug</tt> " is given to the linker. <br><br>
+<li>	<b>PROfile</b>: Links the code for use with PCA, the Performance and
+Coverage Analyzer. The option " <tt>/debug=sys$library:pca$obj.obj</tt>" is
+given to the linker. <br><br>
+<li>	<b>MAP</b>: Creates a link map file. The option "<tt>/map</tt>" is passed
+to the linker. <br><br>
+<li>	<b>MAPALL</b>: Creates a full link map file. The option "<tt>/full</tt>"
+is passed to the linker. MAPALL implies MAP, so you need not give both. <br><br>
+<li>	<b>MAPXREF</b>: Includes a cross reference listing in the map file. The
+option "<tt>/cross_ref</tt>" is given to the linker. MAPXREF implies MAP, so
+you need not give both. </ul><p>The secondary options for the INSTall primary
+option are: </p>
+<ul>
+<li>	<b>LOCAL</b>: Installs the object code in the local (private) library.
+This is the default. The name of the library may be specified with the
+LOCAL_LIBRARY macro in the imakefile. <br><br>
+<li>	<b>SYSTEM</b>: Installs the object code in the VICAR system library. This
+option may only be used by Configuration Management. </ul><p>The secondary
+options for the CLEAN primary option are: </p>
+<ul>
+<li>	<b>OBJ</b>: Deletes object and list files. For PROGRAMs, it purges the
+executable. This is the default. Valid for PROGRAM and SUBROUTINE. <br><br>
+<li>	<b>SRC</b>: Deletes the source code, imakefile, and BLD files. Be very
+careful with this option. It is intended mainly for system builds, where the
+source code can be deleted after the build because it is maintained in the .COM
+file. If you are modifying code and do not have an up-to-date .COM file, then
+do <i>not</i> use the CLEAN-SRC option. </ul><p>The secondary options for the
+DOC primary option are: </p>
+<ul>
+<li>	<b>MSG</b>: Builds the TAE error message file. If no secondary options for
+DOC are given, then all documentation is built. If a secondary option is
+present, then only the types given in the secondaries are built.
+</ul><blockquote>The last parameter to the BLD file is the module list. It is a
+list of modules to compile or clean. Normally, the entire application is built
+at once, so this is not often used. But the capability exists build only some
+of the code. This is useful if you are modifying one module of a large program.
+Once everything is compiled, you need only compile the module you are changing.
+The names given in the module list must match exactly with the names in the
+MODULE_LIST macro in the imakefile. If you want to give more than one module
+name, then separate them with spaces and enclose the whole list in double
+quotes. <br><br>
+Some examples may prove helpful. The first example merely compiles a version of
+the program into the local directory: </blockquote>
+
+<pre>
+@prog.bld
+</pre>
+<blockquote>The
+next example is the same, except the documentation (if present) is built as
+well: </blockquote>
+
+<pre>
+@prog.bld all
+</pre>
+<blockquote>This
+example shows building the program for use in the debugger. Note how the
+secondary option is first because STD was defaulted: </blockquote>
+
+<pre>
+@prog.bld debug 
+</pre>
+<blockquote>The
+next example shows recompiling a single module out of a large application, and
+then relinking it with the debugger. A link map is created. The other modules
+must have already been compiled:</blockquote>
+
+<pre>
+@prog.bld comp deb module. c <br>@prog.bld link deb,map 
+</pre>
+<blockquote>The
+last example shows how to obtain a full compile listing with cross-reference
+from a pair of modules:</blockquote>
+
+<pre>
+@prog.bld comp listall,listxref "module1.c module2.f".<a name="_Ref393879042"></a><a name="_Toc429910622"></a>
+</pre>
+<P><hr size=4>
+<A HREF="Build_VICAR_Apps-2.2.html"> Prev </A>
+|<A HREF="Build_VICAR_Apps-2.4.html"> Next </A>
+|<A HREF="Build_VICAR_Apps-2.html"> Up </A>
+|<A HREF="Build_VICAR_Apps.html"> Title </A>
+|<A HREF="Build_VICAR_Apps-Contents.html"> Contents </A>
+</body></html>

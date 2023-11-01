@@ -1,0 +1,531 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--
+This document was converted from RTF source: 
+By rtftohtml 4.17
+See http://www.sunpack.com/RTF
+Filename:WORD Ram Disk:RTL_Manual.rtf
+Application Directory:Data Disk:r2h4
+Subject:
+Author:Larry Bolef
+Operator:Larry Bolef
+Document Comments:
+Version Comments:
+Comments:
+Keywords:
+Translation Date:06/05/1999
+Translation Time:08:02:31
+Translation Platform:MacOS
+Number of Output files:59
+This File:WORD Ram Disk:RTL_Manual-2_7.html
+SplitDepth=2
+SkipNavPanel=0
+SkipLeadingToc=0
+SkipTrailingToc=1
+GenContents=1
+GenFrames=0
+GenIndex=0
+-->
+<HEAD lang="en"><META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<TITLE>2.7	Writing Portable FORTRAN </TITLE>
+</HEAD>
+
+<BODY ><DIV ALIGN="LEFT"><A HREF="RTL_Manual-Programm.html">Up</A> | 
+<A HREF="RTL_Manual-2_6.html">Previous</A> | 
+<A HREF="RTL_Manual-2_8.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+<HR>
+
+<UL>
+<A HREF="#Heading32">2.7.1	RTL Issues </A><BR>
+<A HREF="#Heading33">2.7.2	No EQUIVALENCE for Type Conversion </A><BR>
+<A HREF="#Heading34">2.7.3	CHARACTER*n for Strings </A><BR>
+<A HREF="#Heading35">2.7.4	READ &amp; WRITE to Strings </A><BR>
+<A HREF="#Heading36">2.7.5	VMS FORTRAN Extensions </A><BR>
+<A HREF="#Heading37">2.7.6	VMS-Specific Code </A><BR>
+</UL>
+
+<a name="Heading41"></a><a name="_Toc425047506"></a><a name="_Toc425048061"></a><a name="_Toc425750585"></a><a name="_Toc453201397"></a><A NAME="Heading31"></A><H2 ALIGN="LEFT">
+2.7	Writing
+Portable FORTRAN 
+</H2>
+<BLOCKQUOTE>
+This
+Section discusses writing portable FORTRAN code for VICAR applications and
+describes how to deal with machine dependencies in VICAR code. It does not
+explain the rules for writing portable FORTRAN; see a reference book on
+FORTRAN. There are a few allowed VMS extensions to FORTRAN, which are described
+below.
+<a name="Heading42"></a><a name="_Toc425047507"></a><a name="_Toc425048062"></a><a name="_Toc425329683"></a><a name="_Toc425750586"></a><a name="_Toc453201398"></a></BLOCKQUOTE><A NAME="Heading32"></A><H3 ALIGN="LEFT">
+2.7.1	RTL
+Issues 
+</H3>
+<BLOCKQUOTE>
+Portable
+FORTRAN applications use the rules below when calling the RTL: 
+</BLOCKQUOTE><UL>
+<LI><FONT FACE="Symbol">	</FONT><B>Terminator</B>.
+RTL routines with keyword-value pairs of optional arguments have a terminator
+in the argument list, even if none of the optional arguments are used. 
+<LI><FONT FACE="Symbol">	</FONT><B>Character
+strings. 
+</B>Strings
+input to the RTL are CHARACTER*n variables or constants. Both for string
+arguments and token words in keyword-value pairs. See 
+<A HREF="RTL_Manual-2_7.html#Heading46">2.7.4</A>
+<A HREF="RTL_Manual-2_7.html#Heading46">READ &amp; WRITE to Strings</A><LI><FONT FACE="Symbol">	</FONT><B>Optional
+arguments. 
+</B>Pure
+optional arguments are not allowed. Most routines require all arguments to be
+specified.
+<a name="Heading44"></a><a name="_Toc425047508"></a><a name="_Toc425048063"></a><a name="_Toc425329684"></a><a name="_Toc425750587"></a><a name="_Toc453201399"></a></UL><A NAME="Heading33"></A><H3 ALIGN="LEFT">
+2.7.2	No
+EQUIVALENCE for Type Conversion 
+</H3>
+<BLOCKQUOTE>
+The
+use of EQUIVALENCE to convert among datatypes, especially byte to integer, is a
+common trick. This practice is not portable. EQUIVALENCE must not be used to
+convert any data types. EQUIVALENCE is used only to conserve memory. Access the
+data using the same data type you stored it with.
+<BR>
+We
+recommend the 
+<B>x/zvtrans</B>
+family of routines for data conversion. See 
+<A HREF="RTL_Manual-1_6.html#Heading9">1.6</A>
+<A HREF="RTL_Manual-1_6.html#Heading9">Converting Data Types &amp; Hosts</A>.
+An alternative efficient method for converting between byte and integer uses
+the functions 
+<TT><FONT FACE="Courier">INT2BYTE</FONT></TT>
+and 
+<TT><FONT FACE="Courier">BYTE2INT</FONT></TT>.
+Include the file &#8220;fortport&#8221; in your subroutine.
+&#8220;fortport&#8221; is a SUBLIB include; add it to FTNINC_LIST in the
+imakefile. 
+<BR>
+<TT><FONT FACE="Courier">INT2BYTE</FONT></TT>
+and 
+<TT><FONT FACE="Courier">BYTE2INT</FONT></TT>
+assume that the data is in the 0 to 255 range. No bounds checking is performed.
+The functions are implemented either as array lookups (rather than functions),
+or as statement functions, so the include file must be present to get the
+appropriate definition. Example:
+</BLOCKQUOTE>
+<PRE>SUBROUTINE do_something(b, i)
+        BYTE b
+        INTEGER i
+        INCLUDE 'fortport'
+        b = INT2BYTE(i)
+        i = BYTE2INT(b)
+        RETURN<a name="Heading45"></a><a name="_Toc425047509"></a><a name="_Toc425048064"></a><a name="_Toc425329685"></a><a name="_Toc425750588"></a><a name="_Toc453201400"></a></PRE><A NAME="Heading34"></A><H3 ALIGN="LEFT">
+2.7.3	CHARACTER*n
+for Strings 
+</H3>
+<BLOCKQUOTE>
+The
+FORTRAN standard does not support the use of BYTE arrays as character strings.
+They must be declared as CHARACTER*n variables. Moreover, descriptors are not
+used on most machines, so there is no way to tell the difference between a BYTE
+and a CHARACTER*n variable. Since CHARACTER*n variables have a declared length
+associated with them, and BYTE arrays do not, any routine expecting a length
+will get garbage if a BYTE variable is passed in. 
+<BR>
+The
+RTL expects that 
+<I>all</I>
+strings will be CHARACTER*n variables. This applies to all RTL routines, but is
+especially important for the output routines 
+<B>qprint</B>
+and 
+<B>x/zvmessage</B>
+(
+<B>x/zvmessage</B>
+is preferred over 
+<B>qprint</B>
+for new code). All strings destined for output must be CHARACTER*n variables. 
+<A HREF="RTL_Manual-2_7.html#Heading46">READ &amp; WRITE to Strings</A>
+(page 38) discusses how to do output conversion to create the strings.
+<BR>
+While
+changing output strings to CHARACTER*n is possible, there are many areas in the
+code, in files and data structures, where strings are stored in BYTE arrays,
+and it is not practical to change. For that reason, character strings in BYTE
+arrays may be used if it is embedded too deeply to change. The SUBLIB routines 
+<TT><FONT FACE="Courier">mvcl</FONT></TT>
+and 
+<TT><FONT FACE="Courier">mvlc</FONT></TT>
+have been provided to convert between BYTE arrays and CHARACTER*n variables. Do 
+<I>not</I>
+copy data directly to a CHARACTER*n variable from a BYTE array, or vice-versa,
+since that will fail if there are descriptors.
+<BR>
+Subroutines
+should use CHARACTER*n string arguments. In cases where it is impractical to
+change, BYTE arrays may be passed. Passing a CHARACTER*n argument where a BYTE
+array is expected is just as bad as the opposite. If possible, include separate
+entry points to the routine that accept both types. For example, the routine 
+<TT><FONT FACE="Courier">vic1lab</FONT></TT>
+returns data in a character string, while 
+<TT><FONT FACE="Courier">vic1labx</FONT></TT>
+returns data in a BYTE array. 
+<a name="Heading46"></a><a name="_Toc425047510"></a><a name="_Toc425048065"></a><a name="_Toc425329686"></a><a name="_Toc425750589"></a><a name="_Toc453201401"></a></BLOCKQUOTE><A NAME="Heading35"></A><H3 ALIGN="LEFT">
+2.7.4	READ
+&amp; WRITE to Strings 
+</H3>
+<BLOCKQUOTE>
+To
+perform input and output conversion, use the FORTRAN I/O package on an
+&#8220;internal file&#8221;. An internal file to FORTRAN is simply a
+CHARACTER*n variable. Give the name of the variable (it may be a substring)
+instead of the unit number in a FORTRAN READ or WRITE statement. Write to a
+string and send the string to 
+<B>qprint</B>
+or 
+<B>x/zvmessage</B>.
+Do not attempt to write directly to the terminal. Any messages written directly
+to the terminal will not appear in the session log and maybe printed in
+unexpected ways due to interaction with VICAR I/O or SAGE.
+</BLOCKQUOTE><P ALIGN="LEFT">Here
+is one way to code the above example (the leading blank is not required in 
+<B>xvmessage</B>):</P>
+
+<PRE>REAL*8 VRES, VRAD, VTAN
+      CHARACTER*80 MS1
+      WRITE (MS1,1001) VRES, VRAD, VTAN
+ 1001 FORMAT ('VEL=', F9.2, ' (VRAD,VTAN)=(', F7.2, ',', F9.2, ') M/SEC')
+      CALL XVMESSAGE(MS1, ')</PRE><BLOCKQUOTE>
+There
+are three things to note about this example:
+</BLOCKQUOTE><UL>
+<LI><FONT FACE="Symbol">	</FONT>The
+DATA statement is separate from the declaration. Putting initialization data on
+the declaration line is not portable.
+<LI><FONT FACE="Symbol">	</FONT>The
+format specifier may be put in-line in the WRITE statement if you wish.
+<LI><FONT FACE="Symbol">	</FONT>The
+numbers changed from the 
+<TT><FONT FACE="Courier">outcon</FONT></TT>
+call because the leading blank was eliminated. 
+</UL><BLOCKQUOTE>
+The
+<B>xvmessage</B>
+routine always prints the first character, with no carriage control. So, all
+the character position numbers are one less than in the 
+<TT><FONT FACE="Courier">outcon</FONT></TT>
+example. 
+<BR>
+Conversion
+of data from string to numeric form using READ is similar. Use standard FORTRAN
+I/O using the CHARACTER*n variable as the internal file. Substrings are much
+more useful on READ to read only the portion you are interested in. For
+example, the following call form is typical: 
+</BLOCKQUOTE>
+<PRE>CALL INCON(NPAR, %REF(ALABEL(OFF+I+5:)),PAR,20)
+      BUF(2) = PAR(1)                 !Frame number</PRE><BLOCKQUOTE>
+where
+ALABEL is the input string (already a CHARACTER*n variable), BUF(2) is an
+integer receiving the value, and NPAR is ignored. The value is an integer in
+the range 0 to 99 (obtained from the documentation), so this call could be
+converted to:
+</BLOCKQUOTE>
+<PRE>READ (ALABEL(OFF+I+5:),'BN,I2') BUF(2)</PRE><BLOCKQUOTE>
+You
+may want to make use of the ERR=n clause on reads in order to trap errors such
+as a decimal point being present in an integer. 
+<a name="Heading48"></a><a name="_Toc425047511"></a><a name="_Toc425048066"></a><a name="_Toc425329687"></a><a name="_Toc425750590"></a><a name="_Toc453201402"></a></BLOCKQUOTE><A NAME="Heading36"></A><H3 ALIGN="LEFT">
+2.7.5	VMS
+FORTRAN Extensions 
+</H3>
+<BLOCKQUOTE>
+VMS
+has many non-standard extensions to its FORTRAN compiler, which are used
+frequently in VICAR code. Some of these extensions are widely available in
+other vendors' FORTRAN compilers, while others are not. Only standard FORTRAN77
+code should be used in a portable program.
+<BR>
+To
+find out what is standard and what isn't, refer to the ANSI FORTRAN standard,
+or the 
+<I>VAX
+FORTRAN Language Reference Manual
+</I>.
+Anything printed in blue in that manual is non-standard FORTRAN and should not
+be used, except as noted below. 
+<BR>
+Some
+of the FORTRAN extensions are so useful that it would be impractical to write
+VICAR code without them. Fortunately, these extensions are common industry-wide
+and are available in the FORTRAN compilers for every machine MIPL is interested
+in. Therefore some extensions to standard FORTRAN77 are allowed. These
+extensions are listed below.
+<BR>
+You
+should not use any non-standard statements or features that are not mentioned
+below. If you absolutely have to, then make sure it is isolated in a
+machine-specific section of code, and  provide a means for performing the same
+function on machines that don't have that extension.
+<BR>
+Following
+are the 
+<I>only
+</I>permit
+VMS FORTRAN extensions: 
+</BLOCKQUOTE><UL>
+<LI><FONT FACE="Symbol">	</FONT>BYTE
+and INTEGER*2 data types. (Not LOGICAL*1). 
+<LI><FONT FACE="Symbol">	</FONT>Data
+type length specifiers in general (i.e. The *2 in INTEGER*2). They should only
+be used for pixel declarations, as listed. See 
+<A HREF="RTL_Manual-2_4.html#_Ref393695027">Table 6: FORTRAN declarations for pixel types</A>.
+<LI><FONT FACE="Symbol">	</FONT>DO-WHILE
+loops. 
+<LI><FONT FACE="Symbol">	</FONT>DO-END
+DO loops. 
+<LI><FONT FACE="Symbol">	</FONT>INCLUDE
+statement (see above for usage). 
+<LI><FONT FACE="Symbol">	</FONT>Symbolic
+names up to 31 characters, with at least 14 significant in external names. 
+<LI><FONT FACE="Symbol">	</FONT>Lowercase
+letters and underscore (_) are allowed in symbolic names. Names are not case
+sensitive. 
+<LI><FONT FACE="Symbol">	</FONT>Exclamation
+point () starts a comment anywhere in the source line. 
+<LI><FONT FACE="Symbol">	</FONT>Tab-format
+source lines (source lines may start with a TAB character). 
+<LI><FONT FACE="Symbol">	</FONT>IMPLICIT
+NONE statement. 
+<a name="Heading49"></a><a name="_Toc425047512"></a><a name="_Toc425048067"></a><a name="_Toc425329688"></a><a name="_Toc425750591"></a><a name="_Toc453201403"></a></UL><A NAME="Heading37"></A><H3 ALIGN="LEFT">
+2.7.6	VMS-Specific
+Code 
+</H3>
+<BLOCKQUOTE>
+Many
+current VICAR applications and subroutines have VMS-specific code embedded in
+them. Some of it is obvious, like a system service call. Some is insidiously
+difficult to find, like using a double precision floating point value as a
+single. This works on VMS because the first half of a double value looks like a
+float. This is not the case on any other machine. 
+<BR>
+All
+VMS-specific code must be eliminated or isolated. If the same thing can be done
+in a portable way, do it that way. If not, then isolate the VMS-specific code
+and write UNIX code to perform the same function. If the function is useful as
+a general-purpose subroutine, then put it in SUBLIB. If not, include it with
+your code. See 
+<A HREF="RTL_Manual-2_6.html#_Ref395921269">2.6.4.3</A>
+<A HREF="RTL_Manual-2_6.html#_Ref395921269">Machine Dependencies</A>
+for methods of dealing with machine-dependent code. 
+<BR>
+An
+attempt is made below to list the types of VMS-specific code you will run into.
+This is not and can not be an exhaustive list, as there are far too many
+potential problem areas that will only be uncovered with more experience. Use
+this list as examples of what to look out for. You should be familiar with
+writing portable FORTRAN code; if not then see a standard FORTRAN manual (the
+black type in the 
+<I>VAX
+FORTRAN Language Reference Manual
+</I>
+is a good source).
+</BLOCKQUOTE><UL>
+<LI><FONT FACE="Symbol">	</FONT>The
+order of bytes in an integer (or any other data type) is reversed on VMS with
+respect to most other machines. Any code that depends on byte order must be
+changed to not do so. Byte-order dependencies typically come from converting
+between BYTE and other data types, where the first byte of an integer is set to
+the value of a byte, then used as an integer. This is typically accomplished
+via EQUIVALENCE. Use the 
+<B>x/zvtrans</B>
+routines or the 
+<TT><FONT FACE="Courier">BYTE2INT</FONT></TT>
+and 
+<TT><FONT FACE="Courier">INT2BYTE</FONT></TT>
+method described above instead. 
+<LI><FONT FACE="Symbol">	</FONT>Integers
+and double precision floating point values must not be used as INTEGER*2s or
+REALs without conversion. On VMS, the address of a double could be treated as
+the address of a real, or they could be equivalenced to each other. This worked
+because the bit pattern for the first half of a double is the same as for a
+real. The same is true for short vs. normal integers. A pointer to an INTEGER
+could be treated as a pointer to an INTEGER*2 or even a BYTE. This is not valid
+on non-VMS systems. The IEEE floating point standard uses different bit
+patterns for doubles and for single-precision reals. For integers, most other
+machines use the &#8220;big-endian&#8221; byte order. The first bytes of an
+INTEGER are actually the higher-order bytes, unlike VMS, so the value cannot be
+treated as an INTEGER*2. 
+</UL><P ALIGN="LEFT">This
+practice is most common (and hardest to find) in subroutine calls, where a
+program is sloppy about passing data of the correct type. If the subroutine
+expects a REAL, the value passed in better be a REAL and not a DOUBLE
+PRECISION. The same is true for INTEGER, INTEGER*2, and BYTE. Be 
+<I>very</I>
+careful to watch out for this, as it is difficult to find. 
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT>VMS
+System Calls must be eliminated or isolated. These include a whole range of
+things, like system services (SYS$), VMS Run-Time Library calls (LIB$, etc.,
+not to be confused with the VICAR RTL), RMS calls or structures, QIO calls for
+I/O, AST's (asynchronous system traps), and anything else that is VMS specific.
+Any subroutine or structure with a dollar sign ($) is suspect, as most VMS
+system routines have $ in the name. 
+</UL><P ALIGN="LEFT">There
+are two choices for dealing with these. The first is to dispense with
+system-specific calls and do things in a standard way, when possible. This
+could be achieved by using standard UNIX-style calls that do the same thing
+(many of which are implemented under VMS), which may imply calling C code that
+calls the UNIX routines. The second is to isolate the VMS-specific code, and
+write corresponding code that works on a UNIX system. Both versions could
+either be included as separate modules in the program itself, or they could be
+put in a SUBLIB subroutine if it's a capability that could be generally useful.
+See 
+<A HREF="RTL_Manual-2_6.html#_Ref395921269">2.6.4.3</A>
+<A HREF="RTL_Manual-2_6.html#_Ref395921269">Machine Dependencies</A>
+for ways of handling machine-dependent code. In general, system routines should
+not be called from FORTRAN, as there is little standardization. 
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT>Assembly
+language (called Macro on the VAX) included in the program will  have to be
+rewritten. You could write assembler versions for every machine supported, but
+this is 
+<I>highly</I>
+discouraged. The best solution is to write the subroutine in a high-level
+language, preferably C. FORTRAN could be used, but C is generally a better
+match to assembly language.
+<LI><FONT FACE="Symbol">	</FONT>Character
+strings must be CHARACTER*n variables instead of BYTE, LOGICAL*1, or INTEGER
+arrays. This topic is discussed in depth above. 
+<LI><FONT FACE="Symbol">	</FONT>FORTRAN
+-C interfaces must be checked. There are several rules for mixing FORTRAN and
+C, including having separate names for subroutines that are to be called from
+both FORTRAN and C. Make sure you don't call a subroutine from FORTRAN by its C
+interface, or vice-versa, as that is not portable. String handling is a
+particular problem. See
+<U>
+</U><A HREF="RTL_Manual-2_6.html#Heading37">2.6</A>
+<A HREF="RTL_Manual-2_6.html#Heading37">Mixing FORTRAN and C</A>,
+for details. 
+<LI><FONT FACE="Symbol">	</FONT>Make
+sure that 
+<I>all</I>
+input operations from files can accept files written on a foreign machine. This
+is often handled automatically, but there are cases where it is not. See 
+<A HREF="RTL_Manual-1_3.html#Heading5">1.3</A>
+<A HREF="RTL_Manual-1_3.html#Heading5">Data Types and Host Representations</A>
+for details.
+<LI><FONT FACE="Symbol">	</FONT>Do
+not assume that you know the size of a pixel in an inputfile. An integer may
+not be four bytes on every machine that VICAR runs on. Use the RTL routines 
+<B>x/zvpixsize</B>,
+<B>x/zvpixsizeu</B>,
+or 
+<B>x/zvpixsizeb</B>
+to get the size of a pixel. 
+<LI><FONT FACE="Symbol">	</FONT>Knowledge
+of the bit patterns used to store data is not portable, especially
+floating-point data. This is not very common, but any code that does
+bit-twiddling is likely to have problems. Byte-order dependencies often creep
+into this sort of code. 
+<LI><FONT FACE="Symbol">	</FONT>Use
+of EQUIVALENCE to access the same bit pattern in different ways is highly
+unportable. If EQUIVALENCEs are used, make sure you use only one of the
+definitions for any given piece of data. If you use the other definition, put a
+new value of that type in to the EQUIVALENCE. Be careful when mixing INTEGER
+and REAL data types in a single array (the FORTRAN way of doing structures).
+While that can be legitimate if done properly, care has to be taken since the
+data sizes may not be the same on all machines. 
+<LI><FONT FACE="Symbol">	</FONT>Optional
+arguments are not allowed in subroutines. Supply all the arguments the
+subroutine requires. If you are porting a subroutine that accepts optional
+arguments, you have the choice of eliminating the extra arguments, forcing them
+to be there, or creating different subroutine names with different numbers of
+arguments. 
+<LI><FONT FACE="Symbol">	</FONT>Do
+not use numeric constants for things like error numbers. VICAR constants could
+change in the future, and &#8220;CANNOT_FIND_KEY&#8221; is much more
+understandable than &#8220;-38&#8221;. Use the VICAR include files when needed. 
+<LI><FONT FACE="Symbol">	</FONT>Variable
+and subroutine names must not conflict with UNIX system routines or the RTL
+internal routines. Most UNIX machines do not have the concept of a shareable
+image like VMS does. Shareable images allowed subroutine libraries such as the
+RTL to hide their internals from the program. Without them, the entire RTL is
+linked with your program. This greatly increases the chance of name collisions,
+as the internal RTL subroutine names (and TAE and SPICE and X-windows and ...)
+are suddenly visible, and some of the names are fairly common. Be very careful
+with subroutine and global variable names. 
+</UL><P ALIGN="LEFT">The
+ultimate solution to this problem is to have a consistent naming scheme for RTL
+internal names that won't conflict with applications. Until this is
+implemented, however, watch out for conflicts. Even this fix won't help other
+subroutine packages that MIPL does not have direct control over, such as TAE,
+SPICE, and X-windows. 
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT>There
+are many differences in the file system and filename structure between VMS and
+UNIX. The VMS path name of &#8220;
+<TT><FONT FACE="Courier">disk:[dir.subdir]file.ext;version</FONT></TT>&#8221;
+is quite different from the UNIX path name of &#8220; 
+<TT><FONT FACE="Courier">/dir/subdir/subdir/filename</FONT></TT>&#8221;.
+Logical names do not exist under UNIX. The analog to logical names, environment
+variables, act quite differently in many respects (for example, the system 
+<TT><FONT FACE="Courier">open()</FONT></TT>
+call doesn't know how to deal with environment variables, although 
+<B>x/zvopen</B>
+and 
+<B>x/zvfilename</B>
+do).
+</UL><P ALIGN="LEFT">Filenames
+and path names that are embedded in the program should be removed and made
+available as arguments, both to handle architecture differences and differences
+in directory structure on other machines. Any code that parses filenames from
+user input must be aware of the differences and have code to handle each
+system. Such code should be rare as the RTL does most of the filename parsing;
+however, it does exist. 
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT>Filenames
+and path names tend to be longer under UNIX than VMS. Many current programs
+arbitrarily limit filename parameters to 40 or even 20 characters in the PDF
+and in the code. These limits need to be lifted. Most of the time, the program
+never sees the filename (it lets 
+<B>x/zvunit</B>
+take care of it), so the solution is simply to not specify the maximum string
+length in the PDF. Instead of &#8220;(STRING,40)&#8221;, use
+&#8220;STRING&#8221;. If you need a buffer in the program code to handle the
+filename, allow at least 255 characters (which is slightly more than the
+maximum TAE string size). 
+<LI><FONT FACE="Symbol">	</FONT>The
+filenames of the program units themselves will need changing. FORTRAN language
+modules must end in a &#8220;.f&#8221;, 
+<I>not</I>
+&#8220;.for &#8220;, to be compatible with vimake. UNIX likes &#8220;.f&#8221;,
+and it is more picky about filename extensions than VMS is.
+<LI><FONT FACE="Symbol">	</FONT>Many
+VAX FORTRAN language extensions are used in current VICAR code. A small subset
+of extensions is allowed (they are listed above), since they are available on
+all machines of interest. All other extensions will have to be removed, as they
+are not portable. Check the 
+<I>VAX
+FORTRAN Language Reference Manual
+</I>
+for the feature in question. If it is printed in blue ink, then it is not
+portable and may not be used, unless it is in the above list. 
+</UL>
+<HR>
+
+<DIV ALIGN="LEFT"><A HREF="RTL_Manual-Programm.html">Up</A> | 
+<A HREF="RTL_Manual-2_6.html">Previous</A> | 
+<A HREF="RTL_Manual-2_8.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+</BODY>
+
+</HTML>

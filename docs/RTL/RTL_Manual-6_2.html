@@ -1,0 +1,656 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--
+This document was converted from RTF source: 
+By rtftohtml 4.17
+See http://www.sunpack.com/RTF
+Filename:WORD Ram Disk:RTL_Manual.rtf
+Application Directory:Data Disk:r2h4
+Subject:
+Author:Larry Bolef
+Operator:Larry Bolef
+Document Comments:
+Version Comments:
+Comments:
+Keywords:
+Translation Date:06/05/1999
+Translation Time:08:04:29
+Translation Platform:MacOS
+Number of Output files:59
+This File:WORD Ram Disk:RTL_Manual-6_2.html
+SplitDepth=2
+SkipNavPanel=0
+SkipLeadingToc=0
+SkipTrailingToc=1
+GenContents=1
+GenFrames=0
+GenIndex=0
+-->
+<HEAD lang="en"><META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<TITLE>6.2	Translation API</TITLE>
+</HEAD>
+
+<BODY ><DIV ALIGN="LEFT"><A HREF="RTL_Manual-Translat.html">Up</A> | 
+<A HREF="RTL_Manual-6_1.html">Previous</A> | 
+<A HREF="RTL_Manual-FORTRAN.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+<HR>
+
+<UL>
+<A HREF="#Heading91">6.2.1	x/zvhost&#8212;Integer and real data representations of a host given the host type name </A><BR>
+<A HREF="#Heading92">6.2.2	x/zvpixsize&#8212;Size of a pixel in bytes given the data type and host representation </A><BR>
+<A HREF="#Heading93">6.2.3	x/zvpixsizeb&#8212;Size of a binary label value in bytes from a file </A><BR>
+<A HREF="#Heading94">6.2.4	x/zvpixsizeu&#8212;Size of a pixel in bytes from a file </A><BR>
+<A HREF="#Heading95">6.2.5	x/zvtrans&#8212;Translate pixels from one format to another </A><BR>
+<A HREF="#Heading96">6.2.6	x/zvtrans_in&#8212;Create translation buffer for input </A><BR>
+<A HREF="#Heading97">6.2.7	x/zvtrans_inb&#8212;Create translation buffer for input from binary labels of a file </A><BR>
+<A HREF="#Heading98">6.2.8	x/zvtrans_inu&#8212;Create translation buffer for input from a file </A><BR>
+<A HREF="#Heading99">6.2.9	x/zvtrans_out&#8212;Create translation buffer for output </A><BR>
+<A HREF="#Heading100">6.2.10	x/zvtrans_set&#8212;Create translation buffer for data types only </A><BR>
+</UL>
+
+<a name="_Toc425047563"></a><a name="_Toc425048118"></a><a name="_Toc453201453"></a><A NAME="Heading90"></A><H2 ALIGN="LEFT">
+6.2	Translation
+API
+<a name="Heading104"></a><a name="_Toc425047564"></a><a name="_Toc425048119"></a><a name="_Toc425329725"></a><a name="Translate"></a><a name="Heading130"></a><a name="_Toc425047602"></a><a name="_Toc425048157"></a></H2>
+<P ALIGN="LEFT">Below
+are the ten subroutines that comprise the Translation API.
+<a name="_Toc453201454"></a></P>
+<A NAME="Heading91"></A><H3 ALIGN="LEFT">
+6.2.1	x/zvhost&#8212;Integer
+and real data representations of a host given the host type name 
+</H3>
+
+<PRE>call xvhost(host, intfmt, realfmt, status) 
+status = zvhost(host, intfmt, realfmt);</PRE><BLOCKQUOTE>
+Returns
+the integer and real data representations of a host given the host type name.
+The returned values may be used with the translation routines or the INTFMT and
+REALFMT system label items. This routine can also return the host type name,
+for use with the HOST system label. 
+<BR>
+This
+routine is rarely needed, as the normal case is to read any type of file (where
+you get INTFMT and REALFMT from the file), and to write in native format (where
+you don't need to specify the formats). However, this routine is useful in the
+rare case that a program needs to write in a non-native format. The user can
+select the machine type for output, and this routine will return the data
+representations needed for that machine type.
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>HOST</B>:
+string, input
+<BR>HOST
+is the type name of the host you want information about. It is not the name of
+a particular machine, rather, it is the name of a type of machine. HOST
+corresponds to the HOST system label. The HOST system label is intended for
+documentation only, however, the same values are valid in this parameter.
+Normally, the HOST parameter will come from user input. The valid values will
+change as VICAR is ported to more machines, so the program should allow any
+value as user input, then check the status from
+<B>
+x/zvhost
+</B>
+to see if the machine name is valid. The currently valid values are listed. See 
+<A HREF="RTL_Manual-1_4.html#_Ref393618344">Table 1: Valid VICAR HOST Labels and Machine Types</A>.
+In addition, the following values are accepted: 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT>NATIVE
+: Returns the INTFMT and REALFMT for the machine currently running. 
+<LI><FONT FACE="Symbol">	</FONT>LOCAL
+: Same as NATIVE. 
+<LI><FONT FACE="Symbol">	</FONT>HOSTNAME
+: Special, see below. 
+</UL></UL><P ALIGN="LEFT">The
+value &#8220;HOSTNAME&#8221; is special. If this value is given for HOST, then
+the return values change. The parameter INTFMT returns the host type name for
+the machine currently running. The parameter REALFMT is undefined on output.
+The value returned in INTFMT could then be used in another call to
+<B>
+x/zvhost
+</B>
+(which wouldn't gain much since &#8220;NATIVE&#8221; or &#8220;LOCAL&#8221; do
+the same thing), or it could be used in a HOST label. This should be needed
+only from FORTRAN. A C program should use the &#8220; NATIVE _HOST_LABEL&#8221;
+macro defined in x/zvmaininc.h instead. Similarly, &#8220;NATIVE&#8221; and
+&#8220;LOCAL&#8221; will be mainly useful in a FORTRAN program, as a C program
+should use the NATIVE_INTFMT and NATIVE_REALFMT macros. 
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>INTFMT</B>:
+string, output
+<BR>The
+integral host representation for the machine in question is returned in INTFMT.
+It corresponds to the INTFMT label item in a file, and the related parameters
+to the translation routines. The returned value will be one of the supported
+integer data types, which are listed. See 
+<A HREF="RTL_Manual-1_4.html#_Ref393618329">Table 2: Valid VICAR Integer Formats</A>.
+<BR>If
+the special host name &#8220;HOSTNAME&#8221; is given, then INTFMT instead
+returns the host type name (HOST label) of the native machine. 
+<LI><FONT FACE="Symbol">	</FONT><B>REALFMT</B>:
+string,  output
+<BR>The
+floating-point host representation for the machine in question is returned in
+REALFMT. It corresponds to the REALFMT label item in a file, and the related
+parameters to the translation routines. The returned value will be one of the
+supported floating-point data types, which are listed. See 
+<A HREF="RTL_Manual-1_4.html#_Ref393618311">Table 3: Valid VICAR Real Number Formats</A>.
+<BR>If
+the special host name &#8220;HOSTNAME&#8221; is given, then the value returned
+in REALFMT is undefined and should not be used. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+integer, output
+<BR>The
+returned status value. It is an argument in FORTRAN and the function return
+value in C. Any value other than SUCCESS indicates that the value given for
+HOST was invalid. 
+<a name="Heading131"></a><a name="_Toc425047603"></a><a name="_Toc425048158"></a><a name="_Toc453201455"></a></UL><A NAME="Heading92"></A><H3 ALIGN="LEFT">
+6.2.2	x/zvpixsize&#8212;Size
+of a pixel in bytes given the data type and host representation 
+</H3>
+
+<PRE>status = xvpixsize(pixsize, type, ihost, rhost) 
+status = zvpixsize(pixsize, type, ihost, rhost);</PRE><BLOCKQUOTE>
+Returns
+the size of a pixel in bytes given the data type and host representation. One
+of the 
+<B>pixsize</B>
+routines should be used to figure out the size of a pixel. Do 
+<I>not</I>
+assume any particular size, like 4 bytes for a REAL. It may be different on
+other machines. It is valid to use 
+<TT><FONT FACE="Courier">sizeof()</FONT></TT>
+in C to get the size of a pixel in the native representation 
+<I>only,
+</I>but
+the 
+<B>pixsize</B>
+routines are the only valid way to get the size of a pixel on any other hosts.
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>PIXSIZE</B>:
+integer, output
+<BR>Returns
+the size of a pixel in bytes. If an error occurs (such as an invalid data
+type), PIXSIZE is returned as 0. 
+<LI><FONT FACE="Symbol">	</FONT><B>TYPE</B>:
+string, input
+<BR>TYPE
+is the data type of the pixel. It corresponds to the FORMAT label item in a
+file. It may be one of the standard VICAR data types: &#8220;BYTE&#8221;,
+&#8220;HALF&#8221;, &#8220;FULL&#8221;, &#8220;REAL&#8221;,&#8221;DOUB&#8221;,
+or &#8220;COMP&#8221;. The types &#8220;WORD&#8221;, &#8220;LONG&#8221;, and
+&#8220;COMPLEX&#8221; are also accepted, but are obsolete and should not be
+used. 
+<LI><FONT FACE="Symbol">	</FONT><B>IHOST</B>:
+string, input
+<BR>IHOST
+is the integral host representation for the pixel. It corresponds to the INTFMT
+label item in a file. It may be any of the supported integer data types, which
+are listed. See 
+<A HREF="RTL_Manual-1_4.html#_Ref393618329">Table 2: Valid VICAR Integer Formats</A>.
+It may also be &#8220;NATIVE&#8221; or &#8220;LOCAL&#8221;, both of which mean
+the native host INTFMT. IHOST should be given even if you are dealing with
+floating-point data types. 
+<LI><FONT FACE="Symbol">	</FONT><B>RHOST</B>:
+string, input
+<BR>RHOST
+is the floating-point host representation for the pixel. It corresponds to the
+REALFMT label item in a file. It may be any of the supported floating-point
+data types, which are listed. See 
+<A HREF="RTL_Manual-1_4.html#_Ref393618311">Table 3: Valid VICAR Real Number Formats</A>.
+It may also be &#8220;NATIVE&#8221; or &#8220;LOCAL&#8221;, both of which mean
+the native host REALFMT. RHOST should be given even if you are dealing with
+integral datatypes. 
+<a name="Heading132"></a><a name="_Toc425047604"></a><a name="_Toc425048159"></a><a name="_Toc453201456"></a></UL><A NAME="Heading93"></A><H3 ALIGN="LEFT">
+6.2.3	x/zvpixsizeb&#8212;Size
+of a binary label value in bytes from a file 
+</H3>
+
+<PRE>status = xvpixsizeb(pixsize, type, unit) 
+status = zvpixsizeb(pixsize, type, unit);</PRE><BLOCKQUOTE>
+Return
+the size of a binary label value in bytes from a file. This routine is exactly
+like 
+<B>x/zvpixsize</B>
+except that the IHOST and RHOST values are obtained for binary labels from the
+file specified by UNIT, which must be open. It is provided merely as a shortcut
+to get the size of a binary label value for a file.
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>PIXSIZE</B>:
+integer, output
+<BR>Returns
+the size of a pixel in bytes. If an error occurs (such as an invalid data
+type), PIXSIZE is returned as 0. 
+<LI><FONT FACE="Symbol">	</FONT><B>TYPE</B>:
+string, input
+<BR>TYPE
+is the data type of the binary label value. It corresponds to the FORMAT label
+item in a file, although binary label values are not restricted to FORMAT and
+maybe any data type. TYPE may be one of the standard VICAR data types:
+&#8220;BYTE&#8221;, &#8220;HALF&#8221;,&#8221;FULL&#8221;, &#8220;REAL&#8221;,
+&#8220;DOUB&#8221;, or &#8220;COMP&#8221;. The types &#8220;WORD&#8221;,
+&#8220;LONG&#8221;, and &#8220;COMPLEX&#8221; are also accepted, but are
+obsolete and should not be used. 
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+integer, input
+<BR>UNIT
+is the unit number of an open file, which is used to obtain the source BINTFMT
+and INTFMT. The values obtained from the file are used exactly like the 
+<B>x/zvpixsize</B>
+IHOST and RHOST. 
+<a name="Heading133"></a><a name="_Toc425047605"></a><a name="_Toc425048160"></a><a name="_Toc453201457"></a></UL><A NAME="Heading94"></A><H3 ALIGN="LEFT">
+6.2.4	x/zvpixsizeu&#8212;Size
+of a pixel in bytes from a file 
+</H3>
+
+<PRE>status = xvpixsizeu(pixsize, type, unit) 
+status = zvpixsizeu(pixsize, type,unit);</PRE><BLOCKQUOTE>
+Return
+the size of a pixel in bytes from a file. This routine is exactly like 
+<B>x/zvpixsize</B>
+except that the IHOST and RHOST values are obtained from the file specified by
+UNIT, which must be open. It is provided merely as a shortcut to get the pixel
+size of a file.
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>PIXSIZE</B>:
+integer, output
+<BR>Returns
+the size of a pixel in bytes. If an error occurs (such as an invalid data
+type), PIXSIZE is returned as 0. 
+<LI><FONT FACE="Symbol">	</FONT><B>TYPE</B>:
+string, input
+<BR>TYPE
+is the data type of the pixel. It corresponds to the FORMAT label item in a
+file. It may be one of the standard VICAR data types: &#8220;BYTE&#8221;,
+&#8220;HALF&#8221;, &#8220;FULL&#8221;, &#8220;REAL&#8221;,&#8221;DOUB&#8221;,
+or &#8220;COMP&#8221;. The types &#8220;WORD&#8221;, &#8220;LONG&#8221;, and
+&#8220;COMPLEX&#8221; are also accepted, but are obsolete and should not be
+used. 
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+integer, input
+<BR>UNIT
+is the unit number of an open file, which is used to obtain the source INTFMT
+and REALFMT. The values obtained from the file are used exactly like the 
+<B>x/zvpixsize</B>
+IHOST and RHOST. 
+<a name="_Toc453201458"></a></UL><A NAME="Heading95"></A><H3 ALIGN="LEFT">
+6.2.5	x/zvtrans&#8212;Translate
+pixels from one format to another 
+</H3>
+
+<PRE>call xvtrans(buf, source, dest, npix) 
+zvtrans(buf, source, dest, npix);</PRE><BLOCKQUOTE>
+Translate
+pixels from one format to another. One of the translation setup routines must
+have been called first to set up the translation buffer. This routine is the
+only standard way to translate data in the VICAR system, both between host
+representations ( e. g. VAX to IEEE) and between data types (e.g. integer to
+real).
+<BR>
+This
+routine is coded to be very efficient, so it may be called inside a tight loop
+with very little performance penalty
+<B>.
+</B></BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:
+</B></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>BUF</B>:
+integer-array(12), input
+<BR>BUF
+is the translation buffer that describes the translation to be performed. It is
+initialized by one of the translation setup routines. The internals of this
+buffer are unknown to the application program, with one exception, described
+below. 
+<I>Any</I>
+other access to the internals of the buffer may cause your program to break in
+the future, as the structure may change without notice. 
+<BR>If
+the first integer in the translation buffer is NULL (0), then 
+<B>x/zvtrans</B>
+merely moves the data from the source to the destination, without any
+conversion. This can happen often when reading a file, where you don't know
+ahead of time what host representation the input data is in. If it turns out to
+be the native representation, no translation is necessary, and the first
+integer of the buffer will be 0. This fact can sometimes be used to avoid
+copying the data, making the program more efficient. 
+<LI><FONT FACE="Symbol">	</FONT><B>SOURCE</B>:
+pixel-buffer, input
+<BR>SOURCE
+is the source data buffer. 
+<LI><FONT FACE="Symbol">	</FONT><B>DEST</B>:
+pixel-buffer, output
+<BR>DEST
+is the destination data buffer. It may 
+<I>not</I>
+be the same as SOURCE, i.e. you can't translate in place or with overlapping
+buffers. 
+<LI><FONT FACE="Symbol">	</FONT><B>NPIX</B>:
+integer, input
+<BR>NPIX
+is the number of pixels (not bytes!) to translate. Both SOURCE and DEST must be
+large enough to hold NPIX pixels; no checking is done. 
+<a name="Heading105"></a><a name="_Toc425047565"></a><a name="_Toc425048120"></a><a name="_Toc425329726"></a><a name="_Toc453201459"></a></UL><A NAME="Heading96"></A><H3 ALIGN="LEFT">
+6.2.6	x/zvtrans_in&#8212;Create
+translation buffer for input 
+</H3>
+
+<PRE>call xvtrans_in(buf, stype, dtype, sihost, srhost, status) 
+status = zvtrans_in(buf, stype, dtype, sihost, srhost);</PRE><BLOCKQUOTE>
+Create
+translation buffer for input. The data will be converted from a host
+representation of (SIHOST, SRHOST) and data type of STYPE into the machine's
+native representation and data type DTYPE. So, it converts from foreign to
+local format. Since all processing must be done in native format on the machine
+the program is running on, this translation is most often needed for input from
+a file
+<B>.
+</B></BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:
+</B></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>BUF</B>:
+integer-array(12), output
+<BR>BUF
+is the translation buffer that this routine will setup, describing the
+translation to be performed. 
+<LI><FONT FACE="Symbol">	</FONT><B>STYPE</B>:
+string, input
+<BR>STYPE
+is the source data type. It corresponds to the FORMAT label item in a file. It
+may be one of the standard VICAR data types: &#8220;BYTE&#8221;,
+&#8220;HALF&#8221;, &#8220;FULL&#8221;, &#8220;REAL&#8221;,&#8221;DOUB&#8221;,
+or &#8220;COMP&#8221;. The types &#8220;WORD&#8221;, &#8220;LONG&#8221;, and
+&#8220;COMPLEX&#8221; are also accepted, but are obsolete and should not be
+used. 
+<LI><FONT FACE="Symbol">	</FONT><B>DTYPE</B>:
+string, input
+<BR>DTYPE
+is the desired destination data type. It corresponds to the FORMAT label item
+in a file. It may be one of the standard VICAR data types: &#8220;BYTE&#8221;,
+&#8220;HALF&#8221;, &#8220;FULL&#8221;, &#8220;REAL&#8221;, &#8220;DOUB&#8221;,
+or &#8220;COMP&#8221;. The types &#8220;WORD&#8221;, &#8220;LONG&#8221;, and
+&#8220;COMPLEX&#8221; are also accepted, but are obsolete and should not be
+used. 
+<LI><FONT FACE="Symbol">	</FONT><B>SIHOST</B>:
+string, input
+<BR>SIHOST
+is the host representation for the source of integral data types. It
+corresponds to the INTFMT label item in a file. It may be any of the supported
+integer data types, which are listed. See 
+<A HREF="RTL_Manual-1_4.html#_Ref393618329">Table 2: Valid VICAR Integer Formats</A>.
+It may also be &#8220; NATIVE&#8221; or &#8220;LOCAL&#8221;, both of which mean
+the native host INTFMT. SIHOST should be given even if you are dealing only
+with floating-point data types. See also 
+<B>x/zvhost</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>SRHOST</B>:
+string, input
+<BR>SRHOST
+is the host representation for the source of floating-point data types. It
+corresponds to the REALFMT label item in a file. It may be any of the supported
+floating-point data types, which are listed. See 
+<A HREF="RTL_Manual-1_4.html#_Ref393618311">Table 3: Valid VICAR Real Number Formats</A>.
+It may also be &#8220;NATIVE&#8221; or &#8220;LOCAL&#8221;, both of which mean
+the native host REALFMT. SRHOST should be given even if you are dealing only
+with integral data types. See also 
+<B>x/zvhost</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+integer, output
+<BR>The
+returned status value. It is an argument in FORTRAN and the function return
+value in C. Any value other than SUCCESS indicates that the translation is
+invalid for some reason, and the translation buffer should not be used. 
+<a name="Heading106"></a><a name="_Toc425047566"></a><a name="_Toc425048121"></a><a name="_Toc425329727"></a><a name="_Toc453201460"></a></UL><A NAME="Heading97"></A><H3 ALIGN="LEFT">
+6.2.7	x/zvtrans_inb&#8212;Create
+translation buffer for input from binary labels of a file 
+</H3>
+
+<PRE>call xvtrans_inb(buf, stype, dtype, unit, status) 
+status = zvtrans_inb(buf,stype, dtype, unit);</PRE><BLOCKQUOTE>
+Create
+translation buffer for input from the binary labels of a file. This routine is
+exactly like 
+<B>x/zvtrans_in</B>
+except that the SIHOST and SRHOST values are obtained for binary labels from
+the file specified by UNIT, which must be open. It is provided merely as a
+shortcut for the common case of reading binary label data from a labeled file
+<B>.
+</B></BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:
+</B></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>BUF</B>:
+integer-array(12), output
+<BR>BUF
+is the translation buffer that this routine will setup, describing the
+translation to be performed. 
+<LI><FONT FACE="Symbol">	</FONT><B>STYPE</B>:
+string, input
+<BR>STYPE
+is the source data type. It corresponds to the FORMAT label item in a file,
+although binary label values are not restricted to FORMAT and may be of any
+datatype. STYPE may be one of the standard VICAR data types:
+&#8220;BYTE&#8221;, &#8220;HALF&#8221;, &#8220;FULL&#8221;,
+&#8220;REAL&#8221;,&#8221;DOUB&#8221;, or &#8220;COMP&#8221;. The types
+&#8220;WORD&#8221;, &#8220;LONG&#8221;, and &#8220;COMPLEX&#8221; are also
+accepted, but are obsolete and should not be used. 
+<LI><FONT FACE="Symbol">	</FONT><B>DTYPE</B>:
+string, input
+<BR>DTYPE
+is the desired destination data type. It corresponds to the FORMAT label item
+in a file, although binary label values are not restricted to FORMAT and may be
+of any data type. DTYPE may be one of the standard VICAR data types:
+&#8220;BYTE&#8221;, &#8220;HALF&#8221;, &#8220;FULL&#8221;, &#8220;REAL&#8221;,
+&#8220;DOUB&#8221;, or &#8220;COMP&#8221;. The types &#8220;WORD&#8221;,
+&#8220;LONG&#8221;, and &#8220;COMPLEX&#8221; are also accepted, but are
+obsolete and should not be used. 
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+integer, input
+<BR>UNIT
+is the unit number of an open file, which is used to obtain the source BINTFMT
+and INTFMT. The values obtained from the file are used exactly like the 
+<B>x/zvtrans_in</B>
+SIHOST and SRHOST. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+integer, output
+<BR>The
+returned status value. It is an argument in FORTRAN and the function return
+value in C. Any value other than SUCCESS indicates that the translation is
+invalid for some reason, and the translation buffer should not be used. 
+<a name="Heading107"></a><a name="_Toc425047567"></a><a name="_Toc425048122"></a><a name="_Toc425329728"></a><a name="_Toc453201461"></a></UL><A NAME="Heading98"></A><H3 ALIGN="LEFT">
+6.2.8	x/zvtrans_inu&#8212;Create
+translation buffer for input from a file 
+</H3>
+
+<PRE>call xvtrans_inu(buf, stype, dtype, unit, status) 
+status = zvtrans_in u(buf,stype, dtype, unit);</PRE><BLOCKQUOTE>
+Create
+translation buffer for input from a file. This routine is exactly like 
+<B>x/zvtrans_in</B>
+except that the SIHOST and SRHOST values are obtained from the file specified
+by UNIT, which must be open. It is provided as a shortcut for the common case
+of reading image data from a labeled file
+<B>.
+</B></BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:
+</B></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>BUF</B>:
+integer-array(12), output
+<BR>BUF
+is the translation buffer that this routine will setup, describing the
+translation to be performed. 
+<LI><FONT FACE="Symbol">	</FONT><B>STYPE</B>:
+string, input
+<BR>STYPE
+is the source data type. It corresponds to the FORMAT label item in a file. It
+may be one of the standard VICAR data types: &#8220; BYTE&#8221;,
+&#8220;HALF&#8221;, &#8220;FULL&#8221;, &#8220;REAL&#8221;,&#8221;DOUB&#8221;,
+or &#8220;COMP&#8221;. The types &#8220;WORD&#8221;, &#8220;LONG&#8221;, and
+&#8220;COMPLEX&#8221; are also accepted, but are obsolete and should not be
+used. 
+<LI><FONT FACE="Symbol">	</FONT><B>DTYPE</B>:
+string, input
+<BR>DTYPE
+is the desired destination data type. It corresponds to the FORMAT label item
+in a file. It may be one of the standard VICAR data types: &#8220;BYTE&#8221;,
+&#8220;HALF&#8221;, &#8220;FULL&#8221;, &#8220;REAL&#8221;, &#8220;DOUB&#8221;,
+or &#8220;COMP&#8221;. The types &#8220;WORD&#8221;, &#8220;LONG&#8221;, and
+&#8220;COMPLEX&#8221; are also accepted, but are obsolete and should not be
+used. 
+<LI><FONT FACE="Symbol">	</FONT><B>UNIT</B>:
+integer, input
+<BR>UNIT
+is the unit number of an open file, which is used to obtain the source INTFMT
+and REALFMT. The values obtained from the file are used exactly like the 
+<B>x/zvtrans_in</B>
+SIHOST and SRHOST. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+integer, output
+<BR>The
+returned status value. It is an argument in FORTRAN and the function return
+value in C. Any value other than SUCCESS indicates that the translation is
+invalid for some reason, and the translation buffer should not be used. 
+<a name="Heading108"></a><a name="_Toc425047568"></a><a name="_Toc425048123"></a><a name="_Toc425329729"></a><a name="_Toc453201462"></a></UL><A NAME="Heading99"></A><H3 ALIGN="LEFT">
+6.2.9	x/zvtrans_out&#8212;Create
+translation buffer for output 
+</H3>
+
+<PRE>call xvtrans_out(buf, stype, dtype, dihost, drhost, status) 
+status =zvtrans_out(buf, stype, dtype, dihost, drhost);</PRE><BLOCKQUOTE>
+Create
+translation buffer for output. The data will be converted from the machine's
+native representation and data type of STYPE into a host representation of
+(DIHOST, DRHOST) and data type of DTYPE. So, it converts from local to foreign
+format. Since all processing must be done in native format on the machine the
+program is running on, this translation is most often needed for output to a
+file. 
+<BR>
+This
+routine is less commonly used than the input routines. The general rule for
+applications is to read any format, but write the native format. Translation on
+output is not needed in this case. However, 
+<B>x/zvtrans_out</B>
+is provided for special cases where the data must be written in a different
+host representation
+<B>.
+</B></BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:
+</B></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>BUF</B>:
+integer-array(12), output
+<BR>BUF
+is the translation buffer that this routine will create, describing the
+translation to be performed. 
+<LI><FONT FACE="Symbol">	</FONT><B>STYPE</B>:
+string, input
+<BR>STYPE
+is the source data type. It corresponds to the FORMAT label item in a file. It
+may be one of the standard VICAR data types: &#8220;BYTE&#8221;,
+&#8220;HALF&#8221;, &#8220;FULL&#8221;, &#8220;REAL&#8221;,&#8221;DOUB&#8221;,
+or &#8220;COMP&#8221;. The types &#8220;WORD&#8221;, &#8220;LONG&#8221;, and
+&#8220;COMPLEX&#8221; are also accepted, but are obsolete and should not be
+used. 
+<LI><FONT FACE="Symbol">	</FONT><B>DTYPE</B>:
+string, input
+<BR>DTYPE
+is the desired destination data type. It corresponds to the FORMAT label item
+in a file. It may be one of the standard VICAR data types: &#8220;BYTE&#8221;,
+&#8220;HALF&#8221;, &#8220;FULL&#8221;, &#8220;REAL&#8221;, &#8220;DOUB&#8221;,
+or &#8220;COMP&#8221;. The types &#8220;WORD&#8221;, &#8220;LONG&#8221;, and
+&#8220;COMPLEX&#8221; are also accepted, but are obsolete and should not be
+used. 
+<LI><FONT FACE="Symbol">	</FONT><B>DIHOST</B>:
+string, input
+<BR>DIHOST
+is the host representation for the destination of integral data types. It
+corresponds to the INTFMT label item in a file. It may be any of the supported
+integer data types, which are listed. See 
+<A HREF="RTL_Manual-1_4.html#_Ref393618329">Table 2: Valid VICAR Integer Formats</A>.
+It may also be &#8220;NATIVE&#8221; or &#8220;LOCAL&#8221;, both of which mean
+the native host INTFMT. DIHOST should be given even if you are dealing only
+with floating-point data types. See also 
+<B>x/zvhost</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>DRHOST</B>:
+string, input
+<BR>DRHOST
+is the host representation for the destination of floating-point data types. It
+corresponds to the REALFMT label item in a file. It may be any of the supported
+floating-point data types, which are listed. See 
+<A HREF="RTL_Manual-1_4.html#_Ref393618311">Table 3: Valid VICAR Real Number Formats</A>.
+It may also be &#8220;NATIVE&#8221; or &#8220;LOCAL&#8221;, both of which mean
+the native host REALFMT. DRHOST should be given even if you are dealing only
+with integral data types. See also 
+<B>x/zvhost</B>.
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+integer, output
+<BR>The
+returned status value. An argument in FORTRAN or the function return value in
+C. Any value other than SUCCESS indicates that the translation is invalid, and
+the translation buffer should not be used. 
+<a name="Heading109"></a><a name="_Toc425047569"></a><a name="_Toc425048124"></a><a name="_Toc425329730"></a><a name="_Toc453201463"></a></UL><A NAME="Heading100"></A><H3 ALIGN="LEFT">
+6.2.10	x/zvtrans_set&#8212;Create
+translation buffer for data types only 
+</H3>
+
+<PRE>call xvtrans_set(buf, stype, dtype, status)
+status = zvtrans_set(buf, stype, dtype);</PRE><BLOCKQUOTE>
+Create
+translation buffer for data types only. Both the source and the destination
+must be in the native host representation. It is useful for converting internal
+buffers from one data type to another. Don't use it with data direct from a
+file, however, as files are not guaranteed to be in the native host
+representation
+<B>.
+</B></BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:
+</B></P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>BUF</B>:
+integer-array(12), output
+<BR>BUF
+is the translation buffer that this routine will setup, describing the
+translation to be performed. 
+<LI><FONT FACE="Symbol">	</FONT><B>STYPE</B>:
+string, input
+<BR>STYPE
+is the source data type. It corresponds to the FORMAT label item in a file. It
+may be one of the standard VICAR data types: &#8220;BYTE&#8221;,
+&#8220;HALF&#8221;, &#8220;FULL&#8221;, &#8220;REAL&#8221;,&#8221;DOUB&#8221;,
+or &#8220;COMP&#8221;. The types &#8220;WORD&#8221;, &#8220;LONG&#8221;, and
+&#8220;COMPLEX&#8221; are also accepted, but are obsolete and should not be
+used. 
+<LI><FONT FACE="Symbol">	</FONT><B>DTYPE</B>:
+string, input
+<BR>DTYPE
+is the desired destination data type. It corresponds to the FORMAT label item
+in a file. It may be one of the standard VICAR data types: &#8220;BYTE&#8221;,
+&#8220;HALF&#8221;, &#8220;FULL&#8221;, &#8220;REAL&#8221;, &#8220;DOUB&#8221;,
+or &#8220;COMP&#8221;. The types &#8220;WORD&#8221;, &#8220;LONG&#8221;, and
+&#8220;COMPLEX&#8221; are also accepted, but are obsolete and should not be
+used. 
+<LI><FONT FACE="Symbol">	</FONT><B>STATUS</B>:
+integer, output
+<BR>The
+returned status value. It is an argument in FORTRAN and the function return
+value in C. Any value other than SUCCESS indicates that the translation is
+invalid for some reason, and the translation buffer should not be used. 
+</UL>
+<HR>
+
+<DIV ALIGN="LEFT"><A HREF="RTL_Manual-Translat.html">Up</A> | 
+<A HREF="RTL_Manual-6_1.html">Previous</A> | 
+<A HREF="RTL_Manual-FORTRAN.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+</BODY>
+
+</HTML>

@@ -1,0 +1,45 @@
+<HEAD>
+<TITLE>No EQUIVALENCE for Type Conversion</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=908 HREF=subsection3.9.2.html><IMG SRC="/icons/previous.png"></A> <A NAME=910 HREF=section3.9.html><IMG SRC="/icons/up.png"></A>  <A NAME=906 HREF=subsection3.9.4.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=909 HREF=subsection3.9.2.html>Include Files</A>  <b>Up:</b> <A NAME=911 HREF=section3.9.html>Porting Fortran</A>  <b>Next:</b> <A NAME=907 HREF=subsection3.9.4.html>CHARACTER*n for Strings</A> <P>
+ <H2>No EQUIVALENCE for Type Conversion</H2>
+<A NAME=ftnequivtype><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+The use of EQUIVALENCE to convert among data types, especially byte to integer,
+is widespread in current Fortran application code.  A byte will typically be
+equivalenced to an integer, so storing the data in the byte variable makes it
+accessible via the integer variable.  This practice is absolutely not portable.
+EQUIVALENCE should <em> never</em> be used to convert any data types.  If you use
+EQUIVALENCE, it must be done to conserve storage only.  You must access the
+data using the same data type you stored it with.
+<P>
+To do data type conversion, use the <b> xvtrans</b> family of routines.  See
+Section <A HREF=subsection3.7.5.html#convtype><IMG SRC="/icons/cross-ref.png"></A>, Converting Data Types &amp; Hosts, for details.
+In addition, a method is available for converting between byte and integer
+(since it is by far the most common conversion) that is more efficient than
+calling the <b> xvtrans</b> routines.  This method consists of the functions
+<tt> INT2BYTE</tt> and <tt> BYTE2INT</tt>.  To use them, you must include the file
+``fortport'' in the subroutine.  ``fortport'' is a SUBLIB include, so it must
+be listed in FTNINC_LIST in the imakefile to be available.  These conversion
+functions assume that the data is strictly in the 0 to 255 range.  No bounds
+checking is performed.  The functions are actually implemented on some
+machines as array lookups rather than functions, and on others they may be
+statement functions, so the include file must be present to get the appropriate
+definition.
+<P>
+<PRE><TT>
+        SUBROUTINE do_something(b, i)
+        BYTE b
+        INTEGER i
+        INCLUDE 'fortport'
+        b = INT2BYTE(i)
+        i = BYTE2INT(b)
+        RETURN
+</TT></PRE>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

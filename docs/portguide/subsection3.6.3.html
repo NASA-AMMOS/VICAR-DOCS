@@ -1,0 +1,111 @@
+<HEAD>
+<TITLE>New Features in Old Routines</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=747 HREF=subsection3.6.2.html><IMG SRC="/icons/previous.png"></A> <A NAME=749 HREF=section3.6.html><IMG SRC="/icons/up.png"></A>  <A NAME=745 HREF=subsection3.6.4.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=748 HREF=subsection3.6.2.html>New Routines</A>  <b>Up:</b> <A NAME=750 HREF=section3.6.html>RTL Routine Changes</A>  <b>Next:</b> <A NAME=746 HREF=subsection3.6.4.html>Deprecated RTL Functionality</A> <P>
+ <H2>New Features in Old Routines</H2>
+<A NAME=newfold><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+This section lists new features and potential incompatibilities of the new RTL
+that aren't discussed elsewhere or need to be re-emphasized.
+<P>
+<UL>
+<P>
+<LI> <b> xvp</b> count problem
+<P>
+The COUNT parameter on <b> zvp</b>, <b> xvip</b>, and <b> zvip</b> behaves like
+you would expect.  It returns the number of parameters given, and 0 if it
+is a null parameter.  However, in <b> xvp</b>, COUNT behaves differently.  If
+the parameter was defaulted (given a default in the PDF but not by the user),
+then COUNT is returned as 0, regardless of the actual number of parameters
+in the defaulted value.  This is a design flaw that must be maintained for
+historical reasons.  See the discussion of COUNT under <b> x</b>/<b>  zvip</b> above for
+more details.
+<P>
+<LI> <b> xvparm</b> and <b> xviparm</b> R8FLAG parameter
+<P>
+The R8FLAG parameter of <b> xvparm</b> and <b> xviparm</b> has been removed.
+To return double precision real values, use <b> x</b>/<b>  zvparmd</b> or <b> x</b>/<b>  zviparmd</b>.
+The R8FLAG parameter does still exist in the VMS version for backward
+compatibility, however, it is <em> only</em> in the VMS version and may disappear
+in the future.
+<P>
+<LI> Single quotes in label strings
+<P>
+Strings in the image label are delimited by single quotes (').
+In the past, this meant that single quotes could not be included in a label
+string.  With the new RTL, however, this restriction no longer applies.
+A single quote in an input string (to <b> x</b>/<b>  zladd</b>) will be repeated before
+being put in the label.  On output (from <b> x</b>/<b>  zlget</b>), the pair will be returned
+as one single quote.  In other words, the repeating of quotes is transparent
+to the application program.  Care should be taken when creating labels with
+single quotes, as older versions of VICAR will not be able to read the file.
+This problem should disappear in time as the old versions get replaced.
+<P>
+<LI> <b> xvpout</b> length parameter
+<P>
+The maximum string length parameter for <b> xvpout</b> has been removed.
+It was formerly an optional argument, but was not used anywhere in the system.
+Since the string length can be obtained from the Fortran string itself,
+it is not needed for the Fortran <b> xvpout</b> call.  The length parameter
+is, however, required on the C-language <b> zvpout</b> call.
+<P>
+<LI> Label key size expanded
+<P>
+The maximum size of a label key has been increased from 8 to 32 characters.
+This will allow more descriptive labels and will facilitate data exchange with
+other image formats, such as PDS and FITS.  Note that at the present time the
+length of a task name is still truncated to 8 (only 8 are significant), but
+when calling <b> x</b>/<b>  zlhinfo</b> you should now provide a 32-character buffer (33 in C
+for the null terminator) in order to accomodate future expansion.  Property
+names may be up to 32 characters long as well.
+<P>
+You must be careful when using longer label keys, at least at first.  An image
+with a long label key will not be able to be read properly on an older VICAR
+system.  Before using a long label key in an image, make sure that all
+potential users of the image are using a version of VICAR that handles long
+label keys.
+<P>
+<LI> Property type added to labels
+<P>
+The TYPE argument to <b> x</b>/<b>  zladd</b>, <b> x</b>/<b>  zldel</b>, <b> x</b>/<b>  zlget</b>, and <b> x</b>/<b>  zlinfo</b> now
+allows the type ``PROPERTY'' as well as ``SYSTEM'' and ``HISTORY''.
+``PROPERTY'' must be specified for the TYPE argument of these routines to
+access the property labels.  See Section <A HREF=subsection3.6.6.html#proplabel><IMG SRC="/icons/cross-ref.png"></A>, Property Labels,
+for more information.
+<P>
+<LI> Unix filename expansion
+<P>
+Under Unix, filenames accepted by the RTL (via <b> x</b>/<b>  zvunit</b>, either the U_NAME
+optional or the INP or OUT parameters) now can contain environment variables
+and usernames.  A reference of the form $<i> var</i> will be replaced with the
+value of the environment variable <i> var</i>.  The name of the environment
+variable (but not the dollar sign) may optionally be enclosed in curly braces
+(${<i> var</i>}).  A tilde ( ) followed by a username will be replaced
+with the home directory of that user.  A tilde without a username will be
+replaced with the home directory of the current account.  Both of these
+expansions exactly mimic the behavior of the C-shell, so they should be
+familiar to most Unix users.
+<P>
+<LI> Temporary files
+<P>
+In addition, if a filename begins with a plus sign (+), the file is treated
+as a <em> temporary</em> file.  It is created (or accessed) in the directory
+pointed at by the environment variable $VTMP, which is normally set to
+/tmp/<i> username</i>, where <i> username</i> is the username of the current
+account.  The VMS VICAR style of specifying temporary filenames (by leaving
+off the filename extension, which is replaced with a .Z<i> xx</i> extension),
+is not supported under Unix.  If you do not put an extension on the filename,
+then the file will be created without one, as you specified.  The + form of
+temporary file will be supported in VMS in the future.  It is possible that
+the translation of the temporary names to physical locations may change in
+the future, in order to allow different filenames for different processes.
+However, the + form of specifying the name will not change.
+<P>
+</UL>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

@@ -1,0 +1,59 @@
+<HEAD>
+<TITLE>Differences from Fortran</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=425 HREF=subsection3.5.4.html><IMG SRC="/icons/previous.png"></A> <A NAME=427 HREF=subsection3.5.4.html><IMG SRC="/icons/up.png"></A>  <A NAME=423 HREF=subsubsection3.5.4.2.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=426 HREF=subsection3.5.4.html>C Calling Sequence</A>  <b>Up:</b> <A NAME=428 HREF=subsection3.5.4.html>C Calling Sequence</A>  <b>Next:</b> <A NAME=424 HREF=subsubsection3.5.4.2.html>C Data Types</A> <P>
+ <H3>Differences from Fortran</H3>
+<P>
+There are several differences in the C calling sequence from the Fortran
+calling sequence.  The name change has been discussed already.  Also, the
+use of a 0 or NULL terminator for a keyword-value argument list has been
+discussed above.  There are two major differences that will come up in
+porting programs, however.  They both have to do with making the interface
+conform to standard C calling conventions.
+<P>
+First, most arguments are now passed by value.  The old RTL routines expected
+all arguments to be passed by reference, since that's how Fortran does it.
+This leads to all sorts of strange constructs like ``&amp;1'' in C, which is
+not valid on most machines.  The rule is:  if it's an input value, it's passed
+by value.  If it's an output value, it of course must still be passed by
+reference (as a pointer).  For example, ``unit'' is a parameter to most of
+the RTL routines.  Instead of calling zvread(&amp;unit, ...);, you
+call zvread(unit, ...); (where ``unit'' is an integer).  The
+routine <b> zvunit</b>, however, returns ``unit'' as an output, so it
+would still have to be called ``zvunit(&amp;unit, ...);''.  Most values in
+keyword-value pairs are input, so the ``&amp;''s would go away.  On
+<b> zvget</b>, however, most values are output, so they are still passed as
+pointers.  Arrays of items, as well as strings, are still passed by reference
+as per standard C practice.  It sounds rather confusing, but it makes sense
+once you work with it a little.
+<P>
+There is a pitfall to be aware of regarding <b> zladd</b>.  Since <b> zladd</b>
+accepts as input the value to which to set the label, you might expect it to be
+passed by value.  However, <b> zladd</b> can accept arrays of items,
+since a label may be multi-valued.  Therefore, the ``value'' parameter to
+<b> zladd</b> is always passed by reference.  This can be confusing if only
+one value is being added.  This is not an issue with <b> zlget</b>, since
+``value'' is an output from <b> zlget</b>.  You would expect ``value'' to be
+passed by reference in that case.
+<P>
+Second, many routines had a ``status'' argument, which returned the status
+of the command.  These arguments have been removed.  The status is now
+the return value of the function.  So, instead of
+``zvread(unit,&amp;status,...);'', it is now
+``status = zvread(unit,...);''.
+If you don't need the status value, it can be ignored entirely, as in
+``zvread(unit,...);''.
+<P>
+Also, the handling of arrays of strings as arguments has been improved and made
+consistent in the C interface.  Only a few routines use string arrays as
+arguments, but the calls to those routines should be examined carefully.
+These routines are <b> zladd</b>, <b> zlget</b>, <b> zlhinfo</b>, <b> zvpout</b>,
+<b> zvparm</b>, <b> zviparm</b>, <b> zvparmd</b>, and <b> zviparmd</b>.
+See below for the rules on passing string arrays.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

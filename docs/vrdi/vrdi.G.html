@@ -1,0 +1,248 @@
+<H2>Sample Application Programs}
+<H3>Non-Interactive Sample Program}
+This program sample does not interact with VIDS or other applications
+and does not allow the operator to interact with the display device.
+It is assumed the display device has been allocated prior to the 
+execution of this program.  Error checking is not performed in this
+sample because the error actions specified call for a program abort on
+errors and fatal errors.
+\begin{tabbing}
+xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=\kill
+\#define IMG\_SIZE 512*512\\
+main()\\
+\\
+\{\\
+\>int status, unit\_no;\\
+\>int config[4] = \{0, 0, 0, 0\};\\
+\>int red\_lut = 1;\\
+\>int green\_lut = 2;\\
+\>int blue\_lut = 3;\\
+\>int imp\_1 = 1;\\
+\>int imp\_2 = 2;\\
+\>int imp\_3 = 3;\\
+\>unsigned char buf1[IMG\_SIZE],buf2[IMG\_SIZE],buf3[IMG\_SIZE];\\
+\\
+/*  Set up actions to take on warning, error, and fatal status returns */\\
+\\
+\>status = zdeaction( 1, 3, 3 );\\
+\\
+/*  Get unit number to use in subsequent VRDI calls */\\
+\\
+\>status = zddunit( unit\_no );\\
+\\
+/*  Open the Device */\\
+\\
+\>status = zddopen( unit\_no );\\
+\\
+/*  Activate the device */\\
+\\
+\>status = zddactivate( unit\_no, 1 );\\
+\\
+/*  Setup default configuration */\\
+\\
+\>status = zddconfigure( unit\_no, config );\\
+\\
+/*  Load LUTs with linear ramps */\\
+\\
+\>status = zdlramp( unit\_no, red\_lut, section\_1 );\\
+\>status = zdlramp( unit\_no, green\_lut, section\_1 );\\
+\>status = zdlramp( unit\_no, blue\_lut, section\_1 );\\
+\\
+/*  Connect for color */\\
+\\
+\>status = zdlconnect( unit\_no, imp\_1, red\_lut,\\
+\>\>\>\>\> section\_1, nobypass);\\
+\>status = zdlconnect( unit\_no, imp\_2, green\_lut,\\
+\>\>\>\>\> section\_1, nobypass);\\
+\>status = zdlconnect( unit\_no, imp\_3, blue\_lut,\\
+\>\>\>\>\> section\_1, nobypass);\\
+\\
+/*  The images are read into buf1, buf2, buf3 */\\
+\\
+\>read\_in\_image();\\
+\\
+/*  Display them */\\
+\\
+\>status = zdiawwrite( unit\_no, imp\_1, IMG\_SIZE, buf1 );\\
+\>status = zdiawwrite( unit\_no, imp\_2, IMG\_SIZE, buf2 );\\
+\>status = zdiawwrite( unit\_no, imp\_3, IMG\_SIZE, buf3 );\\
+\\
+/*  Close the Device */\\
+\\
+\>status = zddclose( unit\_no );\\
+\>return( status );\\
+\}\\
+\end{tabbing}
+\newpage
+<H3>Simple Interactive Sample Program}
+This sample program allows the operator to interact with the display
+device through use of the VIDS XVINTRACT routine.  This simple sample
+shows the minimum you can get away with when creating
+an interactive application involving the VRDI.  It is not
+a very good program, because when the configuration changes, it simply
+changes it back.  Note that this program fragment is in pseudo-code and
+is not intended to be typed and run.
+\begin{tabbing}
+xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=\kill
+\>zddunit()\\
+\>zddopen()\\
+\>zddactivate()\\
+\\
+\>/*  sets mode, connects planes, etc.  */\\
+\>initialize()\\
+\>loop\\
+\>\>xvintract()\\
+\>\>/*  config changed?  */\\
+\>\>if (zdfconfig())\\
+\>\>\>initialize()\\
+\>\>process\_command()\\
+\>end-loop\\
+\>zddclose()\\
+\end{tabbing}
+If it is critical that you know exactly what is displayed, then the
+following could be added to the above after the ZDFCONFIG check:
+\begin{tabbing}
+xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=\kill
+\>if (zdfimage(..., 0))\\
+\>\>for each plane used\\
+\>\>\>if (zdfimage(..., plane)\\
+\>\>\>\>refresh\_imp(plane)\\
+\>\>end-for\\
+\end{tabbing}
+\newpage
+<H3>Better Interactive Sample Program</H3>
+This sample is more sophisticated than the previous example, because
+it looks at exactly what has changed in the configuration, and adapts
+to it.  As an example, this application can only run in color mode,
+so it makes sure that it is in color mode, but it adapts to everything
+else.  This is much better from the user's point of view, because the
+user is more in control of the session.
+
+An application that only used monochrome mode would be quite similar,
+except there would be only one image plane to deal with, making some of
+the loops unnecessary.
+
+This sample also shows some examples of how certain things would be
+handled--like reading the stretch or the cursor position.  Note that,
+in general, the numbers 1, 2, or 3 are passed for the red, green, and
+blue planes.  These numbers are actually look-up table numbers, and
+have to be translated to actual image plane numbers by ZDSIMP.  You
+could instead pass around the actual image plane numbers, of course,
+as long as you know which look-up table they are connected to.  You
+could call ZDSIMP for each plane each time the configuration changes,
+then use the saved value.
+\begin{tabbing}
+xx\=xx\=xx\=xx\=xx\=xx\=\kill
+\>zddunit()\\
+\>zddopen()\\
+\>zddactivate()\\
+\>/*  initialize graphics LUT  */\\
+\>zdglinit()\\
+\>size = zdsnl, zdsns (or zdsvnl, zdsvns)\\
+\>check\_device()\\
+\>new\_size\_routine()\\
+\>loop\\
+\>\>xvintract()\\
+\>\>if (zdfconfig())\\
+\>\>check\_device()\\
+\>\#if optional\\
+\>\>/*  any image plane change?  */\\
+\>\>if (zdfimage(...,0))\\
+\>\>\>for i=1 to 3  (red, green, blue)\\
+\>\>\>\>if (zdfimage(..., zdsimp(i)))\\
+\>\>\>\>\>refresh\_plane(i)\\
+\>\>\>end-for\\
+\>\#endif optional\\
+  \\
+\>\>/*  process xvintract commands  */\\
+  \\
+\>\>...\\
+  \\
+\>\>if (command == ``REFRESH'')\\
+\>\>\>for i=1 to 3 (red, green, blue)\\
+\>\>\>\>if (zdfimage(...,zdsimp(i)))\\
+\>\>\>\>\>refresh\_plane(i)\\
+\>\>\>end-for\\
+  \\
+\>\>if (command == ``PLOT STRETCH TABLE'')\\
+\>\>\>for i=1 to 3 (red, green, blue )\\
+\>\>\>\>/*  read it--don't assume it.  */\\
+\>\>\>\>/*  section 0 means current section.  */\\
+\>\>\>\>zdlread(...,zdsimp(i),0,lut)\\
+\>\>\>\>\>plot\_lut(i, lut)\\
+\>\>\>end-for\\
+  \\
+\>\>if (command == ``GET POSITION INTERACTIVELY'')\\
+\>\>\>/*  use user's choice for cursor form and blink  */\\
+\>\>\>zdcshow()\\
+\>\>\>zdcautotrack()\\
+\>\>\>wait\_button()\\
+\>\>\>zdclocation(..., raw\_x, raw\_y)\\
+\end{tabbing}
+NOTE:  You may use the raw coordinates for some things.  If you need
+the image plane coordinates, you must translate.  The image plane
+location may be different for each plane.  You could always assume one
+plane, like red, if you want (VIDS tends to use the graphics
+plane).  You could use ZDCILOCATION, but if you're doing more
+than one plane, it is best to use ZDCLOCATION and the
+coordinate translation routines so the user doesn't move the
+cursor in between ZDCILOCATION calls.  Also, note the use
+of ZDSIMP to get the plane number currently in use for each
+color.
+\begin{tabbing}
+xx\=xx\=xx\=xx\=xx\=xx\=\kill
+\>\>\>zdcraw2imp(...,zdsimp(...,1), raw\_x, raw\_y, red\_x, red\_y)\\
+\>\>\>zdcraw2imp(...,zdsimp(...,2), raw\_x, raw\_y, grn\_x, grn\_y)\\
+\>\>\>zdcraw2imp(...,zdsimp(...,3), raw\_x, raw\_y, blu\_x, blu\_y)\\
+\>\>\>do\_something(red\_x, red\_y)\\
+\>\>\>...\\
+\\
+\>\>if (command == ``DRAW GRAPHICS'')\\
+\>\>\>zdgon()\\
+\>\>\>/*  Don't assume you know the plane  */\\
+\>\>\>plane = zdsgraph()\\
+\>\>\>/*  Don't assume you know the DN  */\\
+\>\>\>color = zdgcolor(..., ``RED'')\\
+\>\>\>/*  Plot using the DN returned  */\\
+\>\>\>plot\_graphics(plane, color)\\
+\>\>\>/*  Ask for something close to this color  */\\
+\>\>\>color = zdgrgb(..., 100,150,50)\\
+\>\>\>/*  (most likely won't get exact color)  */\\
+\>\>\>plot\_more\_graphics(plane,color)\\
+\\
+\>\>if (command == ``STRETCH'')\\
+\>\>\>/*  Instead of section 1 below, you could use the\=*/\\
+\>\>\>/*  current section (gotten via zdssection), but\>*/\\
+\>\>\>/*  there's no real need to.\>*/\\
+xx\=xx\=xx\=xx\=xx\=xx\=\kill
+\\
+\>\>\>/*  Set up LUT arrays  */\\
+\>\>\>zdlwrite(..., 1, 1, lut)\\
+\>\>\>zdlwrite(..., 2, 1, lut)\\
+\>\>\>zdlwrite(..., 3, 1, lut)\\
+\>\>\>/*  Use section 1, no bypass  */\\
+\>\>\>zdlconnect(..., zdsimp(1), 1, 1, 0)\\
+\>\>\>zdlconnect(..., zdsimp(2), 2, 1, 0)\\
+\>\>\>zdlconnect(..., zdsimp(3), 3, 1, 0)\\
+\>\>\>...\\
+  \\
+\>end-loop\\
+  \\
+\>check\_device:\\
+  \\
+\>/*  can only handle full color  */\\
+\>if (zdsmode() != FULL\_COLOR)\\
+\>\>/*  -1 config code == don't change  */\\
+\>\>zddconfigure(..., [FULL\_COLOR,-1,-1,-1])\\
+\>\>if (size != zdsnl(), zdsns(), ...)\\
+\>\>\>size = zdsnl, zdsns (or zdsvnl, zdsvns)\\
+\>\>\>new\_size\_routine()\\
+\>\#if optional\\
+\>\>\>for i=1 to 3 (red, green, blue)\\
+\>\>\>\>refresh\_planes(i)\\
+\>\>\>\>/* clear flag so won't refresh again */\\
+\>\>\>\>zdfimage(..., zdsimp(i))\\
+\>\>\>end-for\\
+\>\#end-if optional\\
+\end{tabbing}
+\end{document}

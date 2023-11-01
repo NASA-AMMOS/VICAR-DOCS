@@ -1,0 +1,175 @@
+<HEAD>
+<TITLE>Using the Generated Unix Makefile</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=1157 HREF=subsubsection3.13.1.3.html><IMG SRC="/icons/previous.png"></A> <A NAME=1159 HREF=subsection3.13.1.html><IMG SRC="/icons/up.png"></A>  <IMG SRC="/icons/next.png">  <b>Previous:</b> <A NAME=1158 HREF=subsubsection3.13.1.3.html>Using the Generated VMS Build File</A>  <b>Up:</b> <A NAME=1160 HREF=subsection3.13.1.html><tt> vimake</tt></A>  <P>
+ <H3>Using the Generated Unix Makefile</H3>
+<A NAME=usemake><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+The generated Unix makefile is a fairly standard makefile.  Since most
+VICAR programmers are not familiar with <tt> make</tt>, this section briefly
+describes how to use it.  For more details on using <tt> make</tt>, see the
+documentation for it.
+<P>
+In a nutshell, a makefile describes the dependencies between parts of an
+application, and how to build those parts to create the output program.
+Dependencies are simply the files that are needed to build a piece of the
+program.  For example, the executable depends on all the object files and
+the link libraries it needs.  Each object file depends on its corresponding
+source file, and the include files that it uses.  A link library depends on
+the object files that make it up.  Source code may depend on a preprocessor,
+such as <tt> lex</tt> or <tt> yacc</tt>, or may come from a source code management
+system.  All these dependencies can be tracked by <tt> make</tt>.  <tt> make</tt> is
+smart enough to figure out what needs to be built based on what has changed,
+and to build only those parts.  So, if you modify only one source module,
+<tt> make</tt> checks the modification dates, realizes only one module has
+changed, and recompiles only that module.
+<P>
+The <tt> vimake</tt>-generated makefile takes advantage of many of these features.
+It does not allow specifying which include files are used by which source
+files, but since VICAR applications are typically fairly small, this should
+not cause a problem.  It may simply mean a few extra compiles.  Full automatic
+dependency checking may be added to the makefile in the future.
+<P>
+By default, <tt> make</tt> looks for several filenames for the makefile, including
+``Makefile'' and ``makefile''.  However, the generated makefile is named
+``<i> file</i>.make'' where <i> file</i> is the name of the application.  Therefore,
+you must give the ``<tt> -f</tt>'' option to <tt> make</tt> to specify the name of
+the makefile.  If you are doing lots of development on one program, you may
+rename the file to be ``Makefile'' (or better yet, create a symbolic link) so
+<tt> make</tt> will find it automatically, but this precludes having more than one
+application in the same directory, so it should not be done all the time.
+To run <tt> make</tt>, use the following syntax:
+<P>
+<PRE><TT>
+make -f file.make targets
+</TT></PRE>
+<P>
+where ``file'' is the name of the application and ``targets'' is an optional
+list of targets to build (described below).
+<P>
+<tt> make</tt> operates through the use of targets.  A target is the final result
+of the <tt> make</tt>.  A target could be an object file name, in which case that
+file would get compiled.  It could be the executable name, in which case all
+the compiles and links necessary to create the executable are performed.  There
+are also special targets, such as ``all'' or ``clean.src'', that cause
+certain actions to be performed.  More than one target may be given on the
+same command, separated by spaces.
+<P>
+The targets available depend on whether you are building a PROGRAM,
+SUBROUTINE, or PROCEDURE, and on how complex the build is.  The allowed targets
+are listed below.  Not all targets will be available in all generated makefiles.
+<P>
+It is important to realize that there are fewer options on the makefile than
+there are on the VMS BLD file.  This is largely due to the fact that <tt> make</tt>
+takes care of a lot of the details for you.  You generally don't need to
+specify compiling a single module, or only doing the link, because <tt> make</tt>
+will determine what needs to be done and do it for you.
+<P>
+<UL>
+<P>
+<LI> std:  Builds a private version (``standard'') of the unit in the
+current directory.  It is the default target if none is given.  It is valid
+for PROGRAM, SUBROUTINE, and PROCEDURE.  For type SUBROUTINE, the modules
+are installed in the local link library (see library.local).
+<P>
+<LI> all:  Builds a private version of the unit in the current directory,
+including the documentation.  It is valid for PROGRAM, SUBROUTINE, and
+PROCEDURE.  For type SUBROUTINE, the modules are installed in the local
+link library (see library.local).
+<P>
+<LI> debug:  Builds a debuggable version of the unit (``<tt> -g</tt>'' option to
+the compiler).  This target is only available on machines with conditional
+macros in <tt> make</tt>, such as a Sun. On machines without conditional macros,
+debug is not a valid target.  To build the program for debug on these machines,
+you must set the DEBUG flag in the imakefile, and re-run <tt> vimake</tt>.  When
+available, the debug target is valid for PROGRAM and SUBROUTINE.
+<P>
+<LI> profile:  Builds a version of the unit for use with the profiler
+(``<tt> -pg</tt>'' option to the compiler).  This target is only available on
+machines with conditional macros in <tt> make</tt>, such as a Sun.  On machines
+without conditional macros, profile is not a valid target.  To build the
+program for use with the profiler on these machines, you must set the PROFILE
+flag in the imakefile, and re-run <tt> vimake</tt>.  When available, the profile
+target is valid for PROGRAM and SUBROUTINE.
+<P>
+<LI> system:  Performs a system build of the unit.  This target should only
+be used by Configuration Management to build the VICAR system.  It is valid
+for PROGRAM, SUBROUTINE, and PROCEDURE.  Note that the system target performs
+a clean.src operation, which will delete the source code (since it just came
+from the COM file, it's not needed any more).
+<P>
+<LI> compile:  Compiles all the source code, but does not link or install
+the objects in a library.  It is valid for PROGRAM and SUBROUTINE.
+<P>
+<LI> <i> Object module name</i>:  The name of an object module (with ``.o''
+extension) may be given to compile only one module.  This is valid for PROGRAM
+and SUBROUTINE.  Specifying an object module name is not particularly useful,
+since <tt> make</tt> already determines which modules need to be compiled, so this
+option will rarely be used.
+<P>
+<LI> <i> Executable name</i>:  The name of the program itself may be used as
+a target, for type PROGRAM only.  It is equivalent to the target ``std''.
+<P>
+<LI> library.local:  Installs the object code in the local (private)
+library.  The name of the library may be specified with the LOCAL_LIBRARY
+macro in the imakefile.  The modules are compiled if needed first.
+This target is valid for SUBROUTINE only.
+<P>
+<LI> library.system:  Installs the object code in the VICAR system library.
+This option may only be used by Configuration Management.  The modules are
+compiled if needed first.  This target is valid for SUBROUTINE only.
+<P>
+<LI> clean.obj:  Deletes all object code for this unit.  It is valid only
+for PROGRAM and SUBROUTINE.
+<P>
+<LI> clean.src:  Deletes the source code, imakefile, and makefiles.  Be very
+careful with this target!  It is intended mainly for system builds, where
+the source code can be deleted after the build because it is maintainted in
+the COM file.  If you are modifying code and do not have an up-to-date COM
+file, then do <em> not</em> use the clean.src target.
+<P>
+<LI> doc:  Builds all the documentation files for the unit.  Currently, the
+only supported type of documentation file is a TAE error message file,
+although other types will be added.  Valid for PROGRAM, SUBROUTINE, and
+PROCEDURE.
+<P>
+<LI> doc.errmsg:  Builds the TAE error message file.
+<P>
+</UL>
+<P>
+Some examples may prove helpful.  The first example merely compiles a version
+of the program into the local directory:
+<P>
+<PRE><TT>
+make -f prog.make
+</TT></PRE>
+<P>
+The next example is the same, except the documentation (if present) is built
+as well:
+<P>
+<PRE><TT>
+make -f prog.make all
+</TT></PRE>
+<P>
+This example shows building the program for use in the debugger, for systems
+that support the ``debug'' target.
+<P>
+<PRE><TT>
+make -f prog.make debug
+</TT></PRE>
+<P>
+The last example shows how to delete the object modules after a build.  This
+is not recommended during most program development, because it forces all the
+modules to be recompiled every time.  However, it can be useful to force a
+recompile of everything on occasion.
+<P>
+<PRE><TT>
+make -f prog.make clean.obj
+</TT></PRE>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

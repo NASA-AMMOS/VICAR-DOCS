@@ -1,0 +1,78 @@
+<HEAD>
+<TITLE>VICAR Directory Structure</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=1185 HREF=section3.13.html><IMG SRC="/icons/previous.png"></A> <A NAME=1187 HREF=portguide.html><IMG SRC="/icons/up.png"></A>  <A NAME=1183 HREF=section3.15.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=1186 HREF=section3.13.html>Creating Applications</A>  <b>Up:</b> <A NAME=1188 HREF=portguide.html>VICAR Porting Guide</A>  <b>Next:</b> <A NAME=1184 HREF=section3.15.html>Application Examples</A> <P>
+ <H1>VICAR Directory Structure</H1>
+<P>
+The directory structure of VICAR is now quite different from the old directory
+structure.  Directories have been generally rearranged to provide a more
+hierarchical and consistent directory tree.  The directory tree is shown
+diagramatically in Figure <A HREF=section3.14.html#dirtree><IMG SRC="/icons/cross-ref.png"></A>, on the next page.
+<P>
+<A NAME=1520><IMG SRC="/icons/invis_anchor.png"></A><P><A NAME=dirtree><IMG SRC="/icons/invis_anchor.png"></A><P>
+<P>
+It is important to note that while directories have moved all over the place,
+the VMS logical names that point to the directories are in general the
+same (there have been a few deletions and a lot of additions, but most of
+the useful old ones are still there).  So, as long as you use logical names
+(such as ``v2$source'' for the RTL source), like you are supposed to, you
+won't notice the directory changes.  Under Unix, environment variables
+will point at the various directories instead of logical names.
+<P>
+So, although the directory tree changes will not affect most users, they are
+mentioned below for completeness.
+<P>
+Every subsystem within VICAR is now isolated in its own directory tree.
+For example, all the RTL source and includes are under the ``rtl'' directory.
+All source, includes, fonts, and programs for the VRDI are under the ``vrdi''
+directory.  All source, includes, subroutines, and executables for class 2
+applications are under the ``p2'' directory.  This makes it clearer where a
+module stands in the VICAR hierarchy.
+<P>
+The new directory structure is designed to allow several different computer
+systems to use the same copy of VICAR.  All machine-specific object code and
+executables are isolated in directories bearing the name of the machine they
+belong to.  For example, the class 2 application executables (r2lib) for
+a Sun-4 system reside in p2/lib/sun-4, while for an HP 700 they would be
+in p2/lib/hp-700.  The different machines access the same directory tree using
+NFS (Network File System), but still have machine-specific compiled code
+where needed.  These machine-specific directories are represented by the
+``targets...'' boxes on the directory chart.
+<P>
+The directory tree has been renamed, as shown in the diagram.  The top level
+used to be called ``mipl'' or some derivative (such as ``mipl060'').  Now,
+it is called ``vicar''.
+<P>
+Everything that is not directly a part of VICAR has been removed from the
+VICAR source tree.  The old Development system directory tree contained
+many files that had nothing to do with the running VICAR system, such as
+CMS libraries, old build logs, delivery audit trails, and test images.
+These have all been eliminated from the VICAR tree, and have their
+own directories (actually most of them are still in the old ``mipl'' directory
+tree).
+<P>
+The fetch and build procedures have been cleaned up and are now entirely
+separate operations.  The fetch routine gets everything from the code
+management system (CMS) at once, and then the build routine compiles and
+links everything as a separate operation.  This makes building VICAR at
+foreign sites much easier.  The same philosophy holds under both VMS and
+Unix - fill all the directories at once, then build everything.  The fetch
+files are all in the utilities directory, while the build files are in the
+top-level directories of the subsystems they build.
+<P>
+There are two directories that are created entirely during the build process.
+They fall outside the subsystem hierarchy, since they contain files from many
+different places in the directory tree.  These files are grouped into these
+directories for convenience.  Since they are created during the build, and
+contain no source code, being outside the hierarchy does not present a
+significant problem.  The first is the ``olb'' directory, which contains
+all the object (link) libraries in the VICAR system.  The second is the
+``lib'' directory, which contains miscellaneous executables and TAE PDFs from
+various parts of the VICAR system.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

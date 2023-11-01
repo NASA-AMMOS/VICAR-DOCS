@@ -1,0 +1,66 @@
+<HEAD>
+<TITLE><b> sc2for_array</b></TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=715 HREF=paragraph3.6.2.4.2.html><IMG SRC="/icons/previous.png"></A> <A NAME=717 HREF=subsubsection3.6.2.4.html><IMG SRC="/icons/up.png"></A>  <A NAME=713 HREF=paragraph3.6.2.4.4.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=716 HREF=paragraph3.6.2.4.2.html><b> sc2for</b></A>  <b>Up:</b> <A NAME=718 HREF=subsubsection3.6.2.4.html>Fortran String Conversion Routines</A>  <b>Next:</b> <A NAME=714 HREF=paragraph3.6.2.4.4.html><b> sfor2c</b></A> <P>
+ <H4><b> sc2for_array</b></H4>
+<P>
+<PRE><TT>
+sc2for_array(c_string, len, nelements, for_string, max_length, argptr, nargs,
+             argno, strno);
+</TT></PRE>
+<P>
+This routine converts a standard C null-terminated array of strings into an
+output Fortran string array.  The C string array must be a two-dimensional
+array of characters, <em> not</em> an array of pointers to strings.  The Fortran
+string should be declared as a single-dimensional array of CHARACTER*n in the
+calling routine.
+<P>
+<b> Arguments:</b>
+<UL>
+<P>
+<LI> C_STRING: string array, input
+<P>
+String array to convert in standard null-terminated C format.  It must be a
+two-dimensional array of char, not an array of pointers to strings.  Each
+string should have its own null terminator.
+<P>
+<LI> LEN: integer, input
+<P>
+LEN is the size of the inner dimension of the C string array.  If the
+array is declared as ``char x[10][81];'' (10 strings of 80 characters
+each plus terminator), then LEN would be 81.
+<P>
+<LI> NELEMENTS: integer, input
+<P>
+NELEMENTS is the number of strings in the array to convert.
+<P>
+<LI> MAX_LENGTH:  integer, input/output
+<P>
+On input, MAX_LENGTH is the alternate maximum length of each Fortran string.
+Normally the maximum length is obtained from the output Fortran string array
+itself (the ``n'' in a CHARACTER*n declaration).  If MAX_LENGTH is passed in
+as 0, then this natural length is used.  MAX_LENGTH is an alternate maximum
+string length in case one is provided as a parameter to the routine.  The
+actual maximum Fortran length used is the minimum of the passed in MAX_LENGTH
+(if not 0) and the natural Fortran string length.  The output string will be
+truncated if the Fortran string is not long enough.  Any extra space at the
+end of the Fortran string will be padded with blanks in the standard Fortran
+style.  MAX_LENGTH should normally be passed in as 0, as it makes little sense
+to override the natural Fortran string length.  However, it is possible,
+and might be useful in some unusual cases.
+<P>
+On output, MAX_LENGTH returns the actual Fortran string length used by the
+routine.
+<P>
+<LI> FOR_STRING, ARGPTR, NARGS, ARGNO, STRNO
+<P>
+See the ``Common Features'' section above.
+<P>
+</UL>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

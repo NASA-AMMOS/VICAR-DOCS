@@ -1,0 +1,112 @@
+<HEAD>
+<TITLE>Include Files</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=865 HREF=subsection3.8.1.html><IMG SRC="/icons/previous.png"></A> <A NAME=867 HREF=section3.8.html><IMG SRC="/icons/up.png"></A>  <A NAME=863 HREF=subsection3.8.3.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=866 HREF=subsection3.8.1.html>RTL Differences</A>  <b>Up:</b> <A NAME=868 HREF=section3.8.html>Porting C</A>  <b>Next:</b> <A NAME=864 HREF=subsection3.8.3.html>VMS-Specific Code</A> <P>
+ <H2>Include Files</H2>
+<P>
+The standards for accessing include files have changed.  The changes are
+necessary to ensure portability across platforms.  On the VAX, there was
+not that much difference between putting an include filename in double
+quotes, angle brackets, or without any delimiter at all.  To be portable,
+attention must be paid to which of these methods you use.  Note that the
+include file standards have changed since the first draft edition of this
+<i> Porting Guide</i>.
+<P>
+There are five major classes of include files you will use.  They are
+system, VICAR main, VICAR system, VICAR subroutine, and local.
+<P>
+Please keep track of which include files you actually need, and include
+only those.  Some includes require that others be included first, but try to
+achieve the minimum set.  Extra includes in your program don't gain you
+anything, and they slow down your compiles.  They also make system maintenance
+much tougher, since the source code must occasionally be searched to see what
+programs use an include, and all programs that use an include must be
+recompiled when it changes (even if it's not really used).
+<P>
+System include files are provided by the operating system.  Many of them are
+OS-specific, but there are a few that are standard across platforms.  Make
+sure the ones you need are available in both operating systems, or isolate them
+in machine-dependent code.  System include files should be enclosed in angle
+brackets and have the ``.h'' extension.  As examples, some of the known
+portable includes are listed below.
+<P>
+<PRE><TT>
+#include &lt;varargs.h&gt;
+#include &lt;math.h&gt;
+#include &lt;ctype.h&gt;
+#include &lt;stdio.h&gt;
+</TT></PRE>
+<P>
+One known <em> non</em>-portable file is &lt;unistd.h&gt;.  If you need symbolic
+constants for the <tt> lseek()</tt> arguments (which are often contained there),
+use the definitions provided in xvmaininc.h.
+<P>
+The VICAR main include file, which all VICAR programs should start with,
+must be in lower case, with double quotes.  The name of the main include has
+changed to ``vicmain_c'', with no directory specifiers and no ``.h'' extension.
+Any modules other than the main program module that need VICAR definitions
+should include xvmaininc.h, in lower case, with double quotes and the ``.h''
+extension (xvmaininc.h is automatically included with vicmain_c).
+<P>
+<PRE><TT>
+#include &quot;vicmain_c&quot;
+   - or -
+#include &quot;xvmaininc.h&quot;
+</TT></PRE>
+<P>
+VICAR system includes are those provided as part of the RTL.  Their names
+should be in lower case, with quotes and the ``.h'' extension.  The valid ones
+are listed below.  Only a few of these should ever be used in application
+code, notably ftnbridge.h, errdefs.h, and applic.h.  The rest should only be
+needed in very unusual circumstances.  They should generally be in the order
+listed below.  Please include <em> only</em> the ones you need.  Extraneous
+include files you don't use will only slow down your compile and make system
+maintenance harder.  TAE includes are handled as specified in the TAE
+documentation.  They should be in double quotes, with the ``.inc'' or ``.inp''
+extensions as appropriate.  The first four listed below are TAE includes.
+<P>
+<PRE><TT>
+#include &quot;taeconf.inp&quot;
+#include &quot;symtab.inc&quot;
+#include &quot;parblk.inc&quot;
+#include &quot;pgminc.inc&quot;
+#include &quot;defines.h&quot;
+#include &quot;declares.h&quot;
+#include &quot;externs.h&quot;
+#include &quot;applic.h&quot;
+#include &quot;errdefs.h&quot;
+#include &quot;ftnbridge.h&quot;
+#include &quot;xviodefs.h&quot;
+</TT></PRE>
+<P>
+VICAR subroutine include files (class 2 and 3 SUBLIB, VRDI, etc.) should be
+in double quotes, with no pathnames, and should include the ``.h'' extension,
+just like for VICAR system includes.  For these includes, the directories
+containing the includes must be available to the compiler.  This is normally
+handled transparently, but some libraries will require a LIB_* macro in the
+imakefile to access the includes.  See the descriptions in
+Section <A HREF=subsection3.13.1.html#vimake><IMG SRC="/icons/cross-ref.png"></A>, <tt> vimake</tt>, for details.
+<P>
+<PRE><TT>
+#include &quot;vmachdep.h&quot;
+#include &quot;gll_ssi_edr.h&quot;
+#include &quot;xderrors.h&quot;
+</TT></PRE>
+<P>
+Local includes, which are delivered as part of the COM file and are used only
+by that application, should be in double quotes, with no pathnames, and should
+include the ``.h'' extension, just like for VICAR system and subroutine
+includes.  However, local includes must be listed in the INCLUDE_LIST macro
+in the imakefile so they can be cleaned up properly. See Section <A HREF=subsection3.13.1.html#vimake><IMG SRC="/icons/cross-ref.png"></A>,
+<tt> vimake</tt>, for details.
+<P>
+<PRE><TT>
+#include &quot;my_inc.h&quot;
+</TT></PRE>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

@@ -1,0 +1,59 @@
+<HEAD>
+<TITLE>Array I/O</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=926 HREF=subsection3.9.5.html><IMG SRC="/icons/previous.png"></A> <A NAME=928 HREF=section3.9.html><IMG SRC="/icons/up.png"></A>  <A NAME=924 HREF=subsection3.9.7.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=927 HREF=subsection3.9.5.html>READ &amp; WRITE to Strings</A>  <b>Up:</b> <A NAME=929 HREF=section3.9.html>Porting Fortran</A>  <b>Next:</b> <A NAME=925 HREF=subsection3.9.7.html>VMS Fortran Extensions</A> <P>
+ <H2>Array I/O</H2>
+<A NAME=arrayio><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+The RTL has a method of accessing a file, called array I/O, where the file
+is mapped to virtual memory, and the address of the file is returned.  To
+access the file, the program need not use I/O routines such as <b> x</b>/<b>  zvread</b> and
+<b> x</b>/<b>  zvwrit</b>.  The file appears as a single large array at the returned address.
+Actual file I/O is accomplished via the paging mechanism of the operating
+system.  On operating systems where this is not available, it is simulated
+by reading the file into a large chunk of memory when it is opened, and
+writing it out again when it is closed.
+<P>
+The key to array I/O is returning the address of the file in memory.  This
+address is actually a pointer to the data.  Under C, this is no problem.
+Fortran, however, does not understand pointers.  Therefore, array I/O is
+not allowed directly in Fortran.  There is a trick that can allow it to be
+used in some cases, however.
+<P>
+Previously, the few Fortran programs that used array I/O did it by receiving
+the address in an integer variable.  This variable could then be passed in to
+a subroutine using %VAL, which passes the argument by value instead of by
+reference.  The result of this was that the pointer got passed by value.
+The called routine expected an array passed by address, in other words a
+pointer to the array.  Since the variable containing the address was passed
+by value, the subroutine was happy.
+<P>
+Unfortunately, %VAL is not portable and may not be used.  Therefore, pure
+Fortran is unable to use array I/O.  However, C does not have any problems
+passing things by reference or by value.  So, you can use array I/O in a
+manner very similar to the SUBLIB <tt> stacka</tt> subroutine.  The <b> zvopen</b>
+call must be made in a C-language function.  It can then pass the returned
+address by value to a Fortran subroutine.  The Fortran subroutine can access
+the file by treating the parameter as an array.
+<P>
+This method requires that all the Fortran code that uses the array I/O file
+must be in the subroutine that is called from C.  This is quite similar to
+the way STACKA works.  This may require significant revisions of the programs
+that use array I/O from Fortran, but fortunately they are fairly rare.
+<P>
+Another alternative would be to simply not use array I/O.  Any program that
+uses array I/O should have an alternate method of accessing the file using
+line I/O (<b> x</b>/<b>  zvread</b> and <b> x</b>/<b>  zvwrit</b>), in case the file is too big to be
+opened via array I/O.  The line I/O backup is not required, but it is a good
+feature to include if possible.  Use of array I/O only, with no backup line
+I/O, can severely limit the size of files that may be processed by the
+program.  With a line I/O backup, a VMS version of the program could use
+array I/O if possible, but the Unix version of the program would use
+exclusively the line I/O alternative.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

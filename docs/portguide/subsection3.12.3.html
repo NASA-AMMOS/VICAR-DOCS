@@ -1,0 +1,52 @@
+<HEAD>
+<TITLE>Calling Sequences</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=1024 HREF=subsection3.12.2.html><IMG SRC="/icons/previous.png"></A> <A NAME=1026 HREF=section3.12.html><IMG SRC="/icons/up.png"></A>  <A NAME=1022 HREF=subsection3.12.4.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=1025 HREF=subsection3.12.2.html>When to Create a SUBLIB Subroutine</A>  <b>Up:</b> <A NAME=1027 HREF=section3.12.html>SUBLIB Subroutine Library</A>  <b>Next:</b> <A NAME=1023 HREF=subsection3.12.4.html>Fortran vs. C</A> <P>
+ <H2>Calling Sequences</H2>
+<P>
+Keeping the old and new SUBLIBs separate allows the programmer freedom to
+change the calling sequences for SUBLIB subroutines.  There are several reasons
+for changing the calling sequences, which are discussed below.
+<P>
+The flip side of changing the calling sequences is that programmers doing a
+port must pay attention to the new calling sequences, which may not be the
+same as what they're used to.  Programmers will have to be careful that the
+calling sequence they used is appropriate for the new SUBLIB.  However, the
+benefits far outweigh those costs.
+<P>
+The first and most important reason for changing the calling sequence is to
+have separate Fortran and C calling sequences.  The reasons for doing so have
+been described fully throughout this document.  When the separate calling
+sequences are created, they should be appropriate for the language involved.
+The Fortran interface should look like a Fortran call, and the C interface
+should look like a typical C call.  You should feel free to change the
+calling sequences to fit.  For C, this often means accepting input arguments
+by value instead of reference.  For Fortran, this often means accepting
+CHARACTER*n variables instead of BYTE arrays.  Sometimes is it impractical
+to change to CHARACTER*n, if the BYTE array is too entrenched.  In that case,
+consider providing <em> two</em> calling sequences, one with CHARACTER*n and one
+with BYTE.  See the routine <tt> vic1lab</tt> for an example of this.
+<P>
+Another important reason to change the calling sequences is that optional
+arguments are not allowed.  Many current SUBLIB routines accept optional
+arguments.  These arguments will either have to be eliminated, or forced to
+be present.  This may mean multiple subroutine entry points in some cases,
+one with the arguments present, and one without.  In general, this should be
+avoided.  Decide whether or not the arguments are important, and if they are,
+include them.  If you provide a reasonable default (like 0), then it's not too
+hard for the application programmer to include the extra arguments when
+calling the routine.
+<P>
+The last major reason for changing the calling sequence is more a matter of
+style.  Some of the SUBLIB routines have very obscure calling sequences, that
+are difficult to figure out.  If there is a better way to call the routine,
+then feel free to change it.  However, don't make gratuitous changes just for
+the sake of changing something; there should be a clear advantage in making
+the change.
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

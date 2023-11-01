@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--
+This document was converted from RTF source: 
+By rtftohtml 4.17
+See http://www.sunpack.com/RTF
+Filename:WORD Ram Disk:RTL_Manual.rtf
+Application Directory:Data Disk:r2h4
+Subject:
+Author:Larry Bolef
+Operator:Larry Bolef
+Document Comments:
+Version Comments:
+Comments:
+Keywords:
+Translation Date:06/05/1999
+Translation Time:08:02:23
+Translation Platform:MacOS
+Number of Output files:59
+This File:WORD Ram Disk:RTL_Manual-2_2.html
+SplitDepth=2
+SkipNavPanel=0
+SkipLeadingToc=0
+SkipTrailingToc=1
+GenContents=1
+GenFrames=0
+GenIndex=0
+-->
+<HEAD lang="en"><META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<TITLE>2.2	ANSI C</TITLE>
+</HEAD>
+
+<BODY ><DIV ALIGN="LEFT"><A HREF="RTL_Manual-Programm.html">Up</A> | 
+<A HREF="RTL_Manual-2_1.html">Previous</A> | 
+<A HREF="RTL_Manual-2_3.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+<HR>
+
+
+<a name="_Toc453201385"></a><A NAME="Heading16"></A><H2 ALIGN="LEFT">
+2.2	ANSI
+C
+</H2>
+<BLOCKQUOTE>
+ANSI
+C is used for all VICAR programs. This section describes what needs to be done
+within the VICAR environment in order to successfully use ANSI C. Read it
+before using ANSI C with VICAR. 
+<BR>
+Function
+prototypes allow the compiler to check the number and types of arguments to
+subroutines. If they don't match, a warning is issued. This feature will catch
+many common programming errors. You will undoubtedly find many more compiler
+warnings if you use prototypes, but that is a good thing. Most of those
+warnings are errors in the code, or questionable coding practices. Take heed
+and your code quality should improve. 
+<BR>
+A
+function with a prototype does not suffer default argument promotion; it can,
+for example, pass a float as a float, rather than promoting it to a double.
+This can be more efficient in some cases. This is also a danger, however; if a
+subroutine is intended to be called from non-ANSI code (which includes almost
+all SUBLIB routines), then  be careful to use only argument types that won't be
+promoted in the absence of a prototype in order to remain compatible. Any ANSI
+C reference should be able to provide more details. 
+<BR>
+Program
+writers should be careful to include the appropriate include files, in order to
+get the function prototypes for each subroutine package. The prototype file for
+the RTL is called &#8220;zvproto.h&#8221;. You should include this file in any
+routines that make use of the RTL. 
+<BR>
+Subroutine
+writers should provide an include file that defines the prototypes for the
+functions in your subroutine package. This include file may be very short if
+you have only one function, or quite long for a big package. This include file
+should generally be the same as that containing public definitions, although it
+can be separate if need be. For example, the RTL include file,
+&#8221;zvproto.h&#8221;, has only prototypes. 
+<BR>
+When
+you declare prototypes, there are three things you need to do: provide a
+wrapper, use _NO_PROT O, and support C++. The first thing is to protect your
+file against multiple inclusions. A &#8220;wrapper&#8221; define and #ifndef
+should be put around the entire file. This way, if the file is included more
+than once, it will not be compiled the second time.
+<BR>
+Second,
+your include file may be used in a non-ANSI environment. For this reason, it is
+important to protect the prototypes with the _NO_PROTO symbol. The _NO_PROTO
+symbol is declared in 
+<TT><FONT FACE="Courier">xvmaininc.h</FONT></TT>.
+If _NO_PROTO is not defined, use prototypes. If it is, use the old-style
+declarations instead.
+<BR>
+Third,
+allow support of C++. C++ uses the same prototype mechanism as ANSI C, but
+prototypes are required. In order to cross languages and link to a C module,
+however, the C declaration must be enclosed in &#8220;
+<TT><FONT FACE="Courier">extern
+&#8220;C&#8221; {
+</FONT></TT>...<TT><FONT FACE="Courier">}</FONT></TT>
+&#8220;. By putting this wrapper around your entire include file, and providing
+prototypes for every function, you can make your subroutines available from C++. 
+<BR>
+Here
+is an example which demonstrates all three techniques. Use it as a template for
+prototype includes. 
+</BLOCKQUOTE>
+<PRE>/* xyz.h: include file for the XYZ subroutine package. */
+#ifndef _XYZ_H
+#define _XYZ_H
+
+#include "xvmaininc.h"     /* not needed if you can guarantee the caller */
+                           /* has already included it */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#define ONE_OF_MY_FLAGS 10            /* your common definitions go here */
+
+#ifndef _NO_PROTO
+
+double xyz(int a, char *b, double d); /* your prototypes go here */
+
+#else /* _NO_PROTO */
+
+double xyz();                         /* non-prototype decls go here */
+
+#endif /* _NO_PROTO */
+
+#ifdef __cplusplus
+}        /* end extern "C" */
+#endif
+
+#endif /* XYZ_H */</PRE><BLOCKQUOTE>
+There
+are some pitfalls using ANSI C prototypes. First, do 
+<I>not</I>
+put prototypes on any FORTRAN bridge routines. FORTRAN doesn't understand them,
+and the prototypes interfere with the FORTRAN string passing mechanisms. Use
+the old-style declarations instead. Prototypes can and should exist for the C
+function called 
+<I>by</I>
+the bridge. 
+<BR>
+Second,
+variadic functions (those with variable arguments) are a problem if you are
+intending to have both ANSI and non-ANSI callers. The ANSI C standard states
+that variadic functions must use &#8220;
+<TT><FONT FACE="Courier">...</FONT></TT>&#8220;
+in the prototype and function header. The implication is that compiler is free
+to use a different argument-passing mechanism for these functions (although
+current compilers don't seem to do this).
+<BR>
+The
+old form of using varying arguments, &lt;varargs.h&gt;  doesn't have the risk
+of a different argument-passing mechanism. Plus, if a variadic function is
+going to be called by non-ANSI C code, the...&#8220; form is not available. For
+this reason, and to be safe, you should use &lt;varargs.h&gt; instead of
+&lt;stdarg.h&gt;, and not the  ...&#8220; form. See the comments in zvproto.h
+for more details. This should not cause much of a problem in VICAR code because
+varying arguments may only be used in certain limited situations. 
+</BLOCKQUOTE>
+<HR>
+
+<DIV ALIGN="LEFT"><A HREF="RTL_Manual-Programm.html">Up</A> | 
+<A HREF="RTL_Manual-2_1.html">Previous</A> | 
+<A HREF="RTL_Manual-2_3.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+</BODY>
+
+</HTML>

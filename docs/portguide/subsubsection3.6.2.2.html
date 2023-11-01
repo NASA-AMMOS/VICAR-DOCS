@@ -1,0 +1,57 @@
+<HEAD>
+<TITLE>Translation Routines</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=584 HREF=subsubsection3.6.2.1.html><IMG SRC="/icons/previous.png"></A> <A NAME=586 HREF=subsection3.6.2.html><IMG SRC="/icons/up.png"></A>  <A NAME=582 HREF=subsubsection3.6.2.3.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=585 HREF=subsubsection3.6.2.1.html>Parameter Routines</A>  <b>Up:</b> <A NAME=587 HREF=subsection3.6.2.html>New Routines</A>  <b>Next:</b> <A NAME=583 HREF=subsubsection3.6.2.3.html>Miscellaneous Routines</A> <P>
+ <H3>Translation Routines</H3>
+<A NAME=transrtn><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+The translation routines allow conversion of data between different data
+types and different host representations.  See Section <A HREF=section3.7.html#datatypes><IMG SRC="/icons/cross-ref.png"></A>, Data
+Types and Host Representations, for more information on when and how to call
+these routines.
+<P>
+These routines all take a translation buffer as an argument.  This is an opaque
+structure that is at least 12 integers (usually 48 bytes) long that will
+describe the translation.  The internals of the buffer are unknown to the
+application; it is a private RTL data structure.  One of five routines must be
+called first to set up this buffer.  Then, <b> x</b>/<b>  zvtrans</b> can be called as often
+as necessary to perform the translation.  You may have several translations
+available at once by using different translation buffers.
+<P>
+The first integer in the buffer is special.  If it is NULL (0) after the
+setup routine has been called, then no translation is needed.  <b> x</b>/<b>  zvtrans</b>
+will simply move the data in this case, but you can decide to forego calling
+<b> x</b>/<b>  zvtrans</b> if it would be more efficient.  This first integer is the
+<em> only</em> item an application may look at in the translation buffer.
+Using <em> any</em> other knowledge about the internals of the buffer may cause
+your program to break in the future, as the structure may change without notice.
+<P>
+The translation routines are:
+<P>
+<UL>
+<LI> <b> x</b>/<b>  zvtrans</b>:  Translate data types and host representations.
+<LI> <b> x</b>/<b>  zvtrans_in</b>:  Set up a translation buffer for input from a
+(potentially) foreign host.
+<LI> <b> x</b>/<b>  zvtrans_inb</b>:  Set up a translation buffer for input from the binary
+labels of a file.
+<LI> <b> x</b>/<b>  zvtrans_inu</b>:  Set up a translation buffer for input from a file.
+<LI> <b> x</b>/<b>  zvtrans_out</b>:  Set up a translation buffer for output to a
+(potentially) foreign host.
+<LI> <b> x</b>/<b>  zvtrans_set</b>:  Set up a translation buffer for native data type
+conversion.
+</UL>
+<P>
+<P>___________________________________________________<UL> 
+<LI> <A NAME=588 HREF=paragraph3.6.2.2.1.html><b> x</b>/<b>  zvtrans</b></A>
+<LI> <A NAME=589 HREF=paragraph3.6.2.2.2.html><b> x</b>/<b>  zvtrans_in</b></A>
+<LI> <A NAME=590 HREF=paragraph3.6.2.2.3.html><b> x</b>/<b>  zvtrans_inb</b></A>
+<LI> <A NAME=591 HREF=paragraph3.6.2.2.4.html><b> x</b>/<b>  zvtrans_inu</b></A>
+<LI> <A NAME=592 HREF=paragraph3.6.2.2.5.html><b> x</b>/<b>  zvtrans_out</b></A>
+<LI> <A NAME=593 HREF=paragraph3.6.2.2.6.html><b> x</b>/<b>  zvtrans_set</b></A>
+</UL>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

@@ -1,0 +1,3614 @@
+<H2>VRDI Routines}
+\label{routines}
+This section contains the detailed description of the VRDI
+routines.  The descriptions are organized in alphabetical order
+by function (e.g., cursor routines, device configuration routines,
+image memory plane routines, etc.) and include the following
+information:
+\begin{enumerate}
+\item Title and Function--The title and function of each routine are
+listed at the top of the page.  The title is the name of the routine
+in the FORTRAN interface--i.e., the title begins with an ``X''.  To
+obtain the name of the routine in the C interface, substitute a ``Z''
+for the ``X''.
+\item C Interface Calling Context--The calling context of the routine
+in the C interface is provided, along with a list of the parameters
+to the function--including parameter name and data type.
+\item FORTRAN Interface Calling Context--The calling context of the
+routine in the FORTRAN interface is provided, along with a list of
+the parameters to the function.  A detailed description of each
+parameter is also provided--including the parameter name, whether
+it is input or output, parameter data type, and a brief description.
+\item Function Return Values--A list of the possible values returned
+by the function is included, along with a description of each.
+
+The values returned by the function are given as the constant
+name that the VRDI uses to identify the error.  To determine the
+numeric value corresponding to the constant name, see Appendix A.
+These constants are also defined in the XDERRORS.H include file.
+If you are using the C interface to the VRDI, you may add
+the following statements to the beginning of your program:
+
+\#include XDMAININC\\
+\#include xderrors\\
+
+This will allow you to reference the errors by the appropriate
+name.
+\item Function Description--Detailed description of the purpose of
+the function.
+\end{enumerate}
+\newpage
+<H3>Alphanumeric Font Generator}
+\subsubsection{XDACLEAR - Clear Alphanumeric Font Generator}
+\begin{tabbing}
+status = \=zdaclear( unit, x, y, nchars )\\
+\>int  unit, x, y, nchars;\\
+\end{tabbing}
+STATUS = XDACLEAR( UNIT, X, Y, NCHARS )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item X:  input, integer
+
+Starting AFG column.
+\item Y:  input, integer
+
+Starting AFG row.
+\item NCHARS:  input, integer
+
+Number of characters to be cleared.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+AFG\_NOT\_AVAILABLE\>Alphanumeric font generator is not available.\\
+AFG\_NOT\_ACTIVE\>Alphanumeric font generator is not active.\\
+\end{tabbing}
+\end{enumerate}
+Clears the text in the AFG of display unit UNIT.  Characters starting
+at location X, Y in Alphanumeric Font Generator coordinates (line and
+position) are cleared.  If NCHARS is zero or negative, all of the
+characters from X, Y to the end of the AFG memory are cleared.
+\newpage
+\subsubsection{XDAOFF - Turn Off Display of Alphanumeric Font Generator}
+\begin{tabbing}
+status = \=zdaoff( unit )\\
+\>int  unit;\\
+\end{tabbing}
+STATUS = XDAOFF( UNIT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+AFG\_NOT\_AVAILABLE\>Alphanumeric font generator is not available.\\
+\end{tabbing}
+\end{enumerate}
+Turns off the display of the characters in the AFG.
+\newpage
+\subsubsection{XDAON - Turn On Display of Alphanumeric Font Generator}
+\begin{tabbing}
+status = \=zdaon( unit )\\
+\>int  unit;\\
+\end{tabbing}
+STATUS = XDAON( UNIT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+AFG\_NOT\_AVAILABLE\>Alphanumeric font generator is not available.\\
+\end{tabbing}
+\end{enumerate}
+Turns on the display of characters in the AFG.
+\newpage
+\subsubsection{XDATEXT - Write Text to Alphanumeric Font Generator}
+\begin{tabbing}
+status = \=zdatext( unit, x, y, length, text, blink, reverse )\\
+\>int  unit, x, y, length;\\
+\>char  text[];\\
+\>int  blink, reverse;\\
+\end{tabbing}
+STATUS = XDATEXT( UNIT, X, Y, LENGTH, TEXT, BLINK, REVERSE )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item X:  input, integer
+
+Starting AFG column.
+\item Y:  input, integer
+
+Starting AFG row.
+\item LENGTH:  input, integer
+
+Number of characters in TEXT.
+\item TEXT:  input, string
+
+String containing the characters to be written.
+\item BLINK:  input, logical
+
+If BLINK is TRUE, the text will blink; if FALSE, it will not.
+\item REVERSE:  input, logical
+
+If REVERSE is TRUE, the text will be displayed in reverse video; if FALSE, 
+it will not.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+AFG\_NOT\_AVAILABLE\>Alphanumeric font generator is not available.\\
+AFG\_NOT\_ACTIVE\>Alphanumeric font generator is not active.\\
+INVALID\_CHAR\_COUNT\>Invalid character count.\\
+\end{tabbing}
+\end{enumerate}
+Writes text into the AFG.  Text is displayed starting at location X, Y
+in Alphanumeric Font Generator coordinates (line and position).  If
+LENGTH is zero, TEXT must be either a character string descriptor
+or a null terminated character array.
+\newpage
+<H3>Cursor Routines}
+The VRDI cursor routines operate under the following assumptions:
+
+1.  The hardware cursor generator may generate more than one cursor.
+
+2.  The available cursors are numbered starting with one.
+
+3.  Cursor number one is the default cursor.
+
+4.  The cursor may be available in several forms.
+
+5.  Forms are numbered starting with one.
+
+6.  Form zero is the default cursor form.
+
+7.  The default form is implementation dependent.
+
+8.  The size of the cursor may be adjusted on some devices.
+
+9.  The color of the cursor may be adjusted on some devices.
+\newpage
+\subsubsection{XDCAUTOTRACK - Set Cursor/Device Tracking}
+\begin{tabbing}
+status = \=zdcautotrack( unit, cursor, device, flag )\\
+\>int  unit, cursor, device, flag;\\
+\end{tabbing}
+STATUS = XDCAUTOTRACK( UNIT, CURSOR, DEVICE, FLAG )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item CURSOR:  input, integer
+
+Number of cursor to be ``connected to'' or ``disconnected from'' DEVICE.
+\item DEVICE:  input, integer
+
+Number of device to be ``connected to'' or ``disconnected from'' CURSOR.
+\item FLAG:  input, logical
+
+Determines if CURSOR and DEVICE are to be ``connected'' or
+``disconnected''.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_AUTO\_TRACK\>Autotracking is not available.\\
+NO\_SUCH\_CURSOR\>No such cursor.\\
+NO\_SUCH\_INPUT\_DEVICE\>No such input device.\\
+\end{tabbing}
+\end{enumerate}
+Enables or disables autotracking for the specified CURSOR and
+interactive IO DEVICE.  FLAG is TRUE for autotracking and FALSE for
+no autotracking.  Autotracking means that the display unit
+automatically moves the cursor in response the interactive IO device
+without utilizing the system CPU.  In no autotracking mode the
+cursor can only be moved on command from the application program.
+\newpage
+\subsubsection{XDCILOCATION - Get Cursor Location In Image Plane Coordinates}
+\begin{tabbing}
+status = \=zdcilocation( unit, cursor, x, y, imp )\\
+\>int  unit, cursor, *x, *y, imp;\\
+\end{tabbing}
+STATUS = XDCILOCATION( UNIT, CURSOR, X, Y, IMP )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item CURSOR:  input, integer
+
+Cursor to get location from.
+\item X:  output, integer
+
+Sample location of cursor.
+\item Y:  output, integer
+
+Line location of cursor.
+\item IMP:  input, integer
+
+Image memory plane.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_CURSOR\>No such cursor.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+\end{tabbing}
+\end{enumerate}
+Returns the location of the cursor in the image memory plane coordinates,
+X and Y (sample and line).  Note that if you need the location for more
+than one plane, you should call XDCLOCATION followed by several 
+XDCRAW2IMP calls, because the cursor could move between XDCILOCATION
+calls.  To obtain the location of the cursor in raw coordinates, use
+XDCLOCATION or use this routine followed by XDCIMP2RAW.
+\newpage
+\subsubsection{XDCIMP2RAW - Translate from Image Plane Coordinates to Raw}
+\begin{tabbing}
+status = \=zdcimp2raw( unit, imp, ximp, yimp, xraw, yraw )\\
+\>int  unit, imp, ximp, yimp, *xraw, *yraw;\\
+\end{tabbing}
+STATUS = XDCIMP2RAW(UNIT, IMP, XIMP, YIMP, XRAW, YRAW)
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane.
+\item XIMP:  input, integer
+
+Image memory plane X coordinate.
+\item YIMP:  input, integer
+
+Image memory plane Y coordinate.
+\item XRAW:  output, integer
+
+Raw (screen) X coordinate.
+\item YRAW:  output, integer
+
+Raw (screen) Y coordinate.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+\end{tabbing}
+\end{enumerate}
+Translates a point from image plane coordinates for the given image
+plane to raw (screen) coordinates.  The translation may be different
+for every plane.  If the given image plane coordinates translate to
+screen coordinates that exceed the screen limits, the routine will
+return screen coordinates MOD screen size.  For example:  if the
+screen size is $512 \times 512$ and the screen coordinates are (762,762),
+the routine will return (250,250).  This routine is included with
+the cursor routines because that is how it will normally be used.
+\newpage
+\subsubsection{XDCISET - Set Cursor Location in Image Plane Coordinates}
+\begin{tabbing}
+status = \=zdciset( unit, cursor, x, y, imp )\\
+\>int  unit, cursor, x, y, imp;\\
+\end{tabbing}
+STATUS = XDCISET( UNIT, CURSOR, X, Y, IMP )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item CURSOR:  input, integer
+
+Number of cursor to be moved.
+\item X:  input, integer
+
+New sample location for the cursor.
+\item Y:  input, integer
+
+New line location for the cursor.
+\item IMP:  input, integer
+
+Image memory plane.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_CURSOR\>No such cursor.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+\end{tabbing}
+\end{enumerate}
+Moves the specified cursor to the given location in image plane
+coordinates.  If the given image plane coordinates translate to
+screen coordinates that exceed the screen limits, the routine
+will move the cursor to screen coordinates MOD screen size.  For
+example:  if the screen size is $512 \times 512$ and the screen coordinates
+are (762,762), the cursor will be moved to screen location (250,250).
+
+If you immediately read the cursor back, you may not get exactly
+exactly the same image plane coordinates because of the feature
+described above and because of round-off problems in the zoom
+calculation.  Similarly, the same coordinates in two different
+image planes may translate to different screen coordinates.
+
+If you need to set the cursor in raw (screen) coordinates, either
+use the XDCSET routine or use the XDCRAW2IMP routine followed by
+this routine.
+\newpage
+\subsubsection{XDCCOLOR - Set Cursor Color}
+\begin{tabbing}
+status = \=zdccolor( unit, cursor, red, green, blue )\\
+\>int  unit, cursor, red, green, blue;\\
+\end{tabbing}
+STATUS = XDCCOLOR( UNIT, CURSOR, RED, GREEN, BLUE )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item CURSOR:  input, integer
+
+Number of cursor to turn on.
+\item RED:  input, integer
+
+Red intensity value for cursor.
+\item GREEN:  input, integer
+
+Green intensity value for cursor.
+\item BLUE:  input, integer
+
+Blue intensity value for cursor.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+DEVICE\_CANNOT\_DO\_IT\>Device does not support the requested function.\\
+INVALID\_COLOR\>Invalid color value (accepted range is 0-255).\\
+NO\_SUCH\_CURSOR\>No such cursor.\\
+\end{tabbing}
+\end{enumerate}
+Sets the color of the specified cursor.  If the cursor has been turned
+on (either by default in XDDOPEN or by use of XDCON or XDCSHOW), this
+function will set the cursor to the specified color.  If the cursor
+is not on, the cursor color values will be saved in shared memory and
+the function will return.  The saved values will be used the next time
+the cursor is active.
+\newpage
+\subsubsection{XDCLOCATION - Get Cursor Location in Raw Coordinates}
+\begin{tabbing}
+status = \=zdclocation( unit, cursor, x, y )\\
+\>int  unit, cursor, *x, *y;\\
+\end{tabbing}
+STATUS = XDCLOCATION( UNIT, CURSOR, X, Y )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item CURSOR:  input, integer
+
+Cursor to get location from.
+\item X:  output, integer
+
+Sample location of cursor.
+\item Y:  output, integer
+
+Line location of cursor.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_CURSOR\>No such cursor.\\
+\end{tabbing}
+\end{enumerate}
+Returns the location of the cursor in raw (screen) coordinates, X and Y
+(sample and line).  To obtain the location of the cursor in image memory
+plane coordinates, use XDCILOCATION or use this routine followed by
+XDCRAW2IMP.
+\newpage
+\subsubsection{XDCOFF - Turn Cursor Off}
+\begin{tabbing}
+status = \=zdcoff( unit, cursor )\\
+\>int  unit, cursor;\\
+\end{tabbing}
+STATUS = XDCOFF( UNIT, CURSOR )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item CURSOR:  input, integer
+
+Number of cursor to turn off.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_CURSOR\>No such cursor.\\
+\end{tabbing}
+\end{enumerate}
+Turns off the display of the specified cursor.
+\newpage
+\subsubsection{XDCON - Turn Cursor On}
+\begin{tabbing}
+status = \=zdcon( unit, cursor, form, blink )\\
+\>int  unit, cursor, form, blink;\\
+\end{tabbing}
+STATUS = XDCON( UNIT, CURSOR, FORM, BLINK )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item CURSOR:  input, integer
+
+Number of cursor to turn on.
+\item FORM:  input, integer
+
+Number of the cursor form to be used.  (Implementation defined, see
+appendix C for valid values.)
+\item BLINK:  input, integer
+
+Cursor blink rate.  (Implementation defined, see appendix C for valid
+values.)
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_CURSOR\>No such cursor.\\
+NO\_SUCH\_CURSOR\_FORM\>No such cursor form.\\
+NO\_SUCH\_CURSOR\_RATE\>No such cursor rate.\\
+\end{tabbing}
+\end{enumerate}
+Turns on the display of the specified cursor.  The cursor's form and
+blink rate are also set.  Forms and blink rates are implementation
+defined (see appendix C).  XDCSHOW may also be used to turn on the
+cursor without specifying the form and blink rates--i.e., the current
+form and blink rate are used.
+\newpage
+\subsubsection{XDCRAW2IMP - Translate from Raw Coordinates to Image Plane}
+\begin{tabbing}
+status = \=zdcraw2imp( unit, imp, xraw, yraw, ximp, yimp )\\
+\>int  unit, imp, xraw, yraw, *ximp, *yimp;\\
+\end{tabbing}
+STATUS = XDCRAW2IMP(UNIT, IMP, XRAW, YRAW, XIMP, YIMP)
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane.
+\item XRAW:  input, integer
+
+Raw (screen) X coordinate.
+\item YRAW:  input, integer
+
+Raw (screen) Y coordinate.
+\item XIMP:  output, integer
+
+Image memory plane X coordinate.
+\item YIMP:  output, integer
+
+Image memory plane Y coordinate.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+\end{tabbing}
+\end{enumerate}
+Translates a point from raw (screen) coordinates to image plane
+coordinates for the given image plane.  The translation may be
+different for every plane.  This routine is included with the
+cursor routines because that is how it will normally be used.
+\newpage
+\subsubsection{XDCSET - Set Cursor Location in Raw Coordinates}
+\begin{tabbing}
+status = \=zdcset( unit, cursor, x, y )\\
+\>int  unit, cursor, x, y;\\
+\end{tabbing}
+STATUS = XDCSET( UNIT, CURSOR, X, Y )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item CURSOR:  input, integer
+
+Number of cursor to be moved.
+\item X:  input, integer
+
+New sample location for the cursor.
+\item Y:  input, integer
+
+New line location for the cursor.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_CURSOR\>No such cursor.\\
+INVALID\_COORDINATES\>Invalid coordinates.\\
+\end{tabbing}
+\end{enumerate}
+Moves the specified cursor to the raw (screen) coordinate location,
+X and Y (sample and line).  To move the cursor to image plane
+coordinates, either use XDCISET, or use XDCIMP2RAW followed by this
+routine.
+\newpage
+\subsubsection{XDCSHOW - Turn Cursor On}
+\begin{tabbing}
+status = \=zdcshow( unit, cursor )\\
+\>int  unit, cursor;\\
+\end{tabbing}
+STATUS = XDCSHOW( UNIT, CURSOR )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item CURSOR:  input, integer
+
+Number of cursor to turn on.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_CURSOR\>No such cursor.\\
+\end{tabbing}
+\end{enumerate}
+Turns on the display of the specified cursor without changing the
+current form and blink rate.  Forms and blink rates are implementation
+defined (see appendix C).  XDCON may also be used to turn on the
+cursor with a defined form and blink rate.
+\newpage
+\subsubsection{XDCSIZE - Set Cursor Size}
+\begin{tabbing}
+status = \=zdcsize( unit, cursor, xsize, ysize )\\
+\>int  unit, cursor, xsize, ysize;\\
+\end{tabbing}
+STATUS = XDCSIZE( UNIT, CURSOR, XSIZE, YSIZE )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item CURSOR:  input, integer
+
+Number of cursor to turn on.
+\item XSIZE:  input, integer
+
+Horizontal size of the cursor in pixel coordinates.
+\item YSIZE:  input, integer
+
+Vertical size of the cursor in pixel coordinates.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+DEVICE\_CANNOT\_DO\_IT\>Device does not support the requested function.\\
+INVALID\_CURSOR\_SIZE\>Invalid cursor size.\\
+NO\_SUCH\_CURSOR\>No such cursor.\\
+\end{tabbing}
+\end{enumerate}
+Sets the size of the specified cursor.  If the cursor has been turned
+on (either by default in XDDOPEN or by use of XDCON or XDCSHOW) and is
+resizable (form = -1), this function will re-draw the cursor to the
+specified size.  If the cursor is not on or is not resizable, the cursor
+size will be saved in shared memory and the function will return.  The
+saved values will be used the next time a resizable cursor is active.
+\newpage
+<H3>Device Configuration Routines}
+\subsubsection{XDDACTIVATE - Activate/deactivate a Device}
+\begin{tabbing}
+status = \=zddactivate( unit, flag )\\
+\>int  unit, flag;\\
+\end{tabbing}
+STATUS = XDDACTIVATE( UNIT, FLAG )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+The unit number of the device to be activated or deactivated.
+\item FLAG:  input, logical
+
+If FLAG is TRUE, the device is activated; if FALSE, the device is
+deactivated.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_ALREADY\_ACTIVE\>Device is already active.\\
+\end{tabbing}
+\end{enumerate}
+Turn on or off the modification of the display unit UNIT.  If the
+logical flag FLAG is TRUE, modification of display unit UNIT is
+allowed.  If it is FALSE, modification is not allowed.
+\newpage
+\subsubsection{XDDALLOCATE - Allocate a Device}
+\begin{tabbing}
+status = \=zddallocate( device )\\
+\>char  *device;\\
+\end{tabbing}
+STATUS = XDDALLOCATE( DEVICE )
+\begin{enumerate}
+\item DEVICE:  input, string
+
+Name of the device to be allocated.  This may be an actual device
+name (EPA0), a generic device name (EP), or DEFAULT.  
+DEFAULT will try to allocate the ``default''
+device that is assigned to the terminal currently in use.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+NO\_DEFAULT\_DEVICE\>No default device for this terminal.\\
+NO\_AVAIL\_GENERIC\_DEV\>Unable to find available generic device.\\
+NO\_SUCH\_DEVICE\>Unable to find device.\\
+DEVICE\_NOT\_AVAIL\>Device is not available.\\
+CREATE\_LNM\_ERROR\>Unable to create logical name.\\
+GET\_PID\_ERROR\>Unable to get Process ID.\\
+GET\_OWNER\_NAME\_ERROR\>Unable to get device owner username.\\
+GET\_OWNER\_TERM\_ERROR\>Unable to get device owner terminal.\\
+GET\_VAX\_SYMBOL\_ERROR\>Unable to get value of VAX system symbol.\\
+GET\_OWNER\_PID\_ERROR\>Unable to get device owner Process ID.\\
+CANNOT\_ALLOC\_DEVICE\>Unable to allocate device.\\
+DEVICE\_ALREADY\_ALLOC\>Device is already allocated.\\
+\end{tabbing}
+\end{enumerate}
+This routine allocates a device to the current
+process using the VAX/VMS device allocation system services. It defines
+the logical name XDDEVICE which is translated by a subsequent call to XDDUNIT.
+The device will be ``owned'' by that process until it is either deallocated
+(XDDFREE) or the process terminates.
+
+A child process may try to allocate a device that is owned by its
+parent, in which case XDDALLOCATE will return DEVALLOC.  The child
+process will then be able to access the device as if it were its own
+except that it will not be able to deallocate it (XDDFREE).
+
+XDDALLOCATE requires CMEXEC and WORLD privilege.
+\newpage
+\subsubsection{XDDCLOSE - Close Device}
+\begin{tabbing}
+status = \=zddclose( unit )\\
+\>int  unit;\\
+\end{tabbing}
+STATUS = XDDCLOSE( UNIT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+\end{tabbing}
+\end{enumerate}
+This routine closes the IO channel to the display device which was opened
+by XDDOPEN.
+\newpage
+\subsubsection{XDDCONFIGURE - Configure a Device}
+\begin{tabbing}
+status = \=zddconfigure( unit, config )\\
+\>int  unit, config[4];\\
+\end{tabbing}
+STATUS = XDDCONFIGURE( UNIT, CONFIG )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item CONFIG:  input, integer, dimensioned (4)
+
+Array defining the desired device configuration.  (See below for more
+information.)
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+INVALID\_DEVICE\_REQ\>Invalid request for display device.\\
+\end{tabbing}
+\end{enumerate}
+This routine sets display unit UNIT to a standard configuration
+defined by CONFIG.  The following define the possible standard
+configurations:
+\begin{tabbing}
+xxxxxxxxxxxxxxxxx:\=\kill
+CONFIG(1) = -1\>Leave Item Unchanged\\
+CONFIG(1) =  0\>Default\\
+CONFIG(1) =  1\>Full Color Display\\
+CONFIG(1) =  2\>Pseudo-Color Display\\
+CONFIG(1) =  3\>Monochrome Display\\
+\\
+CONFIG(2) = -1\>Leave Item Unchanged\\
+CONFIG(2) =  0\>Default\\
+CONFIG(2) =  1\>$512 \times 512$   Image Memory Planes\\
+CONFIG(2) =  2\>$1024 \times 1024$ Image Memory Planes\\
+CONFIG(2) =  3\>$2048 \times 2048$ Image Memory Planes\\
+\\
+CONFIG(3) = -1\>Leave Item Unchanged\\
+CONFIG(3) =  0\>Default\\
+CONFIG(3) =  1\>$512 \times 512$   Video Output\\
+CONFIG(3) =  2\>$1024 \times 1024$ Video Output\\
+CONFIG(3) =  3\>$480 \times 640$   Video Output\\
+\\
+CONFIG(4) = -1\>Leave Item Unchanged\\
+CONFIG(4) =  0\>Default\\
+CONFIG(4) =  1\>$1 \times 1$ Aspect Ratio\\
+CONFIG(4) =  2\>$4 \times 3$ Aspect Ratio\\
+\end{tabbing}
+If XDDCONFIGURE is not used to change the device configuration, the
+configuration of the display device is undefined.  The application
+program must then set the display device configuration and internal tables.
+Not all display devices can be configured in all the above ways.
+
+There are two things that must be considered when using XDDCONFIGURE to
+set the video display mode.  The first is that the routine may not
+necessarily set the display mode properly.  The display modes are defined
+as follows:
+
+Monochrome--All three look-up tables are connected to the same image
+memory plane, and all have been set to the same values.
+
+Pseudo-color--All three look-up tables are connected to the same image
+memory plane, but are not set to the same values.
+
+Full Color--The look-up tables are not connected to the same image memory
+plane.
+
+The XDDCONFIGURE routine will connect the look-up tables appropriately,
+but will not write data to the look-up tables.  If you choose monochrome
+mode, but have different LUTs, the actual display mode will be
+pseudo-color.  Similarly, if you select pseudo-color mode, but have
+identical LUTs, the actual display mode will be monochrome.
+
+The second consideration is that the video display mode can be changed
+without using XDDCONFIGURE.  An application program can change to any
+of the display modes by using XDLCONNECT to re-connect the LUTs and by
+using XDLWRITE or XDLRAMP to write data to the LUTs.  By connecting three
+identical LUTs to the same image memory plane, the application can change
+the mode from full color to monochrome without using XDDCONFIGURE.
+Since XDDCONFIGURE was not used, the system still believes its mode to
+be full color--a query to XDDINFO will return full color rather than
+monochrome.  Under these circumstances, XDSMODE should be used instead
+of XDDINFO, since XDSMODE checks the look-up table connections and
+contents to determine the actual video display mode.
+\newpage
+\subsubsection{XDDFREE - Free (Deallocate) a Device}
+\begin{tabbing}
+status = \=zddfree( name )\\
+\>char  *name;\\
+\end{tabbing}
+STATUS = XDDFREE( NAME )
+\begin{enumerate}
+\item NAME:  input, string
+
+Name of the device to be deallocated.  This may be an actual device
+name (EPA0), a generic device name (EP), or DEFAULT.  DEFAULT will try
+to allocate the ``default'' device that is assigned to the terminal
+currently in use.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+NO\_DEFAULT\_DEVICE\>No default device for this terminal.\\
+NO\_OWNED\_GENERIC\_DEV\>Unable to find owned generic device.\\
+NO\_SUCH\_DEVICE\>Unable to find device.\\
+DELETE\_LNM\_ERROR\>Unable to delete logical name.\\
+GET\_PID\_ERROR\>Unable to get Process ID.\\
+GET\_OWNER\_NAME\_ERROR\>Unable to get device owner username.\\
+GET\_OWNER\_TERM\_ERROR\>Unable to get device owner terminal.\\
+GET\_VAX\_SYMBOL\_ERROR\>Unable to get value of VAX system symbol.\\
+GET\_OWNER\_PID\_ERROR\>Unable to get device owner Process ID.\\
+CANNOT\_DEALL\_DEVICE\>Unable to deallocate device.\\
+\end{tabbing}
+\end{enumerate}
+After freeing, the display unit is available for use by other
+users.  See XDDALLOCATE for more information on device allocation and
+deallocation.
+
+XDDFREE requires CMEXEC and WORLD privilege.
+\newpage
+\subsubsection{XDDINFO - Get Device Information}
+\begin{tabbing}
+status = \=zddinfo( unit, start, number, info )\\
+\>int  unit, start, number, info[];\\
+\end{tabbing}
+STATUS = XDDINFO( UNIT, START, NUMBER, INFO )
+\begin{enumerate}
+\item UNIT:  input
+
+Display device unit number.
+\item START:  input, integer
+
+Starting position of requested data in internal device information
+table.
+\item NUMBER:  input, integer
+
+Number of words of information to be returned.
+\item INFO:  output, integer, dimensioned (NUMBER)
+
+Array containing the returned device information.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+INVALID\_INFO\_REQUEST\>Invalid request for information.\\
+\end{tabbing}
+\end{enumerate}
+Returns the characteristics of a display device in the array INFO.
+NUMBER words of the internal device configuration data starting at
+position START within the configuration data array will be returned
+in array INFO.  Appendix B contains a description of the data
+returned in array INFO.
+
+An alternative to this routine is the device status routines (XDS*).
+These routines are functions which return the information directly,
+rather than as a parameter.  Some of the information available in
+the status routines is the number of lines in the display, number of
+samples in the display, video display mode, zoom factor, etc.
+\newpage
+\subsubsection{XDDMOVE - Move Window Device}
+\begin{tabbing}
+status = \=zddmove( unit, xloc, yloc )\\
+\>int  unit, xloc, yloc;\\
+\end{tabbing}
+STATUS = XDDMOVE( UNIT, XLOC, YLOC )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item XLOC:  input, integer
+
+X screen coordinates of the new location.
+\item YLOC:  input, integer
+
+Y screen coordinates of the new location.
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+\end{tabbing}
+\end{enumerate}
+This routine moves a window device to the given X and Y coordinates.  The
+routine is applicable only for devices which support X-Windows.
+\newpage
+\subsubsection{XDDNAME - Get Device Name}
+\begin{tabbing}
+status = \=zddname( unit, flag, name, maxlen, retlen )\\
+\>int  unit, flag, maxlen, retlen;\\
+\>char  *name;\\
+\end{tabbing}
+STATUS = XDDNAME( UNIT, FLAG, NAME, MAXLEN, RETLEN )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item FLAG:  input, logical
+
+Determines which device name to return.
+\item NAME:  output, string
+
+String to receive the display device name.
+\item MAXLEN:  input, integer
+
+The maximum number of characters to be returned.  NAME is either
+truncated or padded with blanks to MAXLEN characters.
+\item RETLEN:  output, integer
+
+The number of characters returned, excluding trailing blanks.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+INVALID\_ARGUMENT\>Invalid argument received.\\
+\end{tabbing}
+\end{enumerate}
+This routine returns the name of the currently allocated display
+device UNIT.  FLAG determines which name is returned in the string
+NAME.  MAXLEN is the maximum number of characters to be returned in
+NAME.  If MAXLEN is zero (0) and NAME has been passed as a character
+string descriptor, then MAXLEN will default to the length of the
+string taken from the descriptor.  NAME will either be truncated
+or padded with blanks to MAXLEN characters.
+
+The following defines the possible values of FLAG:
+\begin{tabbing}
+xxxxxxxxxxxxxxxxx:\=\kill
+FLAG = 1\>Return physical device name (EPA1).\\
+FLAG = 2\>Return device make/model name (DeAnza IP8500).\\
+\end{tabbing}
+\newpage
+\subsubsection{XDDNAMEDUNIT - Get Device Unit Number}
+\begin{tabbing}
+status = \=zddnamedunit( unit, name )\\
+\>int  *unit;\\
+\>char  name[];\\
+\end{tabbing}
+STATUS = XDDNAMEDUNIT( UNIT, NAME )
+\begin{enumerate}
+\item UNIT:  output, integer
+
+Display device unit number.
+\item NAME:  input, string
+
+Name of device being accessed.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+DEVICE\_NOT\_ALLOC\>Device is not allocated.\\
+\end{tabbing}
+\end{enumerate}
+If the name is empty (NULL), then this routine performs the same
+function as XDDUNIT--assigns the logical unit number to use in
+all subsequent calls to VRDI routines.  If the name is a valid
+device name and the device is allocated, then the unit number for
+that device is returned.  Otherwise, an appropriate error status
+is returned.
+\newpage
+\subsubsection{XDDOPCLS - Open or Iconify a Window Device}
+\begin{tabbing}
+status = \=zddopcls( unit, open )\\
+\>int  unit, open;\\
+\end{tabbing}
+STATUS = XDDOPCLS( UNIT, OPEN )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item OPEN:  input, integer
+
+Flag to determine whether to open or iconify the window.
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+\end{tabbing}
+\end{enumerate}
+This routine opens or iconifies a window device.  If the OPEN flag is TRUE,
+then the window will be opened.  If it is FALSE, then the window is
+iconified.  The routine is applicable only for devices which support X-Windows.
+\newpage
+\subsubsection{XDDOPEN - Open a Device}
+\begin{tabbing}
+status = \=zddopen( unit )\\
+\>int  unit;\\
+\end{tabbing}
+STATUS = XDDOPEN( UNIT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_ALLOC\>Device is not allocated.\\
+DEVICE\_ALREADY\_OPEN\>Device is already open.\\
+\end{tabbing}
+\end{enumerate}
+Either this routine or XDDSMARTOPEN must be executed before any IO
+to the display device is performed.  On the VAX system, it opens an
+IO channel to the display device.  This routine always initializes the
+DCB.  XDDSMARTOPEN will initialize the DCB if it has not previously
+been initialized or if it is unable to access the shared memory.
+\newpage
+\subsubsection{XDDRESIZE - Resize a Window Device}
+\begin{tabbing}
+status = \=zddresize( unit, width, height )\\
+\>int  unit, width, height;\\
+\end{tabbing}
+STATUS = XDDRESIZE( UNIT, WIDTH, HEIGHT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item WIDTH:  input, integer
+
+Width of the window.
+\item HEIGHT:  input, integer
+
+Height of the window.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_ALLOC\>Device is not allocated.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+\end{tabbing}
+\end{enumerate}
+This routine resizes a window device to the given width and height.  The
+routine is applicable only for devices which support X-Windows.
+\newpage
+\subsubsection{XDDSMARTOPEN - Open a Device}
+\begin{tabbing}
+status = \=zddsmartopen( unit )\\
+\>int  unit;\\
+\end{tabbing}
+STATUS = XDDSMARTOPEN( UNIT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_ALLOC\>Device is not allocated.\\
+DEVICE\_ALREADY\_OPEN\>Device is already open.\\
+\end{tabbing}
+\end{enumerate}
+Either this routine or XDDOPEN must be executed before any IO to
+the display device is performed.  On the VAX system, it opens an IO
+channel to the display device.  XDDOPEN always initializes the
+DCB.  This routine will not initialize the DCB if it has already
+been initialized and if the shared memory can be accessed.  If
+either of these conditions is not met, then the DCB will be
+initialized.
+\newpage
+\subsubsection{XDDUNIT - Assign Device Unit number}
+\begin{tabbing}
+status = \=zddunit( unit )\\
+\>int  *unit;\\
+\end{tabbing}
+STATUS = XDDUNIT( UNIT )
+\begin{enumerate}
+\item UNIT:  output, integer
+
+Display device unit number.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+TRANS\_LNM\_ERROR\>Unable to translate logical name.\\
+DEVICE\_NOT\_ALLOC\>Device is not allocated.\\
+\end{tabbing}
+\end{enumerate}
+Translates the logical name XDDEVICE defined by XDDALLOCATE
+and assigns the logical unit number to use in all subsequent calls
+to VRDI routines.
+\newpage
+\subsubsection{XDDUNITNAMES - Get Device Names}
+\begin{tabbing}
+status = \=zddunitnames( ndev, len, devices )\\
+\>int  *ndev, len;\\
+\>char  *devices;\\
+\end{tabbing}
+STATUS = XDDUNITNAMES( NDEV, LEN, DEVICES )
+\begin{enumerate}
+\item NDEV:  output, integer
+
+The number of devices allocated.
+\item LEN:  input, integer
+
+Maximum number of characters per device name to be returned.  Each
+string in NAME is either truncated or padded with blanks to LEN
+characters.
+\item DEVICES:  output, string
+
+String array to receive the display device names (see below for
+further details).
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+INVALID\_ARGUMENT\>Invalid argument received.\\
+\end{tabbing}
+\end{enumerate}
+This routine returns the names of all the currently allocated display
+devices.  The names are returned either in an array of null-terminated
+strings or a FORTRAN string array descriptor.  This is the only VRDI
+routine which uses an array of strings.
+
+If the C interface is used, the array may be passed as the parameter,
+or the address of the first string in the array may be passed as the
+parameter.
+
+If the FORTRAN string array descriptor is used, the number of strings
+and the length of each string is determined by the descriptor.  The
+strings are either truncated or padded with blanks to the length
+defined in the descriptor.
+\newpage
+<H3>Error Handling Routines}
+\subsubsection{XDEACTION - Set Error Action}
+\begin{tabbing}
+status = \=zdeaction( warning, error, fatal )\\
+\>int  warning, error, fatal;\\
+\end{tabbing}
+STATUS = XDEACTION( WARNING, ERROR, FATAL )
+\begin{enumerate}
+\item WARNING:  input, integer
+
+Action to perform for errors in the WARNING catagory.
+\item ERROR:  input, integer
+
+Action to perform for errors in the ERROR catagory.
+\item FATAL:  input, integer
+
+Action to perform for errors in the FATAL catagory.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+INVALID\_WARNING\_ACTION\>Invalid WARNING action.\\
+INVALID\_ERROR\_ACTION\>Invalid ERROR action.\\
+INVALID\_FATAL\_ACTION\>Invalid FATAL action.\\
+\end{tabbing}
+\end{enumerate}
+This routine sets the action to performs for each of the error code
+categories:  WARNING, ERROR and FATAL.  The actions that may be
+performed are:
+\begin{tabbing}
+xxxxx\=xxxxxxxxx\=\kill
+\>1\>Just return status code\\
+\>2\>Issue system message and return status code\\
+\>3\>Issue system message and abort\\
+\end{tabbing}
+\newpage
+\subsubsection{XDELEVEL - Get Error Severity Level}
+\begin{tabbing}
+status = \=zdelevel( code )\\
+\>int  code;\\
+\end{tabbing}
+STATUS = XDELEVEL( CODE )
+\begin{enumerate}
+\item CODE:  input, integer
+
+A VRDI error code.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+XD\_UNKNOWN\>Unknown error status code.\\
+XD\_NO\_ERROR\>Error status code is SUCCESS.\\
+XD\_WARNING\>Error severity level is WARNING.\\
+XD\_ERROR\>Error severity level is ERROR.\\
+XD\_FATAL\>Error severity level is FATAL.\\
+\end{tabbing}
+\end{enumerate}
+This routine displays the severity level associated with the
+given error code.  See appendix A for a list of error codes and
+system error messages.  If the program utilizes the C interface,
+you should use the following include statements:
+
+\#include XDMAININC\\
+\#include xderrors\\
+
+These will insure that you are using the proper values when interpreting
+the returned values from this function (i.e., XD\_NO\_ERROR, XD\_WARNING,
+etc.).
+\newpage
+\subsubsection{XDESIGNAL - Display a System Error Message}
+\begin{tabbing}
+status = \=zdesignal( code )\\
+\>int  code;\\
+\end{tabbing}
+STATUS = XDESIGNAL( CODE )
+\begin{enumerate}
+\item CODE:  input, integer
+
+A VRDI error code.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+\end{tabbing}
+\end{enumerate}
+This routine displays the system error message associated with the
+given error code.  See appendix A for a list of error codes and
+system error messages.
+\newpage
+<H3>Flag Routines}
+The inter-process communication flags are set automatically by the
+VRDI routines whenever a change occurs.  For example, the device
+configuration flag is set any time a VRDI routine is called that
+changes the configuration of the device (e.g., XDDCONFIGURE).  The
+flags are automatically cleared whenever they are checked.
+
+There is more than one group of flags available.  Group 0 is the default,
+and is reserved, by convention, for the application.  Group 1 is
+reserved, by convention, for VIDS.  Other groups may be used via the
+XDFREGISTER routine.
+
+When a VRDI routine sets a flag, it sets the flag for all groups except
+the current one.  For example, an application calls XDDCONFIGURE.
+XDDCONFIGURE sets the ``configuration changed'' flag for all groups
+except group 0, the application group.  This notifies the other groups
+(e.g., VIDS) that an application has changed the device configuration.
+
+All the flag routines return the result as the function return for
+convenience.  There is no status return, as there are only a few possible
+errors and no hardware errors.  If a bad unit or image plane number is
+given, the result is simply returned as FALSE.
+\newpage
+\subsubsection{XDFCONFIG - Check Device Configuration Flag}
+\begin{tabbing}
+flag = \=zdfconfig( unit )\\
+\>int  unit;\\
+\end{tabbing}
+FLAG = XDFCONFIG( UNIT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item FLAG:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+TRUE\>Device configuration has changed.\\
+FALSE\>Device configuration has not changed.\\
+\end{tabbing}
+\end{enumerate}
+Determines whether another application has changed the device configuration
+since the last call to this function.  Device configuration changes include:
+
+1.  Video display changes, e.g., full color, pseudo-color,
+monochrome (via XDDCONFIGURE or XDDOPEN).
+
+2.  Image memory plane or video display sizes, e.g., $512 \times 512$,
+$1024 \times 1024$ (via XDDCONFIGURE or XDDOPEN).
+
+3.  Aspect ratio changes, e.g., $1 \times 1$, $4 \times 3$ (via XDDCONFIGURE
+or XDDOPEN).
+
+4.  Look-Up Table connection changes (via XDDCONFIGURE or XDLCONNECT).
+
+5.  Graphics plane connection changes (via XDGCONNECT).
+
+This flag is not set if the display configuration is changed using XDLCONNECT
+(e.g., connecting all three look-up tables to the same image memory plane
+will change the display mode from full color to monochrome or pseudo-color).
+Under these conditions, XDSMODE should be used to determine if the video display
+mode has changed.
+\newpage
+\subsubsection{XDFGLUT - Check Graphics Look-Up Table Flag}
+\begin{tabbing}
+flag = \=zdfglut( unit )\\
+\>int  unit;\\
+\end{tabbing}
+FLAG = XDFGLUT( UNIT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item FLAG:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+TRUE\>Graphics Look-Up Table has changed.\\
+FALSE\>Graphics Look-Up Table has not changed.\\
+\end{tabbing}
+\end{enumerate}
+Determines whether another application has changed the Graphics Look-Up
+Table since the last call to this function.  Changes to the Graphics Look-Up
+Table include:
+
+1.  Changing the section of the look-up table used (via XDDOPEN or XDGCONNECT).
+
+2.  Changing the bypass status of the look-up table (via XDDOPEN or XDGCONNECT)
+
+3.  Modifying the table itself (via XDGLCONSTANT, XDGLINIT, or XDGLWRITE).
+\newpage
+\subsubsection{XDFIMAGE - Check Image Memory Plane Flag}
+\begin{tabbing}
+flag = \=zdfimage( unit, imp )\\
+\>int  unit, imp;\\
+\end{tabbing}
+FLAG = XDFIMAGE( UNIT, IMP )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane number.
+\item FLAG:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+TRUE\>Image Memory Plane has changed.\\
+FALSE\>Image Memory Plane has not changed.\\
+\end{tabbing}
+\end{enumerate}
+Determines whether another application has changed the given image memory
+plane since the last call to this function.  The flag for IMP=0 is set
+if any image memory plane has changed since the last IMP=0 call.  Image
+memory plane changes include:
+
+1.  Writing text to the image plane (via XDTTEXT).
+
+2.  Rotating the image plane (via XDIROTATE).
+
+3.  Writing data to the image plane (via XDIAREAFILL, XDIAWWRITE,
+XDICIRCLE, XDIFILL, XDIIARITHMETIC, XDIICOPY, XDIILOGICAL,
+XDIISHIFT, XDILINEWRITE, XDIMAWWRITE, XDIMCIRCLE, XDIMFILL,
+XDIMLINEWRITE, XDIMPIXELWRITE, XDIMPOLYLINE, XDIPIXELWRITE, or
+XDIPOLYLINE.
+
+This flag is not set when the image plane zoom factor is set
+(XDIZOOM), when the image plane access window is changed (XDIAWSET),
+or when the image plane display window location is changed (XDIDWSET),
+since these changes do not affect the values stored in image plane
+memory.  To test for these changes, the application should use
+XDSZOOM, XDIAWLOCATION, and XDIDWLOCATION.
+\newpage
+\subsubsection{XDFLUT - Check Look-Up Table Flag}
+\begin{tabbing}
+flag = \=zdflut( unit, lut )\\
+\>int  unit, lut;\\
+\end{tabbing}
+FLAG = XDFLUT( UNIT, LUT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item LUT:  input, integer
+
+Look-up table number.
+\item FLAG:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+TRUE\>Look-Up Table has changed.\\
+FALSE\>Look-Up Table has not changed.\\
+\end{tabbing}
+\end{enumerate}
+Determines whether another application has changed the given look-up
+table since the last call to this function.  The flag for LUT=0
+is set if any look-up table has changed since the last LUT=0 call.
+Changes to the look-up table can include:
+
+1.  Changing the section of the look-up table used (via XDDCONFIGURE, XDDOPEN,
+or XDLCONNECT).
+
+2.  Changing the bypass status of the look-up table (via XDDCONFIGURE, XDDOPEN,
+or XDLCONNECT).
+
+3.  Modifying the table itself (via XDLRAMP, or XDLWRITE).
+\newpage
+\subsubsection{XDFREGISTER - Select Group of Flags}
+\begin{tabbing}
+zdfregister( group )\\
+int  group;\\
+\end{tabbing}
+XDFREGISTER( GROUP )
+\begin{enumerate}
+\item GROUP:  input, integer
+
+Group of flags.
+\end{enumerate}
+Selects which group of flags to use for this process.  GROUP=0 is the
+default and is used by the application, so it does not need to call
+this routine.  GROUP=1 is reserved, by convention, for VIDS.  Other groups
+(up to 32) may be used.  If an invalid group number is input, the group
+number is set to 0.  The group number is stored internally as a global
+variable which is only visible to the current process.  The same group
+is used for all units.  This routine only needs to be called once in the
+lifetime of the program.  This routine, if called, must be called before
+any devices are opened (via XDDOPEN or XDDSMARTOPEN).
+\newpage
+<H3>Graphics Overlay Plane Routines}
+The use of graphics overlay is logically the same as using any other
+image memory plane for video output.  The pixel values output by the
+graphics overlay hardware replace pixels output from the standard
+outputs when graphics overlay is on.  The graphics overlay LUT
+logically consists of three standard size LUT tables, one for red,
+green and blue (color only).  Some devices, however, do not support
+full-size overlay LUTs.  In these cases, the color choices available
+on the graphics overlay plane are, naturally, limited.
+\newpage
+\subsubsection{XDGCOLOR - Get DN Value Corresponding to Named Color}
+\begin{tabbing}
+dn = \=zdgcolor( unit, name )\\
+\>int  unit;\\
+\>char  name[];\\
+\end{tabbing}
+DN = XDGCOLOR( UNIT, NAME )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item NAME:  input, string
+
+String of one or more color names.
+\item DN:  output, integer
+\end{enumerate}
+Returns the DN value to use on the graphics plane to get the named
+color.  The NAME parameter is a string consisting of one or more
+color names separated by one or more commas or spaces or both.  The
+valid colors are ``red,'' ``green,'' ``blue,'' ``white,'' ``yellow,''
+``magenta,'' ``cyan,'' and ``black.''  If only one name is given, that
+color is returned.  If more than one name is given, the color
+returned is a blend of the colors given.  Since some devices do not
+support full-size overlay LUTs, the DN value returned may not yield
+the exact color requested.  If an error is encountered in the string
+name or any other error occurs, a 0 is returned for the DN as an
+error indication (0 corresponds to ``transparent'' on all the overlay LUTs).
+\newpage
+\subsubsection{XDGCONNECT - Connect Image Plane to Graphics LUT}
+\begin{tabbing}
+status = \=zdgconnect( unit, imp, section, bypass )\\
+\>int  unit, imp, section, bypass;\\
+\end{tabbing}
+STATUS = XDGCONNECT( UNIT, IMP, SECTION, BYPASS )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane to connect to graphics LUT.
+\item SECTION:  input, integer
+
+Number of the graphics LUT section to be used.
+\item BYPASS:  input, logical
+
+Flag indicating whether or not to use the LUT.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+OVERLAY\_NOT\_AVAILABLE\>Graphics overlay is not available.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+NO\_SUCH\_LUT\_SECTION\>No such look-up table section.\\
+CANNOT\_CONNECT\_LUT\>Cannot make IMP/LUT connection.\\
+CANNOT\_BYPASS\_LUT\>Cannot bypass the look-up tables.\\
+\end{tabbing}
+\end{enumerate}
+Connects the image memory plane to the graphics overlay plane LUT
+section.  This has the effect of making the image memory plane the
+graphics overlay plane.  If BYPASS is TRUE, pixels will not be
+converted by the LUT before output.  If BYPASS is FALSE, pixels will
+be converted by the LUT before output.
+\newpage
+\subsubsection{XDGLCONSTANT - Set Graphics Look-up Table to a Constant}
+\begin{tabbing}
+status = \=zdglconstant( unit, section, red, green, blue )\\
+\>int  unit, section, red, green, blue;\\
+\end{tabbing}
+STATUS = XDGLCONSTANT(UNIT, SECTION, RED, GREEN, BLUE)
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item SECTION:  input, integer
+
+Graphics LUT section to be written.
+\item RED:  input, integer
+
+Red intensity value.
+\item GREEN:  input, integer
+
+Green intensity value.
+\item BLUE:  input, integer
+
+Blue intensity value.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+OVERLAY\_NOT\_AVAILABLE\>Graphics overlay is not available.\\
+NO\_SUCH\_LUT\_SECTION\>No such look-up table section.\\
+\end{tabbing}
+\end{enumerate}
+Set the graphics overlay LUT section to constant RED, GREEN and BLUE
+values.  This routine is not recommended because it sets every pixel
+in the graphics image plane to the same color.  The XDGLINIT routine,
+which sets up an optimum graphics overlay LUT, is recommended instead.
+\newpage
+\subsubsection{XDGLINIT - Initialize Graphics Look-up Table}
+\begin{tabbing}
+status = \=zdglinit( unit, section )\\
+\>int  unit, section;\\
+\end{tabbing}
+STATUS = XDGLINIT( UNIT, SECTION )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item SECTION:  input, integer
+
+graphics LUT section to be written.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+OVERLAY\_NOT\_AVAILABLE\>Graphics overlay is not available.\\
+NO\_SUCH\_LUT\_SECTION\>No such look-up table section.\\
+\end{tabbing}
+\end{enumerate}
+Initializes the graphics look-up table for the given section.
+The table is set up to allow the maximum number of colors that
+will easily fit on the display device.
+\newpage
+\subsubsection{XDGLREAD - Read Graphics Look-up Table}
+\begin{tabbing}
+status = \=zdglread( unit, section, red, green, blue )\\
+\>int  unit, section, *red, *green, *blue;\\
+\end{tabbing}
+STATUS = XDGLREAD( UNIT, SECTION, RED, GREEN, BLUE )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item SECTION:  input, integer
+
+Graphics LUT section to be read.
+\item RED:  output, integer, dimensioned (256)
+
+Array to receive Red LUT intensities.
+\item GREEN:  output, integer, dimensioned (256)
+
+Array to receive Green LUT intensities.
+\item BLUE:  output, integer, dimensioned (256)
+
+Array to receive Blue LUT intensities.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+OVERLAY\_NOT\_AVAILABLE\>Graphics overlay is not available.\\
+NO\_SUCH\_LUT\_SECTION\>No such look-up table section.\\
+\end{tabbing}
+\end{enumerate}
+Reads the contents of the graphics overlay LUT section into the
+arrays RED, GREEN and BLUE.  A zero for the section number will
+mean the current section that is controlling the display.
+\newpage
+\subsubsection{XDGLWRITE - Write Graphics Look-up Table}
+\begin{tabbing}
+status = \=zdglwrite( unit, section, red, green, blue )\\
+\>int  unit, section, *red, *green, *blue;\\
+\end{tabbing}
+STATUS = XDGLWRITE( UNIT, SECTION, RED, GREEN, BLUE )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item SECTION:  input, integer
+
+graphics LUT section to be written.
+\item RED:  input, integer, dimensioned (256)
+
+Array containing Red intensity values.
+\item GREEN:  input, integer, dimensioned (256)
+
+Array containing Green intensity values.
+\item BLUE:  input, integer, dimensioned (256)
+
+Array containing Blue intensity values.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+OVERLAY\_NOT\_AVAILABLE\>Graphics overlay is not available.\\
+NO\_SUCH\_LUT\_SECTION\>No such look-up table section.\\
+\end{tabbing}
+\end{enumerate}
+Writes the contents of the arrays RED, GREEN and BLUE into the
+graphics overlay LUT section.  This routine is not recommended
+because it overwrites the default graphics overlay LUT.  The
+XDGLINIT routine, which sets up an optimum graphics overlay LUT,
+is recommended instead.
+\newpage
+\subsubsection{XDGOFF - Turn Off the Graphics Overlay}
+\begin{tabbing}
+status = \=zdgoff( unit )\\
+\>int  unit;\\
+\end{tabbing}
+STATUS = XDGOFF( UNIT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+OVERLAY\_NOT\_AVAILABLE\>Graphics overlay is not available.\\
+\end{tabbing}
+\end{enumerate}
+Turns off the display of the graphics overlay plane.
+\newpage
+\subsubsection{XDGON - Turn On the Graphics Overlay}
+\begin{tabbing}
+status = \=zdgon( unit )\\
+\>int  unit;\\
+\end{tabbing}
+STATUS = XDGON( UNIT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+OVERLAY\_NOT\_AVAILABLE\>Graphics overlay is not available.\\
+\end{tabbing}
+\end{enumerate}
+Turns on the display of the graphics overlay plane.
+\newpage
+\subsubsection{XDGRGB - Get DN Value Corresponding to Given RGB Triplet}
+\begin{tabbing}
+dn = \=zdgrgb( unit, red, green, blue )\\
+\>int  unit, red, green, blue;\\
+\end{tabbing}
+DN = XDGRGB( UNIT, RED, GREEN, BLUE)
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item RED:  input, integer
+
+Red intensity value.
+\item GREEN:  input, integer
+
+Green intensity value.
+\item BLUE:  input, integer
+
+Blue intensity value.
+\item DN:  output, integer
+\end{enumerate}
+Returns the DN value to use on the graphics plane to get as close as
+possible to the given RGB triplet color.
+
+The actual color displayed on the screen for the DN returned is the
+color in the look-up table with the smallest Cartesian distance to
+the given triplet.  The actual color may be different than the
+requested one if the look-up table is not set up well or if there
+are only a limited number of bits available in the overlay plane.
+
+If an error is encountered due to a bad unit number or the RGB values
+being outside the range (0,255), a 0 is returned for the DN (0
+corresponds to ``transparent'' on all the overlay LUTs).
+\newpage
+<H3>Image Memory Plane Routines}
+\subsubsection{XDIAREAFILL - Fill an Area with a Constant Value}
+\begin{tabbing}
+status = \=zdiareafill( unit, imp, x, y, boundary, fill )\\
+\>int  unit, imp, x, y;\\
+\>unsigned char  boundary, fill;\\
+\end{tabbing}
+STATUS = XDIAREAFILL( UNIT, IMP, X, Y, BOUNDARY, FILL )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane to write to.
+\item X:  input, integer
+
+Sample location within the area.
+\item Y:  input, integer
+
+Line location within the area.
+\item BOUNDARY:  input, byte
+
+Pixel value that defines the boundary to be filled.
+\item FILL:  input, byte
+
+Pixel value with which to fill the area.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+NOT\_IN\_ACCESS\_WINDOW\>Requested coordinates are not within the access window.\\
+\end{tabbing}
+\end{enumerate}
+Fills a bounded closed area in the image memory plane of the display
+device with the pixel value FILL.  The bounded area is determined by
+the value BOUNDARY and the access window.  
+\newpage
+\subsubsection{XDIAWLOCATION - Get Access Window Location}
+\begin{tabbing}
+status = \=zdiawlocation( unit, imp, left, top, right, bottom )\\
+\>int  unit, imp, *left, *top, *right, *bottom;\\
+\end{tabbing}
+STATUS = XDIAWLOCATION( UNIT, IMP ,LEFT, TOP, RIGHT, BOTTOM )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane number.
+\item LEFT:  output, integer
+
+Starting sample location of the access window.
+\item TOP:  output, integer
+
+Starting line location of the access window.
+\item RIGHT:  output, integer
+
+Ending sample location of the access window.
+\item BOTTOM:  output, integer
+
+Ending sample location of the access window.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+\end{tabbing}
+\end{enumerate}
+Returns the location of the access window associated with the image
+memory plane of the display device.  The coordinates are image memory
+plane coordinates.
+\newpage
+\subsubsection{XDIAWREAD - Read from Image Plane Access Window}
+\begin{tabbing}
+status = \=zdiawread( unit, imp, size, array )\\
+\>int  unit, imp, size;\\
+\>unsigned char  *array;\\
+\end{tabbing}
+STATUS = XDIAWREAD( UNIT, IMP, SIZE, ARRAY )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane number.
+\item SIZE:  input, integer
+
+The size of the array to receive data from the access window.
+\item ARRAY:  output, byte, dimensioned (SIZE)
+
+Array to receive data from the access window.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+BAD\_PIXEL\_COUNT\>Pixel count was less than 1.\\
+\end{tabbing}
+\end{enumerate}
+Reads SIZE pixels from the access window associated with the image
+memory plane of the display device into the data array.  The read
+starts in the upper left corner of the access window and continues
+one line at a time from top to bottom.
+\newpage
+\subsubsection{XDIAWSET - Set Access Window Location}
+\begin{tabbing}
+status = \=zdiawset( unit, imp, left, top, right, bottom )\\
+\>int  unit, imp, left, top, right, bottom;\\
+\end{tabbing}
+STATUS = XDIAWSET( UNIT, IMP, LEFT, TOP, RIGHT, BOTTOM )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane number.
+\item LEFT:  input, integer
+
+New starting sample location for the access window.
+\item TOP:  input, integer
+
+New starting line location for the access window.
+\item RIGHT:  input, integer
+
+New ending sample location for the access window.
+\item BOTTOM:  input, integer
+
+New ending sample location for the access window.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+BAD\_ACCESS\_WINDOW\>Access window improperly defined.\\
+AW\_NOT\_ON\_IMP\>Part of the access window is not on the image plane.\\
+\end{tabbing}
+\end{enumerate}
+Sets the location of the access window associated with the image
+memory plane of the display device.  The access window must be the
+same as or within the image memory plane.  LEFT must be less than or
+equal to RIGHT and TOP must be less than or equal to BOTTOM.  The
+coordinates are image memory plane coordinates.
+\newpage
+\subsubsection{XDIAWWRITE - Write to Image Plane Access Window}
+\begin{tabbing}
+status = \=zdiawwrite( unit, imp, size, array )\\
+\>int  unit, imp, size;\\
+\>unsigned char  *array;\\
+\end{tabbing}
+STATUS = XDIAWWRITE( UNIT, IMP, SIZE, ARRAY )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane.
+\item SIZE:  input, integer
+
+Number of pixels to be written.
+\item ARRAY:  input, byte, dimensioned (SIZE)
+
+The array containing the data to be written to the access window.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+BAD\_PIXEL\_COUNT\>Pixel count was less than 1.\\
+\end{tabbing}
+\end{enumerate}
+Writes SIZE pixels into the access window associated with the image
+memory plane of the display device from the data array.  The write
+starts in the upper left corner of the access window and continues
+one line at a time from top to bottom.
+\newpage
+\subsubsection{XDICIRCLE - Draw a Circle}
+\begin{tabbing}
+status = \=zdicircle( unit, imp, x, y, radius, value )\\
+\>int  unit, imp, x, y, radius, value;\\
+\end{tabbing}
+STATUS = XDICIRCLE( UNIT, IMP, X, Y, RADIUS, VALUE )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane number.
+\item X:  input, integer
+
+Sample location of the center of the circle.
+\item Y:  input, integer
+
+Line location of the center of the circle.
+\item RADIUS:  input, integer
+
+The radius (in pixels) of the circle.
+\item VALUE:  input, integer
+
+The pixel value to be written into the image memory plane.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+INVALID\_RADIUS\>Invalid circle radius.\\
+\end{tabbing}
+\end{enumerate}
+Draws a one pixel wide circle using the specified pixel value in the
+image memory plane of the display device. Any part of the circle out of
+the access window will not be drawn.
+\newpage
+\subsubsection{XDIDWLOCATION - Get Display Window Location}
+\begin{tabbing}
+status = \=zdidwlocation( unit, imp, left, top )\\
+\>int  unit, imp, *left, *top;\\
+\end{tabbing}
+STATUS = XDIDWLOCATION( UNIT, IMP, LEFT, TOP )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane number.
+\item LEFT:  output, integer
+
+Sample location of the start of the display window.
+\item TOP:  output, integer
+
+Line location of the start of the display window.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+\end{tabbing}
+\end{enumerate}
+Returns the upper left hand corner coordinates (LEFT, TOP) of the
+display window associated with the image memory plane.  The
+coordinates returned are raw (screen) coordinates.
+\newpage
+\subsubsection{XDIDWSET - Set Display Window Location}
+\begin{tabbing}
+status = \=zdidwset( unit, imp, left, top )\\
+\>int  unit, imp, left, top;\\
+\end{tabbing}
+STATUS = XDIDWSET( UNIT, IMP, LEFT, TOP )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane number.
+\item LEFT:  input, integer
+
+New sample location of the start of the display window.
+\item TOP:  input, integer
+
+New line location of the start of the display window.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+BAD\_DISPLAY\_WINDOW\>Display window location is not allowed.\\
+DEVICE\_CANNOT\_DO\_IT\>Device does not support the requested function.\\
+MUST\_SET\_ALL\_DWS\>Display window of all IMPs have been set.\\
+\end{tabbing}
+\end{enumerate}
+Sets the upper left corner of the display window associated with the
+image memory plane.  If the display window cannot be set to the
+requested location, no change is made and BADDW is returned.  If the
+device requires that all display windows must be set at the same
+time, all are set and the function returns MUST\_SET\_ALL\_DWS.  The
+input coordinates must be raw (screen) coordinates.
+\newpage
+\subsubsection{XDIFILL - Fill Image Plane with a Constant}
+\begin{tabbing}
+status = \=zdifill( unit, imp, value )\\
+\>int  unit, imp, value;\\
+\end{tabbing}
+STATUS = XDIFILL( UNIT, IMP, VALUE )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane number.
+\item VALUE:  input, integer
+
+Pixel value to be written into the IMP.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+\end{tabbing}
+\end{enumerate}
+Fills all the pixels in the access window associated with the image
+memory plane with the specified pixel value.
+\newpage
+\subsubsection{XDIHISTOGRAM - Collect a Histogram for an Image Plane}
+\begin{tabbing}
+status = \=zdihistogram( unit, imp, mask, array )\\
+\>int  unit, imp, mask, *array;\\
+\end{tabbing}
+STATUS = XDIHISTOGRAM( UNIT, IMP, MASK, ARRAY )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane of which to gather histogram.
+\item MASK:  input, integer
+
+Image memory plane to use as a mask.
+\item ARRAY:  input, integer, dimensioned (256)
+
+The collected histogram.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+MEMORY\_ERROR\>Memory allocation error.\\
+AW\_SIZES\_DIFFERENT\>Access windows are different sizes.\\
+\end{tabbing}
+\end{enumerate}
+Returns a histogram of the pixels in image memory plane IMP.  MASK is
+a mask image memory plane number.  If MASK is zero all pixels within
+the access window of IMP will be used to calculate the histogram.  If
+MASK is greated than zero only pixels with a nonzero counterpart in
+the MASK image memory plane will be used to calculate the histogram.
+The pixel must also be within both access windows to be used in the
+calculations.  If the access windows are not of the same size, the
+largest rectangle that will fit within them will be used and the
+function will return AW\_SIZES\_DIFFERENT.
+\newpage
+\subsubsection{XDIIARITHMETIC - Perform an Arithmetic Operation}
+\begin{tabbing}
+status = \=zdiiarithmetic( unit, op, imp1, imp2, imp3 )\\
+\>int  unit, op, imp1, imp2, imp3;\\
+\end{tabbing}
+STATUS = XDIIARITHMETIC( UNIT, OP, IMP1, IMP2, IMP3 )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item OP:  input, integer
+\begin{tabbing}
+xxxxxxxxxxxxxxxxx:\=\kill
+0\>Add\\
+1\>Subtract\\
+\end{tabbing}
+\item IMP1:  input, integer
+
+Source image memory plane.
+\item IMP2:  input, integer
+
+Source image memory plane.
+\item IMP3:  input, integer
+
+Destination image memory plane.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+UNDEFINED\_OPERATION\>Undefined arithmetic/logical operation.\\
+MEMORY\_ERROR\>Memory allocation error.\\
+AW\_SIZES\_DIFFERENT\>Access windows are different sizes.\\
+\end{tabbing}
+\end{enumerate}
+Performs an arithmetic operation between image memory plane IMP1
+and IMP2 of the display device.  The result is stored in IMP3.  The
+operation will be performed on pixels that are within the access
+windows of IMP1, IMP2 and IMP3.  That is, if the access windows are
+not of the same size, the largest rectangle that will fit within all
+access windows will be used and the function will return AW\_SIZES\_DIFFERENT.
+\newpage
+\subsubsection{XDIICOPY - Copy from One Image Plane to Another}
+\begin{tabbing}
+status = \=zdiicopy( unit, imp1, imp2 )\\
+\>int  unit, imp1, imp2;\\
+\end{tabbing}
+STATUS = XDIICOPY( UNIT, IMP1, IMP2 )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP1:  input, integer
+
+Source image memory plane.
+\item IMP2:  input, integer
+
+Destination image memory plane.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+MEMORY\_ERROR\>Memory allocation error.\\
+AW\_SIZES\_DIFFERENT\>Access windows are different sizes.\\
+\end{tabbing}
+\end{enumerate}
+Copies the contents of the access window of image memory plane IMP1
+into the access window of image memory plane IMP2.  If the access
+windows are not of the same size, then the largest rectangle that
+will fit within both access windows will be used and the function will
+return AW\_SIZES\_DIFFERENT.
+\newpage
+\subsubsection{XDIILOGICAL - Perform a Logical Operation}
+\begin{tabbing}
+status = \=zdiilogical( unit, op, imp1, imp2, imp3 )\\
+\>int  unit, op, imp1, imp2, imp3;\\
+\end{tabbing}
+STATUS = XDIILOGICAL( UNIT, OP, IMP1, IMP2, IMP3 )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item OP:  input, integer
+\begin{tabbing}
+xxxxxxxxxxxxxxxxx:\=\kill
+0\>AND\\
+1\>OR\\
+2\>Exclusive OR\\
+3\>NOT AND\\
+4\>NOT OR\\
+5\>NOT Exclusive OR\\
+\end{tabbing}
+\item IMP1:  input, integer
+
+Source image memory plane.
+\item IMP2:  input, integer
+
+Source image memory plane.
+\item IMP3:  input, integer
+
+Destination image memory plane.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+UNDEFINED\_OPERATION\>Undefined arithmetic/logical operation.\\
+MEMORY\_ERROR\>Memory allocation error.\\
+AW\_SIZES\_DIFFERENT\>Access windows are different sizes.\\
+\end{tabbing}
+\end{enumerate}
+Performs a bitwise logical operation between image memory planes IMP1 and
+IMP2 of the display device.  The results will be stored in IMP3.  OP
+indicates the operation to be performed on pixels that are within the
+access windows of IMP1, IMP2 and IMP3.  If the access windows are not of
+the same size, the largest rectangle that will fit within each access
+window is used and the function will return AW\_SIZES\_DIFFERENT.
+\newpage
+\subsubsection{XDIISHIFT - Logical Bit Shift of Image Plane}
+\begin{tabbing}
+status = \=zdiishift( unit, shift, imp1, imp2, wrap )\\
+\>int  unit, shift, imp1, imp2, wrap;\\
+\end{tabbing}
+STATUS = XDIISHIFT( UNIT, SHIFT, IMP1, IMP2, WRAP )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item SHIFT:  input, integer
+
+Number of bits to shift.
+\item IMP1:  input, integer
+
+Source image memory plane.
+\item IMP2:  input, integer
+
+Destination image memory plane.
+\item WRAP:  input, logical
+
+Flag indicating whether bit wrap or zero fill will be used.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+MEMORY\_ERROR\>Memory allocation error.\\
+AW\_SIZES\_DIFFERENT\>Access windows are different sizes.\\
+\end{tabbing}
+\end{enumerate}
+Performs a logical shift operation on pixels in image memory plane
+IMP1 of the display device.  The result is stored in IMP2.  If SHIFT
+is positive the bits will be shifted left.  If SHIFT is negative the
+bits will be shifted right.  The operation will only be performed on
+pixels that are within the access windows.  If the access windows are
+not of the same size, the largest rectangle that will fit within both
+access windows will be used and the function will return AW\_SIZES\_DIFFERENT.
+WRAP is a logical flag indicating bits will be wrapped around or zero filled.
+TRUE is wrapped and FALSE is zero fill.
+\newpage
+\subsubsection{XDILINEREAD - Read a Line from an Image Plane}
+\begin{tabbing}
+status = \=zdilineread( unit, imp, x, y, size, array )\\
+\>int  unit, imp, x, y, size;\\
+\>unsigned char  *array;\\
+\end{tabbing}
+STATUS = XDILINEREAD( UNIT, IMP, X, Y, SIZE, ARRAY )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane number.
+\item X:  input, integer
+
+Sample location to begin read.
+\item Y:  input, integer
+
+Line location to begin read.
+\item SIZE:  input, integer
+
+Number of pixels to be read.
+\item ARRAY:  output, byte, dimensioned (SIZE)
+
+Array to receive pixels.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+\end{tabbing}
+\end{enumerate}
+Reads a line of pixels from the image memory plane into the array
+LINE.  The read starts at location X, Y in the image plane.  SIZE
+pixels are read.  Only pixels within the access window will be read.
+\newpage
+\subsubsection{XDILINEWRITE - Write a Line to an Image Plane }
+\begin{tabbing}
+status = \=zdilinewrite( unit, imp, x, y, size, array )\\
+\>int  unit, imp, x, y, size;\\
+\>unsigned char  *array;\\
+\end{tabbing}
+STATUS = XDILINEWRITE( UNIT, IMP, X, Y, SIZE, ARRAY )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane to write to.
+\item X:  input, integer
+
+Sample location to start writing.
+\item Y:  input, integer
+
+Line location to start writing.
+\item SIZE:  input, integer
+
+Number of pixels to be written.
+\item ARRAY:  input, byte, dimensioned (SIZE)
+
+Array containing the pixels to be written.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+\end{tabbing}
+\end{enumerate}
+Writes a line of pixels into the image memory plane from the array
+LINE.  SIZE pixels will be written starting at location X, Y in the
+image plane.  Pixels outside the access window are not
+affected.
+\newpage
+\subsubsection{XDIMAWWRITE - XDIAWWRITE with Mask}
+\begin{tabbing}
+status = \=zdimawwrite( unit, imp, mask, size, array )\\
+\>int  unit, imp;\\
+\>unsigned char mask;\\
+\>int  size;\\
+\>unsigned char  *array;\\
+\end{tabbing}
+STATUS = XDIMAWWRITE( UNIT, IMP, MASK, SIZE, ARRAY )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane.
+\item MASK:  input, byte
+
+Pixel mask value.
+\item SIZE:  input, integer
+
+Nubmer of pixels to be written.
+\item ARRAY:  input, byte, dimensioned (SIZE)
+
+Array containing pixel values to be written.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+BAD\_PIXEL\_COUNT\>Pixel count was less than 1.\\
+\end{tabbing}
+\end{enumerate}
+Performs the same operation as XDIAWWRITE except the pixel mask
+determines which bits of the image plane are affected.
+\newpage
+\subsubsection{XDIMCIRCLE - XDICIRCLE with Mask}
+\begin{tabbing}
+status = \=zdimcircle( unit, imp, x, y, radius, mask, value )\\
+\>int  unit, imp, x, y, radius;\\
+\>unsigned char  mask;\\
+\>int  value;\\
+\end{tabbing}
+STATUS = XDIMCIRCLE(UNIT, IMP, X, Y, RADIUS, MASK, VALUE)
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane number.
+\item X:  input, integer
+
+Sample location of the center of the circle.
+\item Y:  input, integer
+
+Line location of the center of the circle.
+\item RADIUS:  input, integer
+
+The radius (in pixels) of the circle.
+\item MASK:  input, byte
+
+Pixel mask value.
+\item VALUE:  input, integer
+
+The pixel value to be written into the image memory plane.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+INVALID\_RADIUS\>Invalid circle radius.\\
+\end{tabbing}
+\end{enumerate}
+Performs the same operation as XDICIRCLE except the pixel mask
+determines which bits of the image plane are affected.
+\newpage
+\subsubsection{XDIMFILL - XDIFILL with Mask}
+\begin{tabbing}
+status = \=zdimfill( unit, imp, mask, value )\\
+\>int  unit, imp;\\
+\>unsigned char  mask, value;\\
+\end{tabbing}
+STATUS = XDIMFILL( UNIT, IMP, MASK, VALUE )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane to be filled.
+\item MASK:  input, byte
+
+Pixel mask value.
+\item VALUE:  input, byte
+
+Pixel value to be written to the IMP.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+MEMORY\_ERROR\>Memory allocation error.\\
+\end{tabbing}
+\end{enumerate}
+Performs the same operation as XDIFILL except the pixel mask
+determines which bits of the image plane are affected.
+\newpage
+\subsubsection{XDIMLINEWRITE - XDILINEWRITE with Mask}
+\begin{tabbing}
+status = \=zdimlinewrite( unit, imp, x, y, mask, length, array )\\
+\>int  unit, imp, x, y;\\
+\>unsigned char  mask;\\
+\>int  length;\\
+\>unsigned char  *array;\\
+\end{tabbing}
+STATUS = XDIMLINEWRITE( UNIT, IMP, X, Y, MASK, LENGTH, ARRAY )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane.
+\item X:  input, integer
+
+Starting sample location of the write.
+\item Y:  input, integer
+
+Starting line location of the write.
+\item MASK:  input, byte
+
+Pixel mask value.
+\item LENGTH:  input, integer
+
+Number of pixels to be written.
+\item ARRAY:  input, byte, dimensioned (LENGTH)
+
+Array containing pixels to be written to the IMP.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+\end{tabbing}
+\end{enumerate}
+Performs the same operation as XDILINEWRITE except the pixel mask
+determines which bits of the image plane are affected.
+\newpage
+\subsubsection{XDIMPIXELWRITE - Masked XDIPIXELWRITE}
+\begin{tabbing}
+status = \=zdimpixelwrite( unit, imp, x, y, mask, value )\\
+\>int  unit, imp, x, y;\\
+\>unsigned char  mask, value;\\
+\end{tabbing}
+STATUS = XDIMPIXELWRITE( UNIT, IMP, X, Y, MASK, VALUE )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane to write to.
+\item X:  input, integer
+
+Sample location of the write.
+\item Y:  input, integer
+
+Line location of the write.
+\item MASK:  input, byte
+
+Pixel mask value.
+\item VALUE:  input, byte
+
+Pixel value to be written to the IMP.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+NOT\_IN\_ACCESS\_WINDOW\>Requested coordinates are not within the access window.\\
+\end{tabbing}
+\end{enumerate}
+Performs the same operation as XDIPIXELWRITE except the pixel mask
+determines which bits of the image plane are affected.
+\newpage
+\subsubsection{XDIMPOLYLINE - XDIPOLYLINE with Mask}
+\begin{tabbing}
+status = \=zdimpolyline( unit, imp, mask, value, npts, x, y )\\
+\>int  unit, imp;\\
+\>unsigned char  mask, value;\\
+\>int  npts, *x, *y;\\
+\end{tabbing}
+STATUS = XDIMPOLYLINE( UNIT, IMP, MASK, VALUE, NPTS, X, Y )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane.
+\item MASK:  input, byte
+
+Pixel mask value.
+\item VALUE:  input, byte
+
+Pixel value to be written.
+\item NPTS:  input, integer
+
+Number of points in the X and Y arrays.
+\item X:  input, integer, dimensioned (NPTS)
+
+The sample coordinates of the points.
+\item Y:  input, integer, dimensioned (NPTS)
+
+The line coordinates of the points.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+BAD\_COORDINATE\_COUNT\>The number of coordinates is less than 2.\\
+\end{tabbing}
+\end{enumerate}
+Performs the same operation as XDIPOLYLINE except the pixel mask
+determines which bits of the image plane are affected.
+\newpage
+\subsubsection{XDIPIXELREAD - Read Pixel from Image Plane}
+\begin{tabbing}
+status = \=zdipixelread( unit, imp, x, y, value )\\
+\>int  unit, imp, x, y;\\
+\>unsigned char  *value;\\
+\end{tabbing}
+STATUS = XDIPIXELREAD( UNIT, IMP, X, Y, VALUE )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane to read from.
+\item X:  input, integer
+
+Pixel sample location.
+\item Y:  input, integer
+
+Pixel line location.
+\item VALUE:  output, byte
+
+Returned value of the pixel at the point (X, Y).
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+NOT\_IN\_ACCESS\_WINDOW\>Requested coordinates are not within the access window.\\
+\end{tabbing}
+\end{enumerate}
+Reads the pixel value at image memory coordinates X, Y in the image
+memory plane.  If the pixel is within the access window the pixel
+value will be returned in VALUE, otherwise VALUE will remain
+unchanged.
+\newpage
+\subsubsection{XDIPIXELWRITE - Write a Pixel to an Image Plane}
+\begin{tabbing}
+status = \=zdipixelwrite( unit, imp, x, y, value )\\
+\>int  unit, imp, x, y;\\
+\>unsigned char  value;\\
+\end{tabbing}
+STATUS = XDIPIXELWRITE( UNIT, IMP, X, Y, VALUE )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane to write to.
+\item X:  input, integer
+
+The pixel's sample location.
+\item Y:  input, integer
+
+The pixel's line location.
+\item VALUE:  input, byte
+
+Pixel value to write at (X, Y).
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+NOT\_IN\_ACCESS\_WINDOW\>Requested coordinates are not within the access window.\\
+\end{tabbing}
+\end{enumerate}
+Sets the pixel at image coordinates X, Y (sample, line) in the image
+plane to the specified value.  If the coordinates are outside the
+access window the pixel will remain unchanged.
+\newpage
+\subsubsection{XDIPOLYLINE - Draw a Series of Vectors}
+\begin{tabbing}
+status = \=zdipolyline( unit, imp, value, npts, x, y )\\
+\>int  unit, imp;\\
+\>unsigned char  value;\\
+\>int  npts, *x, *y;\\
+\end{tabbing}
+STATUS = XDIPOLYLINE( UNIT, IMP, VALUE, NPTS, X, Y )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane.
+\item VALUE:  input, byte
+
+Pixel value to be written.
+\item NPTS:  input, integer
+
+Number of points in the X and Y arrays.
+\item X:  input, integer, dimensioned (NPTS)
+
+The sample coordinates of the points.
+\item Y:  input, integer, dimensioned (NPTS)
+
+The line coordinates of the points.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+BAD\_COORDINATE\_COUNT\>The number of coordinates is less than 2.\\
+\end{tabbing}
+\end{enumerate}
+Draws a series of vectors of the specified pixel value in the image
+memory plane.  NPTS is the number of vector coordinate pairs in the
+arrays X and Y.  NPTS must be greater than 1.  The first coordinates
+are the starting position for drawing the vectors.  A vector is drawn
+from this point to the second pair of coordinates; from the second to
+the third; and so on.  Any part of a vector falling outside the
+access window will not be drawn.  Anti-aliasing may or may not take
+place.
+\newpage
+\subsubsection{XDIROTATE - Rotate an Image Plane}
+\begin{tabbing}
+status = \=zdirotate( unit, imp, angle )\\
+\>int  unit, imp, angle;\\
+\end{tabbing}
+STATUS = XDIROTATE( UNIT, IMP, ANGLE )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane to be rotated.
+\item ANGLE:  input, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+1\>180 degrees\\
+2\>-90 degrees\\
+3\>90 degrees\\
+\end{tabbing}
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+INVALID\_AW\_ROTATION\>Invalid access window rotation angle.\\
+MEMORY\_ERROR\>Memory allocation error.\\
+AW\_NOT\_SQUARE\>Access window is not square.\\
+\end{tabbing}
+\end{enumerate}
+Rotates the the pixels within the access window of the image memory
+plane.  ANGLE is a flag indicating a rotation angle of 90, -90 or 180
+degrees.  The access window must be square for this operation, if it
+is not, the the largest square that fits within the access window will
+be used and AWNOTSQ will be returned.
+\newpage
+\subsubsection{XDIZOOM - Set Zoom for an Image Plane}
+\begin{tabbing}
+status = \=zdizoom( unit, imp, zoom )\\
+\>int  unit, imp, zoom;\\
+\end{tabbing}
+STATUS = XDIZOOM( UNIT, IMP, ZOOM )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane.
+\item ZOOM:  input, integer
+
+Zoom factor.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+CANNOT\_ZOOM\>Cannot zoom by the specified factor.\\
+DEVICE\_CANNOT\_DO\_IT\>Device does not support the requested function.\\
+MUST\_ZOOM\_ALL\>All images have been zoomed.\\
+\end{tabbing}
+\end{enumerate}
+Sets the zoom factor of the 
+specified IMP of the display device to ZOOM.  If the device does not
+support hardware zoom by the requested factor, the current zoom
+factor will not be changed.  If a device requires that all IMPs
+must be zoomed together, all IMPs will be zoomed and
+MUSTZOOM will be returned.
+\newpage
+<H3>LUT Routines}
+\subsubsection{XDLCONNECT - Connect Image Plane to Look-up Table}
+\begin{tabbing}
+status = \=zdlconnect( unit, imp, lut, section, bypass )\\
+\>int  unit, imp, lut, section, bypass;\\
+\end{tabbing}
+STATUS = XDLCONNECT( UNIT, IMP, LUT, SECTION, BYPASS )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane number.
+\item LUT:  input, integer
+
+Look-up table number.
+\item SECTION:  input, integer
+
+LUT section number.
+\item BYPASS:  input, logical
+
+Flag determining whether or not the LUT should be BYPASSED.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+NO\_SUCH\_LUT\>No such look-up table.\\
+NO\_SUCH\_LUT\_SECTION\>No such look-up table section.\\
+CANNOT\_CONNECT\_LUT\>Cannot make IMP/LUT connection.\\
+CANNOT\_BYPASS\_LUT\>Cannot bypass the look-up tables.\\
+\end{tabbing}
+\end{enumerate}
+Connects the image memory plane to the output LUT section of the
+display device.  If BYPASS is TRUE, pixels will not be converted by
+the LUT before output.  If BYPASS is FALSE, pixels will be converted
+by the LUT before output.
+\newpage
+\subsubsection{XDLRAMP - Set Look-up Table to a Linear Ramp}
+\begin{tabbing}
+status = \=zdlramp( unit, lut, section )\\
+\>int  unit, lut, section;\\
+\end{tabbing}
+STATUS = XDLRAMP( UNIT, LUT, SECTION )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item LUT:  input, integer
+
+Look-up table number.
+\item SECTION:  input, integer
+
+LUT section number.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_LUT\>No such look-up table.\\
+NO\_SUCH\_LUT\_SECTION\>No such look-up table section.\\
+\end{tabbing}
+\end{enumerate}
+Sets the LUT section in the display device to a linear ramp.  Eight-bit
+LUTs will be set to values 0 to 255.  LUTs with larger outputs
+will be set to a ramp that has the largest possible value in the last
+position and zero in the first.
+\newpage
+\subsubsection{XDLREAD - Read Look-up Table}
+\begin{tabbing}
+status = \=zdlread( unit, lut, section, array )\\
+\>int  unit, lut, section, array[256];\\
+\end{tabbing}
+STATUS = XDLREAD( UNIT, LUT, SECTION, ARRAY )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item LUT:  input, integer
+
+Look-up table number.
+\item SECTION:  input, integer
+
+LUT section number.
+\item ARRAY:  output, integer, dimensioned (256)
+
+The array to receive the data from the specified LUT section.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_LUT\>No such look-up table.\\
+NO\_SUCH\_LUT\_SECTION\>No such look-up table section.\\
+\end{tabbing}
+\end{enumerate}
+Reads back the LUT section from the display device and places the
+result in ARRAY.  If 0 is used for the section number, the routine
+will use the current section, taking into account the bypass flag.
+If the bypass flag is TRUE, a ramp is returned in ARRAY.  If the
+bypass flag is FALSE, the LUT for the current section is returned
+in ARRAY.
+\newpage
+\subsubsection{XDLWRITE - Write Look-up Table}
+\begin{tabbing}
+status = \=zdlwrite( unit, lut, section, array )\\
+\>int  unit, lut, section, array[256];\\
+\end{tabbing}
+STATUS = XDLWRITE( UNIT, LUT, SECTION, ARRAY )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item LUT:  input, integer
+
+Look-up table number.
+\item SECTION:  input, integer
+
+LUT section number.
+\item ARRAY:  input, integer, dimensioned (256)
+
+The array to be written to the specified LUT section.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_LUT\>No such look-up table.\\
+NO\_SUCH\_LUT\_SECTION\>No such look-up table section.\\
+\end{tabbing}
+\end{enumerate}
+Writes ARRAY to the LUT section of the display device.
+\newpage
+<H3>Device Status Routines}
+These routines all return information about the state of the display device.
+Much of the information returned by these routines is also available through
+other means, notably XDDINFO.  XDDINFO is still needed for many of the more
+esoteric items.  Only the most commonly needed items are included in these
+routines.
+
+These routines do not return an error status, as the only possible errors
+are an invalid unit number, an invalid look-up table number, or an invalid
+image memory plane number.  Since the routines do not interface with the
+hardware, no hardware error can occur.  If an error does occur, the
+routines return a default value which should avoid crashing most calculations
+(e.g., non-zero on a value that might be in the denominator).
+\newpage
+\subsubsection{XDSBYPASS - Get Look-Up Table Bypass Status}
+\begin{tabbing}
+bypass = \=zdsbypass( unit, lut )\\
+\>int  unit, lut;\\
+\end{tabbing}
+BYPASS = XDSBYPASS( UNIT, LUT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item LUT:  input, integer
+
+Look-up table number.
+\item BYPASS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+TRUE\>Bypass is on; look-up table is not in use.\\
+FALSE\>Bypass is off; look-up table is in use.\\
+\end{tabbing}
+\end{enumerate}
+Given a look-up table number, returns TRUE (1) if the bypass is on (i.e.,
+LUT not in use), and FALSE (0) if bypass is off (LUT in use).  Returns
+FALSE (0) on error.  Not duplicated by any other routine.
+\newpage
+\subsubsection{XDSDWLINE - Get Upper Left Corner Line Number For Image Plane}
+\begin{tabbing}
+pantop = \=zdsdwline( unit, imp )\\
+\>int  unit, imp;\\
+\end{tabbing}
+PANTOP = XDSDWLINE( UNIT, IMP )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane number.
+\item PANTOP:  output, integer
+
+Line number of the upper left corner of the display window.
+\end{enumerate}
+Returns the line number of the upper left corner of the display window
+(pan) for the given image memory plane.  Returns 1 on error.  Duplicates
+half of XDIDWLOCATION.
+\newpage
+\subsubsection{XDSDWSAMP - Get Upper Left Corner Sample Number For Image Plane}
+\begin{tabbing}
+panleft = \=zdsdwsamp( unit, imp )\\
+\>int  unit, imp;\\
+\end{tabbing}
+PANLEFT = XDSDWSAMP( UNIT, IMP )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane number.
+\item PANLEFT:  output, integer
+
+Sample number of the upper left corner of the display window.
+\end{enumerate}
+Returns the sample number of the upper left corner of the display window
+(pan) for the given image memory plane.  Returns 1 on error.  Duplicates
+half of XDIDWLOCATION.
+\newpage
+\subsubsection{XDSGBYPASS - Get Graphics Look-Up Table Bypass Status}
+\begin{tabbing}
+bypass = \=zdsgbypass( unit )\\
+\>int  unit;\\
+\end{tabbing}
+BYPASS = XDSGBYPASS( UNIT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item BYPASS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+TRUE\>Bypass is on; graphics look-up table is not in use.\\
+FALSE\>Bypass is off; graphics look-up table is in use.\\
+\end{tabbing}
+\end{enumerate}
+Returns TRUE if the graphics look-up table bypass is on (i.e.,
+LUT not in use), and FALSE if the graphics look-up table bypass is
+off (LUT in use).  Returns FALSE on error.  Not duplicated by any 
+other routine.  Note that it is not clear just what bypassing the 
+graphics look-up table means, since no devices currently support it.
+\newpage
+\subsubsection{XDSGRAPH - Get Image Plane Connected to the Graphics Plane}
+\begin{tabbing}
+imp = \=zdsgraph( unit )\\
+\>int  unit;\\
+\end{tabbing}
+IMP = XDSGRAPH( UNIT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  output, integer
+
+Image memory plane currently connected to the graphics plane.
+\end{enumerate}
+Returns the image memory plane that is currently connected to the graphics
+plane.  Returns 1 on error.  Duplicates XDDINFO( 34 ).
+\newpage
+\subsubsection{XDSGSECTION - Get Section Number of the Graphics LUT in Use.}
+\begin{tabbing}
+sect = \=zdsgsection( unit )\\
+\>int  unit;\\
+\end{tabbing}
+SECT = XDSGSECTION( UNIT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item SECT:  output, integer
+
+Section of the graphics look-up table in use.
+\end{enumerate}
+Returns the section number of the graphics look-up table currently in use.
+Returns 1 on error.  Duplicates XDDINFO( 35 ).
+\newpage
+\subsubsection{XDSIMP - Get Image Plane Number}
+\begin{tabbing}
+imp = \=zdsimp( unit, lut )\\
+\>int  unit, lut;\\
+\end{tabbing}
+IMP = XDSIMP( UNIT, LUT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item LUT:  input, integer
+
+Look-up table number.
+\item IMP:  output, integer
+
+Image memory plane number connected to the look-up table.
+\end{enumerate}
+Returns the image memory plane connected to the given look-up table.
+Returns 1 on error.  Not duplicated by any other routine.
+\newpage
+\subsubsection{XDSMODE - Get Video Display Mode}
+\begin{tabbing}
+mode = \=zdsmode( unit )\\
+\>int  unit;\\
+\end{tabbing}
+MODE = XDSMODE( UNIT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item MODE:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+1\>Full color.\\
+2\>Pseudo-color.\\
+3\>Monochrome.\\
+\end{tabbing}
+\end{enumerate}
+Returns the video display mode of the device (monochrome,
+pseudo-color, or full color).  Returns monochrome on error.
+The values are the same as for
+XDDINFO(10) or the first element in the XDDCONFIGURE array, but
+this routine does not duplicate XDDINFO(10).  XDDINFO checks the
+value set by the XDDCONFIGURE routine to determine the screen mode.
+This value, however, may be incorrect if the application did not
+use the XDDCONFIGURE routine to change the mode.  For example, if
+an application uses the XDLCONNECT routine to connect all three
+look-up tables to the same image plane, the mode becomes pseudo-color
+or monochrome instead of full color.  The screen configuration
+value is not updated, however, because XDDCONFIGURE was not used.
+
+XDSMODE looks directly at the image plane/look-up table connections
+to determine the screen mode.  If all three look-up tables are
+connected to one image plane, and all the tables are identical,
+the mode is monochrome.  If all three look-up tables are connected
+to one image plane, but the tables are not identical, the mode is
+pseudo-color.  If the look-up tables are connected to different
+planes (in any combination), the mode is full color.
+
+If the video display mode determined by XDSMODE does not match the
+value set by XDDCONFIGURE, then the value is updated and the XDFCONFIG
+flag is set to indicate that the display mode was changed.
+\newpage
+\subsubsection{XDSNL - Get Number of Lines in the Image Planes}
+\begin{tabbing}
+nl = \=zdsnl( unit )\\
+\>int  unit;\\
+\end{tabbing}
+NL = XDSNL( UNIT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item NL:  output, integer
+
+Number of lines in the image memory planes.
+\end{enumerate}
+Returns the number of lines in the image memory planes.  Returns -1 on
+error.  Duplicates XDDINFO( 5 ).
+\newpage
+\subsubsection{XDSNS - Get Number Of Samples In The Image Planes}
+\begin{tabbing}
+ns = \=zdsns( unit )\\
+\>int  unit;\\
+\end{tabbing}
+NS = XDSNS( UNIT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item NS:  output, integer
+
+Number of samples in the image memory planes.
+\end{enumerate}
+Returns the number of samples in the image memory planes.  Returns -1 on
+error.  Duplicates XDDINFO( 6 ).
+\newpage
+\subsubsection{XDSSECTION - Get Look-Up Table Section Number}
+\begin{tabbing}
+sect = \=zdssection( unit, lut )\\
+\>int  unit, lut;\\
+\end{tabbing}
+SECT = XDSSECTION( UNIT, LUT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item LUT:  input, integer
+
+Look-up table number.
+\item SECT:  output, integer
+
+Section number in use.
+\end{enumerate}
+Returns the section number in use for the given look-up table number.
+Returns 1 on error.  Not duplicated by any other routine.
+\newpage
+\subsubsection{XDSVNL - Get Number Of Lines On Video Screen}
+\begin{tabbing}
+vnl = \=zdsvnl( unit )\\
+\>int  unit;\\
+\end{tabbing}
+VNL = XDSVNL( UNIT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item VNL:  output, integer
+
+Number of lines on the video screen.
+\end{enumerate}
+Returns the number of lines on the video screen.  Returns -1 on error.
+Duplicates XDDINFO( 14 ).
+\newpage
+\subsubsection{XDSVNS - Get Number Of Samples On Video Screen}
+
+Number of samples on the video screen.
+\begin{tabbing}
+vns = \=zdsvns( unit )\\
+\>int  unit;\\
+\end{tabbing}
+VNS = XDSVNS( UNIT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item VNS:  output, integer
+\end{enumerate}
+Returns the number of samples on the video screen.  Returns -1 on error.
+Duplicates XDDINFO( 15 ).
+\newpage
+\subsubsection{XDSZOOM - Get Hardware Zoom Factor For Image Plane}
+\begin{tabbing}
+zoom = \=zdszoom( unit, imp )\\
+\>int  unit, imp;\\
+\end{tabbing}
+ZOOM = XDSZOOM( UNIT, IMP )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane number.
+\item ZOOM:  output, integer
+
+Zoom factor for the given image memory plane.
+\end{enumerate}
+Returns the hardware zoom factor for the given image memory plane.
+Returns 1 on error.  Not duplicated by any other routine.
+\newpage
+<H3>Text Generation Routines}
+\subsubsection{XDTCOLOR - Set Font Color and Precision}
+\begin{tabbing}
+status = \=zdtcolor( color, prec )\\
+\>unsigned char  color;\\
+\>int  prec;\\
+\end{tabbing}
+STATUS = XDTCOLOR( COLOR, PREC )
+\begin{enumerate}
+\item COLOR:  input, byte
+
+Pixel value to be used when drawing text.
+\item PREC:  input, integer
+
+The precision to be used when drawing text.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+INVALID\_TEXT\_PREC\>Invalid text precision.\\
+\end{tabbing}
+\end{enumerate}
+Sets the pixel color value and the precision used to write text
+strings.  The precision is an implementation-defined value indicating
+how text is to be written (i.e. anti-aliasing).  The default
+value, zero, for the precision should generally be used.
+\newpage
+\subsubsection{XDTFONT - Set Font Style}
+\begin{tabbing}
+status = \=zdtfont( font )\\
+\>int  font;\\
+\end{tabbing}
+STATUS = XDTFONT( FONT )
+\begin{enumerate}
+\item FONT:  input, integer
+
+Number of the font to be used when drawing text.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+NO\_SUCH\_FONT\>Unable to locate font description file.\\
+FONT\_FILE\_READ\_ERROR\>Error reading font definition file.\\
+BAD\_ASCII\_CODE\>Invalid ASCII character code encountered in font file.\\
+BAD\_VECTOR\_COUNT\>Invalid vector count encountered in font file.\\
+FONT\_TABLE\_OVERFLOW\>Internal font table overflow.\\
+\end{tabbing}
+\end{enumerate}
+Reads a text font description file into an internal font table.  FONT
+indicates which font type to read.  Zero (0) is the default font
+type.  See appendices E and F for more information on font
+description files.
+\newpage
+\subsubsection{XDTLENGTH - Get Length of a String}
+\begin{tabbing}
+status = \=zdtlength( length, nchars, text )\\
+\>int  *length, nchars;\\
+\>char  text[];\\
+\end{tabbing}
+STATUS = XDTLENGTH( LENGTH, NCHARS, TEXT )
+\begin{enumerate}
+\item LENGTH:  output, integer
+
+The returned length, in pixels, of the string in TEXT as it would be
+drawn.
+\item NCHARS:  input, integer
+
+The number of characters in TEXT.
+\item TEXT:  input, string
+
+The string of characters.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+INVALID\_CHAR\_COUNT\>Invalid character count.\\
+\end{tabbing}
+\end{enumerate}
+Returns the length (in pixel coordinates) of the specified text
+string.  If NCHARS is zero (0), TEXT must be either a character
+string descriptor or a null terminated character array.
+\newpage
+\subsubsection{XDTMASK - Set Text Mask}
+\begin{tabbing}
+status = \=zdtmask( mask )\\
+\>int  mask;\\
+\end{tabbing}
+STATUS = XDTMASK( MASK )
+\begin{enumerate}
+\item MASK:  input, byte
+
+Pixel mask value.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+\end{tabbing}
+\end{enumerate}
+Sets the pixel mask value determining which bits of the image plane are
+affected when text is written.
+\newpage
+\subsubsection{XDTROTATE - Set Font Rotation}
+\begin{tabbing}
+status = \=zdtrotate( angle )\\
+\>float  angle;\\
+\end{tabbing}
+STATUS = XDTROTATE( ANGLE )
+\begin{enumerate}
+\item ANGLE:  input, real
+
+Angle of rotation to be used when drawing text.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+\end{tabbing}
+\end{enumerate}
+Sets the angle above or below the X (horizontal) axis that text is to
+be written.  The angle is measured in degrees with a positive angle
+causing a rotation in the counter-clockwise direction.
+\newpage
+\subsubsection{XDTSIZE - Set Font Height and Scaling}
+\begin{tabbing}
+status = \=zdtsize( height, scale )\\
+\>int  height;\\
+\>float  scale;\\
+\end{tabbing}
+STATUS = XDTSIZE( HEIGHT, SCALE )
+\begin{enumerate}
+\item HEIGHT:  input, integer
+
+The height in pixels to be used when drawing text.
+\item SCALE:  input, real
+
+The horizontal scaling factor (width/height) to be used when drawing
+text.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+INVALID\_FONT\_HEIGHT\>Invalid font height.\\
+INVALID\_FONT\_SCALE\>Invalid font horizontal scale factor.\\
+\end{tabbing}
+\end{enumerate}
+Sets the height of the text in pixel coordinates (how many lines tall
+is the text to be).  Also sets the horizontal scale factor (width to
+height ratio) to be applied to the text.  The fonts are defined in a
+machine independent coordinate system that must be scaled to fit the
+display.
+\newpage
+\subsubsection{XDTTEXT - Write Text}
+\begin{tabbing}
+status = \=zdttext( unit, imp, x, y, loc, nchars, text )\\
+\>int  unit, imp, x, y, loc, nchars;\\
+\>char  text[];\\
+\end{tabbing}
+STATUS = XDTTEXT( UNIT, IMP, X, Y, LOC, NCHARS, TEXT )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item IMP:  input, integer
+
+Image memory plane to write text.
+\item X:  input, integer
+
+Sample position of the text string ``origin''.
+\item Y:  input, integer
+
+Line position of the text string ``origin''.
+\item LOC:  input, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+Indicates how the text is drawn relative to the ``origin''.\\
+1\>X,Y is lower left corner of text string\\
+2\>X,Y is bottom center of text string\\
+3\>X,Y is lower right corner of text string\\
+\end{tabbing}
+\item NCHARS:  input, integer
+
+The number of characters in the TEXT string.
+\item TEXT:  input, string
+
+The string containing the text to be drawn.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_IMP\>No such image memory plane.\\
+INVALID\_FONT\_LOCATION\>Invalid font location.\\
+INVALID\_CHAR\_COUNT\>Invalid character count.\\
+\end{tabbing}
+\end{enumerate}
+Writes the text string into the image memory plane of the display
+device.  LOC is a flag indicating how the text string is to be
+written relative to the location X, Y (sample, line) in the image
+memory plane.  NCHARS is the number of characters in the string TEXT
+to be written; if NCHARS is zero, TEXT must be either a character
+string descriptor or a null terminated character string.  The
+coordinates X, Y must be inside the access window.  Any part of
+the text string that falls outside the access window will not be
+written into the image memory plane.
+\newpage
+<H3>Interactive IO Device Routines}
+In order to generalize the interface to interactive IO devices the
+interface accesses generic devices such as knobs, tablets and
+switches.  All interactive IO devices are made to fall under one or
+more of these generic descriptions.  For example, a joystick may
+appear to the system as a tablet with the pen always in proximity to
+the tablet and the pen down.
+
+Devices that return coordinates fall into 2 categories.  One returns
+absolute coordinates such as a tablet.  The second returns relative
+coordinates such as a joystick.  (Relative indicate a delta value
+from the last value.) To determine what type of devices are available
+and if it returns absolute or relative coordinates use XDDINFO.
+
+Some 2D devices do not have a pen.  For example, joysticks,
+pucks, etc.  In many cases these devices have switches which could be
+substituted for a pen.  If a switch is used to simulate a pen the
+number of the switch used can be obtained with XDDINFO.
+If a switch is used to simulate the pen the switch value may
+also be obtained from XDXSWITCH.  The switch number used to simulate
+the pen is made available to the application programmer (through
+XDDINFO) so that the user may be informed of which switch to use.
+
+Many interactive IO devices return coordinates as well as switch
+values.  In this case the device may be accessed by more that one
+interface routine.  For example XDX2D and XDXSWITCH.
+
+The following is a description of the information that may be
+obtained about each device with XDDINFO (see appendices B and C for more
+information):
+\begin{tabbing}
+xxxxxxxxxxxxxx:\=xxx\=xxxx\=\kill
+Array
+Position\>Description\\
+\\
+1\>Device Type\\
+\>\>0 - no device available\\
+\>\>2 - 2D device (tablet and pen)\\
+\>\>4 - Switch device\\
+\pagebreak 
+2\>Type of Coordinates Returned\\
+\>\>0 - device does not return coordinates\\
+\>\>1 - returns absolute coordinates\\
+\>\>2 - returns relative coordinates\\
+\\ 
+3\>Switch Simulating Pen\\
+\>\>0 - Not a 2D device or no pen\\
+\>\>\>used to simulate pen\\
+\>\>N - Number of switch used to simulate pen\\
+\\ 
+4\>Switches Available\\
+\>\>Number of switches available on device\\
+\end{tabbing}
+\newpage
+\subsubsection{XDX2D - Get Two-Dimensional User Input}
+\begin{tabbing}
+status = \=zdx2d( unit, device, x, y, prox, pen )\\
+\>int  unit, device, *x, *y, *prox, *pen;\\
+\end{tabbing}
+STATUS = XDX2D( UNIT, DEVICE, X, Y, PROX, PEN )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item DEVICE:  input, integer
+
+Input device number.
+\item X:  output, real
+
+Returned X (sample) location normalized to between -1.0 and +1.0.
+\item Y:  output, real
+
+Returned Y (line) location normalized to between -1.0 and +1.0.
+\item PROX:  output, logical
+
+Flag indicating whether or not the ``pen'' is ``close'' to the ``tablet''.
+\item PEN:  output, logical
+
+Flag indicating whether or not the ``pen'' is depressed.
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_INPUT\_DEVICE\>No such input device.\\
+INVALID\_DEVICE\_TYPE\>Invalid device type.\\
+DEVICE\_CANNOT\_DO\_IT\>Device does not support the requested function.\\
+\end{tabbing}
+\end{enumerate}
+Returns values from the interactive IO device connected to the
+display device.  The DEVICE returns a 2 dimensional coordinate (X,
+Y).  The model for this type of device is a tablet and pen.  The
+returned values X and Y have been normalized to -1.0 to +1.0.  PROX
+is a flag that indicates proximity (FALSE-out of proximity, TRUE-in
+proximity).  If the device has no proximity detection the returned
+value is always TRUE.  PEN is a flag indicating if the pen is up or
+down (FALSE-up, TRUE-down).  If the device has no pen, or switch to
+simulate a pen, the value returned is always TRUE.
+\newpage
+\subsubsection{XDXSWITCH - Get User Input from Switch Box}
+\begin{tabbing}
+status = \=zdxswitch( unit, device, switch, value )\\
+\>int  unit device, switch, *value;\\
+\end{tabbing}
+STATUS = XDXSWITCH( UNIT, DEVICE, SWITCH, VALUE )
+\begin{enumerate}
+\item UNIT:  input, integer
+
+Display device unit number.
+\item DEVICE:  input, integer
+
+Input device number.
+\item SWITCH:  input, integer
+
+Number of the switch on DEVICE to be read.
+\item VALUE:  output, logical
+
+Returned value of SWITCH (on or off).
+\item STATUS:  output, integer
+\begin{tabbing}
+XXXXXXXXXXXXXXXXXXXXXX\=\kill
+SUCCESS\\
+UNIT\_OUT\_OF\_RANGE\>Unit number is out of range.\\
+DEVICE\_NOT\_OPEN\>Device is not open.\\
+DEVICE\_NOT\_ACTIVE\>Device is not active.\\
+NO\_SUCH\_INPUT\_DEVICE\>No such input device.\\
+NO\_SUCH\_SWITCH\>No such input switch.\\
+DEVICE\_CANNOT\_DO\_IT\>Device does not support the requested function.\\
+\end{tabbing}
+\end{enumerate}
+Returns a value from the interactive IO device connected to the
+display device.  The model for this type of device is a switch box.
+The returned values V indicate if the switch is off (FALSE) or on
+(TRUE).  SWITCH indicates which switch to test.  SWITCH is one or
+greater.
+\cleardoublepage
+\appendix

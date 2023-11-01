@@ -1,0 +1,94 @@
+<HTML><HEAD>
+<!-- This document was created from RTF source by rtftohtml version 3.9.3 -->
+<TITLE>Introduction - 2. vimake </TITLE></HEAD>
+<BODY BACKGROUND="" BGCOLOR="#FFFFFF" TEXT="#000000">
+<A HREF="Build_VICAR_Apps-1.html"> Prev </A>
+|<A HREF="Build_VICAR_Apps-2.1.html"> Next </A>
+|<A HREF="Build_VICAR_Apps.html"> Up </A>
+|<A HREF="Build_VICAR_Apps.html"> Title </A>
+|<A HREF="Build_VICAR_Apps-Contents.html"> Contents </A>
+<hr size=4>
+<H1>
+2. vimake </H1>
+<blockquote>Most UNIX programs come with a "makefile" that is run with the UNIX
+command <tt>make</tt> to compile and link the program. The makefile describes
+everything needed to build the program, including compiler options, linker
+libraries, and location of manual (man) pages. <tt>make</tt> has many
+advantages, including compiling only what has changed since the last compile.
+<br><br>
+The preferred method for the VMS operating system is to have compile and link
+statements directly in a <tt>".COM"</tt> file that contains all the application
+parts. These are extracted and compiled in one step. The use of an independent
+command procedure to build the program under VMS has many advantages. It allows
+the application COM file to be separate. It works on all VMS machines, since
+DCL is standard. And it is fast, since no subprocesses need to be
+created.<br><br>
+To build applications under UNIX, it is highly desirable to use <tt>make</tt>
+with a makefile. To build under VMS, it is desirable to use DCL with a command
+procedure. The makefile and the command procedure are incompatible. Worse yet
+there is quite a bit of variation required for makefiles on different UNIX
+machines. The commands used often vary, and sometimes there are differences in
+the format and capabilities of <tt>make</tt> itself. <br><br>
+It would be very cumbersome to require the VICAR application programmer to
+maintain two sets of build files for every application (for VMS and UNIX).
+Furthermore, the differences in UNIX makefiles would make it almost impossible
+to come up with a single makefile for all UNIX systems. A program called imake
+has been written to solve these problems. <br><br>
+<tt>imake</tt> is used extensively in the X-windows system to build it on many
+platforms. TAE uses it as well. <tt>imake</tt> generates makefiles. It uses the
+C preprocessor for macros and conditional statements to customize the generated
+makefile for a particular platform. The input  <tt>"imakefile" </tt>is a
+reduced makefile that contains only the program-specific parts, not the
+system-specific parts.<br><br>
+A template file provides the system-specific parts of the makefile for each
+machine type. The imake program does some minor cleanup on the imakefile, runs
+it and the template through the C preprocessor, and does some cleanup on the
+output. The result is a makefile that is customized for the system you are on.
+<br><br>
+This helps to create UNIX makefiles, but what about VMS? If you are familiar
+with <tt>imake</tt>, you know that the imakefiles are similar to makefiles.
+There is a set of rules and definitions that are set up at the top of the
+makefile, but the structure of the imakefile is retained in the makefile. It
+would be impossible to generate a VMS command procedure from a typical
+imakefile. <br><br>
+The VICAR program vimake takes the concept of imake and goes one step further.
+Since the compile and link statements for all VICAR programs are quite similar,
+they do not need to be specified at all in the imakefile. In fact, vimake
+extracts <i>all</i> of the control out of the imakefile, leaving only C
+preprocessor commands. <br><br>
+The VICAR imakefile contains only a description of <i>what</i> is to be built,
+not <i>how</i> to build it. <br><br>
+A VICAR imakefile has only C preprocessor statements, mostly <tt>#define</tt>'s
+and a few <tt>#if</tt>'s. These #define statements set up the filenames used in
+the program, and select various options on how to build the program. The vimake
+program uses this information and a system-specific template to create a build
+file for any system. Under VMS, it creates a DCL command file that will build
+the program. Under UNIX, it creates a makefile instead. The makefile and DCL
+command file are never delivered with the program; only the imakefile is.
+<br><br>
+There are many advantages to this scheme:</blockquote><ul>
+<li>	The programmer need only create one imakefile, instead of separate build
+files for each system. <br><br>
+<li>	It is much easier to create the imakefile than it would be to create a
+full-blown build file.<br><br>
+<li>	Build files are standardized, since they are created entirely by the
+vimake templates, and never modified by the application programmer.<br><br>
+<li>	Locations of libraries and other files are standardized, since the
+imakefile doesn't specify where the library is, just what library it wants.
+<br><br>
+<li>	Changing the way applications are built is easy. only the templates need
+to change, and all applications will be built the new way. 
+<a name="Heading23"></a><a name="_Toc429910610"></a></ul><P><hr size=4>
+<UL>
+<LI><A HREF="Build_VICAR_Apps-2.1.html"> 2.1 Creating and Using a VICAR Imakefile  </A>
+<LI><A HREF="Build_VICAR_Apps-2.2.html"> 2.2 Valid vimake Commands  </A>
+<LI><A HREF="Build_VICAR_Apps-2.3.html"> 2.3 Using the Generated VMS Build File  </A>
+<LI><A HREF="Build_VICAR_Apps-2.4.html"> 2.4 Using the Generated UNIX makefile  </A>
+</UL>
+<hr size=4>
+<A HREF="Build_VICAR_Apps-1.html"> Prev </A>
+|<A HREF="Build_VICAR_Apps-2.1.html"> Next </A>
+|<A HREF="Build_VICAR_Apps.html"> Up </A>
+|<A HREF="Build_VICAR_Apps.html"> Title </A>
+|<A HREF="Build_VICAR_Apps-Contents.html"> Contents </A>
+</body></html>

@@ -1,0 +1,247 @@
+<HEAD>
+<TITLE>VMS-Specific Code</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=871 HREF=subsection3.8.2.html><IMG SRC="/icons/previous.png"></A> <A NAME=873 HREF=section3.8.html><IMG SRC="/icons/up.png"></A>  <A NAME=869 HREF=subsection3.8.4.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=872 HREF=subsection3.8.2.html>Include Files</A>  <b>Up:</b> <A NAME=874 HREF=section3.8.html>Porting C</A>  <b>Next:</b> <A NAME=870 HREF=subsection3.8.4.html>Machine Dependencies</A> <P>
+ <H2>VMS-Specific Code</H2>
+<A NAME=vmscodec><IMG SRC="/icons/invis_anchor.png"></A>
+<P>
+Many current VICAR applications and subroutines have VMS-specific code
+embedded in them.  Some of it is obvious, like a system service call.
+Some is insidiously difficult to find, like using a double floating point
+value as a single.  This works because on the VAX the first half of a
+double value looks like a float.  This is not the case on any other machine.
+<P>
+All the VMS-specific code must, of course, be eliminated or isolated.  If the
+same thing can be done in a portable way, do it that way.  If not, then
+isolate the VMS-specific code and write Unix code to perform the same
+function.  If the function is useful as a general-purpose subroutine, then
+put it in SUBLIB.  If not, include it with your code.  See the next section,
+Section <A HREF=subsection3.8.4.html#machdepc><IMG SRC="/icons/cross-ref.png"></A>, Machine Dependencies, for methods of dealing with
+machine-dependent code.
+<P>
+An attempt is made below to list the types of VMS-specific code you will run
+into.  This is not and can not be an exhaustive list, as there are far too
+many potential problem areas that will only be uncovered with more experience.
+Use this list as examples of what to look out for.  You should be familiar
+with writing portable C code; if not then see a standard C manual.  If in
+doubt, try it, or ask.
+<P>
+<UL>
+<P>
+<LI> The order of bytes in an integer (or any other data type) is
+reversed on the VAX with respect to most other machines.  Any code that
+depends on byte order must be changed to not do so.  Byte-order dependencies
+typically come from converting between BYTE and other data types, where the
+first byte of an integer is set to the value of a byte, then used as an
+integer.  Use a type cast or the <b> zvtrans</b> routines instead.  This
+practice is more prevalent in Fortran than in C, but it is something
+you need to watch out for.
+<P>
+<LI> Integers and double precision floating point values must not be used
+as short ints or single precision floats without conversion.  On the VAX,
+a pointer to a double could be treated as a pointer to a float.  This works
+because the bit pattern for the first half of a double is the same as for a
+float.  The same is true for short vs. normal integers - a pointer to an int
+could be treated as a pointer to a short or even to a byte.  This is not valid
+on any other machine.  The IEEE floating point standard (which most other
+machines use) has different bit patterns for doubles and for floats.
+Therefore, if you wish to use a double as a float (or vice-versa) you must
+convert the data with a type cast.  For integers, most other machines use
+the ``big-endian'' byte order.  The first bytes of an int are actually the
+higher-order bytes, unlike the VAX, so the value cannot be treated as a short.
+<P>
+This practice is most common (and hardest to find!) in subroutine calls,
+where a program is sloppy about passing a pointer to the correct data type.
+If the subroutine expects a pointer to a float, the pointer better point to
+a float!  Fortunately, C normally passes items by value, so floats get
+promoted to doubles in the subroutine call automatically.  However, when
+things get passed by pointer instead of by value, the data type needs to be
+checked carefully.  The function prototyping in ANSI C, when available, will
+help find these kinds of problems.
+<P>
+<LI> VMS System Calls must be eliminated or isolated.  These include a whole
+range of things, like system services (SYS$), VMS Run-Time Library calls
+(LIB$, etc., not to be confused with the VICAR RTL), RMS calls or structures,
+QIO calls for I/O, AST's (asynchronous system traps), and anything else that
+is VMS specific.  Any subroutine or structure with a dollar sign ($) in it
+is suspect, as most VMS system routines have a $ in the name.
+<P>
+There are basically two choices for dealing with these.  The first (and better)
+choice is to dispense with system-specific calls and do things in a standard
+way, when possible.  This could be achieved by using standard Unix-style calls
+that do the same thing (many of which are implemented under VMS).  The second
+choice is to isolate the VMS-specific code, and write corresponding code that
+works on a Unix system.  Both versions could either be included in the program
+itself (in-line or in a subroutine), or they could be put in a SUBLIB
+subroutine if it's a capability that could be generally useful.  See the
+next section for ways of handling machine-dependent code.
+<P>
+<LI> Assembly language (called Macro on the VAX) included in the program
+will of course have to be rewritten.  You could write assembler versions for
+every machine supported, but this is <em> highly</em> discouraged due to the
+wide variety of available assembly languages.  The best solution is to
+write the subroutine in a high-level language, preferably C.  The macro
+code can be kept for use on the VAX if required, as long as there is a
+high-level language version for other machines.  With the rapid rise in
+machine performance over the past years, which is expected to continue in the
+future, the use of assembly languages for performance reasons is becoming very
+hard to justify, once the extra development, maintenance, and porting costs
+are taken into account.  If a particular machine <em> really</em> needs the
+performance boost, an assembler routine can be written for that machine,
+assuming a C version exists for other machines.
+<P>
+<LI> Descriptors will have to be eliminated.  Only a few machines use
+descriptors for Fortran strings, and the other machines that do are not
+compatible with the VAX format.  Descriptors normally appear only in system
+calls (which have to be changed anyway) and in interfacing between Fortran
+and C.  The Fortran-C interface is described in Section <A HREF=section3.11.html#mixfortc><IMG SRC="/icons/cross-ref.png"></A>,
+Mixing Fortran and C, and there are routines available in the RTL to do
+string conversions (the <b> sfor2c</b> family).
+<P>
+<LI> Fortran-C interfaces will have to be checked.  There are several rules
+for mixing Fortran and C, including having separate names for subroutines that
+are to be called from both Fortran and C.  Make sure you don't call a
+subroutine from C by its Fortran interface, as that is not portable.
+String handling is a particular problem.  See Section <A HREF=section3.11.html#mixfortc><IMG SRC="/icons/cross-ref.png"></A>,
+Mixing Fortran and C, for details.
+<P>
+<LI> Make sure that <em> all</em> input operations from files can accept files
+written on a foreign machine.  This is often handled automatically, but there
+are cases where it is not.  See Section <A HREF=section3.7.html#datatypes><IMG SRC="/icons/cross-ref.png"></A>, Data Types and Host
+Representations, for details.
+<P>
+<LI> Do not assume that you know the size of a pixel in an input file.
+An integer may not be four bytes on every machine that VICAR runs on.  Use
+the RTL routines <b> zvpixsize</b>, <b> zvpixsizeu</b>, or <b> zvpixsizeb</b>
+to get the size of a pixel.
+<P>
+<LI> Knowledge of the bit patterns used to store data is not portable,
+especially floating-point data.  This is not very common, but any code
+that does bit-twiddling is likely to have problems.  Byte-order dependencies
+often creep into this sort of code.
+<P>
+<LI> Structure packing is not the same on all machines.  Some architectures,
+like the VAX, pack all the items in a structure together with no extra
+space.  Other architectures put every element of a structure at a longword
+boundary, or something similar.  That is because they have access restrictions
+on data, such as not being able to access an integer at an odd address.  This
+can cause problems when writing structures directly out to a file (where another
+machine may read them in), or trying to overlay one structure on another to
+access certain fields differently.  If you need the size of a structure, don't
+just add up the size of its elements, use the <tt> sizeof()</tt> operator on the
+entire structure.  For an example of reading a structure from a file, see
+Section <A HREF=subsection3.7.5.html#convtype><IMG SRC="/icons/cross-ref.png"></A>, Converting Data Types &amp; Hosts.
+<P>
+<LI> Use of unions to access the same bit pattern in different ways (like
+EQUIVALENCE in Fortran) is very unportable.  If unions are used, make sure
+you use only one of the definitions for any given piece of data.  If you use
+the other definition, you must put a new value of that type into the union.
+Unions may not be the same size on different machines, either, due to
+structure packing considerations.
+<P>
+<LI> Not all the ``standard'' C run-time library routines are the same.
+For example, the <tt> memcpy()</tt> function on VMS will handle overlapping moves
+correctly (where the source and destination ranges overlap), but the same
+routine on the Sun does not handle them like you might expect (use the
+<b> zmove</b> function instead).  The <tt> open()</tt> call on VMS, while
+standard in most respects, will accept extra arguments to define the RMS
+file type.  These arguments are not portable.  Some of the less common or
+newer routines are not available everywhere.  The Alliant has a rather
+limited set of string handling routines, for example.
+<P>
+<LI> Optional arguments are not allowed in subroutines.  You must supply
+all the arguments the subroutine requires.  If you are porting a subroutine
+that accepts optional arguments, you have the choice of eliminating the
+extra arguments, forcing them to be there, or creating different subroutine
+names with different numbers of arguments.
+<P>
+<LI> Do not use numeric constants for things like error numbers or flag
+bits.  VICAR constants could change in the future, and ``CANNOT_FIND_KEY''
+is much more understandable than ``-38''.  System constants, for example the
+argument to the <tt> lseek()</tt> function that says to search from the end of
+the file, are even more likely to be different on different machines.  They
+should always be symbolic constants, from the appropriate system include files.
+<P>
+<LI> Global variables should not be initialized in include files.  Under VMS,
+a global variable can be initialized in an include file that is used by
+several program modules.  As long as the initialization is the same in each
+module (which is true since it comes from an include), then it works.  On
+other machines, however, this is not the case.  You get a ``multiply defined''
+error on the global variable.  One way to get around this problem is to use
+a preprocessor macro to control the initialization.  If the macro is defined,
+initialize it.  If not, just declare it.  The main program module then defines
+this macro before including the file in question.  That way, the variables
+only get initialized once.  For example:
+<P>
+<PRE><TT>
+/* file x.h */
+#ifdef INITIALIZE
+int glob = 5;
+#else
+int glob;
+#endif
+<P>
+/* one of the program modules (preferably the main one) */
+#define INITIALIZE                /* delete this line in other modules */
+#include &quot;x.h&quot;
+</TT></PRE>
+<P>
+<LI> Make sure that variable and subroutine names do not conflict with Unix
+system routines or the RTL internal routines.  Of particular interest is the
+use of the variable name ``stat'', which is common in VICAR code for a status
+return.  This conflicts with and overrides (if it's a global) the Unix system
+routine of the same name, which is critical for the RTL to work.  Use of the
+name ``stat'' will cause your program to break.  Use ``status'' or some other
+name instead.
+<P>
+The other part of the problem is that most Unix machines do not have the
+concept of a shareable image like VMS does.  Shareable images allowed
+subroutine libraries such as the RTL to hide their internals from the program.
+Without them, the entire RTL is linked with your program.  This greatly
+increases the chance of name collisions, as the internal RTL subroutine
+names (and TAE and SPICE and X-windows and ...) are suddenly visible, and some
+of the names are fairly common.  Be very careful with subroutine and global
+variable names.
+<P>
+The ultimate solution to this problem is to have a consistent naming scheme
+for RTL internal names that won't conflict with applications.  Until this
+is implemented, however, you must watch out for conflicts.  Even this fix won't
+help other subroutine packages that MIPL does not have direct control over,
+such as TAE, SPICE, and X-windows.
+<P>
+<LI> There are many differences in the file system and filename structure
+between VMS and Unix.  The VMS pathname of
+``disk:[dir.subdir]file.ext;version'' is quite different from the
+Unix pathname of ``/dir/subdir/subdir/filename''.  Logical names do
+not exist under Unix.  The analog to logical names, environment variables,
+act quite differently in many respects (for example, the system <tt> open()</tt>
+call doesn't know how to deal with environment variables, but <b> zvopen</b>
+does).  Filenames and pathnames that are embedded in the program should be
+removed and made available as arguments, both to handle architecture
+differences and differences in directory structure on other machines.  Any
+code that parses filenames from user input must be aware of the differences
+and have code to handle each system.  Such code should be rare as the RTL does
+most of the filename parsing; however, it does exist.
+<P>
+<LI> Filenames and pathnames tend to be longer under Unix than VMS.  Many
+current programs arbitrarily limit filename parameters to 40 or even 20
+characters in the PDF and in the code.  These limits need to be lifted.
+Most of the time, the program never sees the filename (it lets <b> zvunit</b>
+take care of it), so the solution is simply to not specify the maximum string
+length in the PDF.  Instead of saying ``(STRING,40)'', just say ``STRING''.
+If you need a buffer in the program code to handle the filename, allow at
+least 255 characters (which is slightly more than the maximum TAE string size).
+<P>
+<LI> The filenames of the program units themselves may need changing.
+C language modules must end in a ``.c'' to be compatible with <tt> vimake</tt>.
+Other files have naming rules as well.  See Section <A HREF=subsection3.13.1.html#vimake><IMG SRC="/icons/cross-ref.png"></A>, <tt> vimake</tt>,
+for details.
+<P>
+</UL>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

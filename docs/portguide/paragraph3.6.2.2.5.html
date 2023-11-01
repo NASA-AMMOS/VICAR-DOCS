@@ -1,0 +1,80 @@
+<HEAD>
+<TITLE><b> x</b>/<b>  zvtrans_out</b></TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=620 HREF=paragraph3.6.2.2.4.html><IMG SRC="/icons/previous.png"></A> <A NAME=622 HREF=subsubsection3.6.2.2.html><IMG SRC="/icons/up.png"></A>  <A NAME=618 HREF=paragraph3.6.2.2.6.html><IMG SRC="/icons/next.png"></A>  <b>Previous:</b> <A NAME=621 HREF=paragraph3.6.2.2.4.html><b> x</b>/<b>  zvtrans_inu</b></A>  <b>Up:</b> <A NAME=623 HREF=subsubsection3.6.2.2.html>Translation Routines</A>  <b>Next:</b> <A NAME=619 HREF=paragraph3.6.2.2.6.html><b> x</b>/<b>  zvtrans_set</b></A> <P>
+ <H4><b> x</b>/<b>  zvtrans_out</b></H4>
+<P>
+<PRE><TT>
+call xvtrans_out(buf, stype, dtype, dihost, drhost, status)
+status = zvtrans_out(buf, stype, dtype, dihost, drhost);
+</TT></PRE>
+<P>
+Set up a translation buffer for output.  The data will be converted from the
+machine's native representation and data type of STYPE into a host
+representation of (DIHOST,DRHOST) and data type of DTYPE.  So, it converts
+from local to foreign format.  Since all processing must be done in native
+format on the machine the program is running on, this this translation is most
+often needed for output to a file.
+<P>
+This routine will be much less commonly used than the input routines.  The
+general rule for applications is to read any format, but write the native
+format.  Translation on output is not needed in this case.  However,
+<b> x</b>/<b>  zvtrans_out</b> is provided for special cases where the data must be
+written in a different host representation.
+<P>
+<b> Arguments:</b>
+<UL>
+<P>
+<LI> BUF: integer-array(12), output
+<P>
+BUF is the translation buffer that this routine will set up, describing the
+translation to be performed.
+<P>
+<LI> STYPE: string, input
+<P>
+STYPE is the source data type.  It corresponds to the FORMAT label item
+in a file.  It may be one of the standard VICAR data types:  ``BYTE'',
+``HALF'', ``FULL'', ``REAL'', ``DOUB'', or ``COMP''.  The types ``WORD'',
+``LONG'', and ``COMPLEX'' are also accepted, but are obsolete and should
+not be used.
+<P>
+<LI> DTYPE: string, input
+<P>
+DTYPE is the desired destination data type.  It corresponds to the FORMAT
+label item in a file.  It may be one of the standard VICAR data types:
+``BYTE'', ``HALF'', ``FULL'', ``REAL'', ``DOUB'', or ``COMP''. The types
+``WORD'', ``LONG'', and ``COMPLEX'' are also accepted, but are obsolete
+and should not be used.
+<P>
+<LI> DIHOST: string, input
+<P>
+DIHOST is the host representation for the destination of integral data types.
+It corresponds to the INTFMT label item in a file.  It may be any of the
+supported integer data types, which are listed in Table <A HREF=subsection3.7.2.html#intfmtlabel><IMG SRC="/icons/cross-ref.png"></A>.
+It may also be ``NATIVE'' or ``LOCAL'', both of which mean the native
+host INTFMT.  Note that DIHOST should be given even if you are dealing
+only with floating-point data types.  See also <b> x</b>/<b>  zvhost</b>.
+<P>
+<LI> DRHOST: string, input
+<P>
+DRHOST is the host representation for the destination of floating-point data
+types.  It corresponds to the REALFMT label item in a file.  It may be any of
+the supported floating-point data types, which are listed in
+Table <A HREF=subsection3.7.2.html#realfmtlabel><IMG SRC="/icons/cross-ref.png"></A>.  It may also be ``NATIVE'' or ``LOCAL'', both of
+which mean the native host REALFMT.  Note that DRHOST should be given even if
+you are dealing only with integral data types.  See also <b> x</b>/<b>  zvhost</b>.
+<P>
+<LI> STATUS: integer, output
+<P>
+The returned status value.  It is an argument in Fortran and the function
+return value in C.  Any value other than SUCCESS indicates that the translation
+is invalid for some reason, and the translation buffer should not be used.
+<P>
+</UL>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

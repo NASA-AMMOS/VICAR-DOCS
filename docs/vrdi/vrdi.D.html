@@ -1,0 +1,146 @@
+<H2>Hardware Selection Criteria}
+The following is a list of display hardware characteristics.
+All of the listed items may or may not be important to your
+application.  However, all are required to fully implement the MIPL
+machine-independent interface.
+
+When selecting a display device, a definition of the minimum
+hardware required to do the job is necessary.  Some hardware
+characteristics may be simulated in software to save cost.
+<H3>Control Registers}
+All device control registers should be readable and writeable
+by software, i.e. cursor control and location, display window,
+aspect ratio, etc.  This is necessary if several programs are to
+access an image sequentially.  Many devices have write-only
+registers.
+<H3>LUT/DACs}
+There is a LUT (Look-Up Table) for each DAC (Digital to
+Analog Converter).  The LUT is used to modify the pixel values from
+an image memory plane before they are output by the DAC.
+
+All LUT tables are readable and writeable by software.  This
+is necessary if several programs are to access an image
+sequentially.  Many devices have write-only LUT tables.
+
+Each image memory plane may be connected to any or all
+LUT/DACs (video outputs).  This is necessary if the device is
+configurable under software control.
+
+LUTs may be bypassed under software control.  In this mode
+pixel values are sent directly to the DACs.  In some systems, the LUTs
+may not be bypassed.
+
+Each LUT/DAC has a zoom factor associated with it.
+
+LUT/DACs contain one or more pixel transformation tables (LUT
+sections).  Each section consists of 256 entries, one for each pixel
+value.  LUTs and DACs should have a minimum of 8 bits of output.  More
+bits are needed if accurate gamma correction is desired.
+<H3>Graphics Overlay}
+Each device should have graphics overlay capability.
+
+Graphics overlay works by pixel substitution.  Any non-zero
+graphics overlay pixel is substituted for regular pixels before going
+to the DACs.  In this way, graphics overlay data is written on top of the
+output image.
+
+The graphics overlay LUT is different from the other LUTs in
+that it has three tables (red,green,blue) in full color displays.
+
+Any image memory plane may be used as a graphics overlay
+plane by connecting it to the graphics overlay LUT.  This is
+necessary if the device is configurable under software control.  Some
+devices have fixed or no graphics overlay plane.  In many devices the
+graphics overlay plane has fewer bits than the image memory planes.
+
+The video output should support 30hz interlaced and 60hz
+non-interlaced in low resoluton ($512 \times 512$).  It should also support
+60hz interlaced in high resolution ($1024 \times 1024$).  $1 \times 1$
+and $4 \times 3$ aspect ratios should be supported for low and
+high resolution.
+<H3>Image Memory Planes}
+Image memory planes are eight (8) bits deep.
+
+Each plane has a display window and an access window associated
+with it.
+
+Physical image memory planes are configurable into several
+logical image memory plane sizes--i.e. $512 \times 512$,
+$1024 \times 1024$, etc.
+
+Read and write with mask into any image memory plane should
+be available.  Only non-zero bits in the mask may be read or written
+in the image memory plane.
+<H3>Cursor}
+One or more cursors should be available.  Each cursor should
+have several forms and blink rates.  The cursor can be displayed in
+several colors.  The cursors work by pixel substitution similar to
+the graphics overlay.
+
+Cursors should have one or more shapes.  However, user-defined
+cursor patterns are preferred.
+
+The center of the cursor pattern should be locatable over every
+pixel in an image memory plane.  Many display devices use the upper
+left corner as the (0,0) location of the cursor pattern and restrict
+the cursor to the display window.  Useful cursor shapes such as X or
+cross cannot be moved over all of the image memory plane pixels in
+this case.
+<H3>Alphanumeric Font Generator}
+Alphanumeric font generators are not very useful.  They make
+an expensive display device act as a $24 \times 80$ terminal.  
+However, font generators are supported by the VRDI routines.
+<H3>Interactive IO Devices}
+One or more interactive IO devices should be available.  A
+tablet, mouse or puck is preferred.  The IO devices should be a byte
+stream data device using an RS232 interface.  This allows the device
+to be located a distance from the display device itself.
+<H3>Special Hardware}
+Hardware should be available to perform logical and
+arithmetic operations between image memory planes.  Hardware
+should also be available to fill areas, draw
+vectors, compute histograms, etc.  This may be simulated in software
+to reduce hardware costs.
+
+Logical and arithmetic operations between two
+planes should be able to deposit the results in a third plane.
+
+Hardware should be available to have the display window or
+cursor automatically track an interactive IO device.  No CPU cycles
+should be used for this task.
+<H3>Other Considerations}
+Application programs should be able to read or write single
+pixels into any image memory plane at any location.  Application
+programs should be able to read or write a line of pixels of any
+length into any location in an image memory plane.  
+
+The graphics overlay and the cursor should use different LUTs
+if both are to be used at the same time.  Without this,
+the cursor will disappear into the overlay as it is moved.  Many
+display devices use the same LUT for both.
+
+Simplicity of control registers can make the writing of
+programs easier.  Some devices perform many functions with a single
+control register.  For example, the cursor
+location and blink rate may use the same register.  When you want to
+change one, you must change both.  Many applications are written in
+high level languages, such as FORTRAN, that do not have bit
+manipulation facilities.  Devices that have multi-purpose registers usually
+do not put values on easily used bit boundaries.  For example, they
+might use bits 2-9 for one thing and 11-17 for another.
+
+The location of control registers can also be a problem.  If
+the cursor control uses two registers, they should be next to each
+other.  This would require one write instead of two.  
+
+Many devices allow the display window to move only in pre-defined
+increments (e.g., 4 pixels at a time).  This may cause problems,
+depending on your application.  This can be important if the cursor
+location is relative to this window and not the image memory plane.
+
+Interface software provided by the vendor can make
+programming easier if it is full and complete.  Unfortunately, some
+vendors only supply software that requires a deep knowledge of the
+machine.  For example, there should be a raster line write routine,
+not a need to load three registers with values to write the line.
+\cleardoublepage

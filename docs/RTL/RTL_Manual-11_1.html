@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--
+This document was converted from RTF source: 
+By rtftohtml 4.17
+See http://www.sunpack.com/RTF
+Filename:WORD Ram Disk:RTL_Manual.rtf
+Application Directory:Data Disk:r2h4
+Subject:
+Author:Larry Bolef
+Operator:Larry Bolef
+Document Comments:
+Version Comments:
+Comments:
+Keywords:
+Translation Date:06/05/1999
+Translation Time:08:05:06
+Translation Platform:MacOS
+Number of Output files:59
+This File:WORD Ram Disk:RTL_Manual-11_1.html
+SplitDepth=2
+SkipNavPanel=0
+SkipLeadingToc=0
+SkipTrailingToc=1
+GenContents=1
+GenFrames=0
+GenIndex=0
+-->
+<HEAD lang="en"><META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<TITLE>11.1	qprint/zqprint&#8212;(Obsolete) Print a message to the terminal </TITLE>
+</HEAD>
+
+<BODY ><DIV ALIGN="LEFT"><A HREF="RTL_Manual-Appendix-3.html">Up</A> | 
+<A HREF="RTL_Manual-Appendix-3.html">Previous</A> | 
+<A HREF="RTL_Manual-11_2.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+<HR>
+
+
+<a name="Heading114"></a><a name="_Toc425047586"></a><a name="_Toc425048141"></a><a name="Heading113"></a><a name="_Toc425047585"></a><a name="_Toc425048140"></a><a name="Obsolete"></a><a name="_Toc453201493"></a><A NAME="Heading135"></A><H2 ALIGN="LEFT">
+11.1	qprint/zqprint&#8212;(Obsolete)
+Print a message to the terminal 
+</H2>
+
+<PRE>call qprint(message, nbytes) 
+zqprint(message, nbytes) </PRE><BLOCKQUOTE>
+Obsolete.
+Use 
+<B>x/zvmessage</B>.
+<B>qprint/zqprint</B>
+will print a message to the standard output, with some carriage control. If the
+program is run interactively, then the output will appear on the user terminal,
+and any session logs which are active. Otherwise, it will appear in the job log. 
+<BR>
+For
+new VICAR software, 
+<B>x/zvmessage</B>
+is to be preferred to 
+<B>qprint/zqprint</B>
+because it uses a standard message format, allowing the user to build help for
+error messages, and it works both with and without the VICAR supervisor. QPRINT
+will function only within the VICAR supervisor. 
+<BR>
+<B>qprint/zqprint</B>
+uses the first character in the MESSAGE buffer for FORTRAN-style carriage
+control. Read the description of the MESSAGE argument carefully to understand
+how this first character is used. 
+<BR>
+<B>qprint/zqprint</B>
+calls the subroutine PRINT with editing turned on, so that non-printable
+characters are replaced with the character &#8220;|&#8221;. 
+</BLOCKQUOTE><P ALIGN="LEFT"><B>Arguments:</B>
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>MESSAGE</B>:
+input, string, maximum length 132
+<BR>MESSAGE
+contains the message to be given to the user. It may be passed by descriptor (
+FORTRAN character type) or reference (C char array). If the string is passed by
+descriptor or is a NULL terminated C-type string, the NBYTES argument is
+optional. 
+<BR>The
+first character in MESSAGE is used to perform a limited FORTRAN style carriage
+control, controlling output as follows. If the leading character is a 
+<UL>
+<LI><FONT FACE="Symbol">	</FONT>0,
+then a blank line is generated before the message is printed. 
+<LI><FONT FACE="Symbol">	</FONT>1,
+then a form-feed is generated if the job is not interactive, and a blank line
+is inserted if the job is interactive. 
+<LI><FONT FACE="Symbol">	</FONT>blank,
+then normal output starts on the next line. 
+</UL></UL><P ALIGN="LEFT">If
+the leading character is one of the three above, then after the carriage
+control is performed, printing starts with the second character of the buffer.
+Otherwise, printing starts with the first character of the buffer. 
+</P>
+<UL>
+<LI><FONT FACE="Symbol">	</FONT><B>NBYTES</B>:
+input, integer
+<BR>NBYTES
+is the number of bytes to be printed. If MESSAGE is of type CHARACTER, then the
+smaller of the NBYTES and the declared length of the string is used. Likewise,
+if a NULL ( binary 0) character is encountered before NBYTES characters are
+printed, printing terminates at the NULL. 
+<BR>If
+the string is not NULL terminated or a FORTRAN CHARACTER type, then NBYTES is
+required. 
+</UL>
+<HR>
+
+<DIV ALIGN="LEFT"><A HREF="RTL_Manual-Appendix-3.html">Up</A> | 
+<A HREF="RTL_Manual-Appendix-3.html">Previous</A> | 
+<A HREF="RTL_Manual-11_2.html">Next</A> | 
+
+<A HREF="RTL_Manual.html">Title Page</A> | 
+<A HREF="RTL_Manual-Contents.html">Contents</A>
+</DIV>
+</BODY>
+
+</HTML>

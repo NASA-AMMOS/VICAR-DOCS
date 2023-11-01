@@ -1,0 +1,235 @@
+<HEAD>
+<TITLE>Library Macros</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=1147 HREF=paragraph3.13.1.2.7.html><IMG SRC="/icons/previous.png"></A> <A NAME=1149 HREF=subsubsection3.13.1.2.html><IMG SRC="/icons/up.png"></A>  <IMG SRC="/icons/next.png">  <b>Previous:</b> <A NAME=1148 HREF=paragraph3.13.1.2.7.html>Documentation Macros</A>  <b>Up:</b> <A NAME=1150 HREF=subsubsection3.13.1.2.html>Valid <tt> vimake</tt> Commands</A>  <P>
+ <H4>Library Macros</H4>
+<P>
+<UL>
+<P>
+<LI> LOCAL_LIBRARY  - The argument  defines the name of the local
+library to use.  It is defined in a system-specific manner, so it will have
+to be #if'd based on the operating system.  The default if LOCAL_LIBRARY
+is not defined (the normal case) is ``sublib.olb'' for VMS and ``sublib.a''
+for Unix.  LOCAL_LIBRARY is used differently for PROGRAMs and SUBROUTINEs.
+For SUBROUTINEs, it is the name of the object library that the modules are
+inserted into during a non-system build (system builds go directly to the
+appropriate system library).  This is typically used during development and
+debugging.  For PROGRAMs, it is the name of the object library that is
+included in the link statement when the LIB_LOCAL flag is set.  Again, it
+is used only during development and debugging.  A program or subroutine should
+never be delivered with LOCAL_LIBRARY defined, since the program or
+subroutine must build in directories other than yours.  LOCAL_LIBRARY is
+provided merely as a convenience during program development.
+<P>
+<LI> LIB_LOCAL - This flag, if defined, links the program to the local
+library defined in LOCAL_LIBRARY (or the default local library).  It is
+valid only for type PROGRAM.  A program should never be delivered with
+LIB_LOCAL defined, since the program must link in directories other
+than yours.  LIB_LOCAL is provided merely as a convenience during
+program development.
+<P>
+<LI> LIB_RDM - This flag, if defined, links the program to the RDM library.
+It is valid only for type PROGRAM.  RDM is currently available under VMS
+only, where it links as a shareable image.
+<P>
+<LI> LIB_NIMSCAL - This flag, if defined, links the program to the NIMS
+calibration library.  It is valid only for type PROGRAM.  The NIMS calibration
+library is currently available under VMS only.
+<P>
+<LI> LIB_CPLT - This flag, if defined, links the program to the Common
+Plotting Package library.  It is valid only for type PROGRAM.  The Common
+Plotting Package is currently available under VMS only.
+<P>
+<LI> LIB_P1SUB - This flag, if defined, links the program to the portable
+class 1 SUBLIB library.  It is valid only for type PROGRAM.  This flag also
+makes the class 1 SUBLIB includes available to the C compiler.  LIB_P1SUB
+may be used from type SUBROUTINE for this purpose.
+<P>
+<LI> LIB_P1SUB_DEBUG - This flag, if defined, links the program to the
+debuggable version of the portable class 1 SUBLIB library.  It is valid only
+for type PROGRAM.  A program should never be delivered with P1SUB_DEBUG, as
+it is intended for program development and maintenance only.  The P1SUB_DEBUG
+library has not yet been implemented.  This flag also makes the class 1 SUBLIB
+includes available to the C compiler.  LIB_P1SUB_DEBUG may be used from type
+SUBROUTINE for this purpose.
+<P>
+<LI> LIB_P2SUB - This flag, if defined, links the program to the portable
+SUBLIB library.  It is valid only for type PROGRAM.  If you link to P2SUB,
+you may <em> not</em> link to S2 or S3.  This flag also makes the class 2 SUBLIB
+includes available to the C compiler.  LIB_P2SUB may be used from type
+SUBROUTINE for this purpose.
+<P>
+<LI> LIB_P2SUB_DEBUG - This flag, if defined, links the program to the
+debuggable version of the portable SUBLIB library.  It is valid only for type
+PROGRAM.  If you link to P2SUB_DEBUG, you may <em> not</em> link to S2 or S3.
+A program should never be delivered with P2SUB_DEBUG, as it is intended for
+program development and maintenance only.  The P2SUB_DEBUG library has not
+yet been implemented.  This flag also makes the class 2 SUBLIB
+includes available to the C compiler.  LIB_P2SUB_DEBUG may be used from type
+SUBROUTINE for this purpose.
+<P>
+<LI> LIB_S2 - This flag, if defined, links the program to the old,
+unportable, VMS-specific SUBLIB library.  It is valid only for type PROGRAM.
+S2 is available under VMS only.  If you link to S2, you may <em> not</em> link to
+P2SUB or P3SUB.
+<P>
+<LI> LIB_S2_DEBUG - This flag, if defined, links the program to the
+debuggable version of the old, unportable, VMS-specific SUBLIB library.  It is
+valid only for type PROGRAM.  S2_DEBUG is available under VMS only.  If you
+link to S2_DEBUG, you may <em> not</em> link to P2SUB or P3SUB.  A program should
+never be delivered with S2_DEBUG, as it is intended for program development
+and maintenance only.  The S2_DEBUG library has not yet been implemented.
+<P>
+<LI> LIB_P3SUB - This flag, if defined, links the program to the portable
+class 3 SUBLIB library.  It is valid only for type PROGRAM.  If you link to
+P3SUB, you may <em> not</em> link to S2 or S3.  This flag also makes the class 3
+SUBLIB includes available to the C compiler.  LIB_P3SUB may be used from type
+SUBROUTINE for this purpose.
+<P>
+<LI> LIB_P3SUB_DEBUG - This flag, if defined, links the program to the
+debuggable version of the class 3 portable SUBLIB library.  It is valid only
+for type PROGRAM.  If you link to P3SUB_DEBUG, you may <em> not</em> link to S2
+or S3.  A program should never be delivered with P3SUB_DEBUG, as it is
+intended for program development and maintenance only.  The P3SUB_DEBUG
+library has not yet been implemented.  This flag also makes the class 3 SUBLIB
+includes available to the C compiler.  LIB_P2SUB_DEBUG may be used from type
+SUBROUTINE for this purpose.
+<P>
+<LI> LIB_S3 - This flag, if defined, links the program to the old,
+unportable, VMS-specific class 3 SUBLIB library.  It is valid only for type
+PROGRAM.  S3 is available under VMS only.  If you link to S3, you may
+<em> not</em> link to P2SUB or P3SUB.
+<P>
+<LI> LIB_S3_DEBUG - This flag, if defined, links the program to the
+debuggable version of the old, unportable, VMS-specific class 3 SUBLIB library.
+It is valid only for type PROGRAM.  S3_DEBUG is available under VMS only.
+If you link to S3_DEBUG, you may <em> not</em> link to P2SUB or P3SUB.  A program
+should never be delivered with S3_DEBUG, as it is intended for program
+development and maintenance only.  The S3_DEBUG library has not yet been
+implemented.
+<P>
+<LI> LIB_HWSUB - This flag, if defined, links the program to the portable
+HW (Mars '94 specific) subroutine library.  It is valid only for type PROGRAM.
+This flag also makes HW includes available to the C compiler.  LIB_HWSUB
+may be used from type SUBROUTINE for this purpose.
+<P>
+<LI> LIB_HWSUB_DEBUG - This flag, if defined, links the program to the
+debuggable version of the portable HW (Mars '94 specific) subroutine library.
+It is valid only for type PROGRAM.  A program should never be delivered with
+HWSUB_DEBUG, as it is intended for program development and maintenance only.
+The HWSUB_DEBUG library has not yet been implemented.  This flag also makes
+the HW includes available to the C compiler.  LIB_HWSUB_DEBUG may be used
+from type SUBROUTINE for this purpose.
+<P>
+<LI> LIB_VRDI - This flag, if defined, links the program to the Virtual
+Raster Display Interface (VRDI) library.  It is valid only for type PROGRAM.
+Under VMS it links the VRDI as a shareable image.  Some versions of Unix
+support shared libraries, so VRDI will link to the VRDI shared library when
+it is implemented.  This flag also makes the VRDI includes available to the
+C compiler.  LIB_VRDI may be used from type SUBROUTINE for this purpose.
+<P>
+<LI> LIB_VRDI_NOSHR - This flag, if defined, links the program to the
+VRDI as a standard link library, as opposed to a shared library or a VMS
+shareable image.  It is valid only for type PROGRAM.  VRDI is preferred
+over VRDI_NOSHR.  This flag also makes the VRDI includes available to the
+C compiler.  LIB_VRDI_NOSHR may be used from type SUBROUTINE for this purpose.
+<P>
+<LI> LIB_VRDI_DEBUG - This flag, if defined, links the program to the
+debuggable version of the VRDI library.  It is valid only for type PROGRAM.
+A program should never be delivered with VRDI_DEBUG, as it is intended for
+program development and maintenance only.  This flag also makes the VRDI
+includes available to the C compiler.  LIB_VRDI_DEBUG may be used from type
+SUBROUTINE for this purpose.
+<P>
+<LI> LIB_MATH77 - This flag, if defined, links the program to the MATH77
+mathematics subroutine library.  It is valid only for type PROGRAM.
+<P>
+<LI> LIB_SPICE - This flag, if defined, links the program to the SPICE
+subroutine library.  It is valid only for type PROGRAM.
+<P>
+<LI> LIB_FPS - This flag, if defined, links the program to the FPS routines
+for the VMS array processor.  It is valid only for type PROGRAM.  The FPS
+library is currently available under VMS only.
+<P>
+<LI> LIB_DTR - This flag, if defined, links the program to the VMS
+Datatrieve database shareable image.  It is valid only for type PROGRAM.
+The DTR library is available under VMS only.
+<P>
+<LI> LIB_SYBASE - This flag, if defined, links the program to the Sybase
+database client library.  It is valid only for type PROGRAM.  This flag also
+makes the Sybase includes available to the C compiler.  LIB_SYBASE may be
+used from type SUBROUTINE for this purpose.
+<P>
+<LI> LIB_PDS_LABEL - This flag, if defined, links the program to the PDS
+(Planetary Data System) label library.  It is valid only for type PROGRAM.
+This flag also makes the PDS label library includes available to the C
+compiler.  LIB_PDS_LABEL may be used from type SUBROUTINE for this purpose.
+<P>
+<LI> LIB_C3JPEG - This flag, if defined, links the program to the library
+for the C Cubed JPEG decompression board.  It is valid only for type PROGRAM.
+This flag also makes the C3JPEG library includes available to the C compiler.
+LIB_C3JPEG may be used from type SUBROUTINE for this purpose.  Please note
+that this library is <em> not</em> available on all platforms.  Currently, it
+is available only on Sun-4 platforms, as the library is hardware-dependent.
+If the library is not available (specified by the C3JPEG_AVAIL_OS flag
+defined in xvmaininc.h), then the LIB_C3JPEG flag is ignored.
+<P>
+<LI> LIB_RTL - This flag, if defined, links the program to the VICAR
+Run-Time Library.  It is valid only for type PROGRAM.  Under VMS it links the
+RTL as a shareable image.  Some versions of Unix support shared libraries, so
+RTL will link to the RTL shared library when it is implemented.
+<P>
+<LI> LIB_RTL_NOSHR - This flag, if defined, links the program to the
+VICAR Run-Time Library as a standard link library, as opposed to a shared
+library or a VMS shareable image.  It is valid only for type PROGRAM.  RTL
+is preferred over RTL_NOSHR.
+<P>
+<LI> LIB_RTL_DEBUG - This flag, if defined, links the program to the
+debuggable version of the VICAR Run-Time Library.  It is valid only for
+type PROGRAM.  A program should never be delivered with RTL_DEBUG, as it
+is intended for program development and maintenance only.
+<P>
+<LI> LIB_NETWORK - This flag, if defined, links the program to the network
+support libraries, including RPC's (Remote Procedure Calls) and sockets.
+It is valid only for type PROGRAM.  This flag also makes the network includes
+available to the C compiler.  LIB_NET may be used from type SUBROUTINE
+for this purpose.  Currently, the Multinet network support libraries for the
+VAX require a different include syntax.  For example, instead of ``rpc/rpc.h''
+the syntax would simply be ``rpc.h''.  A conditional compile should take care
+of this.  It is hoped that this difference will be resolved in the future.
+<P>
+<LI> LIB_TAE - This flag, if defined, links the program to the TAE object
+library.  It is valid only for type PROGRAM.  Under VMS it links TAE as a
+shareable image.  Some versions of Unix support shared libraries, so TAE
+will link to the TAE shared library when it is implemented.
+<P>
+<LI> LIB_TAE_NOSHR - This flag, if defined, links the program to the TAE
+object library as a standard link library, as opposed to a shared library or
+a VMS shareable image.  It is valid only for type PROGRAM.  TAE is preferred
+over TAE_NOSHR.
+<P>
+<LI> LIB_FORTRAN - This flag, if defined, links the program to the Fortran
+run-time library.  This flag should <em> only</em> be used if MAIN_LANG_C is
+set; the Fortran library is included automatically for MAIN_LANG_FORTRAN.
+The LIB_FORTRAN flag is needed only if you are linking a C main program to a
+subroutine written in Fortran that uses some I/O statements (such as WRITE to
+a string).  This subroutine may be hidden in a library such as P2SUB, so if
+you get unexplained link errors, you might need this flag.  It is important
+to note that the Fortran library is automatically included under VMS (where this
+flag is ignored), so you will not know if you need it unless you try linking
+the program on a Unix system.  LIB_FORTRAN is valid only for type PROGRAM.
+<P>
+<LI> LIB_C_NOSHR - Normally the program is automatically linked to the
+C run-time library as a shared library or a VMS shareable image, and no flag
+need be given.  The C_NOSHR flag, if defined, links the C run-time library
+as a standard link library instead.  It is valid only for type PROGRAM.
+C_NOSHR should only rarely be used.
+<P>
+</UL>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>

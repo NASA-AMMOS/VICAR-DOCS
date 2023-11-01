@@ -1,0 +1,64 @@
+<H2>Creating User Defined Text Fonts}
+<H3>History}
+The Hershey character fonts are the basis for the character
+fonts provided by the XDT* subroutines.  The Hershey fonts were
+originally obtained in a complicated bit saving format.  This format
+was changed and expanded to an ASCII text file for ease of use and
+modification.  The Hershey character fonts are widely used and
+provide a large number of standard and special character fonts.
+<H3>User Defined Fonts}
+The XDT* subroutines are written so that users may define
+their own text fonts.  Font files are named XXX.FON where XXX is a
+three dight number between 000 and 999.  Font files are ASCII text
+files and may be created using a text editor or a program.  XDFONT
+is a symbol pointing to the directory containing the converted
+Hershey font files.  Users may redirect this symbol to any directory
+they wish.
+<H3>Defining Characters}
+Characters within a font are defined by a series of vectors
+drawn on an image memory plane.  The time needed to draw a character
+is directly related to the number of vectors making up the character.
+Very simple to very complex fonts have been provided.  Special
+characters and symbols have also been provided.  (See appendix E for
+more information.)
+
+Vectors making up a character have an origin in the lower
+left hand corner of a box which defines the nominal size of a
+character.  Vectors making up a character are
+not required to stay within this box, however (e.g., lower case
+letters with descenders).
+
+The height of this box has been normalized to 1.0 (this is
+usually the size of capital letters).  The width of the box is
+font-dependent.  Users may define fonts with fixed or variable width
+characters.  Users may also define fonts with white space included on
+either side of a character or on top and bottom.  The Hershey
+character fonts have variable-width characters and usually have white
+space on either side of the character.  They do not have
+white space on the top or bottom of capitol letters.
+
+The width of the characters is used to determine the length
+of character strings.  When a string is written, characters are drawn
+with no space between them.  That is why white space is usually
+included in the width of each character.
+
+Characters may have an ASCII value of 0 to 127.  Characters
+not defined in a font file have a width of zero (0).  A character
+that has a width but no vectors defines a blank or space.
+<H3>Font File Description}
+The basic file format is a record containing the number of
+characters described in the font file followed by descriptions of each
+character.
+
+A character description starts with a record containing the
+ASCII code value for the character, the number of coordinate pairs,
+and the nominal width of the character.  This record is
+followed by zero or more coordinate pair records.  Each coordinate
+pair record contains a move/draw flag and X,Y coordinates.  The
+move/draw flag is a zero (0) for move and one (1) for draw.
+
+Character descriptions do not need to be in numerical order
+in the font file.  If the file contains duplicate descriptions (i.e.,
+the same ASCII code value) the last one encountered will be used and
+the others lost.
+\cleardoublepage

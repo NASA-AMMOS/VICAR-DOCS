@@ -1,0 +1,78 @@
+<HEAD>
+<TITLE>Naming Subroutines</TITLE>
+</HEAD>
+<BODY><P>
+ <A NAME=972 HREF=subsection3.11.1.html><IMG SRC="/wstutor/previous.png"></A> <A NAME=974 HREF=section3.11.html><IMG SRC="/wstutor/up.png"></A>  <A NAME=970 HREF=subsection3.11.3.html><IMG SRC="/wstutor/next.png"></A>  <b>Previous:</b> <A NAME=973 HREF=subsection3.11.1.html>Bridge Routines</A>  <b>Up:</b> <A NAME=975 HREF=section3.11.html>Mixing Fortran and C</A>  <b>Next:</b> <A NAME=971 HREF=subsection3.11.3.html>Passing Numeric Arguments</A> <P>
+ <H2>Naming Subroutines</H2>
+<A NAME=mixnamesub><IMG SRC="/wstutor/invis_anchor.png"></A>
+<P>
+The subroutine names for the Fortran and C interfaces <em> must</em> be different.
+It is not sufficient to add an underscore to the end of a name; the letters
+themselves must be different.  The name difference is forced by the fact that
+some Fortran compilers put a trailing underscore after the name, and others do
+not.  This is described more fully in Section <A HREF=subsection3.4.5.html#portsubname><IMG SRC="/wstutor/cross-ref.png"></A>, Subroutine
+Names.
+<P>
+In order for a C routine to be called from Fortran, it must be named in a
+manner the Fortran compiler will recognize.  This is handled via the FTN_NAME
+macro.  The macro is used anywhere the subroutine name would be, including
+in the declaration of the subroutine.  The subroutine name is the argument
+for the macro.  Note that ``ftnbridge.h'' must be included.  For example:
+<P>
+<PRE><TT>
+#include &quot;xvmaininc.h&quot;
+#include &quot;ftnbridge.h&quot;
+<P>
+void FTN_NAME(mysub)(param1, param2)
+int *param1, *param2;                       /* inputs */
+{
+   zmysub(*param1, *param2);
+}
+</TT></PRE>
+<P>
+This would be called by the Fortran routine like this:
+<P>
+<PRE><TT>
+      integer a, b
+      call mysub(a, b)
+</TT></PRE>
+<P>
+A Fortran routine that wishes to be called by C must have a bridge written
+in C.  Otherwise, the C caller would have to use the FTN_NAME macro to call
+the routine, which would be annoying in the caller's code, plus would cause
+problems if the routine were ever converted to C.  The bridge routine takes
+care of this.  For example:
+<P>
+<PRE><TT>
+      subroutine fsub(param1, param2)
+      integer param1, param2                   ! inputs
+C     do something
+      return
+</TT></PRE>
+<P>
+The C bridge would look like the following.  Note the use of FTN_NAME when
+calling the Fortran program:
+<P>
+<PRE><TT>
+#include &quot;xvmaininc.h&quot;
+#include &quot;ftnbridge.h&quot;
+<P>
+void csub(param1, param2)
+int param1, param2;                            /* inputs */
+{
+   FTN_NAME(fsub)(&amp;param1, &amp;param2);
+}
+</TT></PRE>
+<P>
+It would be called from a C program like this:
+<P>
+<PRE><TT>
+int a, b;
+csub(a, b);
+</TT></PRE>
+<P>
+
+</BODY>
+<P><ADDRESS>
+<I>rgd059@ipl.jpl.nasa.gov</I>
+</ADDRESS>
