@@ -8,15 +8,15 @@
 //document.write('    </div>');
 
 document.write('    <div align="left">');
-document.write('<img border="0" height="40" width="1" src="/images/spacer.gif">');
-document.write('   <img border="0" height="1" width="160" src="/images/spacer.gif">');
+document.write('<img border="0" height="40" width="1" src="/VICAR-DOCS/images/spacer.gif">');
+document.write('   <img border="0" height="1" width="160" src="/VICAR-DOCS/images/spacer.gif">');
 //document.write('   <a href="http://jpl/copyrights.cfm" target="_blank"><b>PRIVACY</b></a> &nbsp;&nbsp;| &nbsp;');
 document.write('   <a href="http://www.hq.nasa.gov/office/pao/FOIA/agency/" target="_blank"><b>FOIA</b></a> <!-- &nbsp;&nbsp;| &nbsp; -->');
 //document.write('    	<a href="sitemap.html"><b>SITEMAP</b></a>');
-document.write('   <img border="0" height="1" width="100" src="/images/spacer.gif">'); 
+document.write('   <img border="0" height="1" width="100" src="/VICAR-DOCS/images/spacer.gif">'); 
 document.write('      <b>Site Manager: <a href="mailto:Adrian.W.Tinio@jpl.nasa.gov">Adrian Tinio</b></a>&nbsp;&nbsp; &nbsp</a>');
 document.write('   <br />');
-document.write('   <img border="0" height="1" width="406" src="/images/spacer.gif">');
+document.write('   <img border="0" height="1" width="406" src="/VICAR-DOCS/images/spacer.gif">');
 document.write('   <font size="-1" color="868A8D">Last Updated: 03-Dec-2015</font>');
 document.write('    </div>');
 

@@ -46,10 +46,10 @@ document.write('</table>');
 document.write('<div="ios_banner">');
 
 document.write('<table width="990" bgcolor="#000000" border="0" cellpadding="0" cellspacing="0" valign="center" align="center">');
-document.write('<img src="/images2/mipl_2010.jpg" width="990" border="0" align="center" valign="top" bgcolor="000000">');
+document.write('<img src="/VICAR-DOCS/images2/mipl_2010.jpg" width="990" border="0" align="center" valign="top" bgcolor="000000">');
 document.write('<td align="center" bgcolor="431E01" id="top_nav_links">');
 //document.write('<h3><a href="index.php">MIPL ENTRY</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="mipex.html"><font color="#ffffff">MIPL HOME</font></a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="ammos_ios.html">AMMOS-IOS</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="projects.html">SUPPORTED MISSIONS</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="mipl-inf.html">MIPL INFRASTRUCTURE</a></h3>');
-document.write('<img src="/images/spacer.gif" alt="" width="0" height="6" border="0">');
+document.write('<img src="/VICAR-DOCS/images/spacer.gif" alt="" width="0" height="6" border="0">');
 document.write('</td>');
 document.write('</tr>');
 document.write('<div>');
