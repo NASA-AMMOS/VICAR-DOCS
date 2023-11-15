@@ -1,0 +1,105 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for LTGEN</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ltgen.html">LTGEN</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+ An image from the light transfer sequence. The image label
+ is used to identify the output Light Transfer File.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+ The output Light Transfer File (LTF).  For details use HELP
+ MOMGEN and TUTOR MOMGEN.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="area"><H3>AREA</H3></A><pre>
+ INTEGER-OPTIONAL
+ <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ltgen_level2.html#area">AREA</A>=(SL1,SS1,NL1,NS1,SL2,SS2,NL2,NS2,...,SLn,SSn,NLn,NSn)
+ specifying the size fields of up to 125 areas in the image.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="grid"><H3>GRID</H3></A><pre>
+ KEYWORD-OPTIONAL
+ Generates a 10x10 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ltgen_level2.html#grid">grid</A> of areas uniformly distributed over
+ the image to be used to produce the statistics in MOMGEN.
+ Each <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ltgen_level2.html#area">area</A> will be 20x20 in size. The resolution of this <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ltgen_level2.html#grid">grid</A>
+ can be increased by using the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ltgen_level2.html#gres">GRES</A> keyword.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="gres"><H3>GRES</H3></A><pre>
+ INTEGER-OPTIONAL
+ <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ltgen_level2.html#gres">GRES</A>=(N,NL,NS)
+ Generates an NxN <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ltgen_level2.html#grid">grid</A> of areas uniformly distributed over the
+ input image.  The areas are NLxNS pixels in size.  Data is extracted
+ from these areas by MOMGEN and stored in the LTF.  Maximum N is 20.
+ Default <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ltgen_level2.html#gres">GRES</A>=(10,20,20).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="expo"><H3>EXPO</H3></A><pre>
+ REAL - (Required if <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ltgen_level2.html#list">LIST</A> is not used)
+ A string of floating point numbers specifying the commanded exposure times
+ (in msec) of the light transfer sequence in ascending order.
+ The first exposure is usually the dark current (0.0 msec):
+        <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ltgen_level2.html#expo">EXPO</A>=(0.0,4.167,6.25,8.33,12.5,16.67)
+ Galileo specific:
+ If extended exposure frames are present in the sequence, then
+ the sequence should begin with the extended-exposure dark-current
+ (specified as -1.0 msec), followed by the normal DC, followed by the
+ rest of the exposure levels:
+        <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ltgen_level2.html#expo">EXPO</A>=(-1.0,0.0,4.167,6.25,8.33,12.5,16.67)
+ However, sequences which consist entirely of extended-exposure mode
+ frames should be treated as though they were normal exposure frames
+ I.e., the extended-exposure dark-current should be specified as
+ 0.0 exposure, and later, when running CCDNOISE or CCDSLOPE, the EXTEXPO
+ parameter should not be used.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ni"><H3>NI</H3></A><pre>
+ INTEGER - (Required if <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ltgen_level2.html#list">LIST</A> is not used)
+ Specifies the maximum number of frames at any one exposure level of
+ the light transfer sequence.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="list"><H3>LIST</H3></A><pre>
+ STRING - Optional
+ Specifies the name of a SRCH-format ASCII file containing a <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ltgen_level2.html#list">list</A> of
+ the filenames of all frames to be processed by MOMGEN.  The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ltgen_level2.html#list">list</A> must
+ be in order of increasing exposure time.  LTGEN will automatically
+ extract the exposure times from the VICAR labels and determine the
+ proper value of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ltgen_level2.html#ni">NI</A>.  This probably should not be used for the special
+ case of extended-exposures for Galileo.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="dbug"><H3>DBUG</H3></A><pre>
+ KEYWORD
+ Invokes special debug print.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

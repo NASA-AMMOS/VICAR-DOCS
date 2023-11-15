@@ -1,0 +1,139 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for FITSIN</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin.html">FITSIN</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+ A FITS formatted <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#data">data</A> file on tape or disk.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+ A Vicar formatted output image filename. Output can be 'BYTE', 'HALF', 'FULL'
+ or 'REAL' depending on FITS format or the FITSIN parameter "<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#data">DATA</A>="
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="header"><H3>HEADER</H3></A><pre>
+ An output file containing FITS label information in ASCII 80 byte fixed
+ length records.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="data"><H3>DATA</H3></A><pre>
+ STRING-OPTIONAL
+ <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#data">Data</A> format to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#pass">pass</A> to VICAR image. Default is "FITS" tape format which
+ can be 'BYTE', 'HALF', 'FULL'  or 'REAL'.
+ 
+ If "TRUE" then will <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#pass">pass</A> R*4 format <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#data">data</A> to VICAR using FITS parameters
+ BSCALE and BZERO keywords in FITS labels based on the formula 
+
+	"TRUE" = (FITS*BSCALE)+BZERO.
+ 
+ If <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#data">DATA</A> is set to "TRUE" and no BSCALE or BZERO values are not found then
+ the program will warn you, but will create an output <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#data">data</A> set of type
+ real*4 by using the default settings of BSCALE=1.0 and BZERO=0.0.
+ 
+ When <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#data">DATA</A>=TRUE output file will always be 'REAL'.
+ Use U16 to transform unsigned FITS <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#data">data</A> into unsigned VICAR FULL data since
+ VICAR uses 16-bit signed <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#data">data</A>.
+ FITS/TRUE/U16
+ DEFAULT="FITS"
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="block"><H3>BLOCK</H3></A><pre>
+ STRING-OPTIONAL
+ FITS image tape is blocked/not blocked,
+ <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#block">BLOCK</A>/NOBLOCK
+ DEFAULT=<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#block">BLOCK</A>
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="factor"><H3>FACTOR</H3></A><pre>
+ INTEGER-OPTIONAL
+ Blocking <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#factor">factor</A> when <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#block">BLOCK</A>=BLOCK is selected. Maximum permitted value is 10.
+ Must be integer. 
+ Find Blocking <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#factor">factor</A> from MIPL TAPES utility.
+ DEFAULT=1
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="pass"><H3>PASS</H3></A><pre>
+ STRING-OPTIONAL
+ <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#pass">Pass</A> to VICAR <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#history">history</A> label the FITS label records beginning
+ with <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#pass">PASS</A>="FITS KEYWORD". Normally this is done after a tape scan.
+ 
+ "BSCALE =", "BZERO =", "BUNIT =", "OBJECT =", "<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#comment">COMMENT</A> =" and "DATE ="
+ keywords will always be passed to the VICAR label even if found before the
+ FITS keyword you choose for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#pass">PASS</A>=.
+ 
+ DEFAULT=-- (All FITS labels)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="excise"><H3>EXCISE</H3></A><pre>
+ STRING-OPTIONAL
+ Don't <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#pass">pass</A> to VICAR <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#history">history</A> label the FITS label records beginning
+ with <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#excise">EXCISE</A>="FITS KEYWORD". This gives you the option of eliminating other
+ less helpful FITS  keywords. Normally this is done after a tape scan.
+ Up to 10 keywords may be excised in addition to those specified with the
+ <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#comment">COMMENT</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#history">HISTORY</A>, and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#null">NULL</A> keywords.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="comment"><H3>COMMENT</H3></A><pre>
+ STRING-OPTIONAL
+ <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#pass">Pass</A>/Don't Pass FITS "<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#comment">COMMENT</A> =" labels
+ <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#comment">COMMENT</A>/NOCOMMENT
+ DEFAULT=<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#comment">COMMENT</A>
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="history"><H3>HISTORY</H3></A><pre>
+ STRING-OPTIONAL
+ <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#pass">Pass</A>/Don't Pass FITS "<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#history">HISTORY</A> =" labels
+ <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#history">HISTORY</A>/NOHISTORY
+ DEFAULT=<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#history">HISTORY</A>
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="null"><H3>NULL</H3></A><pre>
+ STRING-OPTIONAL
+ <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#pass">Pass</A>/Don't Pass FITS "           "(<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#null">null</A>) labels
+ <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/fitsin_level2.html#null">NULL</A>/NONULL
+ DEFAULT=NONULL
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="tablist"><H3>TABLIST</H3></A><pre>
+ STRING-OPTIONAL
+ List/Nolist of FITS tables to screen
+ DEFAULT=NOLIST
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

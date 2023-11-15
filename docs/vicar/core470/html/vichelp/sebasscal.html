@@ -1,0 +1,161 @@
+<HTML>
+<HEAD><title>HTML Help for SEBASSCAL</title></HEAD>
+<BODY>
+<H1>Help for SEBASSCAL</H1>
+<pre>
+PURPOSE:
+
+   SEBASSCAL is a program which calibrates SEBASS data to ground radiance,
+ground temperature, or brightness temperature. The input is SEBASS data which
+have already been calibrated to instrument radiance (in mW/m^2...).
+Output is a band interleaved by line (BIL) data set of all bands in two 
+byte integer.
+
+EXECUTION:
+
+   The following is the execution statement format for SEBASSCAL:
+
+	SEBASSCAL INP=PIX OUT=CALPIX PARAMS
+
+   where INP, OUT, and PARAMS are parameters discussed in their res-
+pective parameter sections. 
+
+
+
+OPERATION:
+
+   SEBASSCAL takes as input the radiance at sensor dataset of SEBASS data.
+It uses MODTRAN to compute the atmospheric path radiance, transmittance, 
+and ground reflected atmospheric radiance. The formula used to compute
+ground radiance is:
+
+        IRAD = [GRAD + (1.0-e)*L   ]*Trans + L
+                                sky           path
+
+   The units output for radiance images are in milliwatts/m**2/um/sr. The units 
+output for temperature images are in hundredths of degrees Celsius.
+Output is in halfword (two byte signed integer) format. 
+
+
+WRITTEN BY:  Ron Alley April 29, 1997
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Ron Alley</A>
+
+REVISION: New
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#inp"><H3>INP</H3></A>
+Radiance at sensor
+SEBASS image
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#out"><H3>OUT</H3></A>
+Output data set of 
+of calibrated SEBASS data.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#size"><H3>SIZE</H3></A>
+The standard  VICAR2 output size
+field.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#sl"><H3>SL</H3></A>
+Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#ss"><H3>SS</H3></A>
+Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#nl"><H3>NL</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#ns"><H3>NS</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#calmode"><H3>CALMODE</H3></A>
+This keyword selects the type
+of decalibatrion to be performed
+Valid: GRAD, GTEM, BTEM
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#date"><H3>DATE</H3></A>
+Date of data acquisition 
+as yyyymmdd
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#amodel"><H3>AMODEL</H3></A>
+Selects the model for which the
+atmospheric corrections will
+be performed via MODTRAN
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#atemp"><H3>ATEMP</H3></A>
+Selects atmospheric temperature
+and pressure profiles, if 
+different form that defaulted
+with AMODEL.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#ahumid"><H3>AHUMID</H3></A>
+Selects the atmospheric water
+vapor model, if different from
+that defaulted with AMODEL.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#aozone"><H3>AOZONE</H3></A>
+Selects the ozone model, if
+different from that defaulted
+with AMODEL.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#height"><H3>HEIGHT</H3></A>
+Aircraft altitude (km above MSL)
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#datum"><H3>DATUM</H3></A>
+Surface elevation (km above MSL)
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#nlayers"><H3>NLAYERS</H3></A>
+The number of atmospheric lay-
+ers in the radiosonde data
+(if used).
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#altitude"><H3>ALTITUDE</H3></A>
+The altitudes of each of the
+atmospheric layers given in
+the radiosonde data. (km.)
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#pressure"><H3>PRESSURE</H3></A>
+The atmospheric pressures of
+each of the atmospheric lay-
+ers given in the radiosonde
+data. (mb.)
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#temp"><H3>TEMP</H3></A>
+The temperatures of the at-
+mospheric layers given in
+the radiosonde data. Units
+are either Celsius (the default)
+or Kelvin, if the KELVIN
+keyword has been specified.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#water"><H3>WATER</H3></A>
+The water profile in terms
+of the parameter WTYPE, for
+each layer in the radiosonde
+data.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#wtype"><H3>WTYPE</H3></A>
+The units in which H2OS are
+given.  The three types are
+relative humidity (RH), dew-
+point (DP), and density (DE)
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#ttype"><H3>TTYPE</H3></A>
+The units in which the 
+temperature profiles are given.
+Valid: KELVIN, CELSIUS
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#waterfac"><H3>WATERFAC</H3></A>
+Varies the moisture profile
+by the factor specified
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#o3fac"><H3>O3FAC</H3></A>
+Varies the ozone profile by
+the factor specified
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#co2fac"><H3>CO2FAC</H3></A>
+Varies the carbon dioxide
+profile by the factor specified
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#so2fac"><H3>SO2FAC</H3></A>
+Varies the sulfur dioxide
+profile by the factor specified
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#ch4fac"><H3>CH4FAC</H3></A>
+Varies the methane profile by
+the factor specified
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#o2fac"><H3>O2FAC</H3></A>
+Varies the oxygen profile by
+the factor specified
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#e"><H3>E</H3></A>
+The emissivity assumed for
+each band.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#rstable"><H3>RSTABLE</H3></A>
+Dataset name for a table of
+radiosonde style input values
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#modfile"><H3>MODFILE</H3></A>
+Dataset name for MODTRAN
+output report file.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal_level2.html#modtab"><H3>MODTAB</H3></A>
+Dataset name for MODTRAN
+output tabular file.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sebasscal.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

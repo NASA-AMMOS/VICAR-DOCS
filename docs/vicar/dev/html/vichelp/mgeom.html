@@ -1,0 +1,147 @@
+<HTML>
+<HEAD><title>HTML Help for MGEOM</title></HEAD>
+<BODY>
+<H1>Help for MGEOM</H1>
+<pre>
+PURPOSE
+     MGEOM is a VICAR applications program which makes geometric
+     changes in pictures.  It can be used for many purposes including
+     correcting geometric distortion, increasing picture <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#size">size</A>, reducing 
+     picture <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#size">size</A>, and rotating a picture.  The ported MGEOM uses a 
+     different algorithm than the unported MGEOM and has different
+     characteristics.  The following are the principal differences
+     with respect to the programs LGEOM and GEOMA (note the difference
+     with the claims of the unported MGEOM):
+
+	1. MGEOM is NO LONGER as fast or faster.
+	2. MGEOM and GEOMA are more accurate as of April 1996.
+           LGEOM should have comparable accuracy soon after.
+	3. Preparation of "sharp edges" for mosaicking appears to
+           be available using ZNOIN (MGEOM) and NOIZ (LGEOM).
+           It appears that LGEOM is better at this.
+	5. No limits on <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#size">size</A> of input/output pictures in MGEOM.
+	6. No limits on <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#size">size</A> of interpolation grid in MGEOM.
+	7. MGEOM now has "bad cases" involving excessive rereading of files.
+
+     The unported version of MGEOM had the following requirement:
+	1. Maximum allowed rotation is 85 degrees.
+     I do not believe this to be the case with the ported version.
+
+
+CALL
+     mgeom INPUT OUTPUT <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#size">SIZE</A> '(QUALIFIERS) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#tiepoint">TIEPOINT</A>-GRID
+  WHERE:
+     INPUT          is the input data set.
+     OUTPUT         is the output data set.
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#size">SIZE</A>           is a VICAR size field for the output file
+     QUALIFIERS     consist of any of the following keywords:
+          NOIN          no interpolation is to be done.
+          ZNOIN         no interpolation for points with 0 DN.
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#tiepoint">TIEPOINT</A>-GRID      is a collection of parameters as follows:
+
+
+     The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#tiepoint">TIEPOINT</A>-GRID is a set of points describing the relation
+of the output file to that of the input file using the keywords
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#nah">NAH</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#nav">NAV</A>, and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#tiepoint">TIEPOINT</A>.
+   <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#nah">NAH</A>=nah  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#nav">NAV</A>=nav
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#tiepoint">tiepoint</A>=(nl1,ns1,ol1,os1,nl2,ns2,ol2,os2,...
+                   ...nlk,nsk,olk,osk)
+
+where the grid is rectangular in the output image space, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#nah">nah</A> is
+the number of grid cells horizontally (across the top in the sample
+direction), <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#nav">nav</A> is the number of grid cells vertically in the output
+image space, the point pairs (nli,nsi,oli,osi) are line-sample
+coordinates in the output (new) and input (old) spaces respectively.
+the number of pairs k must equal (<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#nah">nah</A>+1)*(<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#nav">nav</A>+1).  The grid must be
+perfectly rectangular in the output image space (the rows and
+columns must be perfectly horizontal and vertical respectively).
+
+The input image may either be byte or halfword data.  The data <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#format">format</A> is taken
+from the VICAR label of the input file.  The output image has the same data 
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#format">format</A> (byte or halfword) as the input image.  
+
+The HELP for program GEOMA has additional details.
+
+     For those used to the unported version, note that there used
+to be an output file parameter, IDS.  I.e. you used to have to
+specify an intermediate data set.  This is no longer the case
+with MGEOM.  Also, for a non-uniform tie point grid, there used
+to be an '<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#hvary">HVARY</A> qualifier.  Non-uniform spacing of tie points is
+no longer a special case, so the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#hvary">HVARY</A> parameter is now obsolete.
+However, for backwards compatability, you can still specify the
+parameter; it will simply be ignored.
+
+OPERATION
+
+MGEOM uses a moderate amount of space in its calculation arrays.  The
+program implements a recursive tiling scheme so that it only loads a
+fraction of the input file into memory if the entire input file is too
+large.  However, this tiling scheme should be transparent
+to the user.
+
+PERFORMANCE
+
+Each cell of the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#tiepoint">tiepoint</A> grid is a separate tile (or more than 1) in this 
+algorithm with its own set of disk reads and writes.  For a typical <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#tiepoint">tiepoint</A>
+grid, this may result in a large time (elapsed wall-clock time) spent on 
+disk I/O.
+
+For example, the following statistics were obtained on an Alpha (coda2) for
+the case of a BYTE input image with a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#size">size</A> of 1024 lines by 1024 samples and
+a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#tiepoint">tiepoint</A> grid with <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#nah">NAH</A>=9=<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#nav">NAV</A> (smaller than typical).
+
+             CPU TIME     WALL-CLOCK (CONNECT) TIME
+LGEOM          1.34s       2.89s
+MGEOM          3.45s      22.75s
+
+The number of disk reads and writes is proportional to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#nah">NAH</A>*<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#nav">NAV</A>.  The defaults
+from PICREG are <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#nah">NAH</A>=20=<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#nav">NAV</A>.
+Restrictions
+------------
+
+Warning:  If "<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#nl">nl</A>" or "<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#ns">ns</A>" exceeds the grid corner tie points, the interpolation
+algorithm may become unstable and cause the program to crash.  It is advised 
+that the user limit the number of output lines and samples to the grid corner
+tie point limits. 
+Original Programmer: A. L. Zobrist, 6 Dec. 1979
+Complete scratch rewrite: S.V. Hwan, 8 Nov. 1994
+<A NAME="CogProg">Current Cognizant Programmer: B. A. McGuffie</A>
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#inp"><H3>INP</H3></A>
+Input file name
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#out"><H3>OUT</H3></A>
+Output file name
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#size"><H3>SIZE</H3></A>
+Standard VICAR <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#size">Size</A> Field
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#sl"><H3>SL</H3></A>
+Starting line for output
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#ss"><H3>SS</H3></A>
+Starting sample for output
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#nl"><H3>NL</H3></A>
+Number of lines for output
+* See restrictions
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#ns"><H3>NS</H3></A>
+Number of samples for output
+* See restrictions
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#interp"><H3>INTERP</H3></A>
+interpolation options
+Valid: NOIN,ZNOIN
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#format"><H3>FORMAT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#format">FORMAT</A> is ignored.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#nah"><H3>NAH</H3></A>
+number of grid
+cells horizontally
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#nav"><H3>NAV</H3></A>
+number of grid
+cells vertically
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#tiepoint"><H3>TIEPOINT</H3></A>
+grid corner tiepoints in
+rows NL1,NS1,OL1,OS1,...
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom_level2.html#parms"><H3>PARMS</H3></A>
+previously saved parameter dataset
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mgeom.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

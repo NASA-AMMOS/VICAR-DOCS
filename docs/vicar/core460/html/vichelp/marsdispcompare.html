@@ -1,0 +1,106 @@
+<HTML>
+<HEAD><title>HTML Help for MARSDISPCOMPARE</title></HEAD>
+<BODY>
+<H1>Help for MARSDISPCOMPARE</H1>
+<pre>
+PURPOSE:
+This program is meant to be part of processing chain which ends up 
+with L-&gtR disparity image, a R->L disparity image, and  a mask 
+indicating which values in the l-&gtR disparity image should be ignored.
+This is determined by comparing the L-&gtR and R->L results for consistency.
+If they don't map to the same result, the pixel is rejected.
+
+EXECUTION:
+marsdispcompare <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare_level2.html#inp">inp</A>=(left,right) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare_level2.html#out">out</A>=disparity_mask 
+
+
+where:
+left is the L-&gtR disparity image
+right is the R-&gtL disparity image
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare_level2.html#out">out</A> is the output mask indicating which disparity values in the left 
+image to be ignored.
+
+All of these images can be created with marscor3. 
+
+METHOD:
+
+The program loops through every pixel in the disparity image.  
+For each pixel (optionally satisfying a quality threshold) in the L-&gtR 
+disparity image, 
+the  location in the R-&gtL disparity image is found. At this location, 
+which is commonly not an integer, A bilinear interpolation is 
+performed using the 4 nearest neighbors. 
+(Optionally, the interpolation may be limited to the case where all nearest
+neighbors satisfy a quality threshold) 
+This interpolated value gives a location in L-&gtR image. If this location 
+is close to the original pixel, satisfying a user specified threshold, 
+the output mask value is set to 0. Otherwise, it is set to 1. 
+This creates the mask for the L-&gtR disparity image. The mask for the R->L
+disparity image may be obtained by running marsdispcompare again with 
+RL and LR switched.
+
+The following set of commands demonstrate how the mask is created
+1) ./marsjplstereo <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare_level2.html#inp">inp</A>= \(SS009FFL897017919_11A7EL1M1.IMG,
+SS009FFL897017919_11A7ER1M1.IMG \) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare_level2.html#out">out</A>=DISPLR.IMG MAXDISP=25   
+This creates the low quality L-&gtR disparity image
+2)~/marsdispinvert/marsdispinvert <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare_level2.html#inp">INP</A>=DISPLR.IMG <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare_level2.html#out">OUT</A>=DISPRL.IMG FILL_VALUE=127
+This creates a low quality R-&gtL disparity image with default value set to 127. 
+The default value can be determined by inspection of the original images. 
+Note: This value is a delta value;
+3)./marscor3 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare_level2.html#inp">inp</A>=\(SS009FFL897017919_11A7EL1M1.IMG,SS009FFL897017919_11A7ER1M1.IMG\) 
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare_level2.html#out">out</A>=DISP2LR.IMG in_disp=DISPLR.IMG  
+This creates the high quality disparity. 
+4)./marscor3 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare_level2.html#inp">inp</A>=\(SS009FFL897017919_11A7ER1M1.IMG,SS009FFL897017919_11A7EL1M1.IMG\) 
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare_level2.html#out">out</A>=DISP2RL.IMG in_disp=DISPRL.IMG
+The creates the high quality R-&gtL disparity.
+5)  ./marsdispcompare <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare_level2.html#inp">INP</A>=\(DISP2LR.IMG,DISP2RL.IMG\) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare_level2.html#out">OUT</A>=out.msk
+This creates the disparity mask. 
+
+
+
+HISTORY:
+09-16-09 Initial
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Mathew Yeates</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare_level2.html#inp"><H3>INP</H3></A>
+input images.
+first: left to right disparity 
+image
+second:  right  to left 
+disparity image
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare_level2.html#o_thresh"><H3>O_THRESH</H3></A>
+outlier (in pixels)
+threshold.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare_level2.html#mindist"><H3>MINDIST</H3></A>
+distance (in pixels) threshold.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare_level2.html#out"><H3>OUT</H3></A>
+output disparity mask
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare_level2.html#qualityrl"><H3>QUALITYRL</H3></A>
+input R-&gt L disparity quality 
+image
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare_level2.html#qualitylr"><H3>QUALITYLR</H3></A>
+input L-&gt R disparity quality 
+image
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare_level2.html#quality_thresh"><H3>QUALITY_THRESH</H3></A>
+Two thresholds that the values 
+in the quality images must 
+satisfy.
+first  - left disparity image
+second - right disparity image
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsdispcompare.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

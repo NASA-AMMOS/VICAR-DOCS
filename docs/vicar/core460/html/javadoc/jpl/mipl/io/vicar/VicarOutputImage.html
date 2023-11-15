@@ -1,0 +1,1701 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+
+<title>VicarOutputImage</title>
+<meta name="date" content="2017-06-27">
+<link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<script type="text/javascript">
+</script>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+
+<div class="topNav"><a name="navbar_top">
+
+</a><a href="/VICAR-DOCS/vicar/core460/html/javadoc/./././././././././././././././jpl/mipl/io/vicar/#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow">
+
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../../overview-summary.html">Overview</a></li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/./././././././././././././././jpl/mipl/io/vicar/package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/./././././././././././././././jpl/mipl/io/vicar/package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+<li><a href="../../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../../../jpl/mipl/io/vicar/VicarOutputFile.html" title="class in jpl.mipl.io.vicar"><span class="strong">Prev Class</span></a></li>
+<li><a href="../../../../jpl/mipl/io/vicar/VicarSwapDataInputDIWrapper.html" title="class in jpl.mipl.io.vicar"><span class="strong">Next Class</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../../../index.html?jpl/mipl/io/vicar/VicarOutputImage.html" target="_top">Frames</a></li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/./././././././././././././././jpl/mipl/io/vicar/VicarOutputImage.html" target="_top">No Frames</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_top">
+<li><a href="../../../../allclasses-noframe.html">All Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript">
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>Summary:&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/./././././././././././././././jpl/mipl/io/vicar/#field_summary">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/./././././././././././././././jpl/mipl/io/vicar/#constructor_summary">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/./././././././././././././././jpl/mipl/io/vicar/#method_summary">Method</a></li>
+</ul>
+<ul class="subNavList">
+<li>Detail:&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/./././././././././././././././jpl/mipl/io/vicar/#field_detail">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/./././././././././././././././jpl/mipl/io/vicar/#constructor_detail">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/./././././././././././././././jpl/mipl/io/vicar/#method_detail">Method</a></li>
+</ul>
+</div>
+<a name="skip-navbar_top">
+
+</a></div>
+
+
+<div class="header">
+<div class="subTitle">jpl.mipl.io.vicar</div>
+<h2 title="Class VicarOutputImage" class="title">Class VicarOutputImage</h2>
+</div>
+<div class="contentContainer">
+<ul class="inheritance">
+<li>java.lang.Object</li>
+<li>
+<ul class="inheritance">
+<li>jpl.mipl.io.vicar.VicarOutputImage</li>
+</ul>
+</li>
+</ul>
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<dl>
+<dt>All Implemented Interfaces:</dt>
+<dd><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html" title="interface in jpl.mipl.io.vicar">VicarIOBase</a>, <a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></dd>
+</dl>
+<hr>
+<br>
+<pre>public class <span class="strong">VicarOutputImage</span>
+extends java.lang.Object
+implements <a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></pre>
+<div class="block">This class manages a set of VICAR output image files, making the set appear
+ like one image to the outside world.  The primary use is to make a set
+ of three separate files (R,G,B triplet) look like a single image to any
+ callers.
+ <p>
+ Each band in the virtual image presented by this class is mapped to one
+ (or more) bands in the output files.  Each file will have the same size.
+ <p>
+ The <code>VicarLabel</code> object is the one associated with the first
+ file for any Get operations, but the same <code>VicarLabel</code> is written
+ to all output files.  The <code>SystemLabel</code> object, however, reflects
+ the aggregate of all files (thus it indicates the full number of bands
+ in the virtual image).  So, this means that
+ <code>VicarOutputImage.getSystemLabel()</code> does <em>not</em> return
+ the same info as <code>VicarOutputImage.getVicarLabel().getSystem()</code>
+ (besides the return type difference).
+ <p>
+ Unlike <code>VicarInputImage</code>, files may not be offset with respect
+ to one another.  Each output file created will have the same size and data
+ type.
+ <p>
+ File organization of the virtual image is always BSQ, as will be the
+ organization of the outputs.
+ <p>
+ The binary headers are written to <em>every</em> output file (although
+ the Get applies to the first file only.  Binary prefixes are written to
+ the virtual band in question (the given band is mapped to the file/band
+ number).  All prefixes in different files will be the same size.
+ <p>
+ This class allows for multiple threads to simultaneously issue write
+ requests (as <code>VicarOutputFile</code> does; see the description there).
+ Not much synchronization is required here; we rely on the
+ <code>VicarOutputFile</code> to handle most of that for us.
+ <p>
+ Normally the same Vicar label and binary headers are written to each file,
+ as described above.  If different labels/headers are desired, they may
+ be written directly to the component files.  Be warned, however...
+ attempts to modify the system labels of the component files will cause
+ undefined results.
+ <p></div>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar"><code>VicarOutput</code></a>, 
+<a href="../../../../jpl/mipl/io/vicar/VicarOutputFile.html" title="class in jpl.mipl.io.vicar"><code>VicarOutputFile</code></a>, 
+<a href="../../../../jpl/mipl/io/vicar/VicarInputImage.html" title="class in jpl.mipl.io.vicar"><code>VicarInputImage</code></a></dd></dl>
+</li>
+</ul>
+</div>
+<div class="summary">
+<ul class="blockList">
+<li class="blockList">
+
+<ul class="blockList">
+<li class="blockList"><a name="field_summary">
+
+</a>
+<h3>Field Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Field Summary table, listing fields, and an explanation">
+<caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Field and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected int[]</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#_band_map_band">_band_map_band</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected int[]</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#_band_map_file">_band_map_file</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected <a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html" title="class in jpl.mipl.io.vicar">VicarDataFormat</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#_binary_data_format">_binary_data_format</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected boolean</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#_file_open">_file_open</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected <a href="../../../../jpl/mipl/io/vicar/VicarOutputFile.html" title="class in jpl.mipl.io.vicar">VicarOutputFile</a>[]</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#_files">_files</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected <a href="../../../../jpl/mipl/io/vicar/VicarInput.html" title="interface in jpl.mipl.io.vicar">VicarInput</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#_primary_input">_primary_input</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected <a href="../../../../jpl/mipl/io/vicar/VicarLabel.html" title="class in jpl.mipl.io.vicar">VicarLabel</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#_primary_label">_primary_label</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected <a href="../../../../jpl/mipl/io/vicar/SystemLabel.html" title="class in jpl.mipl.io.vicar">SystemLabel</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#_primary_system">_primary_system</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected boolean</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#_random_allowed">_random_allowed</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected boolean</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#_random_easy">_random_easy</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected <a href="../../../../jpl/mipl/io/vicar/SystemLabel.html" title="class in jpl.mipl.io.vicar">SystemLabel</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#_system">_system</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected <a href="../../../../jpl/mipl/io/vicar/VicarLabel.html" title="class in jpl.mipl.io.vicar">VicarLabel</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#_vicar_label">_vicar_label</a></strong></code>&nbsp;</td>
+</tr>
+</table>
+<ul class="blockList">
+<li class="blockList"><a name="fields_inherited_from_class_jpl.mipl.io.vicar.VicarIOBase">
+
+</a>
+<h3>Fields inherited from interface&nbsp;jpl.mipl.io.vicar.<a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html" title="interface in jpl.mipl.io.vicar">VicarIOBase</a></h3>
+<code><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html#VICAR_TILE_HEIGHT">VICAR_TILE_HEIGHT</a>, <a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html#VICAR_TILE_WIDTH">VICAR_TILE_WIDTH</a></code></li>
+</ul>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="constructor_summary">
+
+</a>
+<h3>Constructor Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructor Summary table, listing constructors, and an explanation">
+<caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colOne" scope="col">Constructor and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colOne"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#VicarOutputImage()">VicarOutputImage</a></strong>()</code>
+<div class="block">Dummy constructor (for now).</div>
+</td>
+</tr>
+</table>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="method_summary">
+
+</a>
+<h3>Method Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Method Summary table, listing methods, and an explanation">
+<caption><span>Methods</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Method and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#close()">close</a></strong>()</code>
+<div class="block">Closes all component <code>VicarOutputFile</code>s.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../../../jpl/mipl/io/vicar/VicarBinaryLabel.html" title="class in jpl.mipl.io.vicar">VicarBinaryLabel</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#createBinaryHeader()">createBinaryHeader</a></strong>()</code>
+<div class="block">Creates an empty binary header object for this image.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../../../jpl/mipl/io/vicar/VicarBinaryLabel.html" title="class in jpl.mipl.io.vicar">VicarBinaryLabel</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#createBinaryPrefix()">createBinaryPrefix</a></strong>()</code>
+<div class="block">Creates an empty binary prefix object for this image.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>java.awt.image.SampleModel</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#createSampleModel()">createSampleModel</a></strong>()</code>
+<div class="block">Creates a SampleModel that is most compatible with the input image.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>java.awt.image.SampleModel</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#createSampleModel(int,%20int)">createSampleModel</a></strong>(int&nbsp;tileWidth,
+                 int&nbsp;tileHeight)</code>
+<div class="block">Creates a SampleModel that is most compatible with the input image.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected java.awt.image.SampleModel</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#createSubsetSampleModel(java.awt.image.SampleModel,%20int[])">createSubsetSampleModel</a></strong>(java.awt.image.SampleModel&nbsp;sm_in,
+                       int[]&nbsp;bands)</code>
+<div class="block">Work around a bug in ComponentSampleModel{JAI}.createSubsetSampleModel().</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#getBand(int)">getBand</a></strong>(int&nbsp;band)</code>
+<div class="block">Maps a virtual band number into a band number within the actual file.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../../../jpl/mipl/io/vicar/VicarOutputFile.html" title="class in jpl.mipl.io.vicar">VicarOutputFile</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#getFile(int)">getFile</a></strong>(int&nbsp;index)</code>
+<div class="block">Returns the actual file for a given file index (NOT a band number!).</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#getFileIndex(int)">getFileIndex</a></strong>(int&nbsp;band)</code>
+<div class="block">Maps a virtual band number into a file index.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../../../jpl/mipl/io/vicar/VicarInput.html" title="interface in jpl.mipl.io.vicar">VicarInput</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#getPrimaryInput()">getPrimaryInput</a></strong>()</code>
+<div class="block">Gets the primary input, or null if none is available.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../../../jpl/mipl/io/vicar/SystemLabel.html" title="class in jpl.mipl.io.vicar">SystemLabel</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#getPrimaryInputSystemLabel()">getPrimaryInputSystemLabel</a></strong>()</code>
+<div class="block">Returns a deep clone of the primary input system label (set via either
+ method).</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../../../jpl/mipl/io/vicar/VicarLabel.html" title="class in jpl.mipl.io.vicar">VicarLabel</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#getPrimaryInputVicarLabel()">getPrimaryInputVicarLabel</a></strong>()</code>
+<div class="block">Returns a deep clone of the primary input VICAR label (set via either
+ method).</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../../../jpl/mipl/io/vicar/SystemLabel.html" title="class in jpl.mipl.io.vicar">SystemLabel</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#getSystemLabel()">getSystemLabel</a></strong>()</code>
+<div class="block">Retrieves a deep copy of the <code>SystemLabel</code> object associated
+ with this image.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../../../jpl/mipl/io/vicar/VicarLabel.html" title="class in jpl.mipl.io.vicar">VicarLabel</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#getVicarLabel()">getVicarLabel</a></strong>()</code>
+<div class="block">Returns a deep copy of the <code>VicarLabel</code> object for this file.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>boolean</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#isLabelComplete()">isLabelComplete</a></strong>()</code>
+<div class="block">Indicates whether or not the <code>VicarLabel</code> has been completely
+ read.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>boolean</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#isRandomAccessAllowed()">isRandomAccessAllowed</a></strong>()</code>
+<div class="block">Return true if random access to this file is <em>possible</em>.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>boolean</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#isRandomAccessEasy()">isRandomAccessEasy</a></strong>()</code>
+<div class="block">Return true if random access to this file is <em>easy</em>, meaning
+ that the underlying stream/file supports seekable random access, as
+ opposed to drastic means like mark/reset, contents caching, or re-opening.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#open(java.util.List)">open</a></strong>(java.util.List&nbsp;v)</code>
+<div class="block">Opens a virtual file given a List of filenames.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#open(java.util.List,%20int[])">open</a></strong>(java.util.List&nbsp;v,
+    int[]&nbsp;bands)</code>
+<div class="block">Opens a virtual file given a List of filenames and a number of bands for
+ each file.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#open(java.lang.String)">open</a></strong>(java.lang.String&nbsp;fn)</code>
+<div class="block">Opens a virtual file given a filename.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#open(jpl.mipl.io.vicar.VicarOutputFile[])">open</a></strong>(<a href="../../../../jpl/mipl/io/vicar/VicarOutputFile.html" title="class in jpl.mipl.io.vicar">VicarOutputFile</a>[]&nbsp;files)</code>
+<div class="block">Opens a virtual file given an array of <code>VicarOutputFile</code>
+ objects, which must already be individually opened.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#open(jpl.mipl.io.vicar.VicarOutputFile,%20jpl.mipl.io.vicar.VicarOutputFile,%20jpl.mipl.io.vicar.VicarOutputFile)">open</a></strong>(<a href="../../../../jpl/mipl/io/vicar/VicarOutputFile.html" title="class in jpl.mipl.io.vicar">VicarOutputFile</a>&nbsp;red,
+    <a href="../../../../jpl/mipl/io/vicar/VicarOutputFile.html" title="class in jpl.mipl.io.vicar">VicarOutputFile</a>&nbsp;grn,
+    <a href="../../../../jpl/mipl/io/vicar/VicarOutputFile.html" title="class in jpl.mipl.io.vicar">VicarOutputFile</a>&nbsp;blu)</code>
+<div class="block">Opens a virtual file given a set of three <code>VicarOutputFile</code>
+ objects, which must already be individually opened.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#openInternal()">openInternal</a></strong>()</code>
+<div class="block">Does the actual work of opening the virtual file.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#setBinaryHeader(jpl.mipl.io.vicar.VicarBinaryLabel)">setBinaryHeader</a></strong>(<a href="../../../../jpl/mipl/io/vicar/VicarBinaryLabel.html" title="class in jpl.mipl.io.vicar">VicarBinaryLabel</a>&nbsp;vbl)</code>
+<div class="block">Writes the binary header to each output file, which is NLB records at the
+ beginning of the file.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#setBinaryPrefix(jpl.mipl.io.vicar.VicarBinaryLabel,%20int,%20int)">setBinaryPrefix</a></strong>(<a href="../../../../jpl/mipl/io/vicar/VicarBinaryLabel.html" title="class in jpl.mipl.io.vicar">VicarBinaryLabel</a>&nbsp;vbl,
+               int&nbsp;n2,
+               int&nbsp;n3)</code>
+<div class="block">Writes the binary prefix to one output file, which is NBB <em>bytes</em>
+ at the beginning of the file.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#setPrimaryInput(jpl.mipl.io.vicar.SystemLabel,%20jpl.mipl.io.vicar.VicarLabel)">setPrimaryInput</a></strong>(<a href="../../../../jpl/mipl/io/vicar/SystemLabel.html" title="class in jpl.mipl.io.vicar">SystemLabel</a>&nbsp;slbl,
+               <a href="../../../../jpl/mipl/io/vicar/VicarLabel.html" title="class in jpl.mipl.io.vicar">VicarLabel</a>&nbsp;vlbl)</code>
+<div class="block">Sets the "primary input" labels directly, rather than via a
+ <code>VicarInput</code> object.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#setPrimaryInput(jpl.mipl.io.vicar.VicarInput)">setPrimaryInput</a></strong>(<a href="../../../../jpl/mipl/io/vicar/VicarInput.html" title="interface in jpl.mipl.io.vicar">VicarInput</a>&nbsp;inp)</code>
+<div class="block">Sets the "primary input" for this output image.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#setSystemLabel(jpl.mipl.io.vicar.SystemLabel)">setSystemLabel</a></strong>(<a href="../../../../jpl/mipl/io/vicar/SystemLabel.html" title="class in jpl.mipl.io.vicar">SystemLabel</a>&nbsp;sl)</code>
+<div class="block">Sets the system label of this image.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#setVicarLabel(jpl.mipl.io.vicar.VicarLabel)">setVicarLabel</a></strong>(<a href="../../../../jpl/mipl/io/vicar/VicarLabel.html" title="class in jpl.mipl.io.vicar">VicarLabel</a>&nbsp;vl)</code>
+<div class="block">Sets the VICAR label for this image.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#writeRecord(byte[],%20int,%20int,%20int,%20int,%20int,%20int)">writeRecord</a></strong>(byte[]&nbsp;data,
+           int&nbsp;start,
+           int&nbsp;length,
+           int&nbsp;offset,
+           int&nbsp;pixelStride,
+           int&nbsp;n2,
+           int&nbsp;n3)</code>
+<div class="block">Low-level write function, writes a byte array to the given record.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#writeRecord(double[],%20int,%20int,%20int,%20int,%20int,%20int)">writeRecord</a></strong>(double[]&nbsp;data,
+           int&nbsp;start,
+           int&nbsp;length,
+           int&nbsp;offset,
+           int&nbsp;pixelStride,
+           int&nbsp;n2,
+           int&nbsp;n3)</code>
+<div class="block">Low-level write function, writes a double array to the given record.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#writeRecord(float[],%20int,%20int,%20int,%20int,%20int,%20int)">writeRecord</a></strong>(float[]&nbsp;data,
+           int&nbsp;start,
+           int&nbsp;length,
+           int&nbsp;offset,
+           int&nbsp;pixelStride,
+           int&nbsp;n2,
+           int&nbsp;n3)</code>
+<div class="block">Low-level write function, writes a float array to the given record.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#writeRecord(int[],%20int,%20int,%20int,%20int,%20int,%20int)">writeRecord</a></strong>(int[]&nbsp;data,
+           int&nbsp;start,
+           int&nbsp;length,
+           int&nbsp;offset,
+           int&nbsp;pixelStride,
+           int&nbsp;n2,
+           int&nbsp;n3)</code>
+<div class="block">Low-level write function, writes an int array to the given record.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#writeRecord(short[],%20int,%20int,%20int,%20int,%20int,%20int)">writeRecord</a></strong>(short[]&nbsp;data,
+           int&nbsp;start,
+           int&nbsp;length,
+           int&nbsp;offset,
+           int&nbsp;pixelStride,
+           int&nbsp;n2,
+           int&nbsp;n3)</code>
+<div class="block">Low-level write function, writes a short array to the given record.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#writeRecordComp(float[],%20int,%20int,%20int,%20int,%20int,%20int)">writeRecordComp</a></strong>(float[]&nbsp;data,
+               int&nbsp;start,
+               int&nbsp;length,
+               int&nbsp;offset,
+               int&nbsp;pixelStride,
+               int&nbsp;n2,
+               int&nbsp;n3)</code>
+<div class="block">Low-level write function, writes complex data in a float array to the
+ given record.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#writeRecordUshort(short[],%20int,%20int,%20int,%20int,%20int,%20int)">writeRecordUshort</a></strong>(short[]&nbsp;data,
+                 int&nbsp;start,
+                 int&nbsp;length,
+                 int&nbsp;offset,
+                 int&nbsp;pixelStride,
+                 int&nbsp;n2,
+                 int&nbsp;n3)</code>
+<div class="block">Low-level write function, writes an unsigned short array to the given
+ record.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#writeTile(int,%20int,%20int,%20int,%20int,%20int,%20int[],%20java.awt.image.SampleModel,%20java.awt.image.DataBuffer)">writeTile</a></strong>(int&nbsp;x,
+         int&nbsp;y,
+         int&nbsp;w,
+         int&nbsp;h,
+         int&nbsp;x_off,
+         int&nbsp;y_off,
+         int[]&nbsp;bandList,
+         java.awt.image.SampleModel&nbsp;sm,
+         java.awt.image.DataBuffer&nbsp;db)</code>
+<div class="block">High-level write function.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#writeTile(int,%20int,%20int,%20int,%20int,%20int,%20java.awt.image.SampleModel,%20java.awt.image.DataBuffer)">writeTile</a></strong>(int&nbsp;x,
+         int&nbsp;y,
+         int&nbsp;w,
+         int&nbsp;h,
+         int&nbsp;x_off,
+         int&nbsp;y_off,
+         java.awt.image.SampleModel&nbsp;m,
+         java.awt.image.DataBuffer&nbsp;b)</code>
+<div class="block">High-level write function.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#writeTile(int,%20int,%20java.awt.image.SampleModel,%20java.awt.image.DataBuffer)">writeTile</a></strong>(int&nbsp;x,
+         int&nbsp;y,
+         java.awt.image.SampleModel&nbsp;m,
+         java.awt.image.DataBuffer&nbsp;b)</code>
+<div class="block">High-level write function.</div>
+</td>
+</tr>
+</table>
+<ul class="blockList">
+<li class="blockList"><a name="methods_inherited_from_class_java.lang.Object">
+
+</a>
+<h3>Methods inherited from class&nbsp;java.lang.Object</h3>
+<code>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="details">
+<ul class="blockList">
+<li class="blockList">
+
+<ul class="blockList">
+<li class="blockList"><a name="field_detail">
+
+</a>
+<h3>Field Detail</h3>
+<a name="_files">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>_files</h4>
+<pre>protected&nbsp;<a href="../../../../jpl/mipl/io/vicar/VicarOutputFile.html" title="class in jpl.mipl.io.vicar">VicarOutputFile</a>[] _files</pre>
+</li>
+</ul>
+<a name="_band_map_file">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>_band_map_file</h4>
+<pre>protected&nbsp;int[] _band_map_file</pre>
+</li>
+</ul>
+<a name="_band_map_band">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>_band_map_band</h4>
+<pre>protected&nbsp;int[] _band_map_band</pre>
+</li>
+</ul>
+<a name="_system">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>_system</h4>
+<pre>protected&nbsp;<a href="../../../../jpl/mipl/io/vicar/SystemLabel.html" title="class in jpl.mipl.io.vicar">SystemLabel</a> _system</pre>
+</li>
+</ul>
+<a name="_vicar_label">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>_vicar_label</h4>
+<pre>protected&nbsp;<a href="../../../../jpl/mipl/io/vicar/VicarLabel.html" title="class in jpl.mipl.io.vicar">VicarLabel</a> _vicar_label</pre>
+</li>
+</ul>
+<a name="_file_open">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>_file_open</h4>
+<pre>protected&nbsp;boolean _file_open</pre>
+</li>
+</ul>
+<a name="_random_allowed">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>_random_allowed</h4>
+<pre>protected&nbsp;boolean _random_allowed</pre>
+</li>
+</ul>
+<a name="_random_easy">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>_random_easy</h4>
+<pre>protected&nbsp;boolean _random_easy</pre>
+</li>
+</ul>
+<a name="_binary_data_format">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>_binary_data_format</h4>
+<pre>protected&nbsp;<a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html" title="class in jpl.mipl.io.vicar">VicarDataFormat</a> _binary_data_format</pre>
+</li>
+</ul>
+<a name="_primary_input">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>_primary_input</h4>
+<pre>protected&nbsp;<a href="../../../../jpl/mipl/io/vicar/VicarInput.html" title="interface in jpl.mipl.io.vicar">VicarInput</a> _primary_input</pre>
+</li>
+</ul>
+<a name="_primary_label">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>_primary_label</h4>
+<pre>protected&nbsp;<a href="../../../../jpl/mipl/io/vicar/VicarLabel.html" title="class in jpl.mipl.io.vicar">VicarLabel</a> _primary_label</pre>
+</li>
+</ul>
+<a name="_primary_system">
+
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>_primary_system</h4>
+<pre>protected&nbsp;<a href="../../../../jpl/mipl/io/vicar/SystemLabel.html" title="class in jpl.mipl.io.vicar">SystemLabel</a> _primary_system</pre>
+</li>
+</ul>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="constructor_detail">
+
+</a>
+<h3>Constructor Detail</h3>
+<a name="VicarOutputImage()">
+
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>VicarOutputImage</h4>
+<pre>public&nbsp;VicarOutputImage()</pre>
+<div class="block">Dummy constructor (for now). Need to add good ones that call open().</div>
+</li>
+</ul>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="method_detail">
+
+</a>
+<h3>Method Detail</h3>
+<a name="open(jpl.mipl.io.vicar.VicarOutputFile, jpl.mipl.io.vicar.VicarOutputFile, jpl.mipl.io.vicar.VicarOutputFile)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>open</h4>
+<pre>public&nbsp;void&nbsp;open(<a href="../../../../jpl/mipl/io/vicar/VicarOutputFile.html" title="class in jpl.mipl.io.vicar">VicarOutputFile</a>&nbsp;red,
+        <a href="../../../../jpl/mipl/io/vicar/VicarOutputFile.html" title="class in jpl.mipl.io.vicar">VicarOutputFile</a>&nbsp;grn,
+        <a href="../../../../jpl/mipl/io/vicar/VicarOutputFile.html" title="class in jpl.mipl.io.vicar">VicarOutputFile</a>&nbsp;blu)
+          throws java.io.IOException</pre>
+<div class="block">Opens a virtual file given a set of three <code>VicarOutputFile</code>
+ objects, which must already be individually opened.
+ <p>
+ <em>Warning!</em>  Undefined results will occur if the system labels of
+ these files do not match what is set on this object!  Only a limited
+ set of items are actually checked.
+ <p>
+ Note that labels set on this object prior to calling this version of
+ <code>open()</code> will be ignored in favor of each file's individual
+ labels.  Subsequent calls to <code>this.setVicarLabel()</code> however
+ will set the labels in each file.</div>
+<dl><dt><span class="strong">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd>
+<dd><code>java.lang.IllegalArgumentException</code> - if the system labels don't match</dd></dl>
+</li>
+</ul>
+<a name="open(jpl.mipl.io.vicar.VicarOutputFile[])">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>open</h4>
+<pre>public&nbsp;void&nbsp;open(<a href="../../../../jpl/mipl/io/vicar/VicarOutputFile.html" title="class in jpl.mipl.io.vicar">VicarOutputFile</a>[]&nbsp;files)
+          throws java.io.IOException</pre>
+<div class="block">Opens a virtual file given an array of <code>VicarOutputFile</code>
+ objects, which must already be individually opened.
+ <p>
+ <em>Warning!</em>  Undefined results will occur if the system labels of
+ these files do not match what is set on this object!  Only a limited set
+ of items are actually checked.  Note that the number of bands in each
+ file can vary but the total must equal the number of bands in this object.
+ <p>
+ Note that labels set on this object prior to calling this version of
+ <code>open()</code> will be ignored in favor of each file's individual
+ labels.  Subsequent calls to <code>this.setVicarLabel()</code> however
+ will set the labels in each file.</div>
+<dl><dt><span class="strong">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd>
+<dd><code>java.lang.IllegalArgumentException</code> - if the system labels don't match</dd></dl>
+</li>
+</ul>
+<a name="open(java.lang.String)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>open</h4>
+<pre>public&nbsp;void&nbsp;open(java.lang.String&nbsp;fn)
+          throws java.io.IOException</pre>
+<div class="block">Opens a virtual file given a filename.
+ What about URL's?
+ <p>
+ The given name may contain multiple filenames separated by spaces or
+ commas.  (This prevents a name from containing a space or comma).
+ As a convenience, if a filename (other than the first) starts with
+ a ".", it is considered to be an extension change from the previous
+ file.  The previous name is taken, the last "." and all that follows are
+ stripped, and the given name is appended (if there is no ".", the extension
+ is simply appended).  This allows strings of the form
+ "/some/directory/path/image.red, .grn, .blu" as a convenient user
+ shorthand.</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html#open(java.lang.String)">open</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html" title="interface in jpl.mipl.io.vicar">VicarIOBase</a></code></dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#open(java.util.List,%20int[])"><code>open(List, int[])</code></a></dd></dl>
+</li>
+</ul>
+<a name="open(java.util.List)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>open</h4>
+<pre>public&nbsp;void&nbsp;open(java.util.List&nbsp;v)
+          throws java.io.IOException</pre>
+<div class="block">Opens a virtual file given a List of filenames.  The List must
+ contain Strings.  Note that unlike open(String), no parsing or extension
+ swapping is done on the names; what you pass in is the file you get.
+ (This does allow blanks and commas in the name, and files that start
+ with ".").</div>
+<dl><dt><span class="strong">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#open(java.lang.String)"><code>open(String)</code></a>, 
+<a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#open(java.util.List,%20int[])"><code>open(List, int[])</code></a></dd></dl>
+</li>
+</ul>
+<a name="open(java.util.List, int[])">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>open</h4>
+<pre>public&nbsp;void&nbsp;open(java.util.List&nbsp;v,
+        int[]&nbsp;bands)
+          throws java.io.IOException</pre>
+<div class="block">Opens a virtual file given a List of filenames and a number of bands for
+ each file.  The List must contain Strings.  Note that unlike open(String),
+ no parsing or extension swapping is done on the names; what you pass in
+ is the file you get.  (This does allow blanks and commas in the name, and
+ files that start with ".").</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>v</code> - The list of filenames.</dd><dd><code>bands</code> - An array containing the number of bands for each corresponding
+ file in the list of filenames.  If bands is null, 1 is assumed for each.
+ The total # of bands must match the # of bands set in this virtual image's
+ system label, and the length of <code>bands</code> must match the length
+ of <code>v</code>.</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#open(java.lang.String)"><code>open(String)</code></a></dd></dl>
+</li>
+</ul>
+<a name="openInternal()">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>openInternal</h4>
+<pre>protected&nbsp;void&nbsp;openInternal()
+                     throws java.io.IOException</pre>
+<div class="block">Does the actual work of opening the virtual file.  Assumes that _files
+ array has been set up, but nothing else has.  Each of the individual
+ files must already be open.</div>
+<dl><dt><span class="strong">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd></dl>
+</li>
+</ul>
+<a name="close()">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>close</h4>
+<pre>public&nbsp;void&nbsp;close()
+           throws java.io.IOException</pre>
+<div class="block">Closes all component <code>VicarOutputFile</code>s.</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html#close()">close</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html" title="interface in jpl.mipl.io.vicar">VicarIOBase</a></code></dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd></dl>
+</li>
+</ul>
+<a name="getFile(int)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getFile</h4>
+<pre>public&nbsp;<a href="../../../../jpl/mipl/io/vicar/VicarOutputFile.html" title="class in jpl.mipl.io.vicar">VicarOutputFile</a>&nbsp;getFile(int&nbsp;index)</pre>
+<div class="block">Returns the actual file for a given file index (NOT a band number!).</div>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#getFileIndex(int)"><code>getFileIndex(int)</code></a></dd></dl>
+</li>
+</ul>
+<a name="getFileIndex(int)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getFileIndex</h4>
+<pre>public&nbsp;int&nbsp;getFileIndex(int&nbsp;band)</pre>
+<div class="block">Maps a virtual band number into a file index.  This index can then be
+ used with <code>getFile()</code>.</div>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#getFile(int)"><code>getFile(int)</code></a>, 
+<a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#getBand(int)"><code>getBand(int)</code></a></dd></dl>
+</li>
+</ul>
+<a name="getBand(int)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getBand</h4>
+<pre>public&nbsp;int&nbsp;getBand(int&nbsp;band)</pre>
+<div class="block">Maps a virtual band number into a band number within the actual file.
+ This should be used in conjunction with <code>getFileIndex()</code>.</div>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#getFileIndex(int)"><code>getFileIndex(int)</code></a></dd></dl>
+</li>
+</ul>
+<a name="setPrimaryInput(jpl.mipl.io.vicar.VicarInput)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setPrimaryInput</h4>
+<pre>public&nbsp;void&nbsp;setPrimaryInput(<a href="../../../../jpl/mipl/io/vicar/VicarInput.html" title="interface in jpl.mipl.io.vicar">VicarInput</a>&nbsp;inp)
+                     throws <a href="../../../../jpl/mipl/io/vicar/AlreadyOpenException.html" title="class in jpl.mipl.io.vicar">AlreadyOpenException</a></pre>
+<div class="block">Sets the "primary input" for this output image.  The initial system and
+ VICAR labels are obtained from the primary input.  If the PI is not
+ specified, the initial labels are default/empty.  Once the system or
+ VICAR labels have been set, or obtained once, the primary input is no
+ longer used.
+ <p>
+ This routine should obviously be called before getting the system or
+ VICAR labels if it is to have any effect.
+ <p>
+ The label is not obtained from the input until/unless it is actually needed
+ (deferred execution).
+ Calling this routine nulls any labels set via the other
+ <code>setPrimaryInput()</code> routine.
+ <p>
+ Passing in null will completely disable the primary input mecahnism.
+ <p></div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#setPrimaryInput(jpl.mipl.io.vicar.VicarInput)">setPrimaryInput</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></code></dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/AlreadyOpenException.html" title="class in jpl.mipl.io.vicar">AlreadyOpenException</a></code> - if the file has been opened already</dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#setPrimaryInput(jpl.mipl.io.vicar.SystemLabel,%20jpl.mipl.io.vicar.VicarLabel)"><code>setPrimaryInput(SystemLabel, VicarLabel)</code></a>, 
+<a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#setPrimaryInput(jpl.mipl.io.vicar.VicarInput)"><code>VicarOutput.setPrimaryInput(jpl.mipl.io.vicar.VicarInput)</code></a></dd></dl>
+</li>
+</ul>
+<a name="getPrimaryInput()">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getPrimaryInput</h4>
+<pre>public&nbsp;<a href="../../../../jpl/mipl/io/vicar/VicarInput.html" title="interface in jpl.mipl.io.vicar">VicarInput</a>&nbsp;getPrimaryInput()</pre>
+<div class="block">Gets the primary input, or null if none is available.  PI's set via
+ the second method (<code>setPrimaryInput(SystemLabel, VicarLabel)</code>)
+ are not returned by this method.</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#getPrimaryInput()">getPrimaryInput</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></code></dd>
+</dl>
+</li>
+</ul>
+<a name="setPrimaryInput(jpl.mipl.io.vicar.SystemLabel, jpl.mipl.io.vicar.VicarLabel)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setPrimaryInput</h4>
+<pre>public&nbsp;void&nbsp;setPrimaryInput(<a href="../../../../jpl/mipl/io/vicar/SystemLabel.html" title="class in jpl.mipl.io.vicar">SystemLabel</a>&nbsp;slbl,
+                   <a href="../../../../jpl/mipl/io/vicar/VicarLabel.html" title="class in jpl.mipl.io.vicar">VicarLabel</a>&nbsp;vlbl)
+                     throws <a href="../../../../jpl/mipl/io/vicar/AlreadyOpenException.html" title="class in jpl.mipl.io.vicar">AlreadyOpenException</a></pre>
+<div class="block">Sets the "primary input" labels directly, rather than via a
+ <code>VicarInput</code> object.  If <code>VicarLabel</code> is null,
+ a default (empty) label is used instead.  If <code>SystemLabel</code>
+ is null, the system label from the <code>VicarLabel</code> parameter
+ is used (which is otherwise ignored).
+ <p>
+ Calling this routine nulls out any primary input set via the other
+ <code>setPrimaryInput()</code> routine.
+ <p>
+ To completely disable the primary input, don't use this routine; pass in
+ null to the other.</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#setPrimaryInput(jpl.mipl.io.vicar.SystemLabel,%20jpl.mipl.io.vicar.VicarLabel)">setPrimaryInput</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></code></dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/AlreadyOpenException.html" title="class in jpl.mipl.io.vicar">AlreadyOpenException</a></code> - if the file has been opened already</dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#setPrimaryInput(jpl.mipl.io.vicar.VicarInput)"><code>setPrimaryInput(VicarInput)</code></a>, 
+<a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#setPrimaryInput(jpl.mipl.io.vicar.SystemLabel,%20jpl.mipl.io.vicar.VicarLabel)"><code>VicarOutput.setPrimaryInput(SystemLabel, VicarLabel)</code></a></dd></dl>
+</li>
+</ul>
+<a name="getPrimaryInputSystemLabel()">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getPrimaryInputSystemLabel</h4>
+<pre>public&nbsp;<a href="../../../../jpl/mipl/io/vicar/SystemLabel.html" title="class in jpl.mipl.io.vicar">SystemLabel</a>&nbsp;getPrimaryInputSystemLabel()
+                                       throws java.io.IOException</pre>
+<div class="block">Returns a deep clone of the primary input system label (set via either
+ method).  This should be used only in special cases; normally the main
+ <code>getSystemLabel()</code> should be used instead.  Returns null
+ if the PI or label doesn't exist; a default is not returned.</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#getPrimaryInputSystemLabel()">getPrimaryInputSystemLabel</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></code></dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#setPrimaryInput(jpl.mipl.io.vicar.VicarInput)"><code>setPrimaryInput(VicarInput)</code></a>, 
+<a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#setPrimaryInput(jpl.mipl.io.vicar.SystemLabel,%20jpl.mipl.io.vicar.VicarLabel)"><code>setPrimaryInput(SystemLabel, VicarLabel)</code></a>, 
+<a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#getSystemLabel()"><code>getSystemLabel()</code></a></dd></dl>
+</li>
+</ul>
+<a name="getPrimaryInputVicarLabel()">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getPrimaryInputVicarLabel</h4>
+<pre>public&nbsp;<a href="../../../../jpl/mipl/io/vicar/VicarLabel.html" title="class in jpl.mipl.io.vicar">VicarLabel</a>&nbsp;getPrimaryInputVicarLabel()
+                                     throws java.io.IOException</pre>
+<div class="block">Returns a deep clone of the primary input VICAR label (set via either
+ method).  This should be used only in special cases; normally the main
+ <code>getVicarLabel()</code> should be used instead.  Returns null
+ if the PI or label doesn't exist; a default is not returned.</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#getPrimaryInputVicarLabel()">getPrimaryInputVicarLabel</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></code></dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#setPrimaryInput(jpl.mipl.io.vicar.VicarInput)"><code>setPrimaryInput(VicarInput)</code></a>, 
+<a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#setPrimaryInput(jpl.mipl.io.vicar.SystemLabel,%20jpl.mipl.io.vicar.VicarLabel)"><code>setPrimaryInput(SystemLabel, VicarLabel)</code></a>, 
+<a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#getVicarLabel()"><code>getVicarLabel()</code></a></dd></dl>
+</li>
+</ul>
+<a name="getVicarLabel()">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getVicarLabel</h4>
+<pre>public&nbsp;<a href="../../../../jpl/mipl/io/vicar/VicarLabel.html" title="class in jpl.mipl.io.vicar">VicarLabel</a>&nbsp;getVicarLabel()
+                         throws java.io.IOException</pre>
+<div class="block">Returns a deep copy of the <code>VicarLabel</code> object for this file.
+ This routine should <em>not</em> be used to retrieve the system label
+ bean; use <code>getSystemLabel()</code> instead.
+ <p>
+ This routine returns the first item from the following that is set:
+ <ul>
+ <li>Label of first actual output file (if this image has been opened)
+ <li>Label set via <code>setVicarLabel</code>
+ <li>Primary input's label
+ <li>Empty (newly constructed) label
+ <p></div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html#getVicarLabel()">getVicarLabel</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html" title="interface in jpl.mipl.io.vicar">VicarIOBase</a></code></dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - if an EOL read is required, and fails.  Will not occur
+ for random-easy streams.</dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#getSystemLabel()"><code>getSystemLabel()</code></a></dd></dl>
+</li>
+</ul>
+<a name="isLabelComplete()">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>isLabelComplete</h4>
+<pre>public&nbsp;boolean&nbsp;isLabelComplete()</pre>
+<div class="block">Indicates whether or not the <code>VicarLabel</code> has been completely
+ read.  Always true for output files.</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html#isLabelComplete()">isLabelComplete</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html" title="interface in jpl.mipl.io.vicar">VicarIOBase</a></code></dd>
+<dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#getVicarLabel()"><code>getVicarLabel()</code></a></dd></dl>
+</li>
+</ul>
+<a name="setVicarLabel(jpl.mipl.io.vicar.VicarLabel)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setVicarLabel</h4>
+<pre>public&nbsp;void&nbsp;setVicarLabel(<a href="../../../../jpl/mipl/io/vicar/VicarLabel.html" title="class in jpl.mipl.io.vicar">VicarLabel</a>&nbsp;vl)
+                   throws java.io.IOException</pre>
+<div class="block">Sets the VICAR label for this image.  The provided <code>VicarLabel</code>
+ object contains the property and history labels that are to be written
+ to each component file.  Note that the system label portion of
+ <code>VicarLabel</code> is ignored; in fact, the system label portion
+ (only!) might be modified by this routine to reflect the current system
+ label (no guarantees one way or the other).
+ <p>
+ Unlike <code>setSystemLabel()</code>, this routine can be called at any
+ time after the system label is set, assuming the file is random-access.
+ You can call this routine multiple times in order to update the label, as
+ well.  For a sequential-only file, however, this routine must only be
+ called before the file is opened.
+ <p>
+ The labels of all physical output files are set by this routine.  In order
+ to set the label of only one file, it may be set directly via
+ <code>getFile()</code>.
+ <p>
+ The VICAR label is generally obtained first via a call to
+ <code>getVicarLabel</code> on this (or another) image.  It may then
+ be modified before submitting it back via this routine.
+ <p>
+ Before the label is set, a call to <code>getVicarLabel</code> will
+ return the existing label if the file already exists.  If not, the
+ primary input's label is returned.  If that hasn't been set, an empty
+ VICAR label is returned.  Once the label is set via this routine (or the
+ <code>open()</code> is called), future get calls will return the label
+ of the first physical output file.
+ <p>
+ It is up to the application to add a VICAR history task if desired.
+ Use <code>VicarLabel.createHistoryTask()</code>.
+ <p>
+ Note that if the VICAR label is set via this routine, the VICAR label is
+ written to all physical files, even ones that aren't open yet.  The
+ exception to this is any form of <code>open()</code> to which already-open
+ files are provided.  In this case only, existing labels are not modified.
+ However, if the labels are modified <em>after</em> the files are open
+ (via any means), the labels will be written to all physical files.</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#setVicarLabel(jpl.mipl.io.vicar.VicarLabel)">setVicarLabel</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></code></dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html#getVicarLabel()"><code>VicarIOBase.getVicarLabel()</code></a>, 
+<a href="../../../../jpl/mipl/io/vicar/VicarLabel.html#createHistoryTask(java.lang.String)"><code>VicarLabel.createHistoryTask(java.lang.String)</code></a></dd></dl>
+</li>
+</ul>
+<a name="getSystemLabel()">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSystemLabel</h4>
+<pre>public&nbsp;<a href="../../../../jpl/mipl/io/vicar/SystemLabel.html" title="class in jpl.mipl.io.vicar">SystemLabel</a>&nbsp;getSystemLabel()</pre>
+<div class="block">Retrieves a deep copy of the <code>SystemLabel</code> object associated
+ with this image.  This should not be confused with
+ <code>VicarLabel.getSystem()</code>, which returns a
+ <code>VicarLabelSet</code> rather than a <code>SystemLabel</code> object.
+ The <code>SystemLabel</code> object returned by this function will not
+ contain the same information as the System part of the
+ <code>VicarLabel</code> object; specifically, the System label applies to
+ this virtual image as a whole, not any of the component parts.
+ <p>
+ This routine returns the first item from the following that is set:
+ <ul>
+ <li>Label set via <code>setSystemLabel</code>
+ <li>Primary input's label
+ <li>Default (newly constructed) label
+ </ul></div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html#getSystemLabel()">getSystemLabel</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html" title="interface in jpl.mipl.io.vicar">VicarIOBase</a></code></dd>
+</dl>
+</li>
+</ul>
+<a name="setSystemLabel(jpl.mipl.io.vicar.SystemLabel)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setSystemLabel</h4>
+<pre>public&nbsp;void&nbsp;setSystemLabel(<a href="../../../../jpl/mipl/io/vicar/SystemLabel.html" title="class in jpl.mipl.io.vicar">SystemLabel</a>&nbsp;sl)
+                    throws <a href="../../../../jpl/mipl/io/vicar/AlreadyOpenException.html" title="class in jpl.mipl.io.vicar">AlreadyOpenException</a></pre>
+<div class="block">Sets the system label of this image.  The system label determines
+ image size, data type, pixel format, etc.
+ <p>
+ <em>This routine must be called before <code>open()</code>.</em>
+ Once the file has been opened, the system label cannot be modified, with
+ one exception:  The n3 dimension (or n2 iff n3==1) can be set to 0, meaning
+ that it is unknown at open time.  The file can thus expand as lines are
+ written to whatever size is desired.  When the file is closed, the size
+ will be set to the maximum record written.  This is only possible with
+ random-access output streams, and is generally discouraged in any case.
+ Note that files expandable in the Band dimension cannot be used with
+ <code>createSampleModel</code> since the # of bands must be known in
+ order to create a sample model.  Management of the expandable files is
+ done by the physical files themselves.  So if an unequal amount is written
+ to each band, the output files might not be the same size.
+ <p>
+ The system label is generally obtained first via a call to
+ <code>getSystemLabel</code> on this (or another) image.  It may then
+ be modified before submitting it back via this routine.
+ <p>
+ Before the label is set, a call to <code>getSystemLabel</code> will
+ return the existing label if the file already exists.  If not, the
+ primary input's label is returned.  If that hasn't been set, a default
+ system label is returned (which is not very useful; the size at least
+ should be set).  Once the label is set via this routine, that's what will
+ be returned by all further calls to the get routine.
+ <p>
+ Attempts to set the label on an already-open file will throw an exception.
+ <p></div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#setSystemLabel(jpl.mipl.io.vicar.SystemLabel)">setSystemLabel</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></code></dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/AlreadyOpenException.html" title="class in jpl.mipl.io.vicar">AlreadyOpenException</a></code> - if the label has already been set</dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html#getSystemLabel()"><code>VicarIOBase.getSystemLabel()</code></a></dd></dl>
+</li>
+</ul>
+<a name="isRandomAccessAllowed()">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>isRandomAccessAllowed</h4>
+<pre>public&nbsp;boolean&nbsp;isRandomAccessAllowed()</pre>
+<div class="block">Return true if random access to this file is <em>possible</em>.  It
+ might be expensive, however.</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html#isRandomAccessAllowed()">isRandomAccessAllowed</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html" title="interface in jpl.mipl.io.vicar">VicarIOBase</a></code></dd>
+<dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#isRandomAccessEasy()"><code>isRandomAccessEasy()</code></a></dd></dl>
+</li>
+</ul>
+<a name="isRandomAccessEasy()">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>isRandomAccessEasy</h4>
+<pre>public&nbsp;boolean&nbsp;isRandomAccessEasy()</pre>
+<div class="block">Return true if random access to this file is <em>easy</em>, meaning
+ that the underlying stream/file supports seekable random access, as
+ opposed to drastic means like mark/reset, contents caching, or re-opening.</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html#isRandomAccessEasy()">isRandomAccessEasy</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html" title="interface in jpl.mipl.io.vicar">VicarIOBase</a></code></dd>
+</dl>
+</li>
+</ul>
+<a name="writeRecord(byte[], int, int, int, int, int, int)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeRecord</h4>
+<pre>public&nbsp;void&nbsp;writeRecord(byte[]&nbsp;data,
+               int&nbsp;start,
+               int&nbsp;length,
+               int&nbsp;offset,
+               int&nbsp;pixelStride,
+               int&nbsp;n2,
+               int&nbsp;n3)
+                 throws java.io.IOException</pre>
+<div class="block">Low-level write function, writes a byte array to the given record.
+ Since the virtual file is always BSQ, n2==line and n3==band.
+ The most normal call, to write an entire record, would be
+ <code>x.writeRecord(data, 0, 0, 0, 1, line, band);</code></div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#writeRecord(byte[],%20int,%20int,%20int,%20int,%20int,%20int)">writeRecord</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></code></dd>
+<dt><span class="strong">Parameters:</span></dt><dd><code>data</code> - The array to write from</dd><dd><code>start</code> - Starting position in the record.  Normally 0 to write the whole
+  record.</dd><dd><code>length</code> - Number of pixels to write.  If 0, the rest of the record is
+  written.</dd><dd><code>offset</code> - Offset into the data array at which to get the data.</dd><dd><code>pixelStride</code> - Offset from one pixel to the next in the array.  For
+  example, a stride of 1 has all pixels contiguous while a stride of 3
+  allows band interleaved pixels in the array (pixels written to the file
+  will be 3 elements apart in the array).  This has nothing to do with
+  what is written to the file - only where the data comes from in the array.
+  Note that this value is measured in pixels or array elements - not bytes.</dd><dd><code>n2</code> - Line number to write (the virtual file is always BSQ).</dd><dd><code>n3</code> - Band number to write (the virtual file is always BSQ).</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/NonSequentialAccessException.html" title="class in jpl.mipl.io.vicar">NonSequentialAccessException</a></code> - (subclass of IOException)</dd>
+<dd><code>java.io.IOException</code></dd></dl>
+</li>
+</ul>
+<a name="writeRecord(short[], int, int, int, int, int, int)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeRecord</h4>
+<pre>public&nbsp;void&nbsp;writeRecord(short[]&nbsp;data,
+               int&nbsp;start,
+               int&nbsp;length,
+               int&nbsp;offset,
+               int&nbsp;pixelStride,
+               int&nbsp;n2,
+               int&nbsp;n3)
+                 throws java.io.IOException</pre>
+<div class="block">Low-level write function, writes a short array to the given record.
+ Since the virtual file is always BSQ, n2==line and n3==band.
+ Follow the See Also link for parameters</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#writeRecord(short[],%20int,%20int,%20int,%20int,%20int,%20int)">writeRecord</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></code></dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#writeRecord(byte[],%20int,%20int,%20int,%20int,%20int,%20int)"><code>writeRecord(byte[], int, int, int, int, int, int)</code></a></dd></dl>
+</li>
+</ul>
+<a name="writeRecordUshort(short[], int, int, int, int, int, int)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeRecordUshort</h4>
+<pre>public&nbsp;void&nbsp;writeRecordUshort(short[]&nbsp;data,
+                     int&nbsp;start,
+                     int&nbsp;length,
+                     int&nbsp;offset,
+                     int&nbsp;pixelStride,
+                     int&nbsp;n2,
+                     int&nbsp;n3)
+                       throws java.io.IOException</pre>
+<div class="block">Low-level write function, writes an unsigned short array to the given
+ record.  Although unsigned short is not a VICAR data type, it is useful
+ for some other formats which use this library.  Note that a short array
+ must be used, although the data should be interpreted as unsigned.
+ For this reason, a different method name is needed.
+ <p>
+ Since the virtual file is always BSQ, n2==line and n3==band.
+ Follow the See Also link for parameters</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#writeRecordUshort(short[],%20int,%20int,%20int,%20int,%20int,%20int)">writeRecordUshort</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></code></dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#writeRecord(byte[],%20int,%20int,%20int,%20int,%20int,%20int)"><code>writeRecord(byte[], int, int, int, int, int, int)</code></a></dd></dl>
+</li>
+</ul>
+<a name="writeRecord(int[], int, int, int, int, int, int)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeRecord</h4>
+<pre>public&nbsp;void&nbsp;writeRecord(int[]&nbsp;data,
+               int&nbsp;start,
+               int&nbsp;length,
+               int&nbsp;offset,
+               int&nbsp;pixelStride,
+               int&nbsp;n2,
+               int&nbsp;n3)
+                 throws java.io.IOException</pre>
+<div class="block">Low-level write function, writes an int array to the given record.
+ Follow the See Also link for parameters</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#writeRecord(int[],%20int,%20int,%20int,%20int,%20int,%20int)">writeRecord</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></code></dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#writeRecord(byte[],%20int,%20int,%20int,%20int,%20int,%20int)"><code>writeRecord(byte[], int, int, int, int, int, int)</code></a></dd></dl>
+</li>
+</ul>
+<a name="writeRecord(float[], int, int, int, int, int, int)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeRecord</h4>
+<pre>public&nbsp;void&nbsp;writeRecord(float[]&nbsp;data,
+               int&nbsp;start,
+               int&nbsp;length,
+               int&nbsp;offset,
+               int&nbsp;pixelStride,
+               int&nbsp;n2,
+               int&nbsp;n3)
+                 throws java.io.IOException</pre>
+<div class="block">Low-level write function, writes a float array to the given record.
+ Follow the See Also link for parameters</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#writeRecord(float[],%20int,%20int,%20int,%20int,%20int,%20int)">writeRecord</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></code></dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#writeRecord(byte[],%20int,%20int,%20int,%20int,%20int,%20int)"><code>writeRecord(byte[], int, int, int, int, int, int)</code></a></dd></dl>
+</li>
+</ul>
+<a name="writeRecord(double[], int, int, int, int, int, int)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeRecord</h4>
+<pre>public&nbsp;void&nbsp;writeRecord(double[]&nbsp;data,
+               int&nbsp;start,
+               int&nbsp;length,
+               int&nbsp;offset,
+               int&nbsp;pixelStride,
+               int&nbsp;n2,
+               int&nbsp;n3)
+                 throws java.io.IOException</pre>
+<div class="block">Low-level write function, writes a double array to the given record.
+ Follow the See Also link for parameters</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#writeRecord(double[],%20int,%20int,%20int,%20int,%20int,%20int)">writeRecord</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></code></dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#writeRecord(byte[],%20int,%20int,%20int,%20int,%20int,%20int)"><code>writeRecord(byte[], int, int, int, int, int, int)</code></a></dd></dl>
+</li>
+</ul>
+<a name="writeRecordComp(float[], int, int, int, int, int, int)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeRecordComp</h4>
+<pre>public&nbsp;void&nbsp;writeRecordComp(float[]&nbsp;data,
+                   int&nbsp;start,
+                   int&nbsp;length,
+                   int&nbsp;offset,
+                   int&nbsp;pixelStride,
+                   int&nbsp;n2,
+                   int&nbsp;n3)
+                     throws java.io.IOException</pre>
+<div class="block">Low-level write function, writes complex data in a float array to the
+ given record.  Each complex value is stored in two consecutive float
+ elements in the array, so it must be twice as long as you would normally
+ expect, and <code>offset</code> must be multiplied by 2.  <code>length</code>
+ is still measured in <em>pixels</em>, so there are 2*<code>length</code>
+ values filled in the array.
+ <p>
+ Follow the See Also link for parameters</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#writeRecordComp(float[],%20int,%20int,%20int,%20int,%20int,%20int)">writeRecordComp</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></code></dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#writeRecord(byte[],%20int,%20int,%20int,%20int,%20int,%20int)"><code>writeRecord(byte[], int, int, int, int, int, int)</code></a></dd></dl>
+</li>
+</ul>
+<a name="createBinaryHeader()">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>createBinaryHeader</h4>
+<pre>public&nbsp;<a href="../../../../jpl/mipl/io/vicar/VicarBinaryLabel.html" title="class in jpl.mipl.io.vicar">VicarBinaryLabel</a>&nbsp;createBinaryHeader()</pre>
+<div class="block">Creates an empty binary header object for this image.  The application
+ is responsible for filling up the object, and for writing it out via
+ <code>setBinaryHeader()</code>.  The returned <code>VicarBinaryLabel</code>
+ will be of the proper size, with the data format set to the BINTFMT and
+ BREALFMT of this image.  The object should be filled with the stream
+ returned by <code>VicarBinaryLabel.getDataOutput()</code> (although
+ direct access to the buffer is possible, it is not recommended).  Note
+ that this routine is just a factory; nothing is written to the image.</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#createBinaryHeader()">createBinaryHeader</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></code></dd>
+<dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarBinaryLabel.html" title="class in jpl.mipl.io.vicar"><code>VicarBinaryLabel</code></a></dd></dl>
+</li>
+</ul>
+<a name="createBinaryPrefix()">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>createBinaryPrefix</h4>
+<pre>public&nbsp;<a href="../../../../jpl/mipl/io/vicar/VicarBinaryLabel.html" title="class in jpl.mipl.io.vicar">VicarBinaryLabel</a>&nbsp;createBinaryPrefix()</pre>
+<div class="block">Creates an empty binary prefix object for this image.  The application
+ is responsible for filling up the object, and for writing it out via
+ <code>setBinaryPrefix()</code>.  The returned <code>VicarBinaryLabel</code>
+ will be of the proper size, with the data format set to the BINTFMT and
+ BREALFMT of this image.  Note that the line number is not required because
+ all prefixes are the same size for a given file; you provide the line
+ number when writing.  The object should be filled with the stream
+ returned by <code>VicarBinaryLabel.getDataOutput()</code> (although
+ direct access to the buffer is possible, it is not recommended).  Note
+ that this routine is just a factory; nothing is written to the image.</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#createBinaryPrefix()">createBinaryPrefix</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></code></dd>
+<dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarBinaryLabel.html" title="class in jpl.mipl.io.vicar"><code>VicarBinaryLabel</code></a></dd></dl>
+</li>
+</ul>
+<a name="setBinaryHeader(jpl.mipl.io.vicar.VicarBinaryLabel)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setBinaryHeader</h4>
+<pre>public&nbsp;void&nbsp;setBinaryHeader(<a href="../../../../jpl/mipl/io/vicar/VicarBinaryLabel.html" title="class in jpl.mipl.io.vicar">VicarBinaryLabel</a>&nbsp;vbl)
+                     throws java.io.IOException,
+                            <a href="../../../../jpl/mipl/io/vicar/NonSequentialAccessException.html" title="class in jpl.mipl.io.vicar">NonSequentialAccessException</a>,
+                            <a href="../../../../jpl/mipl/io/vicar/BinaryFormatMismatchException.html" title="class in jpl.mipl.io.vicar">BinaryFormatMismatchException</a>,
+                            <a href="../../../../jpl/mipl/io/vicar/BinarySizeMismatchException.html" title="class in jpl.mipl.io.vicar">BinarySizeMismatchException</a></pre>
+<div class="block">Writes the binary header to each output file, which is NLB records at the
+ beginning of the file.  See <code>VicarOutputFile.setBinaryHeader()</code>
+ for more details.
+ <p>
+ The same header is written to each physical output file.  Individual headers
+ can be written directly to the outputs using <code>getFile()</code>.
+ to transfer them?</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#setBinaryHeader(jpl.mipl.io.vicar.VicarBinaryLabel)">setBinaryHeader</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></code></dd>
+<dt><span class="strong">Parameters:</span></dt><dd><code>vbl</code> - <code>VicarBinaryLabel</code> containing the data to write.</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/BinaryFormatMismatchException.html" title="class in jpl.mipl.io.vicar">BinaryFormatMismatchException</a></code> - if format doesn't match
+  BINTFMT/BREALFMT of the image (subclass of IOException)</dd>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/BinarySizeMismatchException.html" title="class in jpl.mipl.io.vicar">BinarySizeMismatchException</a></code> - if size doesn't match NLB*recsize of
+  image (subclass of IOException)</dd>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/NonSequentialAccessException.html" title="class in jpl.mipl.io.vicar">NonSequentialAccessException</a></code> - (subclass of IOException)</dd>
+<dd><code>java.io.IOException</code> - if the file is not open, or other error occurs</dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutputFile.html#setBinaryHeader(jpl.mipl.io.vicar.VicarBinaryLabel)"><code>VicarOutputFile.setBinaryHeader(jpl.mipl.io.vicar.VicarBinaryLabel)</code></a>, 
+<a href="../../../../jpl/mipl/io/vicar/VicarBinaryLabel.html" title="class in jpl.mipl.io.vicar"><code>VicarBinaryLabel</code></a>, 
+<a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#createBinaryHeader()"><code>createBinaryHeader()</code></a>, 
+<a href="../../../../jpl/mipl/io/vicar/VicarInput.html#getBinaryHeader()"><code>VicarInput.getBinaryHeader()</code></a></dd></dl>
+</li>
+</ul>
+<a name="setBinaryPrefix(jpl.mipl.io.vicar.VicarBinaryLabel, int, int)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setBinaryPrefix</h4>
+<pre>public&nbsp;void&nbsp;setBinaryPrefix(<a href="../../../../jpl/mipl/io/vicar/VicarBinaryLabel.html" title="class in jpl.mipl.io.vicar">VicarBinaryLabel</a>&nbsp;vbl,
+                   int&nbsp;n2,
+                   int&nbsp;n3)
+                     throws java.io.IOException,
+                            <a href="../../../../jpl/mipl/io/vicar/NonSequentialAccessException.html" title="class in jpl.mipl.io.vicar">NonSequentialAccessException</a>,
+                            <a href="../../../../jpl/mipl/io/vicar/BinaryFormatMismatchException.html" title="class in jpl.mipl.io.vicar">BinaryFormatMismatchException</a>,
+                            <a href="../../../../jpl/mipl/io/vicar/BinarySizeMismatchException.html" title="class in jpl.mipl.io.vicar">BinarySizeMismatchException</a></pre>
+<div class="block">Writes the binary prefix to one output file, which is NBB <em>bytes</em>
+ at the beginning of the file.  See
+ <code>VicarOutputFile.setBinaryPrefix()</code> for more details.
+ <p>
+ The prefix is written to only one file, as determined by the band number.</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#setBinaryPrefix(jpl.mipl.io.vicar.VicarBinaryLabel,%20int,%20int)">setBinaryPrefix</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></code></dd>
+<dt><span class="strong">Parameters:</span></dt><dd><code>vbl</code> - <code>VicarBinaryLabel</code> containing the data to write.</dd><dd><code>n2</code> - Line number to write (the virtual file is always BSQ)</dd><dd><code>n3</code> - Band number to write (the virtual file is always BSQ)</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/BinaryFormatMismatchException.html" title="class in jpl.mipl.io.vicar">BinaryFormatMismatchException</a></code> - if format doesn't match
+  BINTFMT/BREALFMT of the image (subclass of IOException)</dd>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/BinarySizeMismatchException.html" title="class in jpl.mipl.io.vicar">BinarySizeMismatchException</a></code> - if size doesn't match NBB of the
+  image (subclass of IOException)</dd>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/NonSequentialAccessException.html" title="class in jpl.mipl.io.vicar">NonSequentialAccessException</a></code> - (subclass of IOException)</dd>
+<dd><code>java.io.IOException</code> - if the file is not open, or other error occurs</dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutputFile.html#setBinaryPrefix(jpl.mipl.io.vicar.VicarBinaryLabel,%20int,%20int)"><code>VicarOutputFile.setBinaryPrefix(jpl.mipl.io.vicar.VicarBinaryLabel, int, int)</code></a>, 
+<a href="../../../../jpl/mipl/io/vicar/VicarBinaryLabel.html" title="class in jpl.mipl.io.vicar"><code>VicarBinaryLabel</code></a>, 
+<a href="../../../../jpl/mipl/io/vicar/VicarOutputImage.html#createBinaryPrefix()"><code>createBinaryPrefix()</code></a>, 
+<a href="../../../../jpl/mipl/io/vicar/VicarInput.html#getBinaryPrefix(int,%20int)"><code>VicarInput.getBinaryPrefix(int, int)</code></a></dd></dl>
+</li>
+</ul>
+<a name="createSampleModel()">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>createSampleModel</h4>
+<pre>public&nbsp;java.awt.image.SampleModel&nbsp;createSampleModel()</pre>
+<div class="block">Creates a SampleModel that is most compatible with the input image.
+ Follow the See Also link for complete description</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html#createSampleModel()">createSampleModel</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html" title="interface in jpl.mipl.io.vicar">VicarIOBase</a></code></dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code>java.lang.IllegalArgumentException</code> - if the number of bands is left
+ expandable (i.e. 0).</dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html#createSampleModel(int,%20int)"><code>VicarIOBase.createSampleModel(int,int)</code></a></dd></dl>
+</li>
+</ul>
+<a name="createSampleModel(int, int)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>createSampleModel</h4>
+<pre>public&nbsp;java.awt.image.SampleModel&nbsp;createSampleModel(int&nbsp;tileWidth,
+                                           int&nbsp;tileHeight)</pre>
+<div class="block">Creates a SampleModel that is most compatible with the input image.
+ Follow the See Also link for complete description</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html#createSampleModel(int,%20int)">createSampleModel</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html" title="interface in jpl.mipl.io.vicar">VicarIOBase</a></code></dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code>java.lang.IllegalArgumentException</code> - if the number of bands is left
+ expandable (i.e. 0).</dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarIOBase.html#createSampleModel(int,%20int)"><code>VicarIOBase.createSampleModel(int,int)</code></a></dd></dl>
+</li>
+</ul>
+<a name="writeTile(int, int, java.awt.image.SampleModel, java.awt.image.DataBuffer)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeTile</h4>
+<pre>public&nbsp;void&nbsp;writeTile(int&nbsp;x,
+             int&nbsp;y,
+             java.awt.image.SampleModel&nbsp;m,
+             java.awt.image.DataBuffer&nbsp;b)
+               throws java.io.IOException</pre>
+<div class="block">High-level write function.
+ Follow the See Also link for complete description</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#writeTile(int,%20int,%20java.awt.image.SampleModel,%20java.awt.image.DataBuffer)">writeTile</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></code></dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - if there are problems writing the file</dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#writeTile(int,%20int,%20java.awt.image.SampleModel,%20java.awt.image.DataBuffer)"><code>VicarOutput.writeTile(int,int,SampleModel,DataBuffer)</code></a></dd></dl>
+</li>
+</ul>
+<a name="writeTile(int, int, int, int, int, int, java.awt.image.SampleModel, java.awt.image.DataBuffer)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeTile</h4>
+<pre>public&nbsp;void&nbsp;writeTile(int&nbsp;x,
+             int&nbsp;y,
+             int&nbsp;w,
+             int&nbsp;h,
+             int&nbsp;x_off,
+             int&nbsp;y_off,
+             java.awt.image.SampleModel&nbsp;m,
+             java.awt.image.DataBuffer&nbsp;b)
+               throws java.io.IOException</pre>
+<div class="block">High-level write function.
+ Follow the See Also link for complete description</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#writeTile(int,%20int,%20int,%20int,%20int,%20int,%20java.awt.image.SampleModel,%20java.awt.image.DataBuffer)">writeTile</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></code></dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - if there are problems writing the file</dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#writeTile(int,%20int,%20int,%20int,%20int,%20int,%20java.awt.image.SampleModel,%20java.awt.image.DataBuffer)"><code>VicarOutput.writeTile(int,int,int,int,int,int,SampleModel,DataBuffer)</code></a></dd></dl>
+</li>
+</ul>
+<a name="writeTile(int, int, int, int, int, int, int[], java.awt.image.SampleModel, java.awt.image.DataBuffer)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeTile</h4>
+<pre>public&nbsp;void&nbsp;writeTile(int&nbsp;x,
+             int&nbsp;y,
+             int&nbsp;w,
+             int&nbsp;h,
+             int&nbsp;x_off,
+             int&nbsp;y_off,
+             int[]&nbsp;bandList,
+             java.awt.image.SampleModel&nbsp;sm,
+             java.awt.image.DataBuffer&nbsp;db)
+               throws java.io.IOException</pre>
+<div class="block">High-level write function.
+ Follow the See Also link for complete description</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#writeTile(int,%20int,%20int,%20int,%20int,%20int,%20int[],%20java.awt.image.SampleModel,%20java.awt.image.DataBuffer)">writeTile</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html" title="interface in jpl.mipl.io.vicar">VicarOutput</a></code></dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - if there are problems writing the file</dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarOutput.html#writeTile(int,%20int,%20int,%20int,%20int,%20int,%20int[],%20java.awt.image.SampleModel,%20java.awt.image.DataBuffer)"><code>VicarOutput.writeTile(int,int,int,int,int,int,int[],SampleModel,DataBuffer)</code></a></dd></dl>
+</li>
+</ul>
+<a name="createSubsetSampleModel(java.awt.image.SampleModel, int[])">
+
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>createSubsetSampleModel</h4>
+<pre>protected&nbsp;java.awt.image.SampleModel&nbsp;createSubsetSampleModel(java.awt.image.SampleModel&nbsp;sm_in,
+                                                 int[]&nbsp;bands)</pre>
+<div class="block">Work around a bug in ComponentSampleModel{JAI}.createSubsetSampleModel().
+ The <em>only</em> reason this routine exists is because ComponentSampleModel
+ and ComponentSampleModelJAI have a bug in createSubsetSampleModel() such
+ that the band indices are ignored.  This routine works around this bug in
+ the case of ComponentSampleModel and ComponentSampleModelJAI <em>ONLY</em>.
+ Turns out that BandedSampleModel works, and that the bug doesn't matter for
+ PixelInterleavedSampleModel because the indices are 0.
+ <p>
+ <em>NOTE:</em>  This function knows only about the standard subclasses of
+ ComponentSampleModel.  If you create your own subclass, it will not be
+ returned by this function; an instance of ComponentSampleModel will instead
+ (or ComponentSampleModelJAI if you derive from it).
+ <p>
+ !!!! REMOVE THIS FUNCTION WHEN THE CSM/JAI BUGS ARE FIXED!!!!</div>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+<div class="bottomNav"><a name="navbar_bottom">
+
+</a><a href="/VICAR-DOCS/vicar/core460/html/javadoc/./././././././././././././././jpl/mipl/io/vicar/#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow">
+
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../../overview-summary.html">Overview</a></li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/./././././././././././././././jpl/mipl/io/vicar/package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/./././././././././././././././jpl/mipl/io/vicar/package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+<li><a href="../../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../../../jpl/mipl/io/vicar/VicarOutputFile.html" title="class in jpl.mipl.io.vicar"><span class="strong">Prev Class</span></a></li>
+<li><a href="../../../../jpl/mipl/io/vicar/VicarSwapDataInputDIWrapper.html" title="class in jpl.mipl.io.vicar"><span class="strong">Next Class</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../../../index.html?jpl/mipl/io/vicar/VicarOutputImage.html" target="_top">Frames</a></li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/./././././././././././././././jpl/mipl/io/vicar/VicarOutputImage.html" target="_top">No Frames</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_bottom">
+<li><a href="../../../../allclasses-noframe.html">All Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript">
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>Summary:&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/./././././././././././././././jpl/mipl/io/vicar/#field_summary">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/./././././././././././././././jpl/mipl/io/vicar/#constructor_summary">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/./././././././././././././././jpl/mipl/io/vicar/#method_summary">Method</a></li>
+</ul>
+<ul class="subNavList">
+<li>Detail:&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/./././././././././././././././jpl/mipl/io/vicar/#field_detail">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/./././././././././././././././jpl/mipl/io/vicar/#constructor_detail">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/./././././././././././././././jpl/mipl/io/vicar/#method_detail">Method</a></li>
+</ul>
+</div>
+<a name="skip-navbar_bottom">
+
+</a></div>
+
+</body>
+</html>

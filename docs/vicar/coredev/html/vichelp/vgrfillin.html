@@ -1,0 +1,66 @@
+<HTML>
+<HEAD><title>HTML Help for VGRFILLIN</title></HEAD>
+<BODY>
+<H1>Help for VGRFILLIN</H1>
+<pre>
+PURPOSE:
+
+VGRFILLIN will fill in all missing lines, partial lines, or truncated
+lines for Voyager images stored as disk EDRs.  Disk EDRs are created by
+the Voyager Real-Time Subsystem or via program VEDR.
+
+EXECUTION:
+
+	vgrfillin  IN  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/vgrfillin_level2.html#out">OUT</A>
+where
+  IN is the input Voyager disk EDR.
+  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/vgrfillin_level2.html#out">OUT</A> is the output image.
+
+The output image will be in standard VICAR format (with all binary header
+information discarded).
+
+OPERATION:
+
+  Data gaps are detected by examining data presence indicators in each
+line header of the disk EDR.  The fill performed is an interpolation between
+good lines.  If the gap is larger than 20 lines wide, or if it occurs at the
+beginning or the end of the frame, it will not be filled.
+
+In addition, VGRFILLIN will fill in lines truncated prior to transmission by
+the data compressor on-board the spacecraft.  The compressor truncates pixels
+on the right side of odd-numbered lines and on the left side of even-numbered
+lines.  Truncated pixels are filled via interpolation using the nearest
+available data above and below the line.  Sometimes the line truncation is
+so severe as to leave a vertical gap down the middle of the image (called a
+"gore"), where no data is available in either odd or even lines.  These
+gores are filled via interpolation using the nearest available pixels to
+the left and right of the gore.
+
+Timing for VAX 780:
+	4.7 cpu sec  filling 9 lines
+	5.1          filling 40 lines
+	5.8          filling 60 lines
+	10           filling 800 lines truncated by about 200 samples
+PROGRAM HISTORY:
+
+Written by: Gary Yagi     12/1/84
+<A NAME="CogProg">Current cognizant programmer: Gary Yagi</A>
+Revisions:
+   1 MAR 85  L. Kamp   ...write line fill count to label
+                       ...fill in truncated lines for data compression modes
+   1 FEB 86  L. Kamp   ...Skip processing after line 480 for IMQ
+  22 JAN 89  G. Yagi   ...Implement formats for Neptune encounter
+  15 Feb 89  G. Yagi   ...Documented 20-line gap limitation i help file.
+   2 Jun 89  G. Yagi   ...Check for valid input DEDR
+   6 Mar 95  R. Schenk (CRI) ...Ported for use on UNIX
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/vgrfillin_level2.html#inp"><H3>INP</H3></A>
+STRING - input VGR disk EDR
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/vgrfillin_level2.html#out"><H3>OUT</H3></A>
+STRING - output image 
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/vgrfillin.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/vgrfillin.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

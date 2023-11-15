@@ -1,0 +1,138 @@
+<HTML>
+<HEAD><title>HTML Help for PIXSTAT</title></HEAD>
+<BODY>
+<H1>Help for PIXSTAT</H1>
+<pre>
+
+PURPOSE
+
+	PIXSTAT is a VICAR applications program for calculating statistical
+	quantities in local areas surrounding each pixel in an input image.
+	The local mean, second moment, variance and standard deviation are
+	quantities that may be obtained.
+
+EXECUTION FORMAT
+
+	PIXSTAT IN <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#out">OUT</A> [<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#nlw">NLW</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#nsw">NSW</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#scale">SCALE</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#offset">OFFSET</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#calc">CALC</A>]
+
+	where
+
+	IN	is the input data set (VICAR labeled image).
+
+	<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#out">OUT</A>	is the output image of the selected statistic.
+
+	<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#nlw">NLW</A>	is the number of lines in the local area window.
+		This number must be odd to insure a center line.
+		The default value is 11. The maximum value is 129
+
+	<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#nsw">NSW</A>	is the number of samples in the local area window.
+		This number must be odd to insure a center sample.
+		The default value is 11. The maximum value is 129
+
+	<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#scale">SCALE</A>	is the scaling factor that each output pixel will be
+		multiplied by. The default value is 1
+
+	<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#offset">OFFSET</A>	is the constant which is added to each scaled pixel
+		befor it is output. The default value is 0
+
+	<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#calc">CALC</A>    is a keyword selecting the statistic to be calculated.
+		'MEAN, 'MOMENT, 'VARIANCE and 'SDEV (standard deviation)
+		are the valid selections. 'SDEV is the default selection.
+
+		All numerical parameters are integers.
+OPERATION
+
+	PIXSTAT performs a sliding window statistical analysis on an input
+	image. An output pixel's position represents the center position of
+	the window for the input image and its value represents statistics
+	based on data within the window only. The window moves along one sample
+	at a time and one line at a time until each pixel in the input has
+	been at the center of the window. In other words statistics are 
+	compiled for the local area around each and every pixel in the input
+	image.
+
+	The edge conditions are handled as follows. Any window positions that
+	extend beyond the edge of the image are handled by using data from the
+	nearest pixel on the image. This is not a reflection scheme like some
+	sliding window algorithms have.
+
+	Half word input results in half word output. Byte input results in
+	byte output. This is automatic and requires no specification by the 
+	user. Half word values that exceed the half word maximum integer value
+	(32767) are set to 32767. Similarly byte values that exceed 255 are
+	set to 255. Input images must have less than 4001 samples. There is
+	no limit to the number of lines in the input.
+EQUATIONS
+
+	MEAN
+		The mean is a result of the sum of all DN values in the 
+		window divided by the number of pixels in the window.
+		(the average of the DNs)
+			WINDOWSUM / NPIXWNDO
+
+
+
+
+	SECOND MOMENT
+		The second moment is a result of the sum of the squares 
+		of all DN values in the window divided by the number of
+		pixels in the window. (the average of the squares of the DNs)
+
+			DNSQRSUM / NPIXWNDO
+
+	VARIANCE
+		The variance is the difference between the second moment
+		and the square of the mean.(average square - average squared)
+
+			SECOND MOMENT - MEAN ** 2
+
+	STANDARD DEVIATION
+		The standard deviation is the square root of the variance.
+
+			VARIANCE ** 0.5
+
+
+Original Programmer:	Leo Bynum    March 1985
+<A NAME="CogProg">Cognizant Programmer:	Leo Bynum </A>
+Revision		3	     May 1988
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#inp"><H3>INP</H3></A>
+INPUT IMAGE FILE
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#out"><H3>OUT</H3></A>
+OUTPUT IMAGE FILE
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#nlw"><H3>NLW</H3></A>
+NUMBER OF LINES IN THE WINDOW
+OVER WHICH THE CALCULATION
+WILL BE PREFORMED (ODD)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#nsw"><H3>NSW</H3></A>
+NUMBER OF SAMPLES IN THE WINDOW
+OVER WHICH THE CALCULATION
+WILL BE PREFORMED (ODD)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#scale"><H3>SCALE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#scale">SCALE</A> FACTOR BY WHICH EACH PIXEL
+WILL BE MULTIPLIED
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#offset"><H3>OFFSET</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#offset">OFFSET</A> ADDED TO EACH PIXEL
+TO BE OUTPUT
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#calc"><H3>CALC</H3></A>
+OUTPUT VALUES WILL REPRESENT
+ONE OF THE FOLLOWING:
+MEAN, SDEV, MOMENT, VARIANCE
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#nl"><H3>NL</H3></A>
+Number of input lines
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#ns"><H3>NS</H3></A>
+Number of input samples 
+(Maximum 4000)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#sl"><H3>SL</H3></A>
+Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#ss"><H3>SS</H3></A>
+Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#size"><H3>SIZE</H3></A>
+Standard VICAR <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/pixstat.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

@@ -1,0 +1,1448 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for PHOTFIT2M</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m.html">PHOTFIT2M</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+File names of the input input IBIS photometric catalog files.
+PHOTFIT2 accepts two types of files - the old IBIS1 file and a IBIS2 file of 
+the type=phocat.
+
+IBIS1 FILE FORMAT:
+
+There are 18 columns in this file. 
+All are not used exept for columns # 11, 12, 13, and 16. 
+These columns contain :
+	column # 11 = incidence angle (degrees),
+	column # 12 = emission angle (degrees),
+	column # 13 = phase angle (degrees)
+	column # 16 = I/F reflectance values.
+
+
+PHOCAT FILE:
+
+The structure of the IBIS2 file of type phocat is desined in such a way that 
+tiepoint files can be extended and containing all collumns of the old IBIS1 
+photometric catalog files. The program PHOTFIT2 used only one IMAGE_* group at 
+time. but tiepoint files using some IMAGE_* groups containing informations 
+relates to the image.
+GENERAL_QLF containes informations relates to the object point (e.g. 
+CLASS_IDentifier). OBJECT_COORDINATES containes only coordinates of the object 
+point (e.g. LATitude, LONGitude or the X,Y,Z-coordinates in planetocentric 
+coordinate system).
+
+The structure of the photometric catalog file is given by: 
+(There are 19 columns in this file.)
+
+abstract groups	      primitive groups    units	      formats  used in PHOTFIT2
+
+IMAGE_1 		line 		  pixels	REAL	 used
+			samp		  pixels	REAL	 used
+			ObjectLine	  pixels	REAL	  --
+			ObjectSamp	  pixels	REAL	  --
+			BoxLines	  pixels	REAL	  --
+			LuminanceLat	  degrees	DOUB	  --
+			LuminanceLong	  degrees	DOUB	  --
+			IncidenceAngle	  degrees	DOUB	 used
+			EmissionAngle	  degrees	DOUB	 used
+			PhaseAngle	  degrees	DOUB	 used
+			DN_BoxMean	  DN		DOUB	  --
+			Radiance	W/cm**2/str/nm	DOUB	  --
+			I/F		  --		DOUB	 used
+			StandDev	  --		DOUB	 used
+
+OBJECT_COORDINATES  	LAT		  degrees	REAL	  --
+			LONG		  degrees	REAL	  --
+
+GENERAL_QLF		--		  --		DOUB	  --
+			<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#class_id">CLASS_ID</A>	  --		FULL	 used
+
+The "phocat" file can contain data of different classes (<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#class_id">CLASS_ID</A>). The program 
+PHOTFIT2 will using the data of given class only (or all data if class is not 
+given).
+The program uses the value from the column "StandDev" (if given) for weigthing the reflectance value by fitting. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="pho_func"><H3>PHO_FUNC</H3></A><pre>
+Photometric function :
+
+This parameter of the first menu point selects the menu point for input the 
+photometry task:
+When returning to the highest level of the menu (i.e. the PHOTFIT2.MDF-file) 
+you will see that the third selection point has been changed according to your 
+input of PHO_FUNC in the first menu point.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class_id"><H3>CLASS_ID</H3></A><pre>
+The "phocat" file can contain data of different classes. The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#class_id">class_id</A> numerates 
+the photometric functions. For using different photometric functions or 
+parameter sets. The program PHOTFIT2 will using the data of given class only 
+(or all data if <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#class_id">CLASS_ID</A> is not given).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="norm"><H3>NORM</H3></A><pre>
+Causes subroutine Metropolis to renormalize itself by recomputing the
+Boltzmann coefficient. <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#norm">NORM</A>=n causes renormalization each n successful
+iterations. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rerun"><H3>RERUN</H3></A><pre>
+Number of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#rerun">rerun</A> of metropolis. You can see the stability of the results. But be 
+aware, the mean values and there deviations of the parameters are not real 
+statistical values because every <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#rerun">rerun</A> of metropolis starts with the best fit 
+of the run before.  
+Default for <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#rerun">RERUN</A> is 1
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="maxiter"><H3>MAXITER</H3></A><pre>
+Specifies the number of successful iterations which Metropolis will
+perform before ceasing in it's hunt for the coefficient values.
+Usefully is for <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#maxiter">MAXITER</A> is:
+for MINNAERT 5000
+for VEVERKA  20000
+for HAPKE_* 20000
+for HAPKE_* 20000 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="numten"><H3>NUMTEN</H3></A><pre>
+Specifies the number of successful iterations which must be 
+accumulated before the width of the solution generating  probability
+function drops by a factor of ten. If for example <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#maxiter">MAXITER</A>/<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>
+is 4.0 then the initial range specified by the temperatur
+parameter (the starting temperature) is reduced by 4.0 orders
+of magnitude (10000:1) by the time the iteration process has
+ceased. 
+Default for <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A> is: <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#maxiter">MAXITER</A>/4
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="percent"><H3>PERCENT</H3></A><pre>
+The minimum acceptable # of points with residuals below tolerance.
+The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#percent">percent</A> and tolerance keywords permit a solution that is found to
+consist of a subset of all of the data points. If there are more than
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#percent">percent</A> of the points with I/F residuals below tolerance then the
+remainder of the points can be ignored if they exceed tolerance.
+If there are fewer than <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#percent">percent</A> points with residuals below
+tolerance then all of the points will be considered.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="toleranc"><H3>TOLERANC</H3></A><pre>
+The I/F residual tolerance.
+The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#percent">percent</A> and tolerance keywords permit a solution that is found to
+consist of a subset of all of the data points. If there are more than
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#percent">percent</A> of the points with I/F residuals below tolerance then the
+remainder of the points can be ignored if they exceed tolerance.
+If there are fewer than <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#percent">percent</A> points with residuals below
+tolerance then all of the points will be considered.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="print"><H3>PRINT</H3></A><pre>
+Keyword for screen output of the IBIS input files.
+NOPRINT deactivates the sceen output of IBIS input file.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="metrop"><H3>METROP</H3></A><pre>
+Causes subroutine Metropolis to list the iteration progress as it
+converges upon the solution. <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#metrop">METROP</A>=n causes a printout each
+n successful iterations. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="save_par"><H3>SAVE_PAR</H3></A><pre>
+This is the name for the TAE-parameter file containing all parameters 
+needed to running the program. The default name is PHOTFIT2.PAR.
+A user-specified name can be given to that file. This is similar to the
+SAVE command in the Tutor Mode.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="albedo"><H3>ALBEDO</H3></A><pre>
+Albedo -  valid for the Lambert and Minnaert photometric functions.
+This parameter gives the albedo of the surface. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_albedo"><H3>MIN_ALBEDO</H3></A><pre>
+This parameter gives the absolut lower limit of the albedo of the surface. 
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_albedo"><H3>MAX_ALBEDO</H3></A><pre>
+This parameter gives the absolut upper limit of the albedo of the surface. 
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_albedo"><H3>T_ALBEDO</H3></A><pre>
+This parameter gives temperatur for the albedo of the surface. 
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    ALBEDO_NEW = T_ALBEDO * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_ALBEDO_NEW_* = T_ALBEDO_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="exponent"><H3>EXPONENT</H3></A><pre>
+Exponent - the geometrical constant k of the Minnaert photometric function.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_exponent"><H3>MIN_EXPONENT</H3></A><pre>
+This parameter gives the absolut lower limit of the Minnaert exponent - the 
+geometrical constant k of the Minnaert photometric function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_exponent"><H3>MAX_EXPONENT</H3></A><pre>
+This parameter gives the absolut upper limit of the Minnaert exponent - the 
+geometrical constant k of the Minnaert photometric function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_exponent"><H3>T_EXPONENT</H3></A><pre>
+This parameter gives temperatur for the Exponent - the geometrical constant k
+of the Minnaert photometric function.
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    EXPONENT_NEW = T_EXPONENT * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_EXPONENT_NEW_* = T_EXPONENT_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="a_veverka"><H3>A_VEVERKA</H3></A><pre>
+Parameter of the Veverka, Squyres-Veverka and Mosher photometric functions.
+Usually :
+C_VEVERKA=1-A_VEVERKA
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_a_veverka"><H3>MIN_A_VEVERKA</H3></A><pre>
+This parameter gives the absolut lower limit of the parameter of the Veverka photometric function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_a_veverka"><H3>MAX_A_VEVERKA</H3></A><pre>
+This parameter gives the absolut upper limit of the parameter of the Veverka photometric function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_a_veverka"><H3>T_A_VEVERKA</H3></A><pre>
+This parameter gives temperatur for the parameter of the Veverka photometric function.
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    A_VEVERKA_NEW = T_A_VEVERKA * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_A_VEVERKA_NEW_* = T_A_VEVERKA_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="b_veverka"><H3>B_VEVERKA</H3></A><pre>
+Parameter of the Veverka, Mosher, Squyres-Veverka and Buratti 
+photometric functions.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_b_veverka"><H3>MIN_B_VEVERKA</H3></A><pre>
+his parameter gives the absolut lower limit of the parameter of the Veverka photometric function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_b_veverka"><H3>MAX_B_VEVERKA</H3></A><pre>
+This parameter gives the absolut upper limit of the parameter of the Veverka photometric function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_b_veverka"><H3>T_B_VEVERKA</H3></A><pre>
+This parameter gives temperatur for the parameter of the Veverka photometric function.
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    B_VEVERKA_NEW = T_B_VEVERKA * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_B_VEVERKA_NEW_* = T_B_VEVERKA_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="c_veverka"><H3>C_VEVERKA</H3></A><pre>
+Parameter of the Veverka, Mosher, Squyres-Veverka and Buratti 
+photometric functions.
+Usually :
+C_VEVERKA=1-A_VEVERKA
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_c_veverka"><H3>MIN_C_VEVERKA</H3></A><pre>
+his parameter gives the absolut lower limit of the parameter of the Veverka photometric function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_c_veverka"><H3>MAX_C_VEVERKA</H3></A><pre>
+This parameter gives the absolut upper limit of the parameter of the Veverka photometric function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_c_veverka"><H3>T_C_VEVERKA</H3></A><pre>
+This parameter gives temperatur for the parameter of the Veverka photometric function.
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    C_VEVERKA_NEW = T_C_VEVERKA * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_C_VEVERKA_NEW_* = T_C_VEVERKA_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="d_veverka"><H3>D_VEVERKA</H3></A><pre>
+Parameter of the Veverka, Mosher, Squyres-Veverka and Buratti 
+photometric functions.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_d_veverka"><H3>MIN_D_VEVERKA</H3></A><pre>
+This parameter gives the absolut lower limit of the parameter of the Veverka photometric function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_d_veverka"><H3>MAX_D_VEVERKA</H3></A><pre>
+This parameter gives the absolut upper limit of the parameter of the Veverka photometric function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_d_veverka"><H3>T_D_VEVERKA</H3></A><pre>
+This parameter gives temperatur for the parameter of the Veverka photometric function.
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    D_VEVERKA_NEW = T_D_VEVERKA * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_D_VEVERKA_NEW_* = T_D_VEVERKA_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mo_exp1"><H3>MO_EXP1</H3></A><pre>
+Modification of the coefficient k in the Minnaert part 
+of Mosher's photometric function (goes along with MO_EXP2).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_mo_exp1"><H3>MIN_MO_EXP1</H3></A><pre>
+This parameter gives the absolut lower limit of the modification of the 
+coefficient k in the Minnaert part of Mosher's photometric function (goes along 
+with MO_EXP2).
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_mo_exp1"><H3>MAX_MO_EXP1</H3></A><pre>
+This parameter gives the absolut upper limit of the modification of the 
+coefficient k in the Minnaert part of Mosher's photometric function (goes along 
+with MO_EXP2).
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_mo_exp1"><H3>T_MO_EXP1</H3></A><pre>
+This parameter gives temperatur for the modification of the coefficient k in 
+the Minnaert part of Mosher's photometric function (goes along with MO_EXP2).
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    MO_EXP1_NEW = T_MO_EXP1 * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_MO_EXP1_NEW_* = T_MO_EXP1_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mo_exp2"><H3>MO_EXP2</H3></A><pre>
+Modification of the coefficient k in the Minnaert part 
+of Mosher's photometric function (goes along with MO_EXP1).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_mo_exp2"><H3>MIN_MO_EXP2</H3></A><pre>
+This parameter gives the absolut lower limit of the modification of the 
+coefficient k in the Minnaert part of Mosher's photometric function (goes along 
+with MO_EXP1).
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_mo_exp2"><H3>MAX_MO_EXP2</H3></A><pre>
+This parameter gives the absolut upper limit of the modification of the 
+coefficient k in the Minnaert part of Mosher's photometric function (goes along 
+with MO_EXP1).
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_mo_exp2"><H3>T_MO_EXP2</H3></A><pre>
+This parameter gives temperatur for the modification of the coefficient k in 
+the Minnaert part of Mosher's photometric function (goes along with MO_EXP1).
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    MO_EXP2_NEW = T_MO_EXP2 * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_MO_EXP2_NEW_* = T_MO_EXP2_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="e_buratti"><H3>E_BURATTI</H3></A><pre>
+Buratti's parameter for modification of the Veverka photometric function.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_e_buratti"><H3>MIN_E_BURATTI</H3></A><pre>
+This parameter gives the absolut lower limit of the Buratti's parameter for 
+modification of the Veverka photometric function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_e_buratti"><H3>MAX_E_BURATTI</H3></A><pre>
+This parameter gives the absolut upper limit of the Buratti's parameter for 
+modification of the Veverka photometric function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_e_buratti"><H3>T_E_BURATTI</H3></A><pre>
+This parameter gives temperatur for the Buratti's parameter for modification of 
+the Veverka photometric function.
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    E_BURATTI_NEW = T_E_BURATTI * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_E_BURATTI_NEW_* = T_E_BURATTI_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="den_soil"><H3>DEN_SOIL</H3></A><pre>
+Specific volume density of the soil.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_den_soil"><H3>MIN_DEN_SOIL</H3></A><pre>
+This parameter gives the absolut lower limit of the specific volume density of the soil.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_den_soil"><H3>MAX_DEN_SOIL</H3></A><pre>
+This parameter gives the absolut upper limit of the specific volume density of the soil.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_den_soil"><H3>T_DEN_SOIL</H3></A><pre>
+This parameter gives temperatur for the specific volume density of the soil.
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    DEN_SOIL_NEW = T_DEN_SOIL * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_DEN_SOIL_NEW_* = T_DEN_SOIL_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="w_soil"><H3>W_SOIL</H3></A><pre>
+Single-scattering albedo of the soil particles. It characterizes the 
+efficiency of an average particle to scatter and absorb light. 
+One of the classical Hapke parameter.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_w_soil"><H3>MIN_W_SOIL</H3></A><pre>
+This parameter gives the absolut lower limit of the single-scattering albedo of the soil particles. It characterizes the efficiency 
+of an average particle to scatter and absorb light. 
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_w_soil"><H3>MAX_W_SOIL</H3></A><pre>
+This parameter gives the absolut upper limit of the single-scattering albedo of the soil particles. It characterizes the efficiency 
+of an average particle to scatter and absorb light. 
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_w_soil"><H3>T_W_SOIL</H3></A><pre>
+This parameter gives temperatur for the single-scattering albedo of the soil 
+particles. It characterizes the efficiency of an average particle to scatter 
+and absorb light. 
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    W_SOIL_NEW = T_W_SOIL * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_W_SOIL_NEW_* = T_W_SOIL_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="hg1_soil"><H3>HG1_SOIL</H3></A><pre>
+Parameter of the first term of the Henyey-Greenstein soil particle 
+phase function.
+One of the classical Hapke parameter. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_hg1_soil"><H3>MIN_HG1_SOIL</H3></A><pre>
+This parameter gives the absolut lower limit of the parameter of the first term of the Henyey-Greenstein soil particle 
+phase function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_hg1_soil"><H3>MAX_HG1_SOIL</H3></A><pre>
+This parameter gives the absolut upper limit of the parameter of the first term of the Henyey-Greenstein soil particle 
+phase function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_hg1_soil"><H3>T_HG1_SOIL</H3></A><pre>
+This parameter gives temperatur for the parameter of the first term of the 
+Henyey-Greenstein soil particle phase function.
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    HG1_SOIL_NEW = T_HG1_SOIL * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_HG1_SOIL_NEW_* = T_HG1_SOIL_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="hg2_soil"><H3>HG2_SOIL</H3></A><pre>
+Parameter of the second term of the Henyey-Greenstein soil particle 
+phase function.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_hg2_soil"><H3>MIN_HG2_SOIL</H3></A><pre>
+This parameter gives the absolut lower limit of the parameter of the second 
+term of the Henyey-Greenstein soil particle phase function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_hg2_soil"><H3>MAX_HG2_SOIL</H3></A><pre>
+This parameter gives the absolut upper limit of the parameter of the second 
+term of the Henyey-Greenstein soil particle phase function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_hg2_soil"><H3>T_HG2_SOIL</H3></A><pre>
+This parameter gives temperatur for the parameter of the second term of the 
+Henyey-Greenstein soil particle phase function.
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    HG2_SOIL_NEW = T_HG2_SOIL * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_HG2_SOIL_NEW_* = T_HG2_SOIL_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="hg_asy_soil"><H3>HG_ASY_SOIL</H3></A><pre>
+This parameter gives the asymmetry parameter (weight of the two terms in the 
+Henyey-Greenstein soil phase function).
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+in the Henyey-Greenstein soil phase function).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_hg_asy_soil"><H3>MIN_HG_ASY_SOIL</H3></A><pre>
+This parameter gives the absolut lower limit of the asymmetry parameter (weight 
+of the two terms in the Henyey-Greenstein soil phase function).
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+in the Henyey-Greenstein soil phase function).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_hg_asy_soil"><H3>MAX_HG_ASY_SOIL</H3></A><pre>
+This parameter gives the absolut upper limit of the asymmetry parameter (weight 
+of the two terms in the Henyey-Greenstein soil phase function).
+in the Henyey-Greenstein soil phase function).
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_hg_asy_soil"><H3>T_HG_ASY_SOIL</H3></A><pre>
+This parameter gives temperatur for the parameter of the asymmetry parameter (weight of the two terms in the Henyey-Greenstein soil phase function).
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    HG_ASY_SOIL_NEW = T_HG_ASY_SOIL * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_HG_ASY_SOIL_NEW_* = T_HG_ASY_SOIL_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="le1_soil"><H3>LE1_SOIL</H3></A><pre>
+Parameter of the first term of the Legendre-Polynomial soil particle 
+phase function.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_le1_soil"><H3>MIN_LE1_SOIL</H3></A><pre>
+This parameter gives the absolut lower limit of the parameter of the first term 
+of the Legendre-Polynomial soil particle 
+phase function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_le1_soil"><H3>MAX_LE1_SOIL</H3></A><pre>
+This parameter gives the absolut upper limit of the parameter of the first term 
+of the Legendre-Polynomial soil particle 
+phase function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_le1_soil"><H3>T_LE1_SOIL</H3></A><pre>
+This parameter gives temperatur for the parameter of the first term of the 
+Legendre-Polynomial soil particle phase function.
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    LE1_SOIL_NEW = T_LE1_SOIL * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_LE1_SOIL_NEW_* = T_LE1_SOILE_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="le2_soil"><H3>LE2_SOIL</H3></A><pre>
+Parameter of the second term of the Legendre-Polynomial soil particle 
+phase function.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_le2_soil"><H3>MIN_LE2_SOIL</H3></A><pre>
+This parameter gives the absolut lower limit of the parameter of the second 
+term of the Legendre-Polynomial soil particle 
+phase function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_le2_soil"><H3>MAX_LE2_SOIL</H3></A><pre>
+This parameter gives the absolut upper limit of the parameter of the second 
+term of the Legendre-Polynomial soil particle 
+phase function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_le2_soil"><H3>T_LE2_SOIL</H3></A><pre>
+This parameter gives temperatur for the parameter of the second term of the 
+Legendre-Polynomial soil particle phase function.
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    LE2_SOIL_NEW = T_LE2_SOIL * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_LE2_SOIL_NEW_* = T_LE2_SOIL_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="h_shoe"><H3>H_SHOE</H3></A><pre>
+One of the classical Hapke parameter.
+Parameter which characterizes the soil structure in the terms of porosity, 
+particle-size distribution, and rate of compaction with depth (angular width 
+of opposition surge due to shadowing). 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_h_shoe"><H3>MIN_H_SHOE</H3></A><pre>
+This parameter gives the absolut lower limit of the parameter which characterizes the soil structure (angular width of the 
+opposition surge due to shadowing). 
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_h_shoe"><H3>MAX_H_SHOE</H3></A><pre>
+This parameter gives the absolut upper limit of the parameter which characterizes the soil structure (angular width of the 
+opposition surge due to shadowing). 
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_h_shoe"><H3>T_H_SHOE</H3></A><pre>
+This parameter gives temperatur for the parameter which characterizes the soil 
+structure (angular width of the opposition surge due to shadowing). 
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    H_SHOE_NEW = T_H_SHOE * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_H_SHOE_NEW_* = T_H_SHOE_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="b_shoe"><H3>B_SHOE</H3></A><pre>
+One of the classical Hapke parameter. 
+Opposition magnitude coefficient. The total amplitude of the opposition surge 
+due to shadowing. It is the ratio of the light scattered from near the 
+illuminated surface of the particle to the total amount of light scattered at 
+zero phase : 
+B_SHOE=S(0)/(W_SOIL*p(0))
+with p(0) - soil phase function
+S(0) - opposition surge amplitude term which characterizes the contribution of 
+light scattered from near the front surface of individual particles at zero 
+phase.
+For a true, shadow-hiding opposition effect, 0&lt=B_SHOE<=1.
+However, there are several other phenomena that may also cause a surge in 
+brightness at small phase angles. These including the following:
+1) The coherent backscatter or weak photon localisation due to multiply 
+   scattered light.
+2) An single-particle opposition effect caused by complex porous agglomerates 
+   ( soil phase function )
+3) Glory caused by sperical particles ( soil phase function )
+4) Internal reflections of transparent particles ( soil phase function )
+   These various phenomena may be large enough to increase the opposition surge 
+   by more than a factor of 2. This possibility may be taken into account by 
+   allowing B_SHOE to be greater than 1.
+ 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_b_shoe"><H3>MIN_B_SHOE</H3></A><pre>
+This parameter gives the absolut lower limit of the parameter which characterizes the opposition magnitude coefficient.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_b_shoe"><H3>MAX_B_SHOE</H3></A><pre>
+This parameter gives the absolut upper limit of the parameter which characterizes theopposition magnitude coefficient.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+ 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_b_shoe"><H3>T_B_SHOE</H3></A><pre>
+This parameter gives temperatur for the parameter which characterizes the 
+opposition magnitude coefficient.
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    B_SHOE_NEW = T_B_SHOE * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_B_SHOE_NEW_* = T_B_SHOE_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+ 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="h_cboe"><H3>H_CBOE</H3></A><pre>
+Parameter of the coherent backscattering ( angular width of the opposition 
+surge due to multiply scattered light).
+H_CBOE=lambda/(2*pi*L)
+lambda - wavelength
+L - the free path of the phonon in the medium
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_h_cboe"><H3>MIN_H_CBOE</H3></A><pre>
+This parameter gives the absolut lower limit of the parameter of the coherent backscattering ( width of theopposition surge due 
+to the backscatter ).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_h_cboe"><H3>MAX_H_CBOE</H3></A><pre>
+This parameter gives the absolut upper limit of the parameter of the coherent backscattering ( width of theopposition surge due 
+to the backscatter ).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_h_cboe"><H3>T_H_CBOE</H3></A><pre>
+This parameter gives temperatur for the parameter of the coherent 
+backscattering ( width of theopposition surge due to the backscatter ).
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    H_CBOE_NEW = T_H_CBOE * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_H_CBOE_NEW_* = T_H_CBOE_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="b_cboe"><H3>B_CBOE</H3></A><pre>
+Opposition magnitude coefficient of the coherent backscattering 
+(height of opposition surge due to multiply scattered light). 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_b_cboe"><H3>MIN_B_CBOE</H3></A><pre>
+This parameter gives the absolut lower limit of the opposition magnitude coefficient of the coherent backscattering 
+(height of opposition surge due to backscatter). 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_b_cboe"><H3>MAX_B_CBOE</H3></A><pre>
+This parameter gives the absolut upper limit of the opposition magnitude coefficient of the coherent backscattering 
+(height of opposition surge due to backscatter). 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_b_cboe"><H3>T_B_CBOE</H3></A><pre>
+This parameter gives temperatur for the opposition magnitude coefficient of the 
+coherent backscattering (height of opposition surge due to backscatter). 
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    B_CBOE_NEW = T_B_CBOE * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_B_CBOE_NEW_* = T_B_CBOE_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="theta"><H3>THETA</H3></A><pre>
+Average topographic slope angle of surface roughness at subresolution scale.
+One of the classical Hapke parameter. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_theta"><H3>MIN_THETA</H3></A><pre>
+This parameter gives the absolut lower limit of the average topographic slope angle of surface roughness at subresolution scale.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_theta"><H3>MAX_THETA</H3></A><pre>
+This parameter gives the absolut upper limit of the average topographic slope angle of surface roughness at subresolution scale.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_theta"><H3>T_THETA</H3></A><pre>
+This parameter gives temperatur for the average topographic slope angle of 
+surface roughness at subresolution scale.
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    THETA_NEW = T_THETA * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_THETA_NEW_* = T_THETA_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="cook"><H3>COOK</H3></A><pre>
+ Parameter of the Cook's modification of the old Hapke function.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_cook"><H3>MIN_COOK</H3></A><pre>
+This parameter gives the absolut lower limit of the parameter of the Cook's 
+modification of the old Hapke function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_cook"><H3>MAX_COOK</H3></A><pre>
+This parameter gives the absolut upper limit of the parameter of the Cook's 
+modification of the old Hapke function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_cook"><H3>T_COOK</H3></A><pre>
+This parameter gives temperatur for the parameter of the Cook's modification 
+of the old Hapke function.
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    COOK_NEW = T_COOK * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_COOK_NEW_* = T_COOK_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="tau_atm"><H3>TAU_ATM</H3></A><pre>
+Optical depth of the atmosphere.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_tau_atm"><H3>MIN_TAU_ATM</H3></A><pre>
+This parameter gives the absolut lower limit of the optical depth of the 
+atmosphere.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_tau_atm"><H3>MAX_TAU_ATM</H3></A><pre>
+This parameter gives the absolut upper limit of the optical depth of the 
+atmosphere.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_tau_atm"><H3>T_TAU_ATM</H3></A><pre>
+This parameter gives temperatur for the optical depth of the atmosphere.
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    TAU_ATM_NEW = T_TAU_ATM * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_TAU_ATM_NEW_* = T_TAU_ATM_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="w_atm"><H3>W_ATM</H3></A><pre>
+Single scattering albedo of the atmospheric aerosols.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_w_atm"><H3>MIN_W_ATM</H3></A><pre>
+This parameter gives the absolut lower limit of the single scattering albedo of 
+the atmospheric aerosols.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_w_atm"><H3>MAX_W_ATM</H3></A><pre>
+This parameter gives the absolut upper limit of the single scattering albedo of 
+the atmospheric aerosols.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_w_atm"><H3>T_W_ATM</H3></A><pre>
+This parameter gives temperatur for the single scattering albedo of the 
+atmospheric aerosols.
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    W_ATM_NEW = T_W_ATM * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_W_ATM_NEW_* = T_W_ATM_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="hg1_atm"><H3>HG1_ATM</H3></A><pre>
+Parameter of the first term of the Henyey-Greenstein atmospheric phase function.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_hg1_atm"><H3>MIN_HG1_ATM</H3></A><pre>
+This parameter gives the absolut lower limit of the parameter of the first term 
+of the Henyey-Greenstein atmospheric phase function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_hg1_atm"><H3>MAX_HG1_ATM</H3></A><pre>
+This parameter gives the absolut upper limit of the parameter of the first term 
+of the Henyey-Greenstein atmospheric phase function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_hg1_atm"><H3>T_HG1_ATM</H3></A><pre>
+This parameter gives temperatur for the parameter of the first term of the 
+Henyey-Greenstein atmospheric phase function.
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    HG1_ATM_NEW = T_HG1_ATM * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_HG1_ATM_NEW_* = T_HG1_ATM_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="irv_exp1"><H3>IRV_EXP1</H3></A><pre>
+Irvine's first exponent - parameter of the Irvine photometric function.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_irv_exp1"><H3>MIN_IRV_EXP1</H3></A><pre>
+This parameter gives the absolut lower limit of the Irvine's first exponent - 
+parameter of the Irvine photometric function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_irv_exp1"><H3>MAX_IRV_EXP1</H3></A><pre>
+This parameter gives the absolut upper limit of the Irvine's first exponent - 
+parameter of the Irvine photometric function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_irv_exp1"><H3>T_IRV_EXP1</H3></A><pre>
+This parameter gives temperatur for the Irvine's first exponent - parameter 
+of the Irvine photometric function.
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+   IRV_EXP1_NEW = T_IRV_EXP1 * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_IRV_EXP1_NEW_* = T_IRV_EXP1_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="irv_exp2"><H3>IRV_EXP2</H3></A><pre>
+Irvine's second exponent - parameter of the Irvine photometric function.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_irv_exp2"><H3>MIN_IRV_EXP2</H3></A><pre>
+This parameter gives the absolut lower limit of the Irvine's second exponent - 
+parameter of the Irvine photometric function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_irv_exp2"><H3>MAX_IRV_EXP2</H3></A><pre>
+This parameter gives the absolut upper limit of the Irvine's second exponent - 
+parameter of the Irvine photometric function.
+If a sulution guess falls out-of-bonds then the attemp will be aborted and 
+a new guess attempted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t_irv_exp2"><H3>T_IRV_EXP2</H3></A><pre>
+This parameter gives temperatur for the Irvine's second exponent - parameter 
+of the Irvine photometric function.
+This parameter gives the range over which random guesses can be expected to 
+vary at first:
+    IRV_EXP2_NEW = T_IRV_EXP2 * tan( PI * ran_num + PI/2 ).
+As the system cools the range will constrict gradually :
+	T_IRV_EXP2_NEW_* = T_IRV_EXP2_OLD_* * scale, 
+scale depends of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/photfit2m_level2.html#numten">NUMTEN</A>.
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

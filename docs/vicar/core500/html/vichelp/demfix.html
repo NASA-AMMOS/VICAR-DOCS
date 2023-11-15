@@ -1,0 +1,137 @@
+<HTML>
+<HEAD><title>HTML Help for DEMFIX</title></HEAD>
+<BODY>
+<H1>Help for DEMFIX</H1>
+<pre>
+PURPOSE
+
+     demfix fills in holes in a DEM (Digital Elevation Model)
+     using another digital elevation model.  Both must have 
+     Geotiff labels.  An example would be to fix holes in a 
+     SAR image (due to layover or water) using DTED level I.
+     
+     The images must be in the same map projection but can
+     have different scales and offsets.  It is desirable but
+     not necessary for the secondary image to cover the area
+     of the image being fixed, or at least the part of the 
+     image containing holes.
+     
+     A connected component detects connected holes and their
+     boundary pixels.  The corresponding patch from the other
+     image is generated.  It is compared at the edge pixels 
+     and a "boost" value is calculated to align the patches.
+     The patch from the other image might have non-aligned
+     pixels so bilinear interpolation is used to find the 
+     best value for the pixel centers in the primary image.
+     
+     If the second image does not cover a patch, the pixel 
+     value is calculated by 1/n interpolation on all of the
+     edge pixels of the primary image.  You could think of
+     of this as a "soap bubble film" covering the patch.
+     
+     An ocean threshold is provided that will use the second-
+     ary input to mask <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/demfix_level2.html#out">out</A> the ocean areas.  For SAR data
+     a value of 20 is recommended.  All SAR values less than
+     20 and the secondary input is zero (nearest neighbor)
+     will convert to zero.  Do not use this parameter if
+     ocean is not present.  IF YOU DO NOT USE THIS PARAMETER
+     IN AN OCEAN AREA, THE PROGRAM WILL RUN FOR A LONG TIME OR
+     POSSIBLY FAIL.
+     
+     Note on images with gores (such as aster).  Make the gore
+     value greather than the threshold (using photoshop if
+     necessary).  Then the gores will be left alone.  If a hole
+     is on the edge of the data, then the hole and the gore will
+     interact, the hole interpolating in some of the gore value.
+  
+TAE COMMAND LINE FORMAT
+
+     demfix <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/demfix_level2.html#inp">INP</A>=(A,B) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/demfix_level2.html#out">OUT</A>=C <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/demfix_level2.html#thresh">THRESH</A>=N 
+
+     where
+
+     A                   is a digital elevation model with 
+                         "holes".
+     B                   is a digital elevation model with 
+                         values to fill the holes.
+     C                   is a copy of A with the holes filled
+     N                   is the integer value that defines 
+                         holes in the image A.  Values less
+                         than or equal N is part of a hole.
+OPERATION
+     demfix fills in holes in a DEM (Digital Elevation Model)
+     using another digital elevation model.  Both must have 
+     Geotiff labels.  An example would be to fix holes in a 
+     SAR image (due to layover) using DTED level I.
+     
+     The images must be in the same map projection but can
+     have different scales and offsets.  It is desirable but
+     not necessary for the secondary image to cover the area
+     of the image being fixed, or at least the part of the 
+     image containing holes.
+     
+     A connected component detects connected holes and their
+     boundary pixels.  The corresponding patch from the other
+     image is generated.  It is compared at the edge pixels 
+     and a "boost" value is calculated to align the patches.
+     The patch from the other image might have non-aligned
+     pixels so bilinear interpolation is used to find the 
+     best value for the pixel centers in the primary image.
+     The boosted patch is adjusted by the residual differences
+     of edge pixels around the hole.  All the residuals are
+     weighted by 1.0/distance-squared from each pixel in the hole
+     so the patch will smoothly meet the primary DEM at all of
+     the edges.
+     
+     If there is no second image, the pixel value is calculated
+     by 1/n**2 interpolation on all of the edge pixels of the primary
+     image.  You could think of this as a "soap bubble film"
+     covering the patch (though not exactly).
+     
+
+WRITTEN BY:                   Al Zobrist         28 JUL 02
+<A NAME="CogProg">COGNIZANT PROGRAMMER:         Al Zobrist</A>
+Revisions:
+  2008-01-10 WLB Switched to USES_ANSI_C AND LIB_CARTO; misc cleanup
+  2015-11-19 WLB Migrated to MIPL
+  2019-08-22 WLB IDS-7922 - initialized a bunch of variables.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/demfix_level2.html#inp"><H3>INP</H3></A>
+Input 1: Primary DEM
+Input 2: Secondary DEM (optional)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/demfix_level2.html#out"><H3>OUT</H3></A>
+Copy of primary DEM, holes
+corrected by secondary DEM
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/demfix_level2.html#thresh"><H3>THRESH</H3></A>
+Values less than or equal to
+this are holes in the
+primary DEM
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/demfix_level2.html#ocnthrsh"><H3>OCNTHRSH</H3></A>
+Values less than or equal to
+this are set to 0 if the
+secondary DEM is 0
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/demfix_level2.html#pow"><H3>POW</H3></A>
+User can vary the 1/d-squared
+interpolation by changing this
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/demfix_level2.html#demfac"><H3>DEMFAC</H3></A>
+Factor for vertical scale
+difference (see help 2)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/demfix_level2.html#edgetype"><H3>EDGETYPE</H3></A>
+EDGEON   - will recalculate all
+           edge pixels
+EDGEOFF  - no special edge
+           treatment
+EDGEAUTO - algorithm decides
+           which case
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/demfix_level2.html#negtype"><H3>NEGTYPE</H3></A>
+NONEG - output negative values
+          changed to zero
+NEG   - output negative values
+          not changed
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/demfix.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/demfix.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

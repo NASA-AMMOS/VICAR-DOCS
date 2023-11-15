@@ -1,0 +1,117 @@
+<HTML>
+<HEAD><title>HTML Help for DC</title></HEAD>
+<BODY>
+<H1>Help for DC</H1>
+<pre>
+
+PURPOSE:
+
+	"dc" is a VICAR applications program which will fit a straight line
+to DN versus <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#exposure">exposure</A> at each pixel of several input frames and output a zero
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#exposure">exposure</A> or "dark current" picture. DC will also optionally output a slope
+picture, a predicted Y value picture and/or a file of deviated points from
+the fitted line. This allows the spatial responsivity of linear detectors to
+be evaluated with two or more output pictures.
+
+EXECUTION:
+
+"dc" can be executed by the following statement:
+
+	dc <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#inp">INP</A>=(IN1,IN2,...) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#out">OUT</A>=(DC,SLOPE,YPOINT,DELTA) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#size">SIZE</A>=(SL,SS,NL,NS) PARMS
+
+where <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#inp">INP</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#out">OUT</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#size">SIZE</A>, and PARMS are required or optional parameters for DC
+and are explained in TUTOR mode under TAE.
+
+
+	EXPO	'<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#negative">NEGATIVE</A>    <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#maxdn">MAXDN</A>     <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#scale">SCALE</A> 
+	<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#x">X</A>       <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#cons">CONS</A>
+
+The input images may either be (all) byte or (all) halfword data.  The data 
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#format">format</A> is taken from the VICAR label of the first input file.  The output image
+has the same data <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#format">format</A> (byte or halfword) as the input image. 
+OPERATION:
+
+     "dc" fits a straight line on a pixel by pixel basis on two to ten input
+pictures in a light transfer sequence. DC extrapolates to zero <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#exposure">exposure</A>. If the
+analyst suspects for some reason that the zero <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#exposure">exposure</A> picture would be
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#negative">negative</A>, has the option of outputting the negative of the zero <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#exposure">exposure</A>
+picture. Figure 1 graphically shows the concept involved.
+
+
+		|
+		|
+		|			            *
+		|			 .     *   .         ^DN
+	    DN  |			  *    |            -----*<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#scale">SCALE</A>=SLOPE
+		|	             *         |            ^EXPO 
+		|	.       *   .          | ^DN
+		|          *___________________|
+ 		|     *        ^EXPO
+	      DC|*
+		|
+		|____________________________________
+                0          <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#exposure">EXPOSURE</A>
+
+Explanation of FIGURE 1:
+		^ - is used to represent a delta
+  		* - is used to represent a straight solid line
+		. - are points of <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#exposure">exposure</A>
+
+
+<A NAME="examples">  EXAMPLES:</A>
+
+	dc <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#inp">INP</A>=(A,B,C,D,E) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#out">OUT</A>=(DC,SLOPE) EXPO=(3.0,4.0,1.0,2.5,2.2) 	<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#scale">SCALE</A>=2.0
+
+     DC will fit a line to these points in a light transfer sequence and
+     output a zero <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#exposure">exposure</A> level picture and a slope picture which is
+     multiplied by 2.
+
+     RESTRICTIONS:
+
+	1. All the input frames must have as many or more lines and samples
+	   as the first input.
+
+WRITTEN BY: Joel Mosher				1 May 1977
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER: Helen De Rueda		  Feb 1984</A>
+
+Made portable for UNIX by: Alan Scop (CRI)      5 SEP 1994
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#inp"><H3>INP</H3></A>
+ Input pictures to be analyzed.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#out"><H3>OUT</H3></A>
+ Output pictures. OUT1 is the
+ dark current picture. OUT2 is
+ the optional slope picture.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#size"><H3>SIZE</H3></A>
+ Standard VICAR <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#size">size</A> field.
+ See HELP <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#size">SIZE</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#exposure"><H3>EXPOSURE</H3></A>
+ <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#exposure">Exposure</A> for each input 
+ picture.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#format"><H3>FORMAT</H3></A>
+ <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#format">FORMAT</A> is ignored.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#negative"><H3>NEGATIVE</H3></A>
+ Valid:('<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#negative">NEGATIVE</A>) Specifies to
+ output a <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#negative">negative</A> DC picture.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#maxdn"><H3>MAXDN</H3></A>
+ Specifies the maximum DN in 
+ output pictures.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#scale"><H3>SCALE</H3></A>
+ Slope picture is to be 
+ multiplied by the given
+ value.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#x"><H3>X</H3></A>
+ Value used to determine
+ predicted
+ Y value
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc_level2.html#cons"><H3>CONS</H3></A>
+ Constant to be added to
+ deviated point.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/dc.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

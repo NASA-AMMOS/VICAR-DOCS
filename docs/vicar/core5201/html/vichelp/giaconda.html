@@ -1,0 +1,123 @@
+<HTML>
+<HEAD><title>HTML Help for GIACONDA</title></HEAD>
+<BODY>
+<H1>Help for GIACONDA</H1>
+<pre>
+PURPOSE
+
+Welcome to GIACONDA (Generator of Images of Accurate Color On Numerous Digital 
+Apparatus).  GIACONDA transforms images taken through several filters into a
+color image in which designated spectra ("special colors") are reproduced
+accurately.  Special colors are defined, modified and examined using VICAR
+program LEONARDO.  At this time, the only output device supported by this
+program is  the CONRAC 7211 long persistence color monitor. 
+
+EXECUTION
+
+  The program is executed by specifying up to eight half-word images (registed,
+FICOR'ed and VGRFIX'ed, or GALSOS'ed) taken through different filters, up to
+ten special colors, and, optionally, three output files (red, blue, and green),
+a weight for each special color (applied to a least-square fit), and a scale
+factor for the input images, and an image display device.  The program will
+display the resulting transformation matrix (input dn to output intensity) and,
+if output files have been specified, will generate images which may be input to
+the specified device. 
+
+  This program reads the special colors from a file pointed to by the 
+logical name, SCFNAME.  The file is a 100-line by 70-sample VICAR image
+file, which must be created outside of this program.  The same file is read
+and written by LEONARDO to define these colors. 
+
+  If the program indicates "NO UNIQUE SOLUTION", there are several possible
+reasons for the failure:
+  1) Two of the input images were taken through the same filter.
+  2) One of the special colors is a linear combination of the others.
+  3) One of the special-color spectra does not overlap any of the filter
+  	 responses.
+  4) One of the filter responses does not overlap any of the special-color
+  	spectra.
+  5) One of the filters passes nothing in the visible (e.g., VGR UV).
+
+OPERATION
+
+  GIACONDA uses the classical photo-reproduction solution (with a slight
+modification) to accurately reproduce selected ("special") colors.  For a
+given pixel,  the I/F value for each of n filters is the sum of the tristimulus
+values for that pixel, and, therefore, each of the tristimulus values of a
+given pixel may be written as a linear combination of the I/F values obtained
+from each filter.  If these equations (with unknown coefficients) are written
+down for a n special colors, the we have, for each chromaticity coordinate, n
+equations with n unknowns.  Therefore, we can solve for the unknown
+coefficients, and we have the tristimulus values of a pixel as a function of
+the I/F values from each filter.  And, in fact, any linear combination of
+special colors will be accurately reproduced with this solution.  If there are
+more special colors than filters, a least-squares fit solution may be applied,
+as is done by this program. 
+
+  The next step is to convert the tristimulus values to device inputs.  A
+monitor's intesity is equal to the sum of the intensities of the three
+primaries, and, therefore, the intensity for each phosphor can be written as a
+linear combination of the desired tristimulus values.  Intensity is then
+converted to input dn by 
+
+  			DN = I ** 1/2.6,
+
+the 2.6 in the exponent being good for all contemporary CRT's.  (It is assumed 
+here that the monitor has been adjusted so the zero dn produces 0+ intensity.)
+The final dn values are then normalized so that the highest expected input-
+image dn produces a monitor dn of 255 (see SCALE), and out-of-range values are 
+set at 0 or 255.  This exponential results in some surprising effects (e.g.,
+bright skies due to residual dark current).  Only a proportional stretch on the
+output images will maintain the proper hues and saturations.  THIS EXPONENT IS
+NOT APPLIED IF PARAMETER, DEVMAT, IS SPECIFIED.
+
+  The device response for a film recorder is a tougher nut to crack.  Although 
+this program has hooks for that capability, it is not implemented at this time 
+(see memo MSD:384-86-105, "Accurate Color Reproduction", R. Brill).
+
+<A NAME="examples">EXAMPLE</A>
+
+  In the following examples the user creates output files, OUT.*, using input 
+images INP.*, and special colors, CLOUDS, VOLCANOES, SULPHUR, and SAND, with 
+corresponding weights, 3, 2, 1, and 1, respectively.  He uses wants input dn's 
+of 10000 to be the maximum brightness (default).
+
+  VICAR&gtGIACONDA INP=(INP.ORA,INP.CLR,INP.GRE)   VICAR>+ OUT=(OUT.RED,OUT.GRE,OUT.BLU)   VICAR>+ SCFNAME=(COLORS.DAT)   VICAR>+ COLORS=(CLOUDS,VOLCANOES,SULPHUR,SAND) WEIGHTS=(3.,2.)
+ 
+
+WRITTEN BY: 		   R. BRILL, 20 JUNE, 1986
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:	   R. BRILL, 20 JUNE, 1986</A>
+
+Made portable for UNIX ... J. TURNER (CRI),  5 Sept 1994
+
+!
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/giaconda_level2.html#inp"><H3>INP</H3></A>
+input image files
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/giaconda_level2.html#out"><H3>OUT</H3></A>
+output image files
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/giaconda_level2.html#colors"><H3>COLORS</H3></A>
+special colors
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/giaconda_level2.html#scfname"><H3>SCFNAME</H3></A>
+special colors file
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/giaconda_level2.html#weights"><H3>WEIGHTS</H3></A>
+special color weights
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/giaconda_level2.html#scale"><H3>SCALE</H3></A>
+input image maximum dn
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/giaconda_level2.html#device"><H3>DEVICE</H3></A>
+output device
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/giaconda_level2.html#devmat"><H3>DEVMAT</H3></A>
+user device matrix
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/giaconda_level2.html#devoff"><H3>DEVOFF</H3></A>
+user device offset
+
+!
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/giaconda.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/giaconda.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

@@ -1,0 +1,514 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for TCAL2</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2.html">TCAL2</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+      The file containing an instrument radiance iamge in watts, (for TIMS it 
+      is six bands of a calibrated image, using the IRAD mode and WATTS units).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+      Output data set in 16-bit integer format of all the bands of ground 
+      calibrated data.  The exact type of data output (e.g. temperature, 
+      radiance, etc) is determined by the MODE parameter.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="outp"><H3>OUTP</H3></A><pre>
+      Output file produced by lowtran, if the default value of DUMMY is used,
+      no output file will be produced. Also, even if Lowtran is run more than
+      once by TCAL2, only the last run of Lowtran will have this output file.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="table"><H3>TABLE</H3></A><pre>
+      Output file produced by lowtran containing a table of radiance and
+      transmittance versus wavelength, if the default value of DUMMY is used,
+      no output file will be produced. Also, even if Lowtran is run more than
+      once by TCAL2, only the last run of Lowtran will have this output file.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="demfile"><H3>DEMFILE</H3></A><pre>
+      Optional input DEM file, which needs to have the same nl and same ns as
+      the input file, also this file should be 16-bit integer and should be
+      meters above MSL. TCAL2 finds the minimum and maximum elevation from
+      this file, then runs Lowtran in that range at an interval specified by
+      ELEVSTEP. (Lowtran is run twice at each calculated elevation; once at
+      the maximum deflection of the field of view from nadir and once at the
+      minimum deflection. For samples between these two deflections,
+      interpolated values are calculated). When the output temperature or
+      radiance is being calculated, the elevation of each pixel is looked up
+      in the DEM and returned values from the run of Lowtran closest in
+      elevation are used.  No interpolation is currently done between
+      the values Lowtran returns for different elevations.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="atmfile"><H3>ATMFILE</H3></A><pre>
+
+      Input Radiosonde atmospere file. It should be in the following format:
+
+
+atmtitle = test atmosphere                                           
+              
+startatm
+
+ altitude  pressure  temp      h2o
+   (km)     (mb)      (k)       (rh)
+
+   3.000    715.009   283.70    48.25 
+   4.000    633.005   277.00    34.91 
+   5.000    559.002   270.30    37.71 
+   6.000    492.000   263.60    34.79 
+
+where the number of altitude layers may not exceed 34, pressure can never
+be exactly zero, and the lowest altitude must equal the ground altitude.
+The altitude must be given in Kilometers.
+
+The possible values for     The possible values for
+ column headers are:         the units definitions are:
+
+  ALTITUDE                        PPMV     Volume mixing ratio
+  PRESSURE			  CM-3     Number density
+  TEMP				  GM/KG    Mass mixing ratio
+  H2O				  GM/M3    Mass density
+  CO2				  MB       Partial pressure
+  O3				  DP-K     Dew point temp, degrees K (H2O only)
+  N2O				  DP-C     Dew point temp, degress C (H2O only)
+  CO				  RH       Relative Humidity         (H2O only)
+  CH4                             MB       
+  O2                              ATM
+  NO                              TORR   
+  SO2                             K        degrees K   (for TEMP)
+  NO2                             C        degrees C   (for TEMP)
+  NH3    
+  HNO3
+
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="filfile"><H3>FILFILE</H3></A><pre>
+      Input filter function file for non-TIMS data. It should be in the
+      following format:
+
+filtertitle  =  test filter for TCAL2
+
+startfilter
+number of bands  =  3
+
+band 1
+8.000   0.0264
+8.032   0.0268
+8.064   0.0275
+
+band 2
+8.480   0.0394
+8.512   0.0503
+
+band 3
+8.800   0.0288
+8.832   0.9294
+8.864   0.0298
+
+      The string following "filtertitle  = " is put in a vicar label called
+      FILTER on the output file.
+      The strings "startfilter" and "number of bands  =  3" are required to tell
+      the program where to start reading the filter data, these two strings
+      should be on separate lines. There can be anything in the file before
+      the "startfilter" line, but after it you may confuse the program if
+      there are any extra lines starting with the word "band" or if the are
+      extra lines staring with numbers. 
+      "band 1", "band 2" and "band 3" tell the program where data for each band
+      begins. The first column of data is the wavelength in microns and the
+      second column is the response.
+
+      Tcal2 finds the minimum and maximum wavelength from all the filters it
+      reads, and runs Lowtran with the corresponding range of wavenumbers.
+      (Lowtran parameters V1 and V2, right now the Lowtran parameter DV is
+      hardcoded to be 5 cm-1). If you have a series of filters covering a wide
+      wavelength range, Lowtran will take longer to run than if you cover a
+      narrow range.  Specifying FILTLIST keyword will make the program print
+      to the screen the filter values it has read in from the file and the
+      filters it has interpolated from these to match Lowtran's output.  The
+      filters for each band in the filter file do not have to have the same
+      wavelength spacing, a different spline is calculated for each band.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="size"><H3>SIZE</H3></A><pre>
+      The standard VICAR2 output size field.   Default will calibrate
+      the entire data set.
+	Example: SIZE  =  (1,1,200,638)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sl"><H3>SL</H3></A><pre>
+      Starting line (same as SIZE(1)).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ss"><H3>SS</H3></A><pre>
+      Starting sample (same as SIZE(2)).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nl"><H3>NL</H3></A><pre>
+      Number of lines (same as SIZE(3)).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ns"><H3>NS</H3></A><pre>
+      Number of samples (same as SIZE(4)).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="calmode"><H3>CALMODE</H3></A><pre>
+      This keyword selects the type of decalibration to be performed.
+      There is a choice of three possibilities:
+            GRAD - (Ground RADiance)
+                   Radiance values of the ground target in the
+                   scene, incorporating atmospheric corrections.
+            GTEM - (Ground TEMperature)
+                   Kinetic temperature of the ground target, assuming the
+                   emissivity values given by the parameter "E"
+            BTEM - (Brightness TEMperature)
+                   Brightness temperature of the ground target.
+            EMIS - (EMISsivity)
+                   The emissivity of the ground, calculated with
+                   respect to the REFCHAN given (with atmospheric
+                   corrections).
+      Example: MODE  =  GRAD
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="amodel"><H3>AMODEL</H3></A><pre>
+	This selects the model atmosphere for which the atmospheric cor-
+	rections will be computed.  The program uses a version of LOWTRAN
+	as a subroutine, to which AMODEL is passed.  The exact parameters
+	of each model is given in the LOWTRAN handbook.  The options in
+	brief:
+		TR - TRopical model atmosphere
+		MS - Midlatitude Summer
+		MW - Midlatitude Winter
+		SS - Subarctic Summer
+		SW - Subarctic Winter
+		ST - U.S. STandard
+                RS - User supplied (e.g. Radiosonde) model atmosphere
+	These same abbreviations are used with the HUMID parameter, with
+	the same meanings.
+		Example: LMODEL  =  SW
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="models"><H3>MODELS</H3></A><pre>
+	The MODELs parameter is used to modify the AMODEL given, or to 
+    	specify default atmospheres to use with a RS AMODEL.  The choices
+        are the same as those given in the AMODEL description and with the same
+	meanings. The seven elements of MODELS specify Lowtran Parameters
+        M1-M^ and MDEF respectively.
+		TR - TRopical model atmosphere
+		MS - Midlatitude Summer
+		MW - Midlatitude Winter
+		SS - Subarctic Summer
+		SW - Subarctic Winter
+		ST - U.S. STandard
+		Example: MODELS  =  (SW,SW,SW,MW,MW,MW,ST)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="factors"><H3>FACTORS</H3></A><pre>
+        Used to specify the lowtram parameters H2OFAC, CO2FAC, O3FAC, O2FAC,
+         CH4FAC and  SO2FAC
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="height"><H3>HEIGHT</H3></A><pre>
+	Variable HEIGHT gives the altitude above mean sea level of the
+	TIMS aircraft as it scanned the particular flight line.  The
+	units of HEIGHT are kilometers.  A default value of 10 kilometers
+	is used as a nominal approximation of a typical TIMS overflight.
+		Example: HEIGHT  =  12.5
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="datum"><H3>DATUM</H3></A><pre>
+	The DATUM is the mean elevation in kilometers of the target
+		above mean sea level.  A default value of 1 meter is
+	used if the user does not specify the DATUM explicitly.  Again,
+	this variable is used only in the MODE  =  GRAD, GTEM or EMIS cases.
+		Example: DATUM  =  0.2
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="gndalt"><H3>GNDALT</H3></A><pre>
+
+       GNDALT is used to specify the ground elevation beneath the
+       target, if no value is specified, TCAL2 calculates it to be
+       0.0001 km below DATUM or the values it gets from the DEM.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="tbound"><H3>TBOUND</H3></A><pre>
+
+      The temperature of the ground, Lowtrans defaults it to the temperature
+      of the lowest atmospheric level if nothing is specified
+
+ 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="elevstep"><H3>ELEVSTEP</H3></A><pre>
+        Elevation step between successive runs of Lowtran when using a DEM.
+        TCAL2 finds the minimum and maximum elevation from the DEM then runs
+        Lowtran twice at each elevation(i) &lt max elevation, where
+
+          elevation(i)  =  min elevation + i x elevstep.
+
+        So Lowtran must be run
+
+          2 x  (max elevation - min elevation) / elevstep
+
+        times. If elevstep is small enough and the input image is large
+        enough, TCAL2 may fail because of memory limitations. TCAL2 needs
+        to run at least
+
+          5 x ((max elev - min elev) / elevstep) x bands x samples x 4
+
+        bytes.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="tilt"><H3>TILT</H3></A><pre>
+        Pointing of the instrument's center of field of view off
+        nadir (+ direction is towards the zero sample).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="defl"><H3>DEFL</H3></A><pre>
+       Half the field of view of the instrument, the default: 38.28 is for TIMS
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="e"><H3>E</H3></A><pre>
+        This is the emissivity assumed for each band, when computing the
+        sky radiance reflected by the ground. In the GTEM mode, these values
+        are also used to compute the ground kinetic temperature.  In the
+        EMIS mode, the REFCHAN band value is used to set that band's 
+        emissivity.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="refchan"><H3>REFCHAN</H3></A><pre>
+	The band to which the other bands are to be referenced, in
+	the case of Emissivity data, is input through this parameter.
+	The default is band six is used.
+		Example: REFCHAN  =  5
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="date"><H3>DATE</H3></A><pre>
+	TCAL2 uses the date of data acquisition to determine the proper
+	calibration coefficients.  If defaulted, the date in the VICAR 
+	label is used. This parameter is needed if the VICAR label
+	is incorrect, or if an abnormal calibration set is to be used.
+        Date is also needed if IEMSCT = 2; in that case TCAL2 calculates DOY
+        from it for the Lowtran7 parameter IDAY.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sunangle"><H3>SUNANGLE</H3></A><pre>
+ The parameters SUNANGLE, OBS_LOC, SUN_LOC, TIME and PSIPO are used when
+IEMSCT = 2, to specify the position of the sun. There are three allowable
+combinations to specify:
+
+  1) OBS_LOC, SUN_LOC and PSIPO
+
+  2) OBS_LOC, TIME and PSIPO
+
+  3) SUNANGLE
+
+ pages 38-39 of the Lowtran manual have (slightly) more information
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="obs_loc"><H3>OBS_LOC</H3></A><pre>
+ The parameters SUNANGLE, OBS_LOC, SUN_LOC, TIME and PSIPO are used when
+IEMSCT = 2, to specify the position of the sun. There are three allowable
+combinations to specify:
+
+  1) OBS_LOC, SUN_LOC and PSIPO
+
+  2) OBS_LOC, TIME and PSIPO
+
+  3) SUNANGLE
+
+ pages 38-39 of the Lowtran manual have (slightly) more information
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sun_loc"><H3>SUN_LOC</H3></A><pre>
+ The parameters SUNANGLE, OBS_LOC, SUN_LOC, TIME and PSIPO are used when
+IEMSCT = 2, to specify the position of the sun. There are three allowable
+combinations to specify:
+
+  1) OBS_LOC, SUN_LOC and PSIPO
+
+  2) OBS_LOC, TIME and PSIPO
+
+  3) SUNANGLE
+
+ pages 38-39 of the Lowtran manual have (slightly) more information
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="time"><H3>TIME</H3></A><pre>
+ The parameters SUNANGLE, OBS_LOC, SUN_LOC, TIME and PSIPO are used when
+IEMSCT = 2, to specify the position of the sun. There are three allowable
+combinations to specify:
+
+  1) OBS_LOC, SUN_LOC and PSIPO
+
+  2) OBS_LOC, TIME and PSIPO
+
+  3) SUNANGLE
+
+ pages 38-39 of the Lowtran manual have (slightly) more information
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="psipo"><H3>PSIPO</H3></A><pre>
+ The parameters SUNANGLE, OBS_LOC, SUN_LOC, TIME and PSIPO are used when
+IEMSCT = 2, to specify the position of the sun. There are three allowable
+combinations to specify:
+
+  1) OBS_LOC, SUN_LOC and PSIPO
+
+  2) OBS_LOC, TIME and PSIPO
+
+  3) SUNANGLE
+
+ pages 38-39 of the Lowtran manual have (slightly) more information
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="hengreen"><H3>HENGREEN</H3></A><pre>
+   Asymmetry parameter for use with Henyey-Greenstein Phase function. This
+ parameter can be used only if IEMSCT = 2. If it is not specified, then
+ Lowtran7's MIE-generated database of aerosol phase functions will be used
+ instead.
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="list"><H3>LIST</H3></A><pre>
+        Controls what information is printed to the terminal, the choices are:
+
+           low7inp  -  print out some Lowtran input information
+           filtlist - print out the instrument filter functions and the 
+                      interpolated function calculated by TCAL2
+           atmlist  - print some atmosphere model stuff
+           demlist  - for each band, print out the radiation up,
+                      transmission and radiation down at each elevation
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="zeroes"><H3>ZEROES</H3></A><pre>
+are the zeroes in the DEM data?
+   Use 'DATA' to indicate the zeroes in the DEM should be considered data
+ points with 0 meter elevation.
+   Use 'NODATA' to indicate the zeroes in the DEM are null data flags, the
+ zeroes will be ignored, and the output images will have zeroes whereever
+ the DEM has zeroes.$ Return
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

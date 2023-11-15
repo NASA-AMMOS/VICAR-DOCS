@@ -1,0 +1,124 @@
+<HTML>
+<HEAD><title>HTML Help for RESTORW</title></HEAD>
+<BODY>
+<H1>Help for RESTORW</H1>
+<pre>
+ This procedure restores an image using the Wiener noise additive model.
+
+ It performs the following operations:
+  1. (Optional) Extract a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#psf">PSF</A> from the second input image and fourier
+    transform it to obtain an <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#otf">OTF</A>.
+  2. Fourier transform the primary input.
+  3. Perform Wiener filtering.
+  4. Inverse fourier transform the result of step 3 to obtain the output
+    image.
+
+ The fourier transform steps are done using the procedure FFT22.
+
+EXECUTION:
+
+  restorw   (IN, PSFPIC or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#otf">OTF</A>, [OTFD])   <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#out">OUT</A>    PARAMS
+
+  where:	IN	is the input image to be restored,
+		PSFPIC  is the image containing the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#psf">PSF</A> (if <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#mode">MODE</A>=PSF),
+		<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#otf">OTF</A>	is the optical transfer function (if <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#mode">MODE</A>=OTF),
+		OTFD	(optional) is the desired output <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#otf">OTF</A>,
+		<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#out">OUT</A>	is the restored output image,
+		PARAMS  are the parameters, which are described in Tutor
+			<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#mode">mode</A>.
+METHOD
+
+The optional first step is only performed if <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#mode">MODE</A>=<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#psf">PSF</A> is specified.  (Default
+is <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#mode">MODE</A>=<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#otf">OTF</A>).  In this step, a point spread function is extracted from the
+second input image, using the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#area">AREA</A> parameter, and is fourier transformed to 
+obtain the optical transfer function (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#otf">OTF</A>).  If <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#mode">MODE</A>=OTF, the OTF is the
+second input file.
+
+The image restoration is performed using program "wiener". This program applies
+the Wiener noise additive restoration model on a point by point basis:
+
+        FT2(i,j) = FT1(i,j) * W(i,j)
+
+                        <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#otf">OTF</A>"(i,j)
+	W(i,j) = -----------------------
+                 |<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#otf">OTF</A>(i,j)|**2 + 1/<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#sn">SN</A>**2
+
+where FT1 and FT2 are the fourier transforms before and after restoration
+respectively, W is the Wiener filter, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#otf">OTF</A> is the optical transfer function,
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#otf">OTF</A>" is the complex conjugate of OTF, and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#sn">SN</A> is the signal-to-noise ratio.
+
+(NOTE:  a previous version of this proc, and of program WIENER, had a PASS
+parameter that provided for iterative refinement of the output FFT, which
+converged towards the reciprocal filter.  However, the same result can be
+achieved by specifying a large value for parameter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#sn">SN</A>, so this was removed.)
+
+The optional third input is the fourier transform of the desired point
+spread function of the output, OTFD.  If this is specified, then the
+restored transform produced by the above processing is multiplied by
+this:
+
+  FT2(final,i,j) = FT2(i,j) * OTFD(i,j)
+
+Normally one desires a delta function <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#psf">PSF</A>, and OTFD is not specified.
+
+HISTORY
+
+  may1985 ...lwk...  original version
+  18sep90 ...lwk... replaced APFLAG/FT2/FFT22 by proc FFT2 (which
+                     uses FFT2AP instead of FT2)
+  26sep90 ...lwk... renamed param IDSF to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#scratch">SCRATCH</A> and added it to FFT2 call
+  08may95 ...ams... (CRI) MSTP S/W CONVERSION (made portable for UNIX)
+  20mar03 ...lwk... removed parameter PASS (JJL did the same in WIENER)
+
+<A NAME="CogProg"> Current Cognizant Programmer:  L.W.Kamp</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#inp"><H3>INP</H3></A>
+1. Primary input image.
+2. <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#psf">PSF</A> image or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#otf">OTF</A>.
+3. (Optional) desired <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#otf">OTF</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#out"><H3>OUT</H3></A>
+restored output image.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#size"><H3>SIZE</H3></A>
+(<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#ns">NS</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#sl"><H3>SL</H3></A>
+Starting line.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#ss"><H3>SS</H3></A>
+Starting sample.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#nl"><H3>NL</H3></A>
+Number of lines.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#ns"><H3>NS</H3></A>
+Number of samples.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#sn"><H3>SN</H3></A>
+Signal-to noise ratio.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#ifft"><H3>IFFT</H3></A>
+File to contain fourier
+transform of input.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#offt"><H3>OFFT</H3></A>
+File to contain fourier
+transform of output.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#mode"><H3>MODE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#psf">PSF</A> or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#otf">OTF</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#psf"><H3>PSF</H3></A>
+File to contain point 
+spread function.
+(Only if <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#mode">MODE</A>=<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#psf">PSF</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#otf"><H3>OTF</H3></A>
+File to contain fourier
+transform of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#psf">PSF</A>.
+(Only if <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#mode">MODE</A>=<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#psf">PSF</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#scratch"><H3>SCRATCH</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#scratch">Scratch</A> file for proc FFT22.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#area"><H3>AREA</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#area">Area</A> of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#psf">PSF</A> image containing
+the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#psf">PSF</A>.
+(Required if <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#mode">MODE</A>=<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#psf">PSF</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#shift"><H3>SHIFT</H3></A>
+Allow <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#psf">PSF</A> to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#shift">shift</A>?
+(Only if <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#mode">MODE</A>=<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw_level2.html#psf">PSF</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/restorw.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

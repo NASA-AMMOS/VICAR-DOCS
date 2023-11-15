@@ -1,0 +1,96 @@
+<HTML>
+<HEAD><title>HTML Help for IBISLSQ</title></HEAD>
+<BODY>
+<H1>Help for IBISLSQ</H1>
+<pre>
+PURPOSE
+
+   "ibislsq" performs least squares fits on data in an IBIS interface
+(tabular) file.  The solutions and/or residuals can be placed in 
+specified columns of the file.  The solutions can also be output
+to the terminal.  Multiple fits can be done on different parts of
+one file.
+
+
+EXECUTION
+
+     ibislsq <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#inp">INP</A>=DATA.INT  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#indcol">INDCOL</A>=(1,2,3) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#depcol">DEPCOL</A>=(4,5) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#concol">CONCOL</A>=7  	     <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#solcol">SOLCOL</A>=(10,11) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#rescol">RESCOL</A>=(8,9)  '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#noprint">NOPRINT</A>
+
+    This example shows the use of all of the parameters.  The input
+file, DATA.INT, is an IBIS interface file.  The data for the independent
+variables are in columns (1,2,3), and the data for the dependent 
+variables are in columns (4,5).  The control column is used for
+multiple fits to be done in one run.  The least square fits are done 
+on sets of rows; a new set is started whenever the value in the control 
+column changes.  If no control column is specified then one fit
+is done on the whole file.  The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#solcol">SOLCOL</A> and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#rescol">RESCOL</A> parameters specify
+in which columns, of the input file, the results will be put.  If either
+or both are not specified then they will not be output.  There must be
+as many solution columns and residual columns as there are dependent 
+columns.  The data in the residual columns correspond one-to-one with
+the data in the dependent columns.  The solution is put out in the
+first N rows of the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#solcol">SOLCOL</A> columns, where N is the number of independent
+columns; the rest of the rows in the set are filled with zeros.   Normally
+the solution for each set is printed to the terminal, but this can 
+be turned off with the '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#noprint">NOPRINT</A> keyword.
+
+    The length of each set should, of course, be longer than the
+number of independent variables (columns).  If it is not then the
+least squares fit will not be called and values of -999.0 will be
+put out for the solution.  If some columns of the independent data
+are dependent then the error MATRIX RANK TOO SMALL be be printed,
+and -999.0's will be put out for the solution.  If there is no
+solution then zeros will be put out for the residuals.
+
+
+
+<A NAME="examples">EXAMPLES</A>
+
+   Suppose that columns 1 and 2 contain points (x,y) in a plane 
+   and  column  7 contains a function  f(x,y).   The  following 
+   sequence  will perform a quadratic least squares fit  h(x,y) 
+   and place the residuals in column 8.
+
+   mf <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#inp">INP</A>=A FUNCTION=("C3=C1*C1","C4=C2*C2","C5=C1*C2","C6=1")
+   ibislsq <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#indcol">INDCOL</A>=(1,2,3,4,5,6) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#depcol">DEPCOL</A>=7 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#rescol">RESCOL</A>=8
+
+
+RESTRICTIONS
+
+The maximum number of independent columns (variables) is 20.
+The maximum number of dependent columns (variables) is 5.
+The maximum length of any set is 5000.
+The maximum column length of the file is 10000.
+Interface files are assumed to have 40 or less columns.
+
+
+
+WRITTEN BY:            K. F. Evans	April 1986
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  K. F. Evans</A>
+
+REVISION:  A. Scop (CRI) 2 Jan. 1995  Made portable for UNIX
+
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#inp"><H3>INP</H3></A>
+ Input IBIS interface file
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#indcol"><H3>INDCOL</H3></A>
+ Independent variable columns
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#depcol"><H3>DEPCOL</H3></A>
+ Dependent variable columns
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#solcol"><H3>SOLCOL</H3></A>
+ Solutions columns
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#rescol"><H3>RESCOL</H3></A>
+ Residuals columns
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#concol"><H3>CONCOL</H3></A>
+ Control column
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq_level2.html#noprint"><H3>NOPRINT</H3></A>
+Keyword to suppress printout
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ibislsq.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

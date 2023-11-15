@@ -1,0 +1,148 @@
+<HTML>
+<HEAD><title>HTML Help for LIST</title></HEAD>
+<BODY>
+<H1>Help for LIST</H1>
+<pre>
+ PURPOSE:
+ LIST will give a numerical listing of a VICAR dataset.
+ It offers a large assortment of print formats and input data formats.
+ All parameters except <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#inp">INP</A> are optional. Only the first four characters of
+ string parameters (other than <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#inp">INP</A>) are checked by the program.
+ Caution should be used in defaulting the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#size">SIZE</A> parameter as this will result
+ in the entire picture being listed. For a 900 x 900 byte picture, this
+ would tie up the line printer for 30 minutes.
+
+ If the keyword <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#dump">DUMP</A> is specified, the output may be a tape data set.
+ If <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#dump">DUMP</A> is not specified, the data set is listed in vertical strips
+ 30 pixels wide.  Since this will generally result in multiple
+ passes through the data, the picture should be on a disk data set.
+ LIST can handle unlabeled files if the parameter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#insize">INSIZE</A> is given.  The
+ input file <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#format">format</A> and organization is taken from the FORMAT and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#org">ORG</A>
+ parameters, if present.
+
+ The maximum record <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#size">size</A> (number of samples * pixel size) that LIST
+ can handle is 200,000 bytes.  If you try to list even just a part
+ of an image that is bigger than 200,000 bytes, you will get an error.
+
+ EXECUTION:
+    The following is the execution statement for LIST:
+            LIST  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#inp">INP</A>  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#size">SIZE</A>  PARAMS
+ where <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#inp">INP</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#size">SIZE</A>, and PARAMS are parameters discussed in their
+ respective parameter section in TUTOR mode.
+ TIMING:                   None available for the VAX
+
+ WRITTEN BY:               Gary Yagi          01/10/77
+<A NAME="CogProg"> COGNIZANT PROGRAMMER:     Bob Deen</A>
+
+ REVISIONS: 
+
+  1977-01-10 Gary Yagi - Initial version
+  1982-12-20 Lucas Kamp - Conversion to VAX
+  1983-10    ANON - Renamed from PRNT to avoid confusion with the subroutine PRNT
+  1984-01    Lucas Kamp - Changed 64 (EBCDIC <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#space">space</A>) to 32 (ASCII)
+  1984-11    Lucas Kamp - Fixes to reduce QPRINT line length & supress "NO LABELS" msg.
+             (Both should be temporary!)
+  1985-02-15 Ray Stagner - Conversion to VICAR2
+  1985-04-25 Ray Stagner - Change DCODE from 9 to 10 for complex data type to
+             be consistent with other VICAR programs
+  1987-04    Steve Pohorsky Deleted nonfunctional PRINT and SHIFT parameters.
+  1987-06-18 Bob Deen - Major revisions; added 3D file capability and reading of
+             unlabeled files.
+  1990-02    Bob Deen - Rewritten in C with Unix compatibility; removed all sublib 
+             references (outcon, prnt, etc.).
+  1995-05    Barbara McGuffie - Corrected error with hex <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#dump">dump</A> option.  Disables hex
+             <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#dump">dump</A> for DOUB/COMP.  FR 79143                       */
+  1995-11    Barbara McGuffie - Added MEMCPY in MOVX and removed pointer moves FR 87132. 
+             Also, modified tstlist.pdf to use cform rather than c.
+  1998-06    TIH - Added check for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#insize">INSIZE</A> parameter when file is not
+             labeled. Changed tstlist.pdf to conform to UNIX
+             (see AR-9635)                                  
+             Added <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#ndigits">NDIGITS</A> parameter to specify the precision
+             used to <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#display">display</A> real numbers (REAL, DOUB, COMP)
+  2000-10-06 Amy Chen - Added stdio.h header file
+  2017-03-29 Walt Bunch - Added <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#nousrtim">NOUSRTIM</A> param to help automated regression testing.
+
+  2019-09-06 Walt Bunch - IDS-7922 - Initialized some variables. Replaced sprintf
+             calls. Cleaned up -Wall warnings. 
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#inp"><H3>INP</H3></A>
+ Input dataset
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#size"><H3>SIZE</H3></A>
+ Image <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#size">size</A>
+ (See HELP <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#format">FORMAT</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#bands"><H3>BANDS</H3></A>
+ Image band <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#size">size</A>
+ (See HELP <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#format">FORMAT</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#sl"><H3>SL</H3></A>
+ Integer - Starting
+ Line
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#ss"><H3>SS</H3></A>
+ Integer - Starting
+ Sample
+ (See HELP <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#format">FORMAT</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#sb"><H3>SB</H3></A>
+ Integer - Starting
+ Band
+ (See HELP <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#format">FORMAT</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#nl"><H3>NL</H3></A>
+ Integer - Number
+ of Lines
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#ns"><H3>NS</H3></A>
+ Integer - Number
+ of Samples
+ (See HELP <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#format">FORMAT</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#nb"><H3>NB</H3></A>
+ Integer - Number
+ of <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#bands">Bands</A>
+ (See HELP <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#format">FORMAT</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#format"><H3>FORMAT</H3></A>
+ Data <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#format">format</A> 
+ Valid: HEX,BYTE,HALF
+ WORD,FULL,REAL,REAL4,
+ REAL8,DOUBLE,COMPLEX
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#linc"><H3>LINC</H3></A>
+ Line increment
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#sinc"><H3>SINC</H3></A>
+ Sample increment
+ (See HELP <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#format">FORMAT</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#binc"><H3>BINC</H3></A>
+ Band increment
+ (See HELP <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#format">FORMAT</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#incremen"><H3>INCREMEN</H3></A>
+ Line and sample
+ increment
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#dump"><H3>DUMP</H3></A>
+ Record <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#dump">dump</A>? 
+ Valid: <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#dump">DUMP</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#zeroes"><H3>ZEROES</H3></A>
+ Print <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#zeroes">zeroes</A>?
+ Valid: <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#zeroes">ZEROES</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#noeject"><H3>NOEJECT</H3></A>
+ Repeat header?
+ Valid: <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#noeject">NOEJECT</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#space"><H3>SPACE</H3></A>
+ Line spacing
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#ndigits"><H3>NDIGITS</H3></A>
+ Number of significant digits.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#display"><H3>DISPLAY</H3></A>
+ <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#display">Display</A> spacing?
+ Valid: <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#display">DISPLAY</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#nofeed"><H3>NOFEED</H3></A>
+ Suppress form feeds?
+ Valid: <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#nofeed">NOFEED</A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#nousrtim"><H3>NOUSRTIM</H3></A>
+ Suppress username and datetime?
+ Valid: <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#nousrtim">NOUSRTIM</A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#org"><H3>ORG</H3></A>
+ Output organization
+ Valid: BSQ,BIL,BIP.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#insize"><H3>INSIZE</H3></A>
+ (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#ns">ns</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list_level2.html#nb">nb</A>) of input
+ if unlabeled
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/list.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

@@ -1,0 +1,69 @@
+<HTML>
+<HEAD><title>HTML Help for GTSTAT</title></HEAD>
+<BODY>
+<H1>Help for GTSTAT</H1>
+<pre>
+PURPOSE:
+
+gtstat applies a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/gtstat_level2.html#window">window</A> to each pixel location (mirroring at the 
+edges, see OPERATION), calculates the mean or standard deviation,
+multiplies by a user selected constant, and outputs the value for
+the center pixel of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/gtstat_level2.html#window">window</A>.  The result is an image.
+
+EXECUTION:
+
+Example
+
+gtstat A B        will calculate the standard deviation of A using 
+                  the default 3x3 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/gtstat_level2.html#window">window</A> and put the result in C.
+                               
+gtstat A B 'MEAN  will calculate the mean of A using the default
+                  3x3 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/gtstat_level2.html#window">window</A> and put the result in C.
+                               
+OPERATION:
+
+Because of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/gtstat_level2.html#window">window</A>, the program uses a "rolling barrel" of input
+lines to avoid rereading a line more than once in the second input.
+
+The image is not really mirrored at the edges, but calculates the
+calculated statistic on the intersection of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/gtstat_level2.html#window">window</A> with the image.
+The difference is an overweighting of the non-reflected pixels in
+the calculated statistic, but this is a minor effect.  In a sense, 
+mirroring would overweight the reflected pixels, so who is to say
+which is better.
+
+TIMING: 
+
+About the same speed as convolution filter.  
+
+ ORIGINAL PROGRAMMER:    A. Zobrist          15 Dec 2003
+<A NAME="CogProg"> COGNIZANT PROGRAMMER:   A. Zobrist          15 Dec 2003</A>
+ 
+ REVISION HISTORY
+  2003-12-15 AZ  Initial version
+  2003-12-22 AZ  Added mean, kept sigma as default
+  2008-01-02 WLB Switched to USES_ANSI_C AND LIB_CARTO; misc cleanup  
+  2015-10-23 WLB Migrated to MIPL
+  
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/gtstat_level2.html#inp"><H3>INP</H3></A>
+STRING - Input image file
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/gtstat_level2.html#out"><H3>OUT</H3></A>
+STRING - Output image file
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/gtstat_level2.html#window"><H3>WINDOW</H3></A>
+Size of the stat <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/gtstat_level2.html#window">window</A>,
+must be odd
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/gtstat_level2.html#mode"><H3>MODE</H3></A>
+'MEAN - calculate the mean
+'SDEV - calculate the standard
+        deviation
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/gtstat_level2.html#factor"><H3>FACTOR</H3></A>
+Multiply output image by
+this <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/gtstat_level2.html#factor">factor</A>
+.END
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/gtstat.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/gtstat.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

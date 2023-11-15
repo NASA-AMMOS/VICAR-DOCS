@@ -1,0 +1,211 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for TRACKER3</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3.html">TRACKER3</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+The input images to acquire tiepoints from.
+
+First is the left or reference image.
+      If there is no third input this will have a regular <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#grid">grid</A>. 
+Second is the right image.
+      If there is no third input this will have an irregular <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#grid">grid</A>.
+Third is an optional tiepoints file to be used as initial input values.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+Output tiepoint file .
+At the moment this is a mark file with 512 byte records and 32 tiepoints per
+record in the order left_line left_sample right_line right_sample, left_...
+all float format.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="asciifile"><H3>ASCIIFILE</H3></A><pre>
+Name of the optional output ascii tiepoints file. Default is no ascii file is
+produced. (Default name is "NONE").
+If created this file will be in the same order as the binary mark file
+but will contain one record per tiepoint. 
+All data will be in floating point format, possibly extended precision.
+It is intended that records will contain the following 9 columns:
+line1 samp1 line2 samp2 dn1 dn2 X Y Z
+Tracker3 will fill the first 6 columns:
+line1 samp1 line2 samp2 dn1 dn2
+Where line1 & samp1 are the left image coordinates.
+Where line2 & samp2 are the right image coordinates.
+Where dn1 & dn2 are the left & right intensities.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="correl"><H3>CORREL</H3></A><pre>
+The correlation scheme to use. Your options are:
+LINEAR (Exhaustive correlation on integral pixel boundaries).
+AMOEBA (Simplex deterministic downhill search method).
+ANNEAL (Annealing non-deterministic search method).
+LINAMO (LINEAR followed by AMOEBA).
+ANNAMO (ANNEAL followed by AMOEBA).
+
+See the method description.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nlw"><H3>NLW</H3></A><pre>
+Number of lines in the left image template.
+This is the reference area or correlation size.
+Should be an odd number.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nsw"><H3>NSW</H3></A><pre>
+Number of samples in the left image template.
+This is the reference area or correlation size.
+Should be an odd number.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nlarea"><H3>NLAREA</H3></A><pre>
+Number of lines in the right image search area.
+Usually much larger than <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#nlw">NLW</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nsarea"><H3>NSAREA</H3></A><pre>
+Number of samples in the right image search area.
+Usually much larger than <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#nsw">NSW</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="grid"><H3>GRID</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#grid">Grid</A> interval in pixels. This is the spacing between columns and rows of 
+pixels in the left or reference image. Only used when two input images
+are present.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="percent"><H3>PERCENT</H3></A><pre>
+Percentage of the template used in the correlation.
+
+If <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#percent">percent</A>=100 then only one template is used to correlate with.
+
+If <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#percent">percent</A> &lt 100 then five templates are used, the best one determining
+the tiepoint. Template 1 is the standard one. Templates 2-5 permit only
+the top,bottom,left,and right <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#percent">PERCENT</A> of the template area to show.
+This permits blemishes to be ignored if they are on the edge of the 
+correlation area at the expense of five times the overhead.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="limit"><H3>LIMIT</H3></A><pre>
+Number of cycles permitted in the annealing algorithm. As a rule:
+
+1. The fewer cycles the less reliable the result.
+2. If ANNEAL is followed by AMOEBA then fewer cycles are needed.
+3. If the coefficient search range <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#coefrang">COEFRANG</A> is large more cycles are needed.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coefrang"><H3>COEFRANG</H3></A><pre>
+Range limits of the mapping polynomial for annealing options only.
+
+The polynomial mapping is of the form:
+rightline=  C1*leftsample+C2*leftline+C3
+rightsample=C4*leftsample+C5*leftline+C6
+If you specify: <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#coefrang">coefrang</A>=(.8,1.2,-.35,.35) then
+-.35  &lt C1 < .35
+-.35  &lt C5 < .35
+.8    &LT C2 < 1.2
+.8    &LT C4 < 1.2
+Coefficient solutions will be restricted to this range.
+
+The defaults (above example) permit rotations either way of up to 
+about 20 degrees, and scaling of about 20 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#percent">percent</A>.
+ANNEAL and ANNAMO options only.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="quality"><H3>QUALITY</H3></A><pre>
+Only permit tiepoints to be placed into the output file if their correlation
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#quality">quality</A> exceeds QUALITY. Quality is computed for each corralation and is
+a number from 0 (no correlation at all) to 1 (perfect correlation).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="zero"><H3>ZERO</H3></A><pre>
+Reject correlation areas if any of the corners are <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#zero">zero</A> dn.
+This permits the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#zero">zero</A> region outside map projected images to be detected
+and not included in correlations.
+Whether <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#zero">zero</A> is specified or not all areas which are of the same dn 
+(flat fields) are rejected anyway.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="print"><H3>PRINT</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#print">Print</A> tiepoints and their qualities.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="extend"><H3>EXTEND</H3></A><pre>
+If there are three input files the initial tiepoints will be obtained from 
+the third input. The default is to use the left and right tiepoint pairs for
+the first and second input files respectively. If however you wish to chain
+existing tiepoints through successive images (to track points ) the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#extend">EXTEND</A>
+option will place the right tiepoint side on the FIRST input file and then
+create a copy of this point for the second input file. For example, if you had
+a movie sequence with images a b c d you would first create a <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#grid">grid</A> of
+points with:
+tracker3 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#inp">inp</A>=(a.img,b.img) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#out">out</A>=t1.pts <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#grid">grid</A>=40
+and then chain them through the other images with:
+tracker3 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#inp">inp</A>=(b.img,c.img,t1.pts) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#out">out</A>=t2.pts '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#extend">extend</A>
+tracker3 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#inp">inp</A>=(c.img,d.img,t2.pts) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#out">out</A>=t3.pts '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#extend">extend</A>
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

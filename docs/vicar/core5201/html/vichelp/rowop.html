@@ -1,0 +1,121 @@
+<HTML>
+<HEAD><title>HTML Help for ROWOP</title></HEAD>
+<BODY>
+<H1>Help for ROWOP</H1>
+<pre>
+PURPOSE
+
+    ROWOP performs row operations on an IBIS interface (tabular) file.
+There are three modes of operation:  delete, select, and pick.  The modes
+all involve checking the values in a row against an input <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#range">range</A>
+of allowed values.  The delete option deletes the rows that satisfy any
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#range">range</A> criterion, the select option selects the rows that satify all range
+criteria, and the pick option selects the rows that satisfy any <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#range">range</A> 
+criterion.  The changes are made to the output file, not the input file.  
+The number of columns is unchanged.
+
+
+EXECUTION
+
+ROWOP <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#inp">INP</A>=INPUT.INT <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#out">OUT</A>=OUTPUT.INT   <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#keycol">KEYCOL</A>=(C1,C2,..Cn)   			<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#range">RANGE</A>=(L1,U1, L2,U2, ..., Ln,Un)  '<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#mode">mode</A>
+
+    <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#inp">INP</A> is the input IBIS interface file, and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#out">OUT</A> is the output IBIS 
+interface file.   <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#keycol">KEYCOL</A> are the columns for matching data values.  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#range">RANGE</A> 
+specifies that the values in column Ci of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#inp">INP</A> are checked against the 
+numeric <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#range">range</A> designated by Li and Ui.  The precision parameter, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#prec">PREC</A>, 
+specifies by how much the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#range">range</A> limits will be enlarged to overcome
+precision problems;  the lower limit is lowered by P, and the upper
+limit is increased by P.  The default for P is zero.  The '<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#mode">mode</A> parameter
+chooses the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#mode">mode</A> of operation -- how the ranges will be used to select
+the rows.
+
+
+<A NAME="examples">EXAMPLES</A>
+
+ROWOP <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#out">OUT</A>=B <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#keycol">KEYCOL</A>=(1,1,5) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#range">RANGE</A>=(0,10, 100,1000, 20.35,20.35) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#prec">PREC</A>=0.01
+
+    The delete <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#mode">mode</A> has been invoked.  For each row if the value in 
+column one is between -0.01 and 10.01 or between 99.99 and 1000.01, or 
+if the value in column five is between 20.34 and 20.36, then the row 
+containing those values will be deleted.
+
+
+ROWOP <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#out">OUT</A>=B <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#keycol">KEYCOL</A>=(2,6)  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#range">RANGE</A>=( 1.5,3.0, 250,400)  'SELECT
+
+    The select <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#mode">mode</A> has been invoked.  For each row if the value in 
+column two is between 1.5 and 3.0 inclusive AND the value in column six 
+is between 250 and 400 inclusive then the row will be selected.
+
+
+ROWOP <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#out">OUT</A>=B <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#keycol">KEYCOL</A>=(1,2)  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#range">RANGE</A>=( 1,1, 10,20)  'PICK
+
+    The pick <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#mode">mode</A> has been invoked.  For each row if the value in 
+column one is 1  OR  the value in column two is between 10 and 20 
+inclusive then the row will be selected.
+
+
+
+ROWOP <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#inp">INP</A>=INPUT.INT <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#out">OUT</A>=OUTPUT.INT   <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#keycol">KEYCOL</A>=(C1,C2,..Cn)   			<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#range">RANGE</A>=(L1,U1, L2,U2, ..., Ln,Un)   			<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#ncopy">NCOPY</A>=(N,ICOL)
+
+    The first number, N, in the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#ncopy">NCOPY</A> parameter specifies the number of 
+times the accepted rows will be copied, and the second number specifies 
+which column to put the index number in.  The index number tells which copy 
+the row belongs to (1 for the first copy, 2 for the second, etc.)   If no 
+index column is specified then the index numbers will not be put in the file.  
+The copies are made by copying the whole block of output rows, not by copying 
+each row separately.  If the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#ncopy">NCOPY</A> parameter is omitted altogether then just 
+one copy will be made.
+
+
+ROWOP IN=A <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#out">OUT</A>=B <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#keycol">KEYCOL</A>=(2,3) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#range">RANGE</A>=(-90,90, 0,360) 'SELECT <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#ncopy">NCOPY</A>=(5,4)
+
+    The select <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#mode">mode</A> has been invoked.  If the values in column two of IN are
+between -90 and 90 and those of column three between 0 and 360, then
+the rows containing those values are selected (i.e. only those rows 
+satisfying all the criterion are copied to the output file).  Five
+copies of the selected rows will be made, with the index number going
+into column 4.
+
+
+
+RESTRICTIONS
+
+    The number of L,U pairs after <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#range">RANGE</A> must equal the number of columns 
+listed after <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#keycol">KEYCOL</A>.  The maximum number of rows from the input interface 
+file is limited to 1,000,000.  The maximum number of ranges that can be 
+checked is 100.
+
+
+WRITTEN BY		H. Wilczynski		26 Jan 1977
+<A NAME="CogProg">COGNIZANT PROGRAMMER	N. D. Ritter</A>
+REVISION		4			May 1994
+
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#inp"><H3>INP</H3></A>
+Input interface file
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#out"><H3>OUT</H3></A>
+Output interface file
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#keycol"><H3>KEYCOL</H3></A>
+The list of match columns
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#range"><H3>RANGE</H3></A>
+Lower and upper check limits
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#mode"><H3>MODE</H3></A>
+Keyword for which <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#mode">mode</A>.
+DELETE, SELECT, or PICK
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#prec"><H3>PREC</H3></A>
+The precision of the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#range">range</A>
+limits.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#ncopy"><H3>NCOPY</H3></A>
+1. The number of copies
+    to make in the output.
+2. The index column.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop_level2.html#gr1dim"><H3>GR1DIM</H3></A>
+Dimension (Graphics-1 only)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rowop.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

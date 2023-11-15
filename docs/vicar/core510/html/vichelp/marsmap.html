@@ -1,0 +1,803 @@
+<HTML>
+<HEAD><title>HTML Help for MARSMAP</title></HEAD>
+<BODY>
+<H1>Help for MARSMAP</H1>
+<pre>
+Purpose
+-------
+
+To assemble multiple frames into a mosaic in one of three projections:
+
+  Cylindrical
+  Polar
+  Vertical
+
+Cylindrical and Polar use spherical coordinates; Vertical uses rectangular.
+In addition an experimental Sinusoidal <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#projection">projection</A> is implemented, but is
+not yet fully tested or validated.
+
+This is a multimission program derived from Mars Pathfinder's mpfmap.
+It supports and mission, instrument, and camera model supported by the
+Planetary Image Geometry (Pig) software suite.
+
+Best results are obtained if the images are all taken from the same camera
+at approximately the same position.
+
+The program will optionally put azimuth and elevation (Cylindrical, Polar)
+or X and Y (Vertical) lines and annotation on the image.  These can either
+appear "on top of" or "underneath" the image.  See <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#grid">GRID</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#grid_spacing">GRID_SPACING</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#grid_dn">GRID_DN</A>,
+and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#grid_zoom">GRID_ZOOM</A>.
+
+In addition, the program will optionally place an image <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number">number</A> at the center of
+each image in the output, to aid in identification of the images.  See <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number">NUMBER</A>,
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number_dn">NUMBER_DN</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number_zoom">NUMBER_ZOOM</A>, and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number_start">NUMBER_START</A>.  It will also optionally draw a
+"footprint" border around each image.  See <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#footprt">FOOTPRT</A> and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#foot_dn">FOOT_DN</A>.
+
+The program can accept a navigation file written by marsnav which will improve
+the accuracy of the mosaic.
+
+Radiometric correction is performed on the inputs by default; this may be
+turned off via the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#rad">RAD</A> keyword parameter.
+
+Marsmap can also be used to analyze image overlaps for use with brightness
+correction.  This subsumes the functionality of the old "marsint" program.
+
+Marsmap will handle color images automatically if the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#band">BAND</A> parameter is not
+specified. For mixed color and black-and-white inputs, the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number">number</A> of output
+bands will equal the maximum <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number">number</A> of bands across all inputs. Images with
+less than that <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number">number</A> of bands will simply repeat the last available <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#band">band</A> i.e.,
+black-and-white images can be mixed with color images. If <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#band">BAND</A> is specified,
+only that single <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#band">band</A> (in the multi-banded images) is processed, and black-and-
+white images remain unaffected.
+
+Execution
+---------
+
+There are two ways to present input images:
+
+marsmap <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#inp">inp</A>=(a.img,b.img,c.img,...) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#out">out</A>=map.img
+or
+marsmap <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#inp">inp</A>=ascii_listoffiles <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#out">out</A>=map.img
+
+where ascii_listoffiles is a text file created by Sybase or an editor,
+containing the list of filenames to include in the mosaic, one per record.
+Up to 200 input images can be listed.
+
+Additionally, marsnav may be used:
+
+marsnav <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#inp">inp</A>=ascii_listoffiles <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#out">out</A>=navtab search=25
+marsmap <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#inp">inp</A>=ascii_listoffiles <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#out">out</A>=map.img <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#navtable">navtable</A>=navtab
+
+Parallel Execution
+------------------
+
+MARSMAP can be run in parallel in two different ways: across multiple machines
+using MPI, and across cores on a single machine using OMP.  The OMP method
+is far simpler to use.  Both can be used simultaneously (in which case it
+could take up all cores on all machines).
+
+OMP Parallel Processing (multiple cores, single machine)
+-----------------------
+
+This program has been parallelized using Open MP (OMP), which is built in
+to the g++ compiler.
+
+By default the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number">number</A> of threads used equals the number of cores on the machine
+where the program is being run.  Each image line is processed sequentially, but
+each sample in the line is assigned to a different core, with "guided,16"
+scheduling to keep the workload for each core similar.
+
+Parallel processing can be disabled via the -OMP_OFF keyword.  The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number">number</A>
+of threads can be controlled by setting the OMP_NUM_THREADS environment
+variable before running the program.  There are numerous other OMP variables
+that can be set; see the OMP documentation.  However, the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number">number</A> of threads
+is the only one that is likely to be useful in most cases.
+
+MPI Parallel Processing (multiple machines)
+-----------------------
+
+MARSMAP can be run in parallel on multiple machines.  This dramatically
+improves the wall-clock execution time of the program.  The MPI (Message
+Passing Interface) package is used for interprocess communication.  This is
+intended for Beowulf-style clusters, but can be used on any set of machines.
+Each node processes a strip of the output mosaic, extending the entire width
+and 1/n of the height (where n is the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number">number</A> of parallel nodes).
+
+If parallel execution is not desired, nothing special need be done.
+The program will work as before on one node with no extra parameters.
+The program can be recompiled without using the MPI library by removing
+the LIB_MPI definition from the imake file.  However, this is not
+necessary - the MPI-linked version will work in serial fashion just fine.
+
+Consult the MPI documentation for details on parallel execution.  However,
+for the simplest case, the following can be done:
+
+First, make sure all involved machines can be accessed via ssh from the
+main node (the one on which you start the program).  It is convenient
+to set up ssh to work without a password (consult your local System
+Administrator), but that is not required.
+
+Second, make sure that any required setups are done in your .cshrc file
+on each machine.  This includes environment variables and generally
+involves source'ing vicset1.csh and vicset2.csh.  The following is
+recommended for a .cshrc file:
+
+if ($?V2TOP == 0) then
+    setenv V2TOP /usr/local/vicar/dev    (or wherever your VICAR resides)
+    source $V2TOP/vicset1.csh
+endif
+source $V2TOP/vicset2.csh
+
+Third, make sure all pathnames are absolute and accessible from all
+machines.  The current directory is not transferred to the remote machines,
+so relative pathnames will not work.
+
+Finally, set up a file containing the node name of each machine to use.
+Node names can be repeated, in which case multiple processes will be started
+on each machine.  The first one becomes the master machine, and is often
+(but not necessarily) the one on which the program is being started.  The
+nodes should be of the same architecture (e.g. solaris vs. linux).
+For example:
+
+lowe% cat machines.solaris 
+# Change this file to contain the machines that you want to use
+# to run MPI jobs on.  The format is one host name per line, with either
+#    hostname
+# or
+#    hostname:n
+# where n is the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number">number</A> of processors in an SMP.  The hostname should
+# be the same as the result from the command "hostname"
+lowe
+pinatubo
+potato
+wind
+
+Then the program can be run like this:
+
+$MPILIB/bin/mpirun -np 4 -machinefile machines.solaris $MARSLIB/marsmap ...
+
+where -np is the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number">number</A> of processor nodes, -machinefile is the name of
+the file above (this pathname can be relative), and ... are the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#normal">normal</A>
+parameters to marsmap (with absolute pathnames).
+
+Each node sends its stdout/stderr output to the controlling terminal,
+so messages from each node will be interleaved.  Specifically, the
+"line n" status messages will be interleaved.  Careful examination should
+show that all line numbers are eventually printed <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#out">out</A>.
+
+Coordinates
+-----------
+
+(Almost) all coordinates and angles are measured in the coordinate system
+specified by the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#coord">COORD</A> parameter.  The default is the FIXED coordinate system.
+Fixed coordinates are <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#surface">Surface</A> Fixed for Pathfinder and Mars 98, and the
+"special" Site frame for FIDO and MER.  The Instrument coordinates are
+Lander for Pathfinder, MVACS for Mars 98, and Rover for FIDO and MER.  See
+the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#coord">COORD</A> parameter for other options.  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#coord_index">COORD_INDEX</A> also applies for some
+coordinate systems/missions.
+
+With two exceptions, this coordinate system applies to both the input
+parameter values, and all values reported by the program to stdout.  It is
+also used for the mosaic <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#projection">projection</A> itself.  The exceptions are that the
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#surface">surface</A> model can optionally be expressed in a different frame using
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#surf_coord">SURF_COORD</A> or <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#surf_csfile">SURF_CSFILE</A>, and the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#proj_origin">PROJ_ORIGIN</A> parameter can optionally be 
+expressed in a different frame using <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#po_coord">PO_COORD</A>.
+
+Pathfinder and MER Fixed have +x pointing North, and +z down (nadir).
+Mars 98 Fixed has +x pointing North, and +z up (zenith).  Azimuth follows
+the right-hand rule, meaning Clockwise for MPF and MER and Counterclockwise
+for M98.
+
+Usage
+-----
+
+Marsmap creates an output image large enough to contain the mosaic.
+You may override input azimuth and elevation limits using keywords:
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#leftaz">LEFTAZ</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#rightaz">RIGHTAZ</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#topel">TOPEL</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bottomel">BOTTOMEL</A> for Cylindrical and Polar, and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#minx">MINX</A>,
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#miny">MINY</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#maxx">MAXX</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#maxy">MAXY</A> for Vertical.
+
+Four types of output mosaics are available. These are:
+
+"CYLINDRICAL"
+The mosaic consists of lines of constant elevation and columns of constant
+azimuth. An equal <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#scale">scale</A> of pixels/degree exists everywhere. The user can
+control the extent of the azimuth and elevation coverage.
+
+The program will try to determine a window containing the input images and
+only create enough of the output to contain the inputs. If the inputs are
+all over the place, this may not succeed.
+For large mosaics near 360 degrees, override the algorithm by specifying the
+azimuth limits manually.
+
+"POLAR"
+The mosaic consists of radial lines of constant azimuth emanating from the
+center of the output. Zero azimuth is up. The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#scale">scale</A> is only constant 
+radially. Nadir is the center of the image.
+
+"VERTICAL"
+The mosaic consists of a vertical view assuming the landing site is a plane
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#surface">surface</A>.  The quaternion places North up and East to the right.  All pixels
+have an equal X/Y <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#scale">scale</A>.  Note that the scale is NOT specified via the
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#scale">SCALE</A> parameter; you must use <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#vert_scale">VERT_SCALE</A> instead.
+
+"SINUSOIDAL"
+This experimental <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#projection">projection</A> is like Cylindrical except the image <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#scale">scale</A> in
+the azimuth direction is reduced based on the cosine of the latitude.  This
+helps reduce the distortion of cylindrical when near the zenith or nadir.  It
+is not fully implemented or tested.  The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#center_az">CENTER_AZ</A> and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#center_el">CENTER_EL</A> parameters
+define the azimuth and elevation of maximum extent.  These default to the
+center of the mosaic and 0 degrees elevation, respectively.
+
+In all cases, labels will be written to the output image specifying all
+parameters needed in order to reproject the image, and to convert pixel
+coordinates into XYZ view rays in the output coordinate system.  See the
+mission SIS for details on what the label items mean.
+
+Overlap Brightness Analysis
+---------------------------
+
+If an output filename is given via the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#ovr_out">OVR_OUT</A> parameter, then marsmap
+will additionally create a file containing image overlap information.
+Each output pixel is analyzed to see which input images could overlap it.
+Then for each unique set of overlapping images, statistics are gathered
+on the mean, standard deviation, and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number">number</A> of pixels in the overlapping
+area.  This replaces the functionality of the old "marsint" program.
+Optionally, statistics can be gathered about the image as a whole ("overall"
+overlaps).
+
+This file can then be given to the "marsbrt" program, which will compute
+brightness adjustments.  These adjustments can then be supplied back to
+marsmap (or any of the mosaic programs) via the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#brtcorr">BRTCORR</A> parameter.
+
+Normally the statistics are gathered on the given image data (after
+radiometric correction, if specified).  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#use_hsi">USE_HSI</A> can change this to convert
+the data to Hue-Saturation-Intensity (HSI) space, gathering statistics on
+the Intensity channel.  This is better for correcting color images.  If the
+image is not color, the HSI flag is quietly ignored for that image (thus
+allowing mixtures of color and BW images).
+
+The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#radius">RADIUS</A> parameter can be used to control the size of the overlap areas;
+setting this to a non-0 value causes all pixels within an overlap to be
+within a circle of that <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#radius">radius</A> (centered on the first pixel found).
+Pixels outside that area become part of a different overlap.  This makes
+the analysis of the data easier and enables things like outlier rejection
+to deal with sun glints or parallax isues.
+
+When overlap <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#mode">mode</A> is used, the mosaic overlap is different.  Instead of
+the first image coming <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#out">out</A> on top, in this <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#mode">mode</A> the *last* image in the file
+list is on top.  This is simply a side effect of how the overlap analysis
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#mode">mode</A> works (the output mosaic is rarely actually used in this mode), but the
+effect could be useful in certain situations.  The -<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#reverse">reverse</A> flag can be used
+to get the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#reverse">reverse</A> (last on top) effect without having to use overlap.
+
+In overlap <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#mode">mode</A>, ALL inputs must be loaded into memory simultaneously,
+with only one pass through the mosaic.  This means that you may not be able
+to handle mosaics that are as large as can be handled without overlap <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#mode">mode</A>
+being on, depending on your machine.
+
+Zooming <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#out">out</A> has relatively little effect on the brightness statistics
+and speeds things up considerably.
+
+The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#horizon">HORIZON</A> parameter is generally only useful in overlap <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#mode">mode</A>, to cut off
+the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#horizon">horizon</A> so sky pixels are not included in the statistics.  It can be
+useful however to cut off sky on polar mosaics (e.g. by setting to the same
+value as <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#limit_topel">LIMIT_TOPEL</A>).
+
+Note:  if the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#brtcorr">BRTCORR</A> or <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bias">BIAS</A> parameters are supplied, these are applied
+*before* overlaps are computed.  That means, from this program's point of
+view, the input images are the corrected ones; the original DN values are not
+seen.  Thus the statistics file will include the effects of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#brtcorr">BRTCORR</A> or <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bias">BIAS</A>
+implicitly.  This means the same <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#brtcorr">BRTCORR</A> or <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bias">BIAS</A> parameters must be supplied as
+inputs to "marsbrt", or the effects of the input <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#brtcorr">BRTCORR</A>/<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bias">BIAS</A> will not be taken
+into account in the correction file output by "marsbrt".
+
+Sophisticated users could take advantage of this effect to build in a difference
+that remains even after correction (by supplying <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#brtcorr">BRTCORR</A>/<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bias">BIAS</A> here but not to
+marsbrt), but that is beyond the scope of this help.
+
+Operation
+---------
+
+The program uses the appropriate camera model for each input image and
+outputs a mosaic in polar (Cylindrical, Polar) or rectangular (Vertical)
+coordinates.  Each pixel in the output is transformed from output azimuth
+and elevation (or X/Y location for Vertical) to input picture coordinates
+in the following steps:
+1. Each output pixel defines a unit vector based on the azimuth/elevation
+   in the output (this vector is vertical and based on X/Y location for the
+   Vertical <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#projection">projection</A>)
+2. We compute the intersection of this vector with a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#surface">surface</A> model.  This is
+   normally a tilted plane, possibly with an offset from the origin of the
+   spacecraft coordinate system (so the "<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#ground">ground</A>" can be above or below the
+   origin).
+3. Then this <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#ground">ground</A> point is ray traced back into the input camera images.
+   We take the input images in order of input.
+4. The first image is selected which can see the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#ground">ground</A> point.
+5. The DN value in the selected input image is bilinearly interpolated
+   and placed into the output location.
+Input images are loaded into memory 20 at a time.
+
+Index Files
+-----------
+Optionally, index (IDX and ICM) files can be output.  These collectively
+identify what pixel from which input was used for each point in the mosaic.
+
+The index file (<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#idx_out">IDX_OUT</A> parameter) contains, for each pixel, a halfword
+integer (16 bit signed) identifying which image the pixel came from.
+0 indicates no value (black in the mosaic).  Numbers from 1-n match the
+order of files in the input list file (or <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#inp">INP</A> parameter, if a list file
+isn't given).  For most mosaics, the file could be converted to byte using
+CFORM (half is used to support more than 255 input files).
+
+The ICM file (<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#icm_out">ICM_OUT</A> parameter) is an Image Coregistration Map.  It is a
+two-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#band">band</A> float file containing the line, sample coordinate of the input
+pixel used for the point.  This is the same basic format as correlation
+maps such as MARSCOR3 produces, except that multiple images are involved
+(thus the need for the index file).
+
+Overlays
+--------
+Marsmap can put a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number">number</A> of overlays on the image.  In general, each overlay
+type has its own DN value to use for the overlay.  These can be in color if
+the output mosaic is color.
+
+* Grids.  Coordinate grids can be plotted on top of the mosaic, or underneath
+(showing through only where the mosaic is black).  Labels identify the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#grid">grid</A>
+lines.  See <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#grid">GRID</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#grid_spacing">GRID_SPACING</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#grid_dn">GRID_DN</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#grid_zoom">GRID_ZOOM</A>.
+
+* <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#scale">Scale</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar">bar</A>.  A scale bar can be plotted on the image.  Since scale varies
+across the image it is only valid for the location it is plotted.  Still, it
+can give some indication of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#scale">scale</A>.  Getting the range right is critical
+to sizing the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar">bar</A> properly.  By default, it computes range using the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#surface">surface</A>
+model.  However, this can be very inaccurate in some cases.  If possible,
+supply the range using <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar_range">BAR_RANGE</A>.  See <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar">BAR</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar_pos">BAR_POS</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar_size">BAR_SIZE</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar_dn">BAR_DN</A>,
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar_zoom">BAR_ZOOM</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar_height">BAR_HEIGHT</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar_space">BAR_SPACE</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar_range">BAR_RANGE</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar_approx">BAR_APPROX</A>.
+
+* Numbers.  Image numbers can be plotted at the center of the image.  This is
+useful to show which image is which.  See <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number">NUMBER</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number_dn">NUMBER_DN</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number_zoom">NUMBER_ZOOM</A>,
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number_start">NUMBER_START</A>.
+
+* Footprints.  Footprints (image outlines) can be plotted, showing the extent
+of the images.  -FOOTPRINT draws the outline in the input images, so you see
+the image edges (with some aliasing) but not overlaps.  More useful is -OVERLAP
+which draws an outline along the entire image border, including where the image
+goes "underneath" its neighbor.  See <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#footprt">FOOTPRT</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#foot_dn">FOOT_DN</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#max_foot">MAX_FOOT</A>.
+
+* <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#tiepoints">Tiepoints</A>.  If given a tiepoint file (e.g. from marstie), marsmap can plot
+the tiepoint locations on the mosaic in varying ways.  This can be useful
+during mosaic production but should generally not be used in a production
+mosaic.  See <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#tiepoints">TIEPOINTS</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#tie_type">TIE_TYPE</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#tie_dn">TIE_DN</A>.
+Limitations
+-----------
+
+This program only looks at azimuth & elevation, or X and Y. It has no concept
+of parallax.  For parallax-corrected mosaics, see marsortho.
+
+For perspective corrected mosaics use marsmos or marsmcauley.
+
+History
+-------
+  1994-04-30 jjl - Initial mpfmap by J Lorre. 
+  1998-11    rgd - Multimission conversion by B. Deen
+  2010-01    rgd - Added overlap support for brt corr (replacing old marsint)
+  2012-11-07 rgd - Added experimental sinusoidal <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#projection">projection</A>
+  2013-04-02 rgd - Added support for HSI space overlaps
+  2015-07-13 rgd - Added OMP-based parallelization
+  2016-11-30 rgd - Added IDX and ICM output files
+  2019-10-17 wlb - Initialized some variables; cleaned up some -Wall warnings
+  2020-03-26 rgd - Added <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#scale">scale</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar">bar</A> support
+  2020-04-30 wlb - Replaced sprintf calls
+  2020-05-05 youlu - Added -zenith_scaled_rad capabilities
+                     Added <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#dnscale_in">DNSCALE_IN</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#dnscale_out">DNSCALE_OUT</A>, and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#tau">TAU</A> parameters
+  2020-06-10 rgd - Added -<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#reverse">reverse</A>
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Bob Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#inp"><H3>INP</H3></A>
+Input image(s) or
+file list.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#out"><H3>OUT</H3></A>
+Output image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#projection"><H3>PROJECTION</H3></A>
+Output <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#projection">projection</A> type.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#zoom"><H3>ZOOM</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#zoom">Zoom</A> factor for
+image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#band"><H3>BAND</H3></A>
+The BSQ <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#band">band</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number">number</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#input_range"><H3>INPUT_RANGE</H3></A>
+The range of inputs to
+actually mosaic.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bias"><H3>BIAS</H3></A>
+Set of values to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bias">bias</A>
+each tile in the mosiac.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#brtcorr"><H3>BRTCORR</H3></A>
+Input file containing
+brightness corrections.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#scale"><H3>SCALE</H3></A>
+Output <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#scale">scale</A> in
+pixels/degree.
+Cyl, Polar, Sin only
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#leftaz"><H3>LEFTAZ</H3></A>
+Left output azimuth
+Cyl and Sin only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#rightaz"><H3>RIGHTAZ</H3></A>
+Right output azimuth
+Cyl and Sin only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#topel"><H3>TOPEL</H3></A>
+Top output elevation
+Cyl, Polar, Sin only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bottomel"><H3>BOTTOMEL</H3></A>
+Bottom output
+elevation
+Cyl, Sin only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#limit_topel"><H3>LIMIT_TOPEL</H3></A>
+Limit to top elevation.
+Not to exceed value.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#limit_bottomel"><H3>LIMIT_BOTTOMEL</H3></A>
+Limit to bottom elevation.
+Not to exceed value.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#proj_origin"><H3>PROJ_ORIGIN</H3></A>
+Overrides center of
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#projection">projection</A>.
+Cyl, Polar, Sin only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#po_coord"><H3>PO_COORD</H3></A>
+Coordinate system used to define
+the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#proj_origin">PROJ_ORIGIN</A> parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#up_az"><H3>UP_AZ</H3></A>
+Overrides azimuth at
+top of image
+Polar only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#vert_scale"><H3>VERT_SCALE</H3></A>
+Output <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#scale">scale</A> in 
+meters/pixel
+Vertical only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#minx"><H3>MINX</H3></A>
+Minimum extent of
+mosaic in X direction
+(meters)
+Vertical only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#maxx"><H3>MAXX</H3></A>
+Maximum extent of
+mosaic in X direction
+(meters)
+Vertical only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#miny"><H3>MINY</H3></A>
+Minimum extent of
+mosaic in Y direction
+(meters)
+Vertical only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#maxy"><H3>MAXY</H3></A>
+Maximum extent of
+mosaic in Y direction
+(meters)
+Vertical only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#center_az"><H3>CENTER_AZ</H3></A>
+Center azimuth of
+Sinusoidal <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#projection">projection</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#center_el"><H3>CENTER_EL</H3></A>
+Center elevation of
+Sinusoidal <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#projection">projection</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#wrap_az"><H3>WRAP_AZ</H3></A>
+Azimuth to wrap a complete
+mosaic.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#wrap_el"><H3>WRAP_EL</H3></A>
+Elevation to wrap a complete
+mosaic.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#wrap_coord"><H3>WRAP_COORD</H3></A>
+Coordinate system of the
+associated <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#wrap_az">WRAP_AZ</A> and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#wrap_el">WRAP_EL</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#grid"><H3>GRID</H3></A>
+Specifies <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#grid">grid</A> type
+Defaults on.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#grid_spacing"><H3>GRID_SPACING</H3></A>
+Overrides spacing of
+lines in <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#grid">grid</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#grid_dn"><H3>GRID_DN</H3></A>
+DN to use for the
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#grid">grid</A> and grid labels.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#grid_zoom"><H3>GRID_ZOOM</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#zoom">Zoom</A> factor for the
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#grid">grid</A> labels.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#normal"><H3>NORMAL</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#normal">normal</A> vector.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#ground"><H3>GROUND</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#ground">ground</A> point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#surf_coord"><H3>SURF_COORD</H3></A>
+Coordinate system used to define
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#surface">surface</A> parameters.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#surface"><H3>SURFACE</H3></A>
+The type of mars
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#surface">surface</A> to use INFINITY, PLANE, 
+SPHERE1, SPHERE2, MESH.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#surf_mesh"><H3>SURF_MESH</H3></A>
+Mesh file for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#surface">surface</A> model
+
+VARI <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#surf_csfile">SURF_CSFILE</A> 
+File containing CS for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#surface">surface</A>
+model
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number"><H3>NUMBER</H3></A>
+Numbers the center of
+each input.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number_dn"><H3>NUMBER_DN</H3></A>
+DN to use for the
+input numbers.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number_zoom"><H3>NUMBER_ZOOM</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#zoom">Zoom</A> factor for the
+input numbers.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number_start"><H3>NUMBER_START</H3></A>
+Where to start counting
+the input numbers.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#footprt"><H3>FOOTPRT</H3></A>
+Draws footprints around
+each image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#foot_dn"><H3>FOOT_DN</H3></A>
+DN to use for the
+footprint numbers.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#max_foot"><H3>MAX_FOOT</H3></A>
+Maximum image <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number">number</A> in which
+to draw footprints and numbers.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#rad"><H3>RAD</H3></A>
+Turns on or off
+radiometric correction.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#tau"><H3>TAU</H3></A>
+atmospheric opacity
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#dnscale"><H3>DNSCALE</H3></A>
+DN scaling factor.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#dnscale_in"><H3>DNSCALE_IN</H3></A>
+Selects the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#mode">mode</A> for
+applying scaling parameters
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#dnscale_out"><H3>DNSCALE_OUT</H3></A>
+Selects the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#mode">mode</A> for
+scaling outputs
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#dnscale"><H3>DNSCALE</H3></A>
+DN scaling factor.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#match_method"><H3>MATCH_METHOD</H3></A>
+Specifies a method 
+for pointing corrections.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#match_tol"><H3>MATCH_TOL</H3></A>
+Tolerance value for
+matching pointing params
+in pointing corrections file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#mode"><H3>MODE</H3></A>
+Specifies in-memory or
+incremental write to file
+processing.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#interp"><H3>INTERP</H3></A>
+Turns on or off
+the interpolation.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#fov_limit"><H3>FOV_LIMIT</H3></A>
+Overrides limits on
+input image FOV
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#reverse"><H3>REVERSE</H3></A>
+Stacks in <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#reverse">reverse</A> order
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#omp_on"><H3>OMP_ON</H3></A>
+Turns on or off parallel
+processing (multiple threads,
+single machine). Default: on
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#number">number</A> is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique 
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the 
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#fixed_name"><H3>FIXED_NAME</H3></A>
+Overrides what CS type is
+allowed for the FIXED frame
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+pointing correction.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#tiepoints"><H3>TIEPOINTS</H3></A>
+Input tiepoint file for
+tiepoint visualization.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#tie_type"><H3>TIE_TYPE</H3></A>
+Type of tiepoint
+visualization to perform.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#tie_dn"><H3>TIE_DN</H3></A>
+DN value for tiepoint
+visualization.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#horizon"><H3>HORIZON</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#horizon">Horizon</A> value for overlap
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#mode">mode</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#ovr_out"><H3>OVR_OUT</H3></A>
+Output file for overlap <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#mode">mode</A>;
+also turns on overlap <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#mode">mode</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#max_open"><H3>MAX_OPEN</H3></A>
+Max # of files per pass.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#start_key"><H3>START_KEY</H3></A>
+Start key in overlap output
+XML file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#radius"><H3>RADIUS</H3></A>
+Maximum size of overlap
+areas (0 means no max).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#which_ovr"><H3>WHICH_OVR</H3></A>
+Create <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#normal">normal</A> or overall
+overlaps, or both.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#use_hsi"><H3>USE_HSI</H3></A>
+Turns on HSI <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#mode">mode</A> for overlaps.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#idx_out"><H3>IDX_OUT</H3></A>
+Optional output
+index filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#icm_out"><H3>ICM_OUT</H3></A>
+Optional output
+coregistration coordinate
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar"><H3>BAR</H3></A>
+Turns on <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#scale">scale</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar">bar</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar_pos"><H3>BAR_POS</H3></A>
+Sets location for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#scale">scale</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar">bar</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar_size"><H3>BAR_SIZE</H3></A>
+Sets overall desired size
+of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#scale">scale</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar">bar</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar_dn"><H3>BAR_DN</H3></A>
+DN to use for the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#scale">scale</A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar">bar</A> and bar labels.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar_zoom"><H3>BAR_ZOOM</H3></A>
+Sets the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#zoom">zoom</A> factor for
+the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#scale">scale</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar">bar</A> text.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar_height"><H3>BAR_HEIGHT</H3></A>
+Sets the height of the
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#scale">scale</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar">bar</A> end caps.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar_space"><H3>BAR_SPACE</H3></A>
+Sets the spacing between
+the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#scale">scale</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar">bar</A> and label.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar_range"><H3>BAR_RANGE</H3></A>
+Overrides the range for
+the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#scale">scale</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar">bar</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar_approx"><H3>BAR_APPROX</H3></A>
+Controls whether a tilde (~)
+is output for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#scale">scale</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap_level2.html#bar">bar</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsmap.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

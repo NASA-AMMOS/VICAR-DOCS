@@ -1,0 +1,551 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for STATS</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats.html">STATS</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+STRING - Input data sets used by stats.  If input data is in <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#mss">MSS</A> format
+then only one data set is required.  Otherwise there must be one data set
+per spectral <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#band">band</A> examined.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+STRING - Output data sets used by STATS.  First data set will contain the
+statistics output.  The second output data set (optional) will contain
+the input picture with training areas scribed.  (If scribing is requested
+and their is only one output file, the output file is assumed to be the
+scribed image, and no statistics output file is generated.)
+
+The statistics output file is a classification statistics file (statistics
+data set).  Each record (excluding labels) in a classification statistics file
+contains statistics for a particular class of pixels.  The statistics are
+derived from the multispectral (multi-channel) data.  The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#size">size</A> of records in
+the file is based on the number of channels (bands).  If 'N' is used to denote
+the number of channels, then each record contains the following data in the
+order shown. 
+
+   *  2 words (8 bytes) of class name in character (ASCII) format.  This
+      takes the form 'CLASSnnn' where nnn is the class number.
+      (nnn is left-justified with trailing blanks.)
+
+   *  N words for mean values for this class for each of the N channels.
+      Each mean value is stored in REAL*4 format.
+
+   *  1 word, stored in INTEGER*4 format, containing the number of pixels 
+      in this class.
+
+   *  N*(N+1)/2 words containing the variances and covariances for the N
+      channels for this class.  Each variance and covariance is stored in
+      REAL*4 format.
+
+The VICAR system label contains the number of records in the number of lines
+field and the number of bytes per record in the number of samples field.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="size"><H3>SIZE</H3></A><pre>
+INTEGER - Standard Vicar <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#size">size</A> field (Not used - can be defaulted).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mss"><H3>MSS</H3></A><pre>
+INTEGER - Denotes that input data is in <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#mss">MSS</A> format and contains the
+supplied number of spectral bands.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="band"><H3>BAND</H3></A><pre>
+INTEGER - Specifies which <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#mss">MSS</A> format bands are to be used as input (The
+default is for all bands specified by the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#mss">MSS</A> parameter).
+Syntax is:   <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#band">BAND</A> = (b1,...)   where b1,... is a list of bands.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="dn"><H3>DN</H3></A><pre>
+INTEGER - Denotes that the outline will be the given <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#dn">DN</A> in scribing the
+training areas.  The default is to use 0 or 255 depending on which contrasts
+better with the image.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="scribe"><H3>SCRIBE</H3></A><pre>
+the training classes scribed on the image.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="hist"><H3>HIST</H3></A><pre>
+INTEGER - Denotes that histograms of the training classes from the
+specified bands are to be printed on the line printer.  If the value of
+0 is used, histograms for all bands are printed.
+Syntax is:   <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#hist">HIST</A> = (b1,...)   where b1,... is a list of bands.
+
+The histogram output uses vertical bars to show the number of pixels in the
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#dn">DN</A> bins.  The bars are made of a column of  * symbols with a number (or other
+symbol) on top.  The number of pixels represented by each * is shown at the
+top of the histogram.  The number on top of a column is an additional number of
+pixels in the bin beyond those represented by *s.  The letters A through Z are
+used to represent the values 10 through 35, respectively.  The $ symbol
+represents a value greater than 35. 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="spec"><H3>SPEC</H3></A><pre>
+INTEGER - Denotes that a spectral plot of training classes from the given
+bands is to be printed.  If the value of 0 is used, all the bands are 
+included.
+Syntax is:   <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#spec">SPEC</A> = (b1,...)   where b1,... is a list of bands.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="splot"><H3>SPLOT</H3></A><pre>
+INTEGER - Limits spectral plots to the specified classes (default is that
+all classes are included).
+Syntax is:   <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#splot">SPLOT</A> = (c1,...)   where c1,... is a list of classes.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="exclude"><H3>EXCLUDE</H3></A><pre>
+INTEGER - Ignore any pixel which has the same <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#dn">DN</A> value as one specified.
+There is a maximum of 10 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#dn">DN</A> values that can be specified.
+Syntax is:   <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#exclude">EXCLUDE</A> = (d1,...)   where d1,... is a list of DNs.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="noprint"><H3>NOPRINT</H3></A><pre>
+KEYWORD - Controls the printing of means, standard deviations, covariance
+matrices, and training area coordinates on the line printer (default is
+to PRINT this information).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="vert"><H3>VERT</H3></A><pre>
+INTEGER - Specifies which  training areas defined by the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> keyword
+are to be read in the vertices format.
+ The training areas for the classes may be specified either in rectangular
+or vertices format.  stats no longer allows some training fields in a given
+training area to be in vertices format and some to be in rectangular
+format.  Rectangular format is the default and is thus not 
+specified explicitly.   The RECT parameter (which was present in the IBM
+version of stats), for expliciltly specifying rectangular format, is no
+longer used.  The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#vert">VERT</A> parameter is used to list any and every class using the
+vertices format. 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class"><H3>CLASS</H3></A><pre>
+Actual keyword is of the form <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> where x is a number from 1 to 50.
+The number defines which class number this training set belongs.
+e.g.  CLASS69 SL,SS,NL,NS    or    <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#class32">CLASS32</A>  L1,S1,L2,S2,...
+See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a more complete definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="classx"><H3>CLASSX</H3></A><pre>
+INTEGER - Denotes the training area information in either rectangular or
+vertices formats (default is rectangular).  Rectangular coordinates are
+of the form: SL,SS,NL,NS   SL,SS,NL,NS ...  (the standard Vicar <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#size">size</A> field) 
+while vertices format is of the form: L1,S1,L2,S2,... etc.  The range of values
+for 'x' is from 1 to 50 such that the valid keywords would be of the form:
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#class1">CLASS1</A>, ... <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#class50">CLASS50</A>. 
+  The training area for the class is composed of one or more training fields.
+Each training field is a closed region of the image.  The format must be 
+the same for all fields within a class.  In rectangular format the training 
+fields are defined by starting line, starting sample, number of lines,
+and number of samples.
+  In vertices format, only the vertices (line number and sample number) of an
+irregular area need be stated.  The program interpolates between each vertex to
+determine the perimeter of the training field.  Several rules must be adhered
+to in using the vertices format:
+
+1)  The first vertex entered must be the topmost point of the area; that is, 
+    the lowest line number.
+2)  The vertices must follw in a clockwise order. 
+3)  The last vertex must be the same as the first; that is, close the area
+    for each training field.
+
+  The maximum <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#size">size</A> for any training field, whether rectangular or vertices,
+is 600 lines by 600 samples.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class1"><H3>CLASS1</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class2"><H3>CLASS2</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class3"><H3>CLASS3</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class4"><H3>CLASS4</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class5"><H3>CLASS5</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class6"><H3>CLASS6</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class7"><H3>CLASS7</H3></A><pre>
+CINTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class8"><H3>CLASS8</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class9"><H3>CLASS9</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class10"><H3>CLASS10</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class11"><H3>CLASS11</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class12"><H3>CLASS12</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class13"><H3>CLASS13</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class14"><H3>CLASS14</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class15"><H3>CLASS15</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class16"><H3>CLASS16</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class17"><H3>CLASS17</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class18"><H3>CLASS18</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class19"><H3>CLASS19</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class20"><H3>CLASS20</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class21"><H3>CLASS21</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class22"><H3>CLASS22</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class23"><H3>CLASS23</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class24"><H3>CLASS24</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class25"><H3>CLASS25</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class26"><H3>CLASS26</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class27"><H3>CLASS27</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class28"><H3>CLASS28</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class29"><H3>CLASS29</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class30"><H3>CLASS30</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class31"><H3>CLASS31</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class32"><H3>CLASS32</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class33"><H3>CLASS33</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class34"><H3>CLASS34</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class35"><H3>CLASS35</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class36"><H3>CLASS36</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class37"><H3>CLASS37</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class38"><H3>CLASS38</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class39"><H3>CLASS39</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class40"><H3>CLASS40</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class41"><H3>CLASS41</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class42"><H3>CLASS42</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class43"><H3>CLASS43</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class44"><H3>CLASS44</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class45"><H3>CLASS45</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class46"><H3>CLASS46</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class47"><H3>CLASS47</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class48"><H3>CLASS48</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class49"><H3>CLASS49</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="class50"><H3>CLASS50</H3></A><pre>
+INTEGER - See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stats_level2.html#classx">CLASSx</A> for a proper definition.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

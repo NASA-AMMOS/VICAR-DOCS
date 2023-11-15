@@ -1,0 +1,168 @@
+<HTML>
+<HEAD><title>HTML Help for LAB2TCL</title></HEAD>
+<BODY>
+<H1>Help for LAB2TCL</H1>
+<pre>
+PURPOSE
+"lab2tcl" copies information from the system and history sections of a VICAR
+label into user specified TCL variables.
+
+
+EXECUTION
+
+    procedure
+    local lineInc real
+    body
+	lab2tcl  INP=file.img  V1=lineInc  KEYWORD=linc
+    end-proc
+
+In this example, "lab2tcl" searches for keyword "linc" in the HISTORY section
+of image file "file.img"'s label (note that the program requires a variable
+definition prior to use). If the keyword is found, its value is written into
+the variable "lineInc"; if the keyword is not found, the message:
+    Keyword LINC not found in label.
+is displayed; the program will stop without searching for other specified
+keywords. The label's value is returned as either an integer, a real, or a
+string; label-add sets the value type, e.g.: 
+
+	Integer		Real		String
+	-------		----		------
+	 787		787.		'787'
+	 +3		+3e0		 '3'
+	 -45		-45.78		'negative forty five.'
+
+The variable whose name is given to the V1 parameter should be declared to be
+of the same type as the expected value. 
+
+Some of the label's information is stored in the SYSTEM section of the image
+file. lab2tcl looks in the SYSTEM section if the 'SYSTEM switch is specified: 
+
+    procedure
+    local numlines integer
+    body
+	lab2tcl  INP=file.img  v1=numlines  KEYWORD=nl 'SYSTEM
+    end-proc
+
+In this example, "lab2tcl" searches for keyword "nl" in the SYSTEM section
+of image file "file.img"'s label. "lab2tcl" will look in both sections of the
+image file--in the order SYSTEM,HISTORY--if the 'ALL switch is specified:
+
+    procedure
+    local sampinc real
+    body
+	lab2tcl  INP=file.img  v1=sampinc  KEYWORD=sinc 'ALL
+    end-proc
+
+In this example, lab2tcl searches for keyword "sinc" in the SYSTEM section
+first, then, if it wasn't found, in the HISTORY section. The "not found"
+message will appear if the keyword is not found in the HISTORY section, either.
+
+More than one keyword can be read at a time, setting a corresponding number
+of variables (note that separate parameters are used for each of the variable
+names; the parameters are numbered v1 to v20):
+
+    procedure
+    local numl integer
+    local nums integer
+    local fmt string
+    local linc real
+    local sinc real
+    body
+	lab2tcl  INP=file.img  v1=numl v2=nums v3=fmt v4=linc v5=sinc   	    KEYWORD=(nl,ns,format,linc,sinc)  'ALL
+    end-proc
+
+"lab2tcl" looks for each keyword individually, so that, in this example, it
+will first look for keyword "nl" in SYSTEM then in HISTORY, then it will look
+for "ns" in SYSTEM and HISTORY, and so on. The first missing keyword
+terminates "lab2tcl" for all keyword retrieval.
+
+If an empty string is specified for one of the keywords other than the first,
+the corresponding variable will be assigned the value from the last retrieved 
+variable:
+
+    procedure
+    local nl1 integer
+    local nl2 integer
+    local ns1 integer
+    local ns2 integer
+    body
+	lab2tcl  INP=file.img  v1=nl1 v2=nl2 v3=ns1 v4=ns2   	    KEYWORD=(nl,"",ns,"") 'SYSTEM
+    end-proc
+
+In this example, variables nl1 and nl2 are assigned the value found for keyword
+"nl", while ns1 and ns2 are assigned the value associated with "ns". Variable 
+names cannot be omitted. The message:
+    The first keyword in a KEYWORD list cannot be an empty string.
+is displayed if an empty string is supplied for the first keyword; the program
+will stop without searching for other specified keywords.
+
+
+RESTRICTIONS
+ 1. A maximum of 20 variables can be returned at a time.
+ 2. The parameter KEYWORD must be explicitly mentioned, as in "KEYWORD=ns", 
+    since each variable has its own parameter (V1,V2,V3,...,V20).
+ 3. Only the first value in a multivalued keyword is returned; this 
+    restriction corresponds to label-add, which will only permit the
+    first value to be written.
+ 4. If the keyword appears more than once in a section, the keyword 
+    in the "current task" is used, where the "current task" is the
+    last Task entry depicted in the label-list display.
+ 5. During a HISTORY search, "lab2tcl" looks at the current task for a
+    keyword. If the keyword is not found, the program then scans
+    backwards through the tasks starting with the second-to-last task.
+    "lab2tcl" is limited to 100 tasks, however, including the current task.
+
+
+WRITTEN BY:		M. K. Tschudi	July 14, 1987
+<A NAME="CogProg">COGNIZANT PROGRAMMER:	R. J. Bambery</A>
+REVISIONS:
+
+    1994-10-31 AMS (CRI) - Made portable for UNIX
+    2010-01-19 R. J. Bambery - Revised pdf file to remove 80 character
+               limit on input file
+    2012-06-05 R. J. Bambery - fix uninitialized variable
+    2012-06-06 R. J. Bambery - fixed TYPE parm to use 20 vals
+    2012-12-09 R. J. Bambery - fixed uninitialized variable i_format
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/lab2tcl_level2.html#inp"><H3>INP</H3></A>
+Input image whose label value
+is sought
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/lab2tcl_level2.html#v1"><H3>V1</H3></A>
+Parameters V1,V2,...,V20 each
+contain the name of a TCL 
+variable that is to receive a
+value corresponding to a KEYWORD
+V1 corresponds to the first
+KEYWORD
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/lab2tcl_level2.html#v2"><H3>V2</H3></A>
+The variable to receive the
+value for the second KEYWORD
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/lab2tcl_level2.html#v3"><H3>V3</H3></A>
+The variable to receive the
+value for the third KEYWORD
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/lab2tcl_level2.html#v4"><H3>V4</H3></A>
+The variable to receive the
+value for the fourth KEYWORD
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/lab2tcl_level2.html#v5"><H3>V5</H3></A>
+The variable to receive the
+value for the fifth KEYWORD
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/lab2tcl_level2.html#keyword"><H3>KEYWORD</H3></A>
+One or more names of label
+entries; each label entry's 
+associated value is returned to
+the corresponding VAR
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/lab2tcl_level2.html#type"><H3>TYPE</H3></A>
+Switch indicating if the 
+HISTORY (default) or SYSTEM
+portion of a label is to be
+searched for KEYWORD, or if
+both SYSTEM & HISTORY should
+be searched (ALL)
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/lab2tcl.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/lab2tcl.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

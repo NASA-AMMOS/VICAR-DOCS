@@ -1,0 +1,86 @@
+<HTML>
+<HEAD><title>HTML Help for STRETCH2B</title></HEAD>
+<BODY>
+<H1>Help for STRETCH2B</H1>
+<pre>
+ PURPOSE:
+Procedure STRETCH2B (STRetch TO BYTE) is a VICAR procedure that converts an
+image (either single or multichannel) to byte, by means of an automatic
+contrast stretch, based upon the input <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#mean">mean</A> and standard deviation. The input
+may be of any format excluding COMPLEX (but including BYTE itself), and 
+contain any number of channels.  For multichannel inputs, the user may list
+the desired band(s) to process, or request that all <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#bands">bands</A> be processed,
+without enumeration.
+ EXECUTION:
+     STRETCH2B uses the VICAR programs COPY, HIST, and C to extract the
+requested band and subarea, compute the input <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#mean">mean</A> and standard deviation,
+the rescale to byte by forcing the input <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#mean">mean</A> to map to the value or the
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#mean">MEAN</A> parameter (default = 127.5), and forcing the range of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#sigma">SIGMA</A> (default = 2.5)
+standard deviations to map to the 255 DN range about the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#mean">MEAN</A>.
+     If the input is multichannel, each requested channel is processed
+one at a time, and each channel is output to a different file.
+<A NAME="examples"> EXAMPLES:</A>
+     STRETCH2B yuma.half yuma.byte
+
+         In this example, if the input contains one band, that band is
+         stretched, using the defaults, then output to yuma.byte.  If the
+         input is multichannel, the first input band is stretched.
+
+     STRETCH2B dv12 (dv12.r,dv12.g,dv12.b) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#bands">bands</A>=(5,3,1) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#sigma">sigma</A>=5
+
+         In this example, Band 5 is stretched to dv12.r
+                          Band 3 is stretched to dv12.g and
+                          Band 1 is stretched to dv12.b
+         with 0 to 255 spanning 5 standard deviations from the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#mean">mean</A>.
+
+     STRETCH2B sebass sebass 'all
+
+         In this example, all <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#bands">bands</A> of the input are stretched. The outputs
+         will have the names sebass.1, sebass.2, sebass.3, ...
+ WRITTEN BY:             Ron Alley                   18 Feb 1998
+
+<A NAME="CogProg"> COGNIZANT PROGRAMMER:   Ron Alley                   18 Feb 1998</A>
+
+ REVISION:               New                         18 Feb 1988
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#inp"><H3>INP</H3></A>
+Input file name
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#out"><H3>OUT</H3></A>
+Output file name(s).  Use
+one name for the root output
+name if keyword ALL is used;
+otherwise one filename for 
+each band to be stretched.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#size"><H3>SIZE</H3></A>
+Vicar <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#size">size</A> field for input:
+Same as  (<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#ns">NS</A>)
+By default, the entire input
+image is used if these
+parameters are not entered.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#sl"><H3>SL</H3></A>
+Starting line of input
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#ss"><H3>SS</H3></A>
+Starting sample of input
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#nl"><H3>NL</H3></A>
+Number of lines from input
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#ns"><H3>NS</H3></A>
+Number of samples from input
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#doall"><H3>DOALL</H3></A>
+Use KEYWORD "ALL" if all
+channels are desired.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#bands"><H3>BANDS</H3></A>
+The band(s) to be stretched.
+The number of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#bands">bands</A> must match
+the number of output files.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#mean"><H3>MEAN</H3></A>
+The desired <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#mean">mean</A> of each output
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#sigma"><H3>SIGMA</H3></A>
+The desired number of standard
+deviations from <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b_level2.html#mean">mean</A> in output
+data range.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/stretch2b.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

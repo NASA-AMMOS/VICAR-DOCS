@@ -1,0 +1,223 @@
+<HTML>
+<HEAD><title>HTML Help for MARSRAD</title></HEAD>
+<BODY>
+<H1>Help for MARSRAD</H1>
+<pre>
+PURPOSE:
+To radiometrically correct an image, usually an EDR.
+
+This is a multimission program.  It supports any mission, instrument,
+and camera model supported by the Planetary Image Geometry (Pig) software
+suite and its associated Radiometry models (mars_radiometry).
+
+The output file will have the same labels as the input, with the addition
+of the radiometric correction scale factors (RADIANCE_SCALING_FACTOR and
+RADIANCE_OFFSET).
+
+Multiple images can be given to the program, in which case each is corrected
+independently.  The number of outputs must match the number of inputs.
+
+The program will work with color images if such are given as input and
+the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#band">BAND</A> parameter is not specified; the number of output bands will equal
+the number of input bands.  If BANDS is specified, only that one single <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#band">band</A>
+is processed and output.
+
+NOTE: currently the SAME <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#rad">rad</A> correction is applied to ALL bands.  This
+should probably be fixed.
+
+EXECUTION:
+
+The inputs and outputs may be presented in two ways:
+1) Normal file parameters, e.g. <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#inp">inp</A>=(a.img,b.img,c.img...)
+2) A file list, e.g. <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#inp">inp</A>=filelist.txt
+
+The file list is a simple ASCII text file containing one filename per line.
+
+If only one value is given for the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#inp">INP</A> or <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#out">OUT</A> parameter, it is assumed that
+the value is the name of a file list file.  However, if the file appears to
+be a VICAR image, or if it doesn't exist (<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#out">OUT</A> only), then it is treated as
+an actual image name.  This means that you can simply correct a single image:
+
+marsrad <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#inp">inp</A>=a.img <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#out">out</A>=a.out
+
+without having to create file lists.
+
+The number of input filename must match the number of output filenames, but
+it is okay if one is a file list and the other is directly entered in the
+parameter.
+
+The default is to create a short int (HALF) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#format">format</A> file, with radiometric
+values scaled to short int using <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#dnscale">DNSCALE</A>.  However, specifying <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#format">FORMAT</A>=REAL
+will create a floating point file, in actual physical units.  Note that
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#dnscale">DNSCALE</A>=1.0 should be used in this case.
+
+If <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#bits">BITS</A> is specified (and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#format">FORMAT</A>=REAL is not), then the results are clamped
+to have that many <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#bits">bits</A>, e.g. if BITS is 12 then the results will be in the
+range 0-4095.  The sample bit mask in the label will be set appropriately.
+As a backward compatibility feature, if <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#bits">BITS</A> is not set then there is no
+clamping but the sample bit mask is still set to 15 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#bits">bits</A>.  BITS is ignored
+for floating-point files.
+
+OPERATION:
+
+The specific algorithm used for radiometric correction depends on the mission
+type, but most are similar.
+
+MARS PATHFINDER / MARS 98
+-------------------------
+
+The absolute radiance S of a single pixel (at a location (i,j) in an image)
+is given by
+
+S(i,j) = DN(i,j)/(t * R(lambda,temperature) * G(i,j))
+
+where
+DN(i,j) is the instrument signal (in units of DN) from the input image
+G(i,j) is the normalized flat field of the camera system (which corrects
+    for the pixel to pixel sensitivity variations)
+t is the exposure time of the image (in seconds)
+R(lambda,temperature) is the responsivity curve defined by a quadratic
+    function in temperature.
+temperature is the camera head temperature in degrees C.
+lambda is the wavelength in nm, which is derived from the filter.
+
+t, temperature, and filter are derived from the image label.  G depends
+on the filter and eye (left or right), which are also derived from the
+image label.
+
+Flat field files are obtained via the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#config_path">CONFIG_PATH</A> parameter.
+
+The responsivity function R is embedded in the source code; refer to
+mars_radiometry.com if details are required.
+
+The dark current of the camera (i.e., the signal that does not correspond
+to photons incident onto the detector) is insignificant at the low Martian
+temperatures experienced by the lander cameras and is not subtracted for
+the calculations presented here.  (During Mars Pathfinder surface operations,
+the largest dark current of the camera (2 PM local solar time, camera
+temperature = -9 degrees C) was &lt 2 counts/sec (less than 0.5 % in radiance
+for well-exposed pixels)).
+
+For more information, see Maki et al., 1999 (JGR).
+
+HISTORY:
+Apr. 99  Initial version
+2017-03	mjl, rgd	Support for multiple bands
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Bob Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#inp"><H3>INP</H3></A>
+input image(s) or
+file list.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#out"><H3>OUT</H3></A>
+Output image(s) or
+file list.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#band"><H3>BAND</H3></A>
+Input image <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#band">band</A> number to
+write to output image. Defaults
+to all bands.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#rad"><H3>RAD</H3></A>
+Turns on or off
+radiometric correction.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#tau"><H3>TAU</H3></A>
+atmospheric opacity
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#dnscale"><H3>DNSCALE</H3></A>
+DN scaling factor.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#dnscale_in"><H3>DNSCALE_IN</H3></A>
+Selects the mode for 
+applying scaling parameters
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#dnscale_out"><H3>DNSCALE_OUT</H3></A>
+Selects the mode for 
+scaling outputs
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#format"><H3>FORMAT</H3></A>
+Selects HALF (short int)
+or REAL (float) output
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#format">format</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#bits"><H3>BITS</H3></A>
+Sets number of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#bits">bits</A> in output
+for non-floating-point files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+Not used by this program.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+Not used by this program.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#coord">COORD</A>/mission combos.
+Not used by this program.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+Not used by this program.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

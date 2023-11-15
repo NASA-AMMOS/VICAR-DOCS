@@ -1,0 +1,242 @@
+<HTML>
+<HEAD><title>HTML Help for TIEPLOT</title></HEAD>
+<BODY>
+<H1>Help for TIEPLOT</H1>
+<pre>
+PURPOSE
+
+     TIEPLOT plots tiepoints in an IBIS interface file by
+     drawing vectors to indicate the direction and amount of
+     shift between the old (line,sample)  new (line,sample)
+     pairs.  The image area is outlined and labeled.  A number
+     or symbol from the interface file may be plotted at each 
+     tiepoint position.
+
+     
+TAE COMMAND LINE FORMAT
+
+     TIEPLOT <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#inp">INP</A>=A PARAMS
+     A                   is an IBIS interface file.     
+     PARAMS              is a standard VICAR parameter field.
+OPERATION
+
+     For each tiepoint that has the correct entry in the
+     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#keycol">KEYCOL</A>, a vector is drawn with a length proportional
+     to the distance between the old (line,sample) coordinates
+     and the new (line,sample) coordinates.
+
+PARAMETERS
+    <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#inp">INP</A>  an input ibis tabular file containing the tiepoints from
+two images
+    <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#nl">NL</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#ns">NS</A>  the number of lines and samples of the image to
+show the tiepoints plot   
+    <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#plotout">PLOTOUT</A>   the name of the output plot. It will yield two
+files named <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#plotout">PLOTOUT</A>.gpi  and PLOTOUT.asc
+    <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#plotfmt">PLOTFMT</A>   The type of plot, either GNUPLOT or EPS
+    <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#newcols">NEWCOLS</A>  are the column numbers in <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#inp">INP</A> containing the tiepoints
+in the new image.
+    <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#oldcols">OLDCOLS</A> are the column numbers in <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#inp">INP</A> containing the tiepoints
+in the old image.
+    <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#numcol">NUMCOL</A>  (optional) is a column containing a number to be plotted
+along side the tiepoint symbol.
+    <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#charcol">CHARCOL</A> (optional)  is a column containing a number of a symbol
+to be used to plot to indicate the location of a tiepoint.
+    <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#ichar">ICHAR</A>  (optional) is a symbol number
+    <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#scale">SCALE</A>   is the magnification number for showing tiepoint offsets
+    <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#key">KEY</A>     is which key in the key column to plot.  Each key
+specifies a separate plot
+    <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#keycol">KEYCOL</A>  is the column number to look for the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#key">key</A> value
+
+
+PLOT OUTPUTS
+
+    The other type of output come from the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#plotout">PLOTOUT</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#plotfmt">PLOTFMT</A> parameters.
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#plotout">PLOTOUT</A> produces a file of gnuplot commands contained in a file having a .gpi
+file extension. Another file with an .asc extension is created containing
+columms of data that are displayed by the gpi file.
+
+   The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#plotfmt">PLOTFMT</A> parameter allows the user to generate a postscript file of
+the output for use in documentation by choosing <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#plotfmt">PLOTFMT</A>=EPS. The default
+is to generate a gnuplot interactive display.
+
+
+  PLOT NAMING CONVENTIONS
+
+  The user should enter only the parent file name without an extension
+  for the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#plotout">PLOTOUT</A> parameter.  The program will supply the extensions.
+
+  For example, if the user has an input file of indata.dat and  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#plotout">PLOTOUT</A>=outplot
+  then for the interactive plot the following files are produced:
+
+     outplot.gpi
+     outplot.asc
+
+  The first file is the gnuplot instruction file and the second is the
+  data file used by gnuplot.      
+
+  If the user wanted an encapsulate postscript file with <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#plotfmt">PLOTFMT</A>=eps
+  then the following files are produced:
+
+     outplot.eps.gpi
+     outplot.asc
+
+
+  Remember entering the following command gives the eps file, outplot.eps
+
+  ush gnuplot outplot.eps.gpi
+
+  If you move the gpi file to another directory, you must also move the
+  input data file, indata.dat.asc to the same directory.
+
+  Note that the gpi file produced by this program has the name of the
+  input file embedded in the plot command inside the gpi file, e.g..
+
+  plot  'output.asc' u  1: 9 t .......
+
+
+USING GNUPLOT
+
+
+  INTERACTIVE:
+
+    This program uses the gnuplot package for its plots. Gnuplot is a
+  separate package from Vicar and is not actually invoked inside this
+  program.  Instead this program creates a template of gnuplot commands
+  which are written out as a separate file. The plot is then viewed after
+  exiting this program. The file has the extension .gpi. You view
+  the plot by issuing the following command in the vicar shell.
+
+  ush gnuplot output.gpi
+
+  or external to vicar as
+
+  gnuplot output.gpi
+
+    After viewing the data, you close the plot by clicking the mouse anywhere
+  except on the top bar of the plot. Clicking on the top bar allows you
+  to move the plot to any convenient place on the terminal screen.  (While
+  the plot is displayed you cannot enter any commands to the vicar shell).
+
+  The data to be plotted by gnuplot is read from a separate file, created
+  by this program, which contains columns of data in ascii text.
+  File naming conventions are discussed in the OUTPUT section, but in this
+  case that file extension will be .asc.
+
+  It is possible to keep the plot alive for comparison purposes by issuing
+  the following command.
+
+  ush gnuplot --persist output.gpi
+  (You will be able to enter commamds to the vicar shell after clicking on
+  the mouse on the plot).
+
+  Note: This program creates 5 output plots per run. You bring up each plot
+  panel sequentially. You close each plot by clicking the mouse on any
+  portion of the plot.
+
+
+  HARDCOPY:
+
+  This program also allows you to create a hardcopy encapsulated postscript
+  plot suitable for publications. This file can be viewed with ghostscript
+  or gimp. The encapsulated postscript file is not created by this program
+  by by the gnuplot program from a gpi file made especially for this purpose.
+  this file has the extension, eps.gpi. You create the hardcopy plot via
+  the following command
+
+  ush gnuplot output.eps.gpi
+
+  This creates the eps file output.eps. You can view this file by
+
+  ush gimp output.eps
+
+    DEVELOPER Note:
+
+    This program used to link to the XRT plot library -lxrt. Calls to
+  that library were mitigated through a Calcomp conversion library,
+  xrtps located in the p2 subroutine library. With the conversion to
+  gnuplot, neither of these packages are used.
+
+
+     
+<A NAME="examples">EXAMPLES</A>
+
+Tieplot tiepoints.int <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#nl">nl</A>=1056 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#ns">ns</A>=1204  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#scale">scale</A>=10
+
+In this example, just one plot will be produced since the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#keycol">KEYCOL</A> parameter
+has not been specified.  The default columns for the tiepoints (columns 
+1, 2, 3, and 4,  same as output by PICMATCH) will be assumed.  The length
+of the offset vectors will be magnified by a factor of 10, and no
+symbols or numbers will label the vectors. The plot output will be 
+named tieplot.
+
+
+ibis-gen out=table1.dat nc=7 nr=30
+mf3 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#inp">inp</A>=table1.dat func=("c1=@aint(@index/31)+1"$"c2=100*@index"$      "c3=100*@index"$"c4=c2+101"$"c5=c3-200"$"c6=@aint(@index)"$"c7=0")
+
+tieplot <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#inp">inp</A>=i.dat <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#nl">nl</A>=3000 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#ns">ns</A>=3000 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#keycol">keycol</A>=1 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#key">key</A>=(1,2)   <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#scale">scale</A>=20 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#newcols">newcols</A>=(4,5) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#oldcols">oldcols</A>=(2,3) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#numcol">numcol</A>=6     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#plotout">plotout</A>=tieplot2
+
+In this example an IBIS file of 7 columns and 30 rows is created,
+it is divided into 2 subsets of 15 rows each (control column C1
+has 1 in the first 15 rows and 2 in the next 15 rows). Old coordinates
+are in columns 2 and 3, new coordinates are in columns 4 and 5.
+Number of each point is contained in column 6. Two plots, each con-
+taining vectors for 15 points will be generated. 
+
+Original Programmer:  A. L. Zobrist       10 October 1980
+
+<A NAME="CogProg">Cognizant Programmer:  K. F. Evans</A>
+
+Revision History
+
+ 02 Sep 2013 R. J. Bambery  Fixed misspelling of lintyp vs. lntype 
+ 13 Jul 2013 R. J. Bambery  Adjusted eps format to more readable fonts
+                            Remove vestiges of debug statments
+ 12 Jul 2013 R. J. Bambery  Create ascii file for .gpi file
+                            Previously used ibis2asc to create in for input
+                            Add <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#plotfmt">PLOTFMT</A>. Made file naming conventions
+                            consistent
+ 20 Feb 2013 R. J. Bambery  Removed some debug print statements
+                            test script enhancements
+ 13 Feb 2013 R. J. Bambery  Documentation and test updates
+ 16 Nov 2012 R. J. Bambery  Linux 64-bit, Gnuplot
+  8 May 95   J. Turner (CRI)  Made portable for UNIX and XRT/graph 
+
+ 01 Mar 86   KFE  Revision 2   
+
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#inp"><H3>INP</H3></A>
+Input IBIS interface file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#plotout"><H3>PLOTOUT</H3></A>
+STRING - Output Plot file name.
+Default="tieplot"
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#plotfmt"><H3>PLOTFMT</H3></A>
+ Output plot format
+ GNUPLOT or EPS
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#keycol"><H3>KEYCOL</H3></A>
+Control column
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#key"><H3>KEY</H3></A>
+Keys in the control column
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#scale"><H3>SCALE</H3></A>
+Magnification factor for shifts
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#nl"><H3>NL</H3></A>
+Size of an area in lines
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#ns"><H3>NS</H3></A>
+Size of an area in samples
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#newcols"><H3>NEWCOLS</H3></A>
+Columns of new (line,sample)
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#oldcols"><H3>OLDCOLS</H3></A>
+Columns of old (line,sample)
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#numcol"><H3>NUMCOL</H3></A>
+Columns of identifying numbers
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#charcol"><H3>CHARCOL</H3></A>
+Column containing Calcomp
+special symbol numbers
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot_level2.html#ichar"><H3>ICHAR</H3></A>
+Calcomp special symbol number
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/tieplot.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

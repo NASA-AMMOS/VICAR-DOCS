@@ -1,0 +1,119 @@
+<HTML>
+<HEAD><title>HTML Help for ZCIRCLE</title></HEAD>
+<BODY>
+<H1>Help for ZCIRCLE</H1>
+<pre>
+PURPOSE:
+
+	"zcircle" is a VICAR2 applications program which removes
+	data <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#in">in</A> a circular or elliptical pattern from an image.  
+	Data may be removed either inside or outside of the
+	specified pattern, and is either replaced with lowest
+	<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#dn">DN</A> value (i.e., 0 for BYTE data, -32678 for HALF, 
+	-214748638 for FULL and -1.7E38 for FULL data) or,
+	optionally, with a specified <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#dn">DN</A> value.
+
+OPERATION:
+	
+	"zcircle" reads the input dataset line by line, modifying
+	each if necessary, and writes each line directly to the
+	output.  The circle or ellipse defined by the parameters
+	may intercept any given line at most 2 times.  If the
+	default mode of removing data outside the curve is <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#in">in</A>
+	effect, all data outside of these 2 points is replaced
+	with the desired <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#dn">DN</A> value.  If the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#in">IN</A> (for inside) option
+	is used, all data between the two points is replaced.
+	The actual curve is replaced <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#in">in</A> both modes.  If an ellipse
+	is desired, it is possible to generate the axis lengths
+	by various combinations of two parameters:
+
+	1) Known average radius and eccentricity, specify <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#r">R</A> and
+	   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#ecc">ECC</A>. If polar radius is larger that equatorial radius,
+	   make <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#ecc">ECC</A> negative.
+	2) Known semimajor and semiminor axis lengths, specify
+	   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#rpol">RPOL</A> and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#req">REQ</A> as desired.  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#ecc">ECC</A> will be calculated from
+	   these two given values.
+	3) Known eccentricity and one axis length, specify <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#ecc">ECC</A> and
+	   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#rpol">RPOL</A> or <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#req">REQ</A> (as known). If the polar radius is to
+	   be larger than the equatorial, make <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#ecc">ECC</A> negative.
+
+	The average radius of an ellipse is assumed to be
+	(<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#nl">NL</A>+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#ns">NS</A>)/4.
+EXECUTION:
+
+<A NAME="examples">	EXAMPLES	</A>
+	   zcircle A B (1 1 500 500)
+ 	   --This replaces all pixels with zero which are outside
+	     of a circle centered at line 250.5, sample 250.5, with
+	     radius 250.
+
+	   zcircle A B (1 1 500 500) '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#in">IN</A>
+	   --This is similar to the above except that all pixels 
+	     inside the circle are replaces with zero.
+
+	   zcircle A B <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#dn">DN</A>=100 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#xcen">XCEN</A>=-10 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#ycen">YCEN</A>=200 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#r">R</A>=50 '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#in">in</A>
+	   --This replaces all pixels with 100 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#dn">DN</A> which are iside
+	     the circle centerd (off the picture) at line 200 and
+	     sample -10 with radius 50 pixels.
+
+	   zcircle A B (1 1 500 500) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#ecc">ECC</A>=0.5
+	   --This replaces all pixels with zero which are outside of
+	     an ellipse centered at (250.5 250.5) and average semi-
+	     axis length of 500.  The major axis will be aligned
+	     along the sample direction (horizontal).
+
+	   zcircle A B (1 1 500 500) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#ecc">ECC</A>=-0.5
+	   --This is similar to the above, except that the major
+	     axis is aligned along the line direction (vertical).
+
+	   zcircle A B <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#rpol">RPOL</A>=25.3 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#ecc">ECC</A>=0.9 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#ang">ANG</A>=35.7
+	   --This replaces all pixels outside of the ellipse with
+	     zero <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#dn">DN</A> defines by an eccentricity of 0.9 and a polar
+	     axis length of 50.6 pixels (2*<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#rpol">RPOL</A>), with the polar
+	     axis pointing to an azimuthal angle of 35.7 degrees
+	     clockwise from up.  The major axis length (<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#req">REQ</A>) is
+	     determined by <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#rpol">RPOL</A> and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#ecc">ECC</A> to be 116.1 pixels.
+PROGRAM HISTORY:
+Made portable for UNIX by A. Scop (CRI) 1-JULY-1994
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#inp"><H3>INP</H3></A>
+An input image
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#out"><H3>OUT</H3></A>
+An output image
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#size"><H3>SIZE</H3></A>
+VIACR <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#size">size</A> field (<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#ns">NS</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#sl"><H3>SL</H3></A>
+Integer, starting line number for output
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#sn"><H3>SN</H3></A>
+Integer, starting sample number for output
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#nl"><H3>NL</H3></A>
+Integer, number of lines <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#in">in</A> the output image
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#ns"><H3>NS</H3></A>
+Integer, number of samples <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#in">in</A> the output image
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#xcen"><H3>XCEN</H3></A>
+Integer, center sample coordinate <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#in">in</A> pixels
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#ycen"><H3>YCEN</H3></A>
+Integer, center line coordinate <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#in">in</A> pixels
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#r"><H3>R</H3></A>
+Real, average radius of a circle or ellipse
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#rpol"><H3>RPOL</H3></A>
+Real, "polar" radius of an ellipse and overrides the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#r">R</A> value
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#req"><H3>REQ</H3></A>
+Real, "equatorial" radius of a ellipse and overrides the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#r">R</A> value
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#ecc"><H3>ECC</H3></A>
+Real, eccentricity of the ellipse and may be -1&ltECC<+1
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#ang"><H3>ANG</H3></A>
+Real, amizuth angle of rotation of the polar axis and may be -90&ltANG<+90
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#dn"><H3>DN</H3></A>
+Integer, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#dn">DN</A> value to replace removed data for BYTE, HALF and FULL format data
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#rdn"><H3>RDN</H3></A>
+Real, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#dn">DN</A> value to replace removed data for REAL*4 format data
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle_level2.html#in"><H3>IN</H3></A>
+Keyword, specifies that all the pixels inside the limits of the defined
+circle or ellipse are to be removed
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/zcircle.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

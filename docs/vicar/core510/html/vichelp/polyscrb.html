@@ -1,0 +1,166 @@
+<HTML>
+<HEAD><title>HTML Help for POLYSCRB</title></HEAD>
+<BODY>
+<H1>Help for POLYSCRB</H1>
+<pre>
+ PURPOSE:
+
+Program "polyscrb" takes the data from a standard IBIS graphics-1 vector
+input file and produces from it an output image file of polygon borders
+(line segments) that are scribed (drawn) against a uniform
+background.  The input file consists of the coordinates of points in
+the output image that are to be connected with line segments.  The output
+image that is produced forms a raster base containing polygon outlines.
+Program options allow the user to specify both the data number values for the
+polygon borders and the background areas.  "polyscrb" is used in conjunction
+with programs "polyreg" and "polygeom" to produce a scribed image for input to
+program "paint".
+ EXECUTION:
+
+The input file consists of the coordinates of sequences of points in
+the output image space.  Each sequence of points is to be connected
+with line segments in sequential order.  The coordinates of points
+are given in floating point (REAL*4) form with the line location first,
+followed by the pixel location in the line.  The program rounds 
+the coordinate locations to the nearest pixel in the output image space.
+
+The records in the input file consist of an integral number of coordinate
+pairs, or in other words, an integral number of points.  Sequences of points
+are packed into the records end to end and may cross record boundaries.
+The end of a sequence of points can either be marked by a null point or the
+end of the input file, or can be implied by means of a polygon closure option.
+By default a null point is a point with the coordinates (0.0,0.0).  A null
+point can be defined otherwise, though, by means of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#ignor">IGNOR</A> option.  When
+a polygon closure option (<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#exclose">EXCLOSE</A> or <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#apclose">APCLOSE</A>) is used, the program saves the
+coordinates of the first point in a sequence and checks if this point
+occurs again exactly (<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#exclose">EXCLOSE</A>) or approximately (<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#apclose">APCLOSE</A>).  If this point
+does occur again, (a closed polygon has been found, and) the sequence
+ends with the second occurrence of the point.  When a polygon closure option 
+is used, the program interprets either a closed polygon or a null point as
+an end of sequence.
+
+In "polyscrb", the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#size">size</A> field does not refer to the input file, but instead
+determines a window (in the output image space) which will be written
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#out">out</A> to the output file.  The program finds the line segments or portions
+of line segments that lie within the window and assigns to the pixels along
+these segments the data number value for line segments (polygon borders).
+All pixels in the window area that are not part of a line segment are
+assigned the data number for background areas.
+
+The output image may either be byte or halfword data.  The output
+file must be allocated with AL or a similar program before
+running "polyscrb".
+
+TAE COMMAND LINE FORMAT
+      The following command line formats show the major allowable forms:
+      polyscrb <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#inp">INP</A>=a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#out">OUT</A>=b <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#size">SIZE</A>=(<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#ns">ns</A>) optional parameters
+      polyscrb <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#inp">INP</A>=a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#out">OUT</A>=b <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#sl">SL</A>=sl <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#ss">SS</A>=ss <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#nl">NL</A>=nl <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#ns">NS</A>=ns optional parameters
+      polyscrb a b (<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#ns">ns</A>) optional parameters
+      
+       Here 'a' represents the input file name,
+       'b' represents the output image file name.
+<A NAME="examples">EXAMPLES</A>
+
+ 1.   polyscrb <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#inp">INP</A>=OLINES <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#out">OUT</A>=SCRIB <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#size">SIZE</A>=(600,600,100,360) '<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#exclose">EXCLOSE</A>
+
+      In this example a byte-data image is produced for the window which
+      starts at line 600, pixel 600 and which is 100 lines long and 360
+      pixels wide.  The program will check for polygons which close
+      exactly in determining the end of sequences of points in the
+      input file.
+
+ 2.   polyscrb <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#inp">INP</A>=OLINES <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#out">OUT</A>=SCRIBH <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#size">SIZE</A>=(600,600,100,360) '<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#exclose">EXCLOSE</A> '<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#half">HALF</A>
+
+      In this example a halfword-data image is produced for the same window 
+      which was used in example 1.
+
+ 3.   polyscrb IN.GRA <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#out">OUT</A>.IMG  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#dim">DIM</A>=3
+
+      In this example IN.GRA is a 3-dimensional file; the output line
+      segments will have the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#dn">dn</A> values specified by the z-value of the
+      initial point.  All other actions are the same.
+
+ 4.   polyscrb IN.GRA <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#out">OUT</A>.IMG  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#dim">DIM</A>=3  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#dn">DN</A> = 255
+
+      Specifying the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#dn">DN</A> value in the case of a 3-dimensional input will
+      override the z-value in the graphics file; all polygons will have
+      the specified <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#dn">DN</A> value.
+
+RESTRICTIONS
+1. The output image can be byte or halfword data.
+2. Maximum number of samples is 500,000 per line.  The TAE/VICAR executive
+   may impose further <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#size">size</A> limitations.
+ OPERATION:
+
+Because the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#size">size</A> of output images can be larger than the size of the
+program's work buffer, "polyscrb" builds the output image in strips.
+Each strip contains as many (of the remaining) lines of the window area
+as will fit in the work buffer.  For each strip, "polyscrb" processes each
+line segment one at a time.  When a line segment intersects the strip,
+the slope of the segment is used in determining exactly which pixels to
+use in scribing the line.
+
+ WRITTEN BY:             A. L. Zobrist                1 Dec 1975
+
+<A NAME="CogProg"> COGNIZANT PROGRAMMER:   Niles Ritter		      2 Jun 1988</A>
+
+ REVISION:               1                           22 Sep 1978
+           AMS (CRI)     Made portable for UNIX       2 Jan 1995
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#inp"><H3>INP</H3></A>
+Input file name
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#out"><H3>OUT</H3></A>
+Output file name 
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#size"><H3>SIZE</H3></A>
+Standard Vicar <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#size">size</A> field:
+  (<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#ns">NS</A>)
+You can enter <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#nl">NL</A>,
+and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#ns">NS</A> together as <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#size">SIZE</A>, OR
+enter the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#nl">NL</A>, and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#ns">NS</A>
+parameters separately.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#sl"><H3>SL</H3></A>
+Starting line number
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#ss"><H3>SS</H3></A>
+Starting sample number
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#nl"><H3>NL</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#ns"><H3>NS</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#dim"><H3>DIM</H3></A>
+2 or 3 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#dim">dim</A> file?
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#half"><H3>HALF</H3></A>
+Enter  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#half">HALF</A>=HALF (or abbreviate)
+for halfword output.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#dn"><H3>DN</H3></A>
+Data number for polygon borders
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#bdn"><H3>BDN</H3></A>
+Data number for background areas
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#pdn"><H3>PDN</H3></A>
+Data number for polygon corners
+(endpoints of line segments)
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#exclose"><H3>EXCLOSE</H3></A>
+Enter to check for
+polygons which close exactly
+when determining the end of
+sequences of points in the
+input file.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#apclose"><H3>APCLOSE</H3></A>
+Distances in checking for
+polygons which close
+approximately.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#outside"><H3>OUTSIDE</H3></A>
+Enter to expand the polygon
+border by one pixel around
+the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#outside">outside</A> of the polygon.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#noprint"><H3>NOPRINT</H3></A>
+Suppresses program messages
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb_level2.html#ignor"><H3>IGNOR</H3></A>
+Defines coordinates of a
+null point.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polyscrb.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

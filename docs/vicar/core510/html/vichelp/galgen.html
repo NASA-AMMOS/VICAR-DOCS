@@ -1,0 +1,324 @@
+<HTML>
+<HEAD><title>HTML Help for GALGEN</title></HEAD>
+<BODY>
+<H1>Help for GALGEN</H1>
+<pre>
+PURPOSE:
+   GALGEN is a VICAR applications program used to generate radiometric
+calibration (slope) and dark current files.  These files are used to radiome-
+trically correct flight images via the program GALSOS (Galileo) or DECAL 
+(Cassini).  The program also generates files containing statistical data 
+measuring the linearity at each pixel.  These latter files may be input 
+to the program BLEMGEN to generate camera blemish files.
+
+   GALGEN was originally specific to the Galileo SSI camera.  It will also
+work for the Cassini ISS camera.  The program assumes a linear <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#light">light</A>-transfer 
+curve.  See also GLLPFCF.
+
+References: 
+	D-4264  MIPL Software Structural Design for the Instrument
+	        Calibration of GLL SSI Science Processing.
+        tbd     Software Design Document for Instrument Calibration -
+                Cassini ISS
+
+EXECUTION STATEMENT:
+
+  GALGEN <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#inp">INP</A>=(D1,D2,D3,...,Dn) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#out">OUT</A>=(CAL,SAT,ERR,RMS,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">DC</A>) DC=DC <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#edc">EDC</A>=EDC           &ltuser-params&gt
+
+     or
+
+  GALGEN <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#inp">INP</A>=D1 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#list">LIST</A>=LT.LIST <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#out">OUT</A>=(CAL,SAT,ERR,RMS,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">DC</A>) DC=DC <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#edc">EDC</A>=EDC           &ltuser-params&gt
+
+
+
+  The input frames D1,D2,D3,...,Dn should comprise a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#light">light</A>-transfer sequence,
+consisting of not more than 10 images of a featureless, uniformly 
+illuminated target (flat-field frames) in order of increasing <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A>.  
+Their filenames may be input to the program in the form of a SRCH-format 
+text file (see program SRCH).  If extended-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> frames are included 
+in the sequence (Galileo), an extended-dark-current frame (<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#edc">EDC</A>) must be 
+specified.  If multiple frames are taken at any given <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A>, they may 
+be summed via program PICSUM and the resulting summed frame input to GALGEN.  
+The inputs may be in byte or 16-bit integer format.
+
+  The output files (CAL,SAT,ERR,RMS,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">DC</A>) are images in the same format as the
+input flat-field frames (400x400 or 800x800 for Galileo, 256x256, 512x512, or
+1024x1024 for Cassini):
+
+  CAL is the output radiometric slope file (REAL*4),
+  SAT is an output file identifying the low-full-well pixels (16-bit data),
+  ERR is an output file containing the maximum absolute difference (in DN)
+       between the input data samples and the fitted curve (16-bit data),
+  RMS is an output file containing the rms <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#error">error</A> for the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#fit">fit</A> (16-bit data),
+  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">DC</A> is the output dark-current file (linear model only, 16-bit data).
+
+OPERATION:
+  GALGEN assumes a linear model of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#light">light</A>-transfer function.  For a
+given line-sample coordinate (i,j), the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#light">light</A>-transfer function is of the
+form:
+	d(i,j) = c(i,j)e(i) + <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">dc</A>(i,j)		(1)
+
+where e(i) is the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> at image line i, d(i,j) is the output camera
+signal (DN), and c(i,j) and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">dc</A>(i,j) are the slope and offset (dark-current)
+terms.
+
+  GALGEN assumes that the intensity of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#light">light</A> source is held constant
+and that the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> is varied by varying the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#shutter">shutter</A> speed of the camera.
+The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> e(i) is computed from the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#light">light</A> of the light cannon, the commanded
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#shutter">shutter</A> time t, and the shutter offset to(i):
+
+	e(i) = l*[t - to(i)]			(2)
+
+  For Galileo, the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#light">light</A> of the light cannon must be specified via the LIGHT
+parameter, the camera <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#gain">gain</A> state must be specified via the GAIN parameter, and
+the commanded <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> times (in msec) for input frames D1,D2,D3,...,Dn must be
+specified via the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">EXPOSURE</A> parameter.  Alternatively, the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#shutter">shutter</A> settings may
+be input via the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#shutter">SHUTTER</A> parameter.  The Shutter-Offset File is specified via
+the OFFSET parameter.  
+
+  For Cassini, specifying <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#light">LIGHT</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#gain">GAIN</A>, and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">EXPOSURE</A> is optional (the parameter
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#shutter">SHUTTER</A> is not used for Cassini).  The values are extracted from the VICAR
+label if the parameters are not given.
+
+  To determine whether <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#light">LIGHT</A> is in relative foot-lamberts or picoamps,
+sr/nanometer, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#units">UNITS</A> is used.  If UNITS=LUMINANC, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#light">LIGHT</A> is in relative
+foot-lamberts).  If <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#units">UNITS</A>=RADIANCE, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#light">LIGHT</A> is in picoamps.
+(<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#units">UNITS</A> should be LUMINANC for Galileo and RADIANCE for Cassini).
+
+  GALGEN operates in two modes.  In the default mode (<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#fit">FIT</A>=LINEAR), GALGEN
+solves for both the slope and offset terms at each pixel position in the
+image by fitting a straight line (via least squares) through the input
+data points (extracted from input files (D1,D2,D3,...).  The inverse of the
+slope (1/c) is output to the radiometric slope file (CAL) and the offset is 
+output to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">DC</A>.  If <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#fit">FIT</A>=SLOPE is specified, then GALGEN solves for the 
+slope-term only by fitting the input points to the function:
+
+	d(i,j) = c(i,j)e(i) - do(i,j)		(3)
+
+where do(i,j) is extracted from the input dark-current file (<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">DC</A>).  The inverse
+of the slope (1/c) is output to CAL and no <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">DC</A> file is output.
+
+  If the input frames have been pre-processed by PICSUM to sum multiple
+frames, GALGEN will normalize the data by dividing by the picture <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#scale">scale</A>
+(extracted from the picture label) prior to performing the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#fit">fit</A>.  The picture
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#scale">scale</A> may be optionally input via the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#numb">NUMB</A> parameter.
+
+  For pixels with unsuccessful fits, the CAL file will receive a 0.0, the
+SAT, ERR, and RMS files will receive -1.0 and the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">DC</A> file will receive 0.
+
+While processing each pixel, if a saturated level is detected, that level
+and all higher levels are ignored.  This saturation value is 255 for Galileo
+and 4095 for Cassini.
+
+Notes:
+For Slope model, the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">DC</A> parameter is not required.  The dark-current file
+can be in the input <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#list">list</A> as the first frame.  This model will subtract
+the first input file from all the others before performing <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#fit">fit</A>.  However,
+it assumes that this first file is a true dark-current, this Slope model should
+yield slope values which go thru the origin.
+
+For Linear model, all input files are fitted without adjustment.  A fifth
+output file is produced which is the best <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#fit">fit</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#offsets">offsets</A> associated with the
+output slope values.
+
+PROGRAM FLOW
+  The processing GALGEN performs can be broken into three distinct
+modules which are processed sequentially.  First all the input and output
+files are opened and prepared for use.  Any input file errors will be
+flagged at this point.  Second, the program parameters will be examined
+and verified with the input files as necessary.  Finally, all specified
+output calibration files will be generated simultaneously line by line.
+As processing progresses, informational messages will be given to keep
+the user apprised of the current processing.
+
+  If there is a program or system failure, it will not be possible to
+recover from a mid-point in the file processing.
+
+EXTENDED-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">EXPOSURE</A> DARK-CURRENT CORRECTION FOR GALILEO:
+  If extended-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> mode frames are included in the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#light">light</A>-transfer
+sequence, the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#extexpo">EXTEXPO</A> parameter must be used to specify the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A>
+at which the extended-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> data begins, and an extended-exposure
+dark-current file (<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#edc">EDC</A>) must be specified.  An adjustment is made to
+correct for the difference in dark-current level between extended-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A>
+mode frames and frames taken at the normal exposures.  If SLOPE is
+specified, this adjustment consists of replacing the normal <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A>
+dark-current (<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">DC</A>) by the extended-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> dark-current in equation 3.
+If LINEAR is specified (the default), the extended-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> dark-current
+is subtracted from all extended-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> data and the normal dark-current
+is added.
+
+  Sequences which consist entirely of extended-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> mode data could
+be processed like normal <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> data.  I.e., the extended-exposure
+dark-current should be specified in the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">DC</A> parameter; the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#extexpo">EXTEXPO</A> parameter
+should not be used.
+
+LOW-FULL-WELL-PIXEL TEST:
+  The keyword <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#lfwpt">LFWPT</A> enables the low-full-well-pixel test for automatically
+scanning for low-full-well pixels by checking for non-linearities in the
+input data points (see <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#lfwpt">LFWPT</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#skip">SKIP</A>, and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#error">ERROR</A> parameters).  The SAT file
+contains the DN at full-well for each LFW pixel and 32767 for all good
+pixels.
+
+RESTRICTIONS:
+
+1.  A maximum of 10 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> levels (not counting the optiona <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">DC</A>) are
+    allowed.
+
+
+<A NAME="examples">EXAMPLE:</A>
+
+If multiple frames are acquired at each <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A>, they may be combined via
+program PICSUM and the resulting summed frames input to GALGEN:
+
+   PICSUM (DC1,DC2,DC3,DC4,DC5) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">DC</A>	     !Sum dark-current frames
+   PICSUM (A1,A2,A3,A4,A5) A		     !Sum frames at <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> 133.22
+   PICSUM (B1,B2,B3,B4,B5) B		     !Sum frames at <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> 200.0
+   PICSUM (C1,C2,C3,C4) C		     !Sum frames at <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> 266.67
+   PICSUM (D1,D2,D3) D			     !Sum frames at <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> 400.0
+   PICSUM (E1,E2) E			     !Sum frames at <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> 533.33
+   PICSUM (EDC1,EDC2,EDC3) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#edc">EDC</A>		     !Sum extended-dark-current frames
+					     !Input summed dark-current,
+
+   GALGEN <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#inp">INP</A>=(A,B,C,D,E) + 		     !Exposures
+     <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#out">OUT</A>=(CAL.GRN,SAT,ERR,RMS,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">DC</A>.GRN) +	     !Output files
+     <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">DC</A>=DC <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#edc">EDC</A>=EDC			     |Dark-current files
+     EXPO=(133.22,200,266.67,400,533.33) +   !Commanded <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> times (in msec)
+     <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#extexpo">EXTEXPO</A>=5 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#light">LIGHT</A>=3.54       <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#gain">GAIN</A>=100       <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#error">ERROR</A>=(0,20) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#skip">SKIP</A>=4       <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#offsets">OFFSETS</A>=OFFSETS.DAT
+
+NOTE:  The frames must be input in order of ascending <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A>.  The
+exposures, specified by the EXPO parameter, must be given in the same order
+(It is not necessary to specify the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">DC</A> or <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#edc">EDC</A>).  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#extexpo">EXTEXPO</A>=5
+specifies that the 5th <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> above the dark-current (533.33 msec) is the
+beginning of the extended-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A> data.  All data is in the 100K <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#gain">gain</A>-state.
+
+PROGRAM HISTORY:
+
+Written by Jean Lorre, 3 Sep 82
+<A NAME="CogProg">Current cognizant programmer:  Gary Yagi</A>
+Revisions:
+  30 JUN 1997 ...TXH...     added changes made by CCA to the ported version.
+  19 JUN 1997 ...CCA...     stopped use of saturated levels in fits, mod help
+  18 JUN 1997 ...TXH...     ported from VAX/VMS to UNIX and ALPHA/VMS.
+  25 OCT 1995 ...CCA...     more digits in line number printout
+  16 MAY 1995 ...CCA...     Changed lab.lumin to .radiance, added report of
+                            filename if ABLE97 has <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#error">error</A>, commented <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#out">out</A> open
+                            of primary input (conflict with frames in <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#list">list</A>),
+                            changed max <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#list">list</A> files from 500 to 10.
+  09 Jan 95...J.Yoshimizu...Changed LUMINANC to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#light">LIGHT</A>.  Added parameter <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#units">UNITS</A>.
+  15 Aug 94...J.Yoshimizu...Changed to work on Cassini ISS data.  Took <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#out">out</A> the
+      			    subroutine SOFFSETS since it was never called.
+      			    Changed LC to LUMINANC.
+  01 Jul 94...A.Scop..(CRI).Made portable for UNIX
+  25 Jan 91...A.Runkle......Added messages to identify processing progression
+                            Split the dark current files into separate
+				parameters
+  20 Nov 88...G.M.Yagi......Fixed processing of summation-mode <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#shutter">shutter</A>-offset
+  17 Nov 88...G.M.Yagi......Fixed use of LFW pixel table (FLAGLFWP)
+                      ......Fixed summation-mode LFW pixel table so LFW
+		      ......only at 400K
+  30 Sep 88...G.M.Yagi......Update LFW pixel table (Klaasen 16 Sept 88)
+  28 Apr 88...G.M.Yagi......Minor changes to help file.
+  25 Feb 88...G.M.Yagi......Fix built-in tables for low-full-well pixels.
+  22 Nov 87...G.M.Yagi......Delete quadratic model, change format of files,
+  	                    built-in tables for low-full-well pixels.
+  15 NOV 85...R.A.MORTENSEN.Added <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#shutter">shutter</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#offsets">OFFSETS</A> parameter.
+  06 APR 85...D.F.STANFILL..Change to DN=f(BRITE).  Added RMS output file
+  24 OCT 84...G.M.YAGI......CONVERSION TO VAX VICAR*2
+  20 APR 84...M.E.MORRILL...REWRITTEN IN VAX FORTRAN VICAR1*
+   3 SEP 82...J.J.LORRE.....INITIAL RELEASE
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#inp"><H3>INP</H3></A>
+ STRING--REQUIRED
+ Flat-field & <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">DC</A> images.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#out"><H3>OUT</H3></A>
+ STRING--REQUIRED
+ 1-5 output images.  
+ <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#out">OUT</A>=(CAL,SAT,ERR,RMS,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">DC</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc"><H3>DC</H3></A>
+ STRING--OPTIONAL
+ Input Dark-current file
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#edc"><H3>EDC</H3></A>
+ STRING--OPTIONAL
+ Extended Dark-current
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#offsets"><H3>OFFSETS</H3></A>
+ STRING--REQUIRED
+ Specifies <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#shutter">Shutter</A>-Offset
+ File.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#gain"><H3>GAIN</H3></A>
+ INTEGER
+ Camera <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#gain">gain</A> state.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#units"><H3>UNITS</H3></A>
+ KEYWORD
+Specifies whether <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#light">LIGHT</A>
+is in RADIANCE or
+LUMINANC
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#light"><H3>LIGHT</H3></A>
+ REAL
+ <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#light">Light</A> cannon level in
+ foot-Lamberts or
+ nanowatts/cm**2/sr/
+ nanometer
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure"><H3>EXPOSURE</H3></A>
+ REAL
+ Specifies the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#exposure">exposure</A>
+ time (in msec) for each
+ input image (excluding
+ the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">DC</A> & <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#edc">EDC</A> frames).
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#shutter"><H3>SHUTTER</H3></A>
+ INTEGER
+ <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#shutter">Shutter</A> setting for each
+ input image (excluding
+ the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#dc">DC</A> & <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#edc">EDC</A> frames).
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#numb"><H3>NUMB</H3></A>
+ INTEGER--OPTIONAL
+ Specifies how many
+ images were PICSUMed for
+ each input flat field.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#extexpo"><H3>EXTEXPO</H3></A>
+ INTEGER--OPTIONAL
+ Specifies input frame
+ at which extended-dark-
+ current correction will
+ be applied.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#scale"><H3>SCALE</H3></A>
+ REAL--OPTIONAL
+ Specifies <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#scale">scale</A> factor
+ for scaling output
+ slopes (CAL).
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#fit"><H3>FIT</H3></A>
+ KEYWORD--OPTIONAL 
+ Specifies type of
+ curve <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#fit">fit</A> (SLOPE
+ or LINEAR).
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#fitscale"><H3>FITSCALE</H3></A>
+ REAL--OPTIONAL
+ Specifies scaling applied
+ to MAXERR and RMS outputs.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#lfwpt"><H3>LFWPT</H3></A>
+ KEYWORD--OPTIONAL
+ Enables low-full-well
+ pixel test.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#skip"><H3>SKIP</H3></A>
+ INTEGER--OPTIONAL
+ Specifies number of
+ exposures to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#skip">skip</A>
+ before applying
+ low-full-well-pixel
+ test.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#error"><H3>ERROR</H3></A>
+ REAL--OPTIONAL
+ Specifies slope and offset
+ of linear <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#error">error</A> function
+ applied in low-full-well
+ pixel test.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen_level2.html#list"><H3>LIST</H3></A>
+ STRING--OPTIONAL
+ SRCH-format file containing
+ the names of the files
+ to be processed.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/galgen.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

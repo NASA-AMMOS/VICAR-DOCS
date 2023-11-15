@@ -1,0 +1,117 @@
+<HTML>
+<HEAD><title>HTML Help for FFTFLIP</title></HEAD>
+<BODY>
+<H1>Help for FFTFLIP</H1>
+<pre>
+PURPOSE:
+"fftflip" accepts one FFT or a matrix of FFT outputs from programs "fft2",
+or "fft22", and rearranges the internal structure of each FFT
+such that <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#dc">DC</A> is moved from the upper-left corner to center.  An optional
+transposition can also be made along the diagonal (upper-left to lower-right).
+"fftflip" differs from "fftpic" in that no automatic scaling of the FFT is
+performed, and no beginning and trailing samples are added.
+
+EXECUTION:
+
+	fftflip <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#inp">INP</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#out">OUT</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#size">SIZE</A> PARAMS
+
+where:  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#inp">INP</A>  is the input FFT or matrix of FFTs.
+	<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#out">OUT</A>  is the output file.
+        <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#size">SIZE</A> specifies a subarea of the input file to process.
+	PARAMS includes other parameters descibed below and in Tutor mode.
+OPERATION:
+"fftflip" performs the operation shown in the following diagrams.
+The letters A,B,C,D refer to fft quadrants.
++-------+-------+     +-------+-------+     +-------+------- |<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#dc">DC</A>     |       |     |       |       |     |       |       |
+|       |       |     |       |       |     |       |       |
+|   A   |   B   |     |   D   |   C   |     |   D'  |   B'  |
+|       |       |     |       |       |     |       |       |
++-------+-------+ --&gt +-------+-------+ --> +-------+------- |       |       |     |       |<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#dc">DC</A>     |     |       |DC     |
+|       |       |     |       |       |     |       |       |
+|   C   |   D   |     |   B   |   A   |     |   C'  |   A'  |
+|       |       |     |       |       |     |       |       |
++-------+-------+     +-------+-------+     +-------+-------   INPUT FFT           DEFAULT OPERATION      WITH <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#flip">FLIP</A> OPTION
+                                            (' MEANS TRANSPOSE)
+
+When the input is a matrix of FFTs, then the above operation is
+performed on each FFT separately.
+
+Obviously, there is nothing that compells the input to this program 
+to be an FFT:  it will work on any arbitrary image;  however, the
+operation described is most meaningful for an FFT, so that term is
+used here.
+
+
+LIMITATIONS
+    (Removed Warning about slowness on VAX)
+
+    Does not work with "COMP" images
+
+<A NAME="examples">EXAMPLES</A>
+
+	fftflip <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#out">OUT</A>=B <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#nlw">NLW</A>=32 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#line">LINE</A>=0 '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#flip">FLIP</A>
+
+	In this example, the FFT in file A will be rearranged and then the
+	program will perform a transposition along the upper-left to lower-
+	right diagonal.  The result will be written to file B.  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#nlw">NLW</A> gives
+	the FFT dimension in pixels; the default is 32.  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#line">LINE</A> specifies the
+	number of lines above and below <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#dc">DC</A> which are to be averaged
+	together as a form of pseudo apodizing; no averaging is desired in
+	this case.  (If averaging were to be done, the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#dc">DC</A> parameter could
+	also have been specified, which indicates the number of lines
+	surrounding <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#dc">DC</A> that are to be excluded from the averaging; the
+	default is <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#dc">DC</A>=1, that is, only the DC <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#line">line</A> is excluded.)
+
+	insert <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#inp">INP</A>=IN <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#out">OUT</A>=A (1,1,32,32)		(where 'IN' is image data)
+	fft22 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#out">OUT</A>=B POW=5 IFMT=BYTE OFMT=COMP
+	cform <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#inp">INP</A>=B <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#out">OUT</A>=A IN=COMP OUT=HALF SO=(9.76525,0.)
+	fftflip <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#out">OUT</A>=B <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#nlw">NLW</A>=32 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#line">LINE</A>=0 '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#flip">FLIP</A>
+	f2 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#inp">INP</A>=B <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#out">OUT</A>=A 'HALF 'OUTH  	    FUNC="(32767./ALOG(32767.))*ALOG10(IN1)"
+	linear <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#out">OUT</A>=B 'HALF 'OUTB STRE=(6000,14000) LIMI=(0,255)
+	list B
+
+	This example shows fftflip as used in a typical command sequence
+
+WRITTEN BY:  J.J. Lorre,  23 January 1984
+
+CONVERTED TO VAX BY:  A.S.Mazer, 11 May 1984
+
+
+<A NAME="CogProg">CURRENT COGNIZANT PROGRAMMER:  R. J. Bambery</A>
+
+    1984-05-11 A.S.Mazer - Converted to VAX 
+    1985-08-01 L. W. Kamp - CONVERTED TO VICAR2, FIXED BUGS
+    1994-09-05 A. Scop (CRI) - Made portable for UNIX 
+    2012-12-19 R. J. Bambery - LINUX 64-bit changes, Internal format
+                               is real, removed BYE,HALF limitation
+    2016-06-08 W. L. Bunch - Migrated to MIPL
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#inp"><H3>INP</H3></A>
+STRING - Input fft(s)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#out"><H3>OUT</H3></A>
+STRING - Output fft(s)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#size"><H3>SIZE</H3></A>
+INTEGER - Standard <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#sl"><H3>SL</H3></A>
+INTEGER - Starting <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#line">line</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#ss"><H3>SS</H3></A>
+INTEGER - Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#nl"><H3>NL</H3></A>
+INTEGER - Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#ns"><H3>NS</H3></A>
+INTEGER - Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#nlw"><H3>NLW</H3></A>
+INTEGER - fft dimension in pixels
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#flip"><H3>FLIP</H3></A>
+KEYWORD - Causes transposition along NW-SE diagonal
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#line"><H3>LINE</H3></A>
+INTEGER - Number of lines above and below <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#dc">DC</A> to be averaged
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#dc"><H3>DC</H3></A>
+INTEGER - Number of lines around <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip_level2.html#dc">DC</A> to be excluded from averaging
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftflip.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

@@ -1,0 +1,181 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for ROVERNAV</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav.html">ROVERNAV</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+An ascii list of filenames of rover stereo pair images to be displayed. 
+Since there is no capability to identify rover stereo pairs you must 
+list them in pair order:
+pair 1 left
+pair 1 right
+pair 2 left
+pair 2 right
+...
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+An ascii file listing the rover location and orientation in the order:
+filename,x,y,z,heading,pitch,roll.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="percent"><H3>PERCENT</H3></A><pre>
+Image histogram saturation at each end.
+Each input image is autostretched before being displayed.
+Default is <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav_level2.html#percent">percent</A>=2.0
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="device"><H3>DEVICE</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav_level2.html#device">Device</A> type to plot or display to. Options are:
+/XTERM,  tektronix terminal
+/XWINDOW workstations running x windows
+/XSERVE, persistent X window
+/XMOTIF  X motif
+The default is: <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav_level2.html#device">device</A>=/XSERVE
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="archive"><H3>ARCHIVE</H3></A><pre>
+The name of the xyz data <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav_level2.html#archive">archive</A> created by program xyznet.
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav_level2.html#archive">archive</A> contains all known surveyed xyz points. 
+These points will be displayed in the images. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="force"><H3>FORCE</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav_level2.html#force">Force</A> the X,Y, and Z rover origin and the Heading, Pitch, and Roll to be 
+reset to the 6 numbers following the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav_level2.html#force">FORCE</A> keyword. Normally this information
+comes from the picture label.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="objective"><H3>OBJECTIVE</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav_level2.html#objective">objective</A> function to minimize.
+If <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav_level2.html#objective">OBJECTIVE</A>=1 the objective function is the sums of the distances between
+the xyz tiepoint locations stored in the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav_level2.html#archive">archive</A> and computed from user
+specified tiepoints in the rover stereo pairs.
+if <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav_level2.html#objective">OBJECTIVE</A>=2 the objective function is the sums of the distances between
+the pixel locations of the xyz <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav_level2.html#archive">archive</A> points projected into the rover images
+and the corresponding user specified tiepoints in the rover stereo pairs.
+Default is <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav_level2.html#objective">OBJECTIVE</A>=2.
+Note: I suspect that <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav_level2.html#objective">Objective</A> #2 is better because it avoids the problem of
+huge xyz errors for distant tiepoints.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rsf"><H3>RSF</H3></A><pre>
+Rover State File.  This is a list of filenames to load containing
+Rover State information.  These files contain position and orientation
+information for a rover (or other mobile spacecraft) at various sites.
+They are in XML format.  See the "Rover Motion Counter (RMC) Master File SIS"
+for details on these files.
+
+Rover State Files have a priority order.  The files listed first have
+the highest priority.
+
+Environment variables may be used in the list.
+
+For MER, if a directory is specified, then that directory is searched for
+RMC Master files and any found are loaded.  The directory structure and
+filename convention is covered in the RMC SIS.  The directory specified
+is the one containing "master", so if &ltdir&gt is the name specified in the
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav_level2.html#rsf">RSF</A> parameter, the following files will be searched for:
+
+&ltdir&gt/master/<mission>_Master.svf
+&ltdir&gt/master/<mission>_Site_<n>_Master.rvf
+
+The name of each file loaded is printed to the stdout log for reference.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="debug_rsf"><H3>DEBUG_RSF</H3></A><pre>
+If enabled, this causes the internal database of RMC locations to be
+printed <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav_level2.html#out">out</A> to the stdout log.  This is after the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav_level2.html#rsf">RSF</A> files have been
+loaded and the coordinate systems read from the input label(s).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord"><H3>COORD</H3></A><pre>
+This parameter is currently ignored by rovernav.  It is here for compatibility
+with subroutines used by other programs (see e.g. marsmap).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord_index"><H3>COORD_INDEX</H3></A><pre>
+This parameter is currently ignored by rovernav.  It is here for compatibility
+with subroutines used by other programs (see e.g. marsmap).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="fixed_site"><H3>FIXED_SITE</H3></A><pre>
+Specifies which major Site is the "Fixed" Site for this run.
+
+Historically, MPF and M98 had a single "Surface Fixed" frame which never
+moved, and which all other coordinate system frames were referenced to.
+With the advent of long-range rovers (such as MER and FIDO), that became
+insufficient.  The rover traverses far enough that errors in knowledge of
+coordinate system offset and orientation become unacceptable.
+
+For this reason, a system of major Sites was introduced.  Periodically
+during the mission, a Site frame is declared.  This then becomes the
+reference frame for all activities until the next Site is declared.
+References are kept local, and errors don't propogate across Sites.
+
+However, if images from more than one Site are combined together, the
+Site's must be placed relative to each other.  Therefore a single reference
+frame is still needed to combine different sites.
+
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav_level2.html#fixed_site">FIXED_SITE</A> parameter controls which of the major Site frames is
+the reference ("fixed") site for this program run.  This fixed frame
+can vary in different program runs, but is constant throughout one
+execution.
+
+If not specified, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav_level2.html#fixed_site">FIXED_SITE</A> defaults to the minimum Site number (i.e.
+lowest numbered, or earliest chronologically) used in all input images.
+Normally this default is sufficient; rarely must <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav_level2.html#fixed_site">FIXED_SITE</A> be specified.
+
+One or more Rover State Files must usually be specified in order to combine
+image from more than one Site.  These describe the relationship between
+sites.  See the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rovernav_level2.html#rsf">RSF</A> parameter.
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

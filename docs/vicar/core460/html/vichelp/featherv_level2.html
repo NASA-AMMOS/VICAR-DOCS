@@ -1,0 +1,565 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for FEATHERV</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv.html">FEATHERV</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+The last required file is an IBIS file giving information on the input
+files.  The columns of the file are usually:
+
+1.  The name of the image file in any order, with or without pathname.
+    Only the part of the pathname/filename after the last \ or / is read
+    for checking
+2.  The offset <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#sl">SL</A> of the image input
+3.  The offset <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ss">SS</A> of the image input
+4.  The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nl">NL</A> of the image input (must be exact, cannot be less as in FASTMOS)
+5.  The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ns">NS</A> of the image input (must be exact, cannot be less as in FASTMOS)
+6.  Input factor for brightness equalization formulas (only one as of 9/99)
+7.  Reserved for more complex brightness equalization formulas
+
+the numbering of the columns can be changed by the parameter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#cols">COLS</A>.  See
+parameter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#adjust">ADJUST</A> for an explanation of column six.
+
+The program limits at present (9/99):
+1. 400 inputs
+2. The number allowed by the system for simultaneous open (somewhere 
+   between 67 and 100 according to one expert).
+   The files are opened and closed as a narrow mosaicking band passes
+   from top to bottom of the output.  The width of this band is <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#dfeather">DFEATHER</A>.
+   The number of files open over the band cannot exceed the VICAR
+   or system limit for number of files open at once.  It is possible that
+   a UNIX system call can enlarge this.
+
+The optional <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#geotiff">GeoTIFF</A> reference image, which is placed after the IBIS file,
+is used in the following way:
+1.  Its pixel referencing is a master for the mosaic.
+2.  All other images will have offsets relative to the master.
+3.  The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#size">SIZE</A> or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ns">NS</A> parameters will be relative to the master.
+4.  The offsets can be placed in the IBIS file, in which case they are
+    checked against the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#geotiff">GeoTIFF</A> mappings.
+5.  The offsets can be zero'd in the IBIS file, in which case they are
+    calculated from the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#geotiff">GeoTIFF</A> mappings.  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ns">NS</A> columns must be zero'd
+    for this to occur and they are also calculated.
+6.  For this case, the '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#geotiff">GEOTIFF</A> keyword must be given and all input images
+    are required to have <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#geotiff">GeoTIFF</A> labels.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+A major difference with program FASTMOS is that (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ss">SS</A>) can be used to 
+window down into the mosaic.  See HELP level 2 under <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#sl">SL</A>.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="cols"><H3>COLS</H3></A><pre>
+The last file is an IBIS file giving information on the input files.  The
+columns of the file are usually:
+
+1.  The name of the image file in any order, with or without pathname.
+    Only the part of the pathname/filename after the last \ or / is read
+    for checking
+2.  The offset <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#sl">SL</A> of the image input
+3.  The offset <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ss">SS</A> of the image input
+4.  The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nl">NL</A> of the image input (must be exact, cannot be less as in FASTMOS)
+5.  The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ns">NS</A> of the image input (must be exact, cannot be less as in FASTMOS)
+6.  Input factor for brightness equalization formulas (only one as of 9/99)
+7.  Reserved for more complex brightness equalization formulas
+
+By using this parameter, the columns can be renumbered as the user desires.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="size"><H3>SIZE</H3></A><pre>
+If the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#size">SIZE</A> field is not entered, the output image has the same size as the
+first input image.  If the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#size">SIZE</A> field is entered, the number of lines and
+number of samples refer to the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#size">size</A> of the output image.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sl"><H3>SL</H3></A><pre>
+The default is 1.  Setting it larger moves the "window" of the mosaic upwards
+in line number and is the same as lowering all of the individual input <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#sl">SL</A>'s
+by an equivalent amount.  This means that the mosaic can conveniently be done
+in sections by setting (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ns">NS</A>) in a checkerboard fashion and then by
+butting together the checkerboard pieces with the VICAR programs APPEND and
+MSS.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ss"><H3>SS</H3></A><pre>
+The default is 1.  Setting it larger moves the "window" of the mosaic upwards
+in sample number and is the same as lowering all of the individual input <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ss">SS</A>'s
+by an equivalent amount.  This means that the mosaic can conveniently be done
+in sections by setting (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ns">NS</A>) in a checkerboard fashion and then by
+butting together the checkerboard pieces with the VICAR programs APPEND and
+MSS.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mmode"><H3>MMODE</H3></A><pre>
+The mosaicking mode specifies how the output data number values are determined 
+from the input data numbers.   The following rules apply for each of the 
+modes.  If none of the input images have a data number value for a 
+given pixel that is greater than or equal to the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#thresh">THRESH</A> value, the 
+output data number is the data number from the first input image if 
+the pixel is contained in the first input image, and the output 
+data number is L0 if the pixel is not contained in the first input image, where
+L0 is 0 if <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#thresh">THRESH</A> is greater than 0, L0 is 0 if THRESH=0 and the data format 
+is byte, and L0 is equal to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#thresh">THRESH</A>-1 otherwise.  If
+exactly one of the input images has a data number value for a given pixel that
+is greater than or equal to the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#thresh">THRESH</A> value, the output data number is the
+data number from the one input image.  If more than one of the input images
+have a data number value for a given pixel that is greater than or equal to the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#thresh">THRESH</A> value, the output data number is determined by the mosaicking mode. 
+
+There are currently five modes to choose from.  They are listed by name below.
+For each mode a description is given of how the output data number is 
+determined when there is more than one input image having a data number value 
+that is greater than or equal to the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#thresh">THRESH</A> value for a given pixel.  The
+default mode is OVERLAY.
+
+OVERLAY  - The input images are checked against the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#thresh">THRESH</A> value in the order
+           in which they are entered by the user.  The first data number value
+           found which meets the threshold criteria is used for the output
+           image.  This means that the order in which the input files are 
+           entered gives a priority to the data in the files.
+
+AVERAGE  - The average of the values meeting the threshold criteria is used.
+           The average is found by integer division with no rounding.
+
+MOD      - When there are two values meeting the threshold criteria, the 
+           average of the values is used.  When there are more than two 
+           values meeting the threshold criteria, the value closest to the
+           average is used.  This mode may be particularly useful when
+           combining many images with high bit-error rates.
+
+MAX      - The maximum of the values meeting the threshold criteria is used.
+
+MIN      - The minimum of the values meeting the threshold criteria is used.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="thresh"><H3>THRESH</H3></A><pre>
+Only values greater than or equal to the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#thresh">THRESH</A> threshold parameter are used
+by the mosaicking mode in determining the data numbers for the output image.
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#thresh">THRESH</A> value is usually greater than 0 for mosaicking.  THRESH can be
+set to 0 for cases such as averaging images.  The default value is 1.
+(See Example 5 in the main help for details about the case of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#thresh">THRESH</A>=0
+for byte data.  Users may need to convert images to halfword to use <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#thresh">THRESH</A>=0
+for mosaicking.  Other VICAR programs, such as INSECT may be an alternative.)
+
+For halfword images for which negative DNs are considered valid, a negative
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#thresh">THRESH</A> value may be used.  In this case, 0 is an inappropriate value for
+representing the absence of image data.  When <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#thresh">THRESH</A> is less than 0, FEATHERV
+uses an output DN of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#thresh">THRESH</A>-1 to represent the absence of image data.
+(If <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#thresh">THRESH</A> = -32768, -32768 is used to represent the absence of image data.)
+This value is used as an output DN where the output pixel does not lie in one
+of the input images.  (See the MMODE parameter.)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="progress"><H3>PROGRESS</H3></A><pre>
+If the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#progress">PROGRESS</A> parameter is specified, FEATHERV prints a comment every 500th
+line.  The default is to not print the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#progress">progress</A>.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="edge"><H3>EDGE</H3></A><pre>
+If the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">EDGE</A> parameter is specified, all input images are edged prior to
+applying the mosaicking mode. No edging is the default.  '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">EDGE</A> M U S T
+be specified to invoke the edging algorithm.
+
+ALSO NOTE THAT EDGING IS INCREASED BY THE USE OF <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorefac">MOOREFAC</A>.  A <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nibble">NIBBLE</A> OF
+TWO AND A <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorefac">MOOREFAC</A> OF THREE WILL RESULT IN SIX PIXELS BEING REMOVED.
+
+If edging is selected, then each line of each input image is edged first on the
+left and then on the right.  Edging means scanning through a line from one
+end or another to the point at which the data numbers are greater than or
+equal to a threshold value and then removing the pixels from the end of
+the line up to a certain number of pixels beyond the point.  This is 
+referred to as finding the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">edge</A> of the scene data and nibbling in a 
+certain number of pixels beyond the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">edge</A>.  Because of the line by 
+line processing performed by the program, edging is only available
+in the horizontal direction.  (Edging the top and bottom of images would
+normally require an intermediate data set.)  Edging is typically used
+to remove distortion around the edges of pictures that was caused by
+interpolation, filtering, or other things.
+
+Several parameters are used to control the way that edging is done.  The 
+parameters <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nthresh">NTHRESH</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#lthresh">LTHRESH</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#rthresh">RTHRESH</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nseq">NSEQ</A>, and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nincr">NINCR</A> determine the location
+of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">edge</A> of the scene data for lines of the input images.  The parameters
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nibble">NIBBLE</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#lnibble">LNIBBLE</A>, and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#rnibble">RNIBBLE</A> determine how many pixels beyond the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">edge</A> of 
+the scene data are removed.
+
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">edge</A> of the scene data for a line is determined as follows.  The program
+scans through the pixels of a line comparing the data numbers against the
+edging threshold.  (Separate edging thresholds can be specified for scanning
+from the left and scanning from the right using the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#lthresh">LTHRESH</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#rthresh">RTHRESH</A>
+parameters.  The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nthresh">NTHRESH</A> parameter can be used to specify the same threshold
+for scanning from the left and scanning from the right.)  The scanning begins
+at one end of the line, and it checks successive pixels unless the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nincr">NINCR</A>
+parameter is entered.  If <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nincr">NINCR</A> is entered, the scanning checks only every
+NINCRth pixel.  The program scans until it finds a group of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nseq">NSEQ</A> consecutive
+(in terms of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nincr">NINCR</A>) pixels all of which have a data number greater than or
+equal to the edging threshold.  The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">edge</A> of the scene data is defined as the
+first pixel (according to the direction of the scan) of that group.
+
+The nibbling number is the number of pixels, starting with the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">edge</A> of the
+scene data, which are to be removed along with any pixels from the end of
+the line to the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">edge</A> of the scene data.  (If the nibbling number is zero, 
+then just the pixels from the end of the line to the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">edge</A> of the scene data
+are removed.)  Separate nibbling numbers can be specified for scanning from 
+the left and scanning from the right using the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#lnibble">LNIBBLE</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#rnibble">RNIBBLE</A> parameters.
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nibble">NIBBLE</A> parameter can be used to specify the same nibbling number for 
+scanning from the left and scanning from the right.  
+
+If no <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">edge</A> of the scene data is found when scanning, the entire line is 
+removed.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nthresh"><H3>NTHRESH</H3></A><pre>
+The default for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nthresh">NTHRESH</A> is <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#thresh">THRESH</A>.  (See also under <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">EDGE</A>.)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="lthresh"><H3>LTHRESH</H3></A><pre>
+The default for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#lthresh">LTHRESH</A> is <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nthresh">NTHRESH</A>.  (See also under <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">EDGE</A>.)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rthresh"><H3>RTHRESH</H3></A><pre>
+The default for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#rthresh">RTHRESH</A> is <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nthresh">NTHRESH</A>.  (See also under <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">EDGE</A>.)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nseq"><H3>NSEQ</H3></A><pre>
+The default for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nseq">NSEQ</A> is 8.  (See also under <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">EDGE</A>.)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nibble"><H3>NIBBLE</H3></A><pre>
+The default for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nibble">NIBBLE</A> is 4.  (See also under <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">EDGE</A>.)
+
+ALSO NOTE THAT EDGING IS INCREASED BY THE USE OF <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorefac">MOOREFAC</A>.  A <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nibble">NIBBLE</A> OF
+TWO AND A <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorefac">MOOREFAC</A> OF THREE WILL RESULT IN SIX PIXELS BEING REMOVED.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="lnibble"><H3>LNIBBLE</H3></A><pre>
+The default for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#lnibble">LNIBBLE</A> is 4.  (See also under <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">EDGE</A>.)
+
+ALSO NOTE THAT EDGING IS INCREASED BY THE USE OF <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorefac">MOOREFAC</A>.  A <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nibble">NIBBLE</A> OF
+TWO AND A <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorefac">MOOREFAC</A> OF THREE WILL RESULT IN SIX PIXELS BEING REMOVED.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rnibble"><H3>RNIBBLE</H3></A><pre>
+The default for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#rnibble">RNIBBLE</A> is 4.  (See also under <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">EDGE</A>.)
+
+ALSO NOTE THAT EDGING IS INCREASED BY THE USE OF <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorefac">MOOREFAC</A>.  A <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nibble">NIBBLE</A> OF
+TWO AND A <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorefac">MOOREFAC</A> OF THREE WILL RESULT IN SIX PIXELS BEING REMOVED.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nincr"><H3>NINCR</H3></A><pre>
+The default for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nincr">NINCR</A> is 1.  (See also under <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">EDGE</A>.)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="adjust"><H3>ADJUST</H3></A><pre>
+This keyword is defaulted to 'NOADJ which does no brightness adjustment.
+Three kinds of adjustment can be performed using column 6 of the IBIS
+file:
+
+'FACTOR - All input images will be multiplied by the number in column 6
+of the IBIS file as a brightness adjustment.  Note that there is a
+mathematical risk of a one turing into a zero if the factor is less
+than .5.  This would be significant if zero means "no data" for
+mosaicking.
+
+'ADD - All input images will be added to by the number in column 6
+of the IBIS file as a brightness adjustment.
+
+'ADDZMASK - All input images will be added to by the number in column 6
+of the IBIS file as a brightness adjustment except that zeros/nonzeros
+are preserved (pixels that were greater than 0 prior to the add are
+compared to a minimum of 1, zeros remain at zero).  This is useful for
+the case where zero means "no data" for mosaicking.
+
+The adjustment is performed just prior to the output or the averaging for
+output, so it does not affect the edging operations.  The cloud erasing
+operation is done after this adjustment operation.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="dfeather"><H3>DFEATHER</H3></A><pre>
+Width of feathering is the max distance of the MOORE DISTANCE ALGORITHM
+measured in pixels.  The effective feathering will be twice this distance
+because a large overlap will feather one image to its full MOORE DISTANCE
+yielding a 50/50 averaging of the two images.  Then a reverse feather of 
+the other image will take place.
+
+A larger number will feather the inputs to a greater degree, but the program 
+will use more time and memory.  Plan carefully using the virtual memory limit
+formula
+
+  6 x (max number of inputs open) x (max input <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ns">NS</A>) x <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#dfeather">DFEATHER</A> / <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorefac">MOOREFAC</A>**2
+
+If <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorefac">MOOREFAC</A> is greater than one, the value used is <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#dfeather">DFEATHER</A>/MOOREFAC
+in tiles of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#size">size</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorefac">MOOREFAC</A> x MOOREFAC, and also the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#dfeather">DFEATHER</A> will be
+adjusted slightly to a multiple of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorefac">MOOREFAC</A> because of the tiling.
+The net effect of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorefac">MOOREFAC</A>&gt1 is to still feather to depth <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#dfeather">DFEATHER</A>,
+but in coarser steps.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="moorefac"><H3>MOOREFAC</H3></A><pre>
+In the formula for storage:
+
+  6 x (max number of inputs open) x (max input <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ns">NS</A>) x <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#dfeather">DFEATHER</A> / <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorefac">MOOREFAC</A>**2
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#dfeather">DFEATHER</A> increases storage linearly, and also increases compute time.  The
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorefac">MOOREFAC</A> reduces the resolution of the MOORE algorithm and decreases storage
+quadratically, and also saves compute time.  Further, the ratio of
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#dfeather">DFEATHER</A> to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorefac">MOOREFAC</A> must be less than 65536.  
+
+A good suggested value is a ratio of 50 to 100.  This will result in
+100 to 200 steps of brightness in feathering from one image to the other.
+If ramping is used, the need for feathering is reduced and a smaller
+ratio can be used.
+
+Keep in mind that increasing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorefac">MOOREFAC</A> does not decrease the feathering
+distance in the images, it simply coarsens the number of steps in the
+MOORE distance function.  The human eye probably cannot see more than
+100 steps in the typical mosaicking situation.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="cloudout"><H3>CLOUDOUT</H3></A><pre>
+If a pixel comes from multiple inputs and one of the inputs is brighter than
+one of the others (which of the others is order dependent for three or more)
+by this amount, then it is deleted from the averaging process.  This
+correction is applied after the brightness adjustment (see keyword <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#adjust">ADJUST</A>).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ramp"><H3>RAMP</H3></A><pre>
+'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">RAMP</A> - apply ramping procedure;
+   The first pass over the files calculates the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">ramp</A> values to apply
+   to each scene.  The second pass constructs ramps to smooth together
+   the scenes.  The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">ramp</A> values are written to the IBIS file.
+'NORAMP - don't apply ramping
+   A single pass smoothes together the scenes using the Moore distance
+   interpolation only.  No <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">ramp</A> values are calculated. No ramp values
+   are written to the IBIS file.
+'READRAMP - apply previous <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">ramp</A> values from file
+   This option requires an IBIS file with <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">ramp</A> values calculated from
+   a previous run with the '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">RAMP</A> option.  The previous run can be on
+   a reduced image... the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">ramp</A> values are <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#size">size</A>-independent.  A single
+   pass is performed like the second pass of the '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">RAMP</A> option, and
+   no values are written to the IBIS file.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rdkthr"><H3>RDKTHR</H3></A><pre>
+This is for throwing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#out">out</A> unreliable water or shadow pixels in Landsat, or space,
+shadow, etc. for planets.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rdiffthr"><H3>RDIFFTHR</H3></A><pre>
+This allows glimmer, seasonal variation, wetness, etc. to be discarded from
+tiepoints.  It is applied after the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#adjust">adjust</A> parameter correction.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rmoore"><H3>RMOORE</H3></A><pre>
+Tiepoints in overlap areas for an image are taken at a particular distance
+inside of the neighbor image.  The Moore distance function is used to determine
+when a pixel is that distance inside.  The unit of distance is the pixel.
+By setting this parameter to 7 (for example) all pixels that are a distance
+of 7 from the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">edge</A> of non-0 data in the neighbor overlap will be used as tiepoints.
+
+The tiepoints from different neighbor frames are kept separate in the tally,
+so that brightness ramps can be constructed to each neighbor.  Neighbors are
+specified in the IBIS file input (see parameter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#rcols">rcols</A>).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="gorefac"><H3>GOREFAC</H3></A><pre>
+The ramps are four half-images hinged horizontally and vertically in the middle 
+of an image.  The difference with a neighbor (divided by 2) is the height of the 
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">ramp</A> at the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">edge</A> of the image.  But the data may actually start inside the
+image with a zero gore of data at the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">edge</A>.  This factor multiplies the height of
+the half plane so that it applies better to the data.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rcols"><H3>RCOLS</H3></A><pre>
+The ten columns in order are (using their default column numbers, which can be changed)
+
+8.   An index of the images (any unique integer index will do)
+9.   Right neighbor to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">ramp</A> to, or 0 if no neighbor to the right (using the index
+     of column 8)
+10.  Bottom neighbor to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">ramp</A> to, or 0 if no neighbor to the bottom (using the index
+     of column 8)
+11.  Left neighbor to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">ramp</A> to, or 0 if no neighbor to the left (using the index
+     of column 8)
+12.  Top neighbor to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">ramp</A> to, or 0 if no neighbor to the top (using the index
+     of column 8)
+13.  Constant calculated by the ramping procedure, add to this image
+14.  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">Ramp</A> constant calculated by the ramping procedure for right-facing ramp (a
+     value of -999.0 means that there is no <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">ramp</A> in this direction##)
+15.  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">Ramp</A> constant calculated by the ramping procedure for bottom-facing ramp (a
+     value of -999.0 means that there is no <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">ramp</A> in this direction##)
+16.  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">Ramp</A> constant calculated by the ramping procedure for left-facing ramp (a
+     value of -999.0 means that there is no <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">ramp</A> in this direction##)
+17.  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">Ramp</A> constant calculated by the ramping procedure for top-facing ramp (a
+     value of -999.0 means that there is no <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">ramp</A> in this direction##)
+
+## A <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">ramp</A> of height zero is different than no ramp.  The ramp of height zero
+would be interpolated with neighboring ramps, causing them to curve towards
+zero.  No <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ramp">ramp</A> (-999.0) would not be interpolated with neighboring ramps.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="geotiff"><H3>GEOTIFF</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#geotiff">GeoTIFF</A> Options:  If the images all have GeoTIFF labels and the 'GEOTIFF
+keyword is given, then there are two possibilities:
+
+The first is: if columns 2-5 contain non-zero values (only column 4 is
+checked for 0), then the values are compared with values calculated from
+the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#geotiff">GeoTIFF</A> labels or the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ns">ns</A> from the VICAR label.  Since the values
+might calculate with a slight inaccuracy, the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#toler">TOLER</A> parameter is provided
+with a default value of 1.e-7.  If a calculated offset exceeds the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#toler">TOLER</A>
+parameter, this indicates that the files have an inaccurate mapping for
+the purposes of mosaicking and do not have an integral offset.  All mappings
+are checked for consistency (map projection type, zones, meridians,
+etc.).
+
+The second is: if columns 2-5 contain zero values (only column 4 is
+checked for 0), then the values are calculated from the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#geotiff">GeoTIFF</A> labels
+or the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#ns">ns</A> from the VICAR label.  The only check is that the offsets
+are integral values (within the parameter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#toler">TOLER</A>) and that the mappings
+are consistent.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="toler"><H3>TOLER</H3></A><pre>
+The calculated value, if within <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#toler">TOLER</A> of an integral value, will be converted 
+to the integral value for purposes of mosaicking.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="moorenbl"><H3>MOORENBL</H3></A><pre>
+FEATHERV HAS BOTH THE OLD TYPES OF NIBBLING (SEE PARAM <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">EDGE</A>) AND
+A NEW EDGING CAPABILITY BASED ON THE MOORE ALGORITHM.  The new edging
+nibbles in a perpendicular direction to the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">edge</A> of data in all
+directions (the old <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nibble">nibble</A> worked from the righ or left only).  Use 
+the parameter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorenbl">MOORENBL</A> to invoke this.  The default of 0 is no <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nibble">nibble</A>,
+a value of n nibbles all values where the MOORE distance from the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">edge</A>
+is n, etc.  To give a smooth transition, instead of starting at n+1,
+the whole MOORE distance input is reduced by n so the MOORE distance
+that is used in feathering still starts at 1.  Keep in mind that
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorefac">MOOREFAC</A>=3 means that a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorenbl">MOORENBL</A>=1 will <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#nibble">nibble</A> 3 pixels from all
+edges.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mooremax"><H3>MOOREMAX</H3></A><pre>
+This will help if the images do not register perfectly in the geometric (x,y)
+sense.  A road that appears doubled in the overlap area will turn into a 
+disjoint line.  The seam will be along the polyline where the Moore numbers
+are at equality.  Do not use this parameter along with <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorepow">MOOREPOW</A>.
+
+FEATHERV has two parameters to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#adjust">adjust</A> the mathematics of the feathering
+calculation.  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#mooremax">MOOREMAX</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorepow">MOOREPOW</A>.  The choice here is affected by the
+quality of image geometric registration.  If the images are not in perfect
+registration, consider using <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#mooremax">MOOREMAX</A>.  If MOOREMAX causes an undesirable
+brightness <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">edge</A>, consider using <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorepow">MOOREPOW</A> with a high number, lowering it
+until the brightness <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">edge</A> disappears.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="moorepow"><H3>MOOREPOW</H3></A><pre>
+If set to a number greater thatn the default 1.0, the Moore distance values
+will be taken to this power.  So the linear ratio of Moore numbers, say, 80
+to 20 would be converted into 80**pow to 20**pow (or a pow
+split
+
+FEATHERV has two parameters to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#adjust">adjust</A> the mathematics of the feathering
+calculation.  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#mooremax">MOOREMAX</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorepow">MOOREPOW</A>.  The choice here is affected by the
+quality of image geometric registration.  If the images are not in perfect
+registration, consider using <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#mooremax">MOOREMAX</A>.  If MOOREMAX causes an undesirable
+brightness <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">edge</A>, consider using <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#moorepow">MOOREPOW</A> with a high number, lowering it
+until the brightness <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/featherv_level2.html#edge">edge</A> disappears.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

@@ -1,0 +1,199 @@
+<HTML>
+<HEAD><title>HTML Help for MARSFIDFINDER</title></HEAD>
+<BODY>
+<H1>Help for MARSFIDFINDER</H1>
+<pre>
+PURPOSE:
+To determine line/sample offset of a point projected  (inexactly)
+to an image.
+The resulting tiepoints are output in <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#out_tpt">OUT_TPT</A> for use by
+other programs such as MARSNAV.
+
+This is a multimission program.
+
+MARSFIDFINDER supports any mission, instrument, and camera model supported by the
+Planetary Image Geometry (Pig) software suite.
+
+EXECUTION:
+There are two ways to present input images:
+
+marsfidfinder <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#inp">inp</A>=(a.img,b.img,c.img,...) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#out_tpt">out_tpt</A>=tiepoints.tpt
+or
+marsfidfinder <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#inp">inp</A>=ascii_listoffiles <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#out_tpt">out_tpt</A>=tiepoints.tpt
+
+where ascii_listoffiles is a text file created by  an editor,
+containing the list of filenames to be searched for fiducials.
+Up to 200 input images can be listed.
+
+
+
+Then use MARSNAV to generate navigation solutions, and then one of the
+mosaic programs:
+
+marsnav <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#inp">inp</A>=files.lis out=mosaic.nav in_tpt=tiepoints.tpt
+marsmos <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#inp">inp</A>=files.lis out=mosaic.img <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#navtable">navtable</A>=mosaic.nav
+
+
+USAGE:
+The program requires a set of templates for the fiducials. For each
+fiducial, there needs to be a template matching all possible filters and eyes
+of the target image.Information about the templates is located in one of
+2 files, one for engineering and the other for flight.
+
+METHOD:
+For each input image
+1) determine the image filter number and eye.
+2) For each template with same filter and eye
+2A) perform correlations by moving the template throughout the search area. Pixels
+that are equal to a user specified mask value are ignored when computing the
+correlation. The maximum (subpixel) correlation is found by interpolating
+all computed correlations about the maximum.
+
+WARNING: The parameters <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#normal">NORMAL</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#ground">GROUND</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#surf_coord">SURF_COORD</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#surface">SURFACE</A> should be the same as
+those used in MARSNAV and the mosaic program to get proper results (although
+this is less critical with MARSFIDFINDER than with the other programs, because
+once you have a tiepoint, the model doesn't matter - the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#surface">surface</A> is used
+only to determine initial points before correlation).
+
+Most stereo cameras (e.g. MPF IMP, M98 SSI) are *not* designed to have their
+nodal <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#surface">surface</A> at the azimuth axis.  This introduces LOTS of parallax if single
+images contain objects both near and far that do not lie on the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#surface">surface</A> model.
+Pick your points intelligently so you don't pick a near object in this pair
+and a far one in that pair, and keep them as close as you can to the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#surface">surface</A>.
+
+
+
+HISTORY:
+4-15-08  Initial release
+<A NAME="CogProg">COGNIZANT PROGRAMMER: Mathew Yeates </A>
+
+REVISIONS:
+  2019-10-16 wlb - IDS-7926 - initialized some variables; cleaned up -Wall warnings.
+  2020-03-20 wlb - IDS-7927 - replaced sprintf calls.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#inp"><H3>INP</H3></A>
+Input image(s) or
+file list.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#out_tpt"><H3>OUT_TPT</H3></A>
+Output tiepoint file.
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#band"><H3>BAND</H3></A>
+The vicar image 
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#band">band</A> number. 
+Defaults to 1
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#border"><H3>BORDER</H3></A>
+When a fiducial xyz is projected to an image line/sample, if this line/sample is 
+not in the image and is not within this distance to the image <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#border">border</A>, 
+the fiducial is ignored.
+
+
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#searchns"><H3>SEARCHNS</H3></A>
+The number of samples to search to the left and right.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#searchnl"><H3>SEARCHNL</H3></A>
+The number of lines to search to the up  and down.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#quality"><H3>QUALITY</H3></A>
+Minimum acceptable
+correlation <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#quality">quality</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#searchpcnt"><H3>SEARCHPCNT</H3></A>
+The minimum percentage of the template that must be used when performing
+correlations.
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#start_key"><H3>START_KEY</H3></A>
+Starting key number for
+tiepoint file. 
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#mask_value"><H3>MASK_VALUE</H3></A>
+When computing correlations, pixels which equal this value are ignored.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#sep_angle"><H3>SEP_ANGLE</H3></A>
+Maximum separation angle
+for an image pair.
+
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation filename
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#verbosity"><H3>VERBOSITY</H3></A>
+Controls the amount of messages to display. Choose either INFO (default)
+or DEBUG.
+
+
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#format"><H3>FORMAT</H3></A>
+OLD or NEW tiepoint
+file format.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#normal"><H3>NORMAL</H3></A>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#normal">normal</A> vector.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#ground"><H3>GROUND</H3></A>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#ground">ground</A> point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#surf_coord"><H3>SURF_COORD</H3></A>
+Coordinate system used to define
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#surface">surface</A> parameters.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#surface"><H3>SURFACE</H3></A>
+The type of mars
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#surface">surface</A> to use INFINITY, PLANE, 
+SPHERE1, SPHERE2, MESH.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#surf_mesh"><H3>SURF_MESH</H3></A>
+Mesh file for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#surface">surface</A> model
+
+VARI <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#surf_csfile">SURF_CSFILE</A> 
+File containing CS for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#surface">surface</A>
+model
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+Ignored by marsfidfinder.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#coord">COORD</A>/mission combos.
+Ignored by marsfidfinder.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsfidfinder.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

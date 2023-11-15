@@ -1,0 +1,130 @@
+<HTML>
+<HEAD><title>HTML Help for MULTOVLY</title></HEAD>
+<BODY>
+<H1>Help for MULTOVLY</H1>
+<pre>
+PURPOSE:
+
+  multovly performs image overlay to produce a table of DN-combination 
+counts vs. DN-combinations (a histogram of DN-combinations) in sorted
+order in an IBIS interface file format.  In <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#tally">TALLY</A> mode one of the images
+can have its pixels summed instead of histogrammed.
+
+
+EXECUTION:
+
+Examples
+
+multovly  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#inp">INP</A> = (A,B,C)  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#out">OUT</A> = OUT  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#size">SIZE</A> = (50,50,150,250)  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#ncol">NCOL</A> = 4          DATA = (1,2,3)  AREA = 4  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#bytes">BYTES</A> = (1,2,2)  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#zeroes">ZEROES</A> = (1,2)
+
+  In this example, MULTOVLY will overlay three images (A, B, and C); the first
+is a byte image while the other two are halfword images.  The table of DN-
+combinations will be compiled only for the window listed in <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#size">SIZE</A>.  Pixel
+combinations with a zero value in the first or second column will be included.
+The possible pixels combinations will be listed in columns one through three,
+while the number of times each combination occured will be in column four.  
+
+  Only the input images and the output file must be specified; all of the
+other parameters will default sensibly.
+
+multovly  (A,B,C,D)  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#out">OUT</A>
+
+  In this example, the four images (A,B,C, and D) will be overlayed.  The
+number of columns in the output file will be five with the pixel combinations
+listed in columns one through four and the number of counts in column five.
+The window <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#size">size</A> will be taken from the size of the first image, and the pixel
+type from the format of each image.  Zero values in any image will cause that
+pixel combination to be ignored.
+
+
+multovly (POLYGONS.IMG,DATA.IMG) SUM.INT  '<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#tally">TALLY</A>  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#sumcol">SUMCOL</A>=3 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#areacol">AREACOL</A>=2
+
+This example shows the use of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#tally">TALLY</A> mode.  When 'TALLY is specified
+the last input file is the summed file.  For each unique pixel combination
+in the other input images, a sum is made of the pixels in the sum image.  Thus
+in this case, for each polygon in the paint image POLYGONS.IMG the pixels
+in DATA.IMG will be summed up.  The sum and the number of pixels for each 
+unique pixel combination go into <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#sumcol">SUMCOL</A> and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#areacol">AREACOL</A> columns in the interface
+file.  The default columns are, for n input images, column n for the sum column
+and column n+1 for the area column.  All of the other parameters refer only
+to the first n-1 images (the ones actually being overlayed).
+
+
+  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#ncol">NCOL</A> can be greater than the actual number of columns of data output: the
+rest of the columns will be filled with zeros.
+ 
+  There can be up to ten input images and each image can have byte, halfword,
+or fullword (4 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#bytes">bytes</A>) pixels.  There is a limit, however, of 20 bytes to the
+total combined width of the pixels in all of the images.  For example, one
+could have ten halfword images or five fullword images, but not ten fullword
+images.  The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#bytes">BYTES</A> parameter can be less than the actual pixel <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#size">size</A>, in which
+case only the lower <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#bytes">bytes</A> of the pixel will be used.  For example, BYTES could
+be 3 for a full word image if all of the values were less than 16,777,215
+(the largest number that fits into 3 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#bytes">bytes</A>).
+
+
+
+OPERATION:
+
+  MULTOVLY uses a hash table method of storing the DN-combinations and the
+histogram of counts.  The hash method is only practical if the table is in
+internal memory.  Thus if the table is too long for the core memory the
+hashing is done in stages, and the parts are merged together and stored in
+virtual memory on disk.
+
+
+
+RESTRICTIONS:
+  The maximum number of entries in the output interface file (i.e. the maximum
+number of unique combinations) allowed is 1,000,000 or 3,000,000/KEYLEN, which
+ever is smaller. (KEYLEN is the total combined width, in <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#bytes">bytes</A>, of the pixels).
+MULTOVLY will often allow more than this number of entries, but this is the
+maximum number that can always be counted on.
+  The length of the lines in all of the input images must be less than or
+equal to 40000 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#bytes">bytes</A> (i.e. 40000 samples in a byte image, 20000 samples in
+a halfword image, and 10000 samples in a fullword image.)
+
+WRITTEN BY: 		F. Evans  April 1985
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  	F. Evans</A>
+DOCUMENATION AUTHOR:  	F. Evans
+REVISION:  C  		F. Evans  January 1986
+
+PROGRAM HISTORY:
+Sep 11 2014 wlb Initialized most variables in subroutine main
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#inp"><H3>INP</H3></A>
+Input images
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#out"><H3>OUT</H3></A>
+IBIS output interface file
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#size"><H3>SIZE</H3></A>
+Standard VICAR <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#sl"><H3>SL</H3></A>
+Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#ss"><H3>SS</H3></A>
+Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#ns"><H3>NS</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#nl"><H3>NL</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#ncol"><H3>NCOL</H3></A>
+# of cols in output file
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#datacol"><H3>DATACOL</H3></A>
+Output file column order
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#areacol"><H3>AREACOL</H3></A>
+Output file totals column
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#sumcol"><H3>SUMCOL</H3></A>
+Output file sum column
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#bytes"><H3>BYTES</H3></A>
+Format of input data
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#zeroes"><H3>ZEROES</H3></A>
+Zero-value sample control
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#tally"><H3>TALLY</H3></A>
+'<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly_level2.html#tally">TALLY</A> for tally option
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/multovly.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

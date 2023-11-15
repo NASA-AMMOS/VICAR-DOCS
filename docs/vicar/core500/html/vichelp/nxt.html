@@ -1,0 +1,117 @@
+<HTML>
+<HEAD><title>HTML Help for NXT</title></HEAD>
+<BODY>
+<H1>Help for NXT</H1>
+<pre>
+
+OPERATION
+
+NXT reads a list file which was written by the program SRCH and 
+returns information about the next file in the list.  The values 
+are returned in <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/nxt_level2.html#onam">ONAM</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/nxt_level2.html#istape">ISTAPE</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/nxt_level2.html#tapepos">TAPEPOS</A>, and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/nxt_level2.html#nxtfil">NXTFIL</A>.  Upon completion, ONAM
+contains the name of the disk file or tape position which is next in the list.
+
+If the file is a tape, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/nxt_level2.html#istape">ISTAPE</A> will be 1, otherwise it will be 0.
+
+If <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/nxt_level2.html#istape">ISTAPE</A> is 1, then <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/nxt_level2.html#tapepos">TAPEPOS</A> will contain the file position number on 
+the tape.
+
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/nxt_level2.html#nxtfil">NXTFIL</A> contains the (ordinal) number of the returned file within the list file.
+
+NXT needs to have write access to the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/nxt_level2.html#input">input</A> file and to its directory because
+it modifies the first record of the file.  The recommended method for accessing
+a SRCH file owned by another user is to make a copy of it in one's account.
+
+
+HISTORICAL FOOTNOTE
+
+This program was written for processing files from a 9-track tape on
+a VAX-VMS system in the 1980's. In those days disk space was limited,
+so tape was the medium of archival storage and data interchange.
+
+Tapes came in two forms; with and without IBM standard labels. Standard
+label tape allowed file names to be associated with a position on the
+tape. If the tape was not labeled then you could only access data
+by knowing its position on the tape. This program performed this
+function for you by relating an entry in an ascii text list of files
+to a position on a tape and then creating a disk file with a filename.
+
+The example, below shows historically how this was done under VAX-VMS.
+
+Now this program gives you the ability to access files quickly from
+a list, thus avoiding a human manual entry.
+<A NAME="examples">EXAMPLE:</A>
+
+The following procedure could be used to get a list of the 
+system label of each file in the list file LIST.DAT.
+
+PROCEDURE
+  LOCAL FILENAM TYPE=STRING
+  LOCAL <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/nxt_level2.html#istape">ISTAPE</A> TYPE=INT
+  LOCAL POSITION TYPE=INT
+  LOCAL FILENUM TYPE=INT
+BODY
+  RESET LIST.DAT
+  write ('resetting')
+  LOOP
+    NXT LIST.DAT FILENAM <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/nxt_level2.html#istape">ISTAPE</A> POSITION FILENUM
+    IF (FILENAM = "END_OF_FILE") BREAK
+    IF (<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/nxt_level2.html#istape">ISTAPE</A>)
+        ALLOC MT T
+	MOUNT T COMMENT="Please mount tape &FILENAM"
+	LABEL-LIST &FILENAM/&POSITION 'SYS
+      ELSE
+        LABEL-LIST &FILENAM 'SYS
+    END-IF
+  END-LOOP
+END-PROC
+
+REVISIONS:
+
+  1986-09    SP  Changed fscanf to sscanf and changed                  
+                 format specifier from "%5d" to "10%d"                 
+                 to allow users to modify the first record in file.    
+                 Added code to check for first record having a         
+                 different length than expected and to handle this.    
+                 Modified to output to a TAE variable the number of the
+                 file (as done in program CNT) per Charlie Avis.       
+                 Note that this change the calling sequence of NXT by  
+                 adding another required parameter, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/nxt_level2.html#nxtfil">NXTFIL</A>.            
+  1987-02    SP  Added code to handle  NO RECORDS in SRCH file.        
+  1994-06    SVH Ported to UNIX - Steve Hwan				
+  1996-06    OAM Included a REWIND statement and a loop in the VMS part
+	         to avoid dropping filenames as it updates the NEXT FILE
+                 number.  FR 89371.
+  1997-08    RRD Added first fseek call after #else (the UNIX specific 
+                 section) because a previous call to fscanf had moved 
+                 the current position in the file and this fixes it.
+  1998-07    TIH Changed constant value with FILENAME_LEN to fix       
+  2011-10    LWK Increased pool size in q_init call from 500 to 1000   
+                 to fix V-block overflow in 64-bit linux.             
+  2012-12-09 RJB fixed warnings with gcc 4.7.2         
+                 moved variables c and ounit into #ifdef VMS_OS block   
+  2012-12-14 RJB Doc update.
+  2016-03-07 WLB Switched to ANSI_C. Removed VMS residue. Migrated to MIPL.
+  2019-06-13 WLB IDS-7922: Initialized some variables.
+                 IDS-7924: Switched to constant formatting string.
+		 IDS-7925: Null-terminated some strings.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/nxt_level2.html#input"><H3>INPUT</H3></A>
+List file
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/nxt_level2.html#onam"><H3>ONAM</H3></A>
+Output -- the next name
+in the list
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/nxt_level2.html#istape"><H3>ISTAPE</H3></A>
+Output -- TRUE (1) if tape
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/nxt_level2.html#tapepos"><H3>TAPEPOS</H3></A>
+Output -- File position number 
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/nxt_level2.html#nxtfil"><H3>NXTFIL</H3></A>
+Output -- Number of next
+file in list.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/nxt.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/nxt.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

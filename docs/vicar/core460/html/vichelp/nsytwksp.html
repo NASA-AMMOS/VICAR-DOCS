@@ -1,0 +1,174 @@
+<HTML>
+<HEAD><title>HTML Help for NSYTWKSP</title></HEAD>
+<BODY>
+<H1>Help for NSYTWKSP</H1>
+<pre>
+PURPOSE:
+
+NSYTWKSP computes a mask showing the workspace boundaries for the
+InSight mission.  The boundaries are computed by comparing the XYZ
+coordinates with precomputed polygons indicating the edges of the
+workspace.
+
+The output is a single-band BYTE image, containing a code 0-5 showing
+which polygons the point is inside.  See below for values.
+
+This program could easily by multimission-ized.
+
+EXECUTION:
+
+nsytwksp <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#inp">inp</A>=data.xyz <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#out">out</A>=data.wss -seis
+where:
+data.xyz is an input 3-band image of type REAL with the X, Y and Z values
+at that pixel in meters (the unit is actually irrelevant).
+
+METHOD:
+
+The actual core algorithm was developed by Steven Myint from Section 347.
+It was then refactored to meet VICAR standards by Bob Deen.
+
+The algorithm is simple: for each point, it checks if the XY coordinate
+is within the boundary specified by the input polygon file.  Z is ignored.
+The XYZ coordinate is converted to the coordinate system specified in
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#coord">COORD</A> first.
+
+The files are different based on instrument: HP3 and SEIS (actually a
+combination of SEIS and WTS).  Selection is made via a parameter.
+
+OUTPUT FORMAT:
+
+The output is a 1-band file in BYTE format.
+
+For HP3 the possible values are:
+
+  0 = no data
+  1 = outside HP3 boundary, or no data
+  2 = n/a
+  3 = inside HP3 workspace, outside HP3 grapple point boundary
+  4 = n/a
+  5 = inside HP3 grapple point boundary 
+
+For SEIS/WTS the possible values are:
+
+  0 = no data
+  1 = outside all SEIS/WTS areas, or no data
+  2 = inside WTS boundary, outside SEIS boundary
+  3 = n/a
+  4 = inside WTS and SEIS boundaries, outside SEIS/WTS grapple point boundary
+  5 = inside SEIS/WTS grapple point boundary 
+
+The assigned numbers max at 5 (where 5 is best) in order to maintain
+consistency across all InSight masks.  The 1-4 numbers are arbitrary but
+were chosen so they would be different between WSH and WSS products.
+
+Note: it is assumed the polygons strictly nest, with higher numbers above
+being smaller than previous polygons.  If not, the highest number wins
+(in other words, polygons are traversed in order from highest to lowest, and
+once a number is assigned to a given pixel, no other polyons are checked).
+
+
+HISTORY:
+2015-05-02	rgd	Initial version, based on code from Steven Myint (347)
+<A NAME="CogProg">COGNIZANT PROGRAMMER: B. Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#inp"><H3>INP</H3></A>
+Input XYZ image.
+Must be 1 3-band file
+or (x,y,z) triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#out"><H3>OUT</H3></A>
+Output file.
+Must be 1 filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#inst"><H3>INST</H3></A>
+Instrument to use:
+HP3 or SEIS
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#outside_dn"><H3>OUTSIDE_DN</H3></A>
+DN to use for outside
+all polygons
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nsytwksp.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

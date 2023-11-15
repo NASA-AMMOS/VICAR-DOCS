@@ -1,0 +1,631 @@
+<HTML>
+<HEAD><title>HTML Help for FARENC</title></HEAD>
+<BODY>
+<H1>Help for FARENC</H1>
+<pre>
+ <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#purpose">PURPOSE</A>:
+ "farenc" is a Vicar program to determine the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A> of a <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target">target</A> body
+ presenting part of its limb in a picture.  The orientation
+ and lighting geometry of the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target">target</A> body can be made constraints.
+ The program has 4 main modes. These are:
+ 
+ 1. Determining constraints from the SEDR or from parameters.
+    Constraints determine the shape,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#size">size</A>,and orientation of the limb.
+ 2. Locating candidate limb points.
+ 3. Fitting these points to a conic.
+ 4. Generating GEOM parameters, 
+    Updating the SPICE/SEDR OM matrix, and
+    Writing the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#planet">planet</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A> to a file (if the input is a perspective
+    projection with a map3 label)
+
+ Three limb fitting functions are available:
+
+              1. An unconstrained circle
+              2. A constrained circle
+              3. A constrained ellipse
+
+LOCAL AND REMOTE SPICE ACCESS:
+
+FARENC accesses SPICE data either locally or via the MIPS SPICE server.
+Currently (Jan 2002) SPICE data is available for Cassini, GLL, and
+VGR (at Jupiter only).  For images without SPICE data, parameters may be used
+to specify the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target">target</A> geometry.
+
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#spicemode">SPICEMODE</A> specifies whether local or remote SPICE access is to be used.
+If defaulted, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#spicemode">SPICEMODE</A> is set to the value of the logical name (or
+environmental variable) DEFAULTSPICE.
+
+
+PARAMETERS FOR RETRIEVING THE INITIAL CAMERA POINTING:
+
+Initial camera pointing data is first retrieved from predict C kernels or
+from MIPS C kernels.  The following optional parameters permit the user to
+specify where this initial pointing is retrieved:
+
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#ckname">CKNAME</A> and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#ckid">CKID</A> are alternative ways to specify the C kernel from which camera
+pointing is to be retrieved.  For example, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#ckname">CKNAME</A>=FARE or <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#ckid">CKID</A>=M904 specifies
+that the camera pointing should be retrieved from the file MIPS_FARENC.CK.
+The <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#ckid">CKID</A> is the unique kernel ID assigned to each C kernel.  When CKID is
+specified, it overrides the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#ckname">CKNAME</A> parameter.  A complete list
+of kernel IDs is located in the ASCII file assigned the logical name (or
+environmental variable) KERNELDB.
+
+
+PARAMETERS FOR STORING THE IMPROVED CAMERA POINTING:
+
+The following optional parameters are used to store provenance information along
+with the improved (C-Smithed) camera pointing computed by the program.  This
+provenance information is stored in the (C kernel) segment identifier for the
+camera pointing data.  In cases where there are several versions of camera
+pointing for an image in a given C kernel, this provenance information can
+later be used to retrieve a specific instance of camera pointing from the
+kernel.
+
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#purpose">PURPOSE</A> identifies the purpose for creating the camera pointing.
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#reqnum">REQNUM</A> identifies the request number associated with the camera pointing.
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#cdate">CDATE</A> specifies the date and time the camera pointing was created.
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#groupid">GROUPID</A> identifies the group which created the camera pointing.
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#institute">INSTITUTE</A> identifies the facility which created the camera pointing.
+
+See the level 2 help (via the TAE tutor mode) for further details.
+
+Examples:  'LOCAL <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#ckname">CKNAME</A>=NAIF specifies that SPICE data be retrieved from
+          local kernels using camera pointing from predicts or AACS telemetry.
+          Improved camera pointing will later be stored in the local C kernel
+          specific to this program.
+
+           'REMOTE <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#institute">INSTITUTE</A>=DLR USERID=TYR retrieves SPICE data remotely
+          (from MIPS) via the SPICE server.  When improved camera pointing is
+          stored (at MIPS), provenance data regarding the facility (DLR) and
+          user (Thomas Roatsch) who created the data is included.
+
+
+ "farenc" determines limb points by computing a value called
+ <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#activity">activity</A>.  Activity is defined as the sum of the absolute
+ values of the differences between the DN's of opposite
+ sides of a 3 by 3 pixel box, i.e.:
+
+          --- --- ---
+         | 1 | 2 | 3 |
+          --- --- ---
+         | 4 | 5 | 6 |    |DN1 - DN9| + |DN3 - DN7| = <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#activity">Activity</A>
+          --- --- ---
+         | 7 | 8 | 9 |
+          --- --- ---
+ Points having the highest <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#activity">activity</A> lie along the limb of a
+ <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target">target</A> body.  If ACTI is the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#activity">activity</A> threshold and DNTH is the DN
+ threshold ( As applied to DN in the above figure) then the
+ tests required for a point to be accepted as a limb candidate are:
+
+       1. DN5 &gt= DNTH
+       2. |DN2 - DN8| + |DN4 - DN6| &gt= ACTI
+       3. |DN1 - DN9| + |DN3 - DN7| &gt= ACTI
+       4. MIN (DN1,DN2,DN3,DN4,DN6,DN7,DN8,DN9) &lt= <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#below">BELOW</A>
+       5. The direction of the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#planet">planet</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A> obtained from:
+         atan2(dn1+dn2+dn3-dn7-dn8-dn9,dn3+dn6+dn9-dn1-dn4-dn7)
+          must be within 90 degrees of the sun illumination 
+          direction.
+ For each line and column, two limb candidate points are chosen.
+ These points must be the two largest <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#activity">activity</A> values in that
+ dimension which:
+
+       1. are more than or equal to DIST pixels apart.
+       2. form a ratio of smallest/largest <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#activity">activity</A> at least
+           equal to <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#height">HEIGHT</A>.
+
+ Points are then removed which fail to have sufficient numbers
+ of neighbors, implying that they are isolated events.
+
+ Limb fitting is performed in two stages. First an initial fit is
+ made using simulated annealing. Then a least squares fit is performed
+ which permits iterative point rejection until all the points
+ lie within TOLERANCE.
+ 
+ 1. Simulated annealing. This is a complex method which treats
+    the problem like a thermodynamic cooling system and whose
+    object is to cool the system into the lowest energy state.
+    The lowest state corresponds to the minimum residual fit
+    error for the limb points.
+
+ 2. Iterative least squares fit.
+    Each cycle rejects values which depart from the
+    mean error by more than +/-<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#sigma">SIGMA</A> * THETA, until all values fall
+    within computed <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#radius">radius</A> +/-TOLE.
+
+ If an oblate spheroid is imaged from a <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#distance">distance</A> less than about
+ 20 diameters and if the oblateness is greater than about 5%,
+ the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A> of the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target">target</A> body may not coincide acceptably with the
+ <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A> of the projected ellipse.  An approximate solution to
+ the problem ( assuming the projected shape is an ellipse )
+ which provides an additive <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#offset">offset</A> to the computed ellipse
+ <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A> to give the true <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target">target</A> body center is provided by "farenc".
+ This correction is not made to the ellipse <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A>, but is
+ only printed along with the ellipse <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A>.  A <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target">target</A> body whose
+ oblateness is 10%, viewed from two diameters at a subspace-
+ craft <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#latitude">latitude</A> of +/-45 degrees will suffer a <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target">target</A> body <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A>
+ discrepancy error from that of the ellipse <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A> of about
+ 1% of the ellipse major axis.
+
+ Unless data specific to the constrained ellipse or circle
+ has been provided, "farenc" will compute only the general
+ circle.  Unless '<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#nosedr">NOSEDR</A> is specified,
+ data for the constrained fit will be obtained from the SEDR
+ or SPICE.  User specified parameters will over-
+ ride the equivalent SEDR values.
+
+ If a reseau or GEOMA data has been provided, the ellipse
+ and circle centers will be computed in object space by
+ first transforming all of the limb points to object space.
+ The principal output file is a dataset containing GEOMA parameters.
+ (This file must always be the LAST output.)  This data set can be
+ input to GEOMA to geometrically correct and translate the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target">target</A> body
+ such that the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A> of the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target">target</A> body will lie at <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#nl">NL</A>/2.0, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#ns">NS</A>/2.0.
+ This data set could also be input to other programs as a
+ geometric correction data set.  These other programs such
+ as "photfunc", "photcat", "photcal" and "map2" must have "farenc"
+ modes for determining the OM matrix (the camera to picture
+ body rotation matrix).  The object space <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target">target</A> body <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A>
+ will be <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#nl">NL</A>/2.0,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#ns">NS</A>/2.0 by default.
+EXECUTION:
+
+ "farenc" may be executed using the following <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#format">format</A>:
+
+    farenc <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#inp">INP</A>=(IN,GEOM) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#out">OUT</A>=(CURVE,POINTS,G) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#size">SIZE</A>=(<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#ns">NS</A>) PARAMS
+
+  where PARAMS represents parameters such as those that follow.
+
+SUGGESTED EXECUTION <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#format">FORMAT</A>:
+   farenc <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#inp">inp</A>=(in,geom) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#out">out</A>=g '<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#auto">auto</A>
+
+Note: If the input image has a map3 perspective label placed there by
+      the "perslab" program "farenc" will ignore the sedr/spice and
+      will write the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#planet">planet</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A> to an output file called: FARENC.POS
+      This file is a Vicar image, has 1 line & 2 samples with the
+      real values line,sample. See test file for example using
+      Space Telescope project imagery.
+
+ The following parameters perform editing operations on the
+ initial set of limb points in order to reject spurious points
+ from the final least squares fit:
+
+   	<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#sigact">SIGACT</A>  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#sigma">SIGMA</A>  TOLERANCE   <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#sunangle">SUNANGLE</A>  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#print">PRINT</A>   <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#maxnum">MAXNUM</A>
+
+ For additional information type help followed by the parameter name.
+
+ The following parameters control the nature of the geometric
+ transformation parameters ouput in data set "G".
+
+       GEOM              <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#rescale">RESCALE</A>
+
+ For additional information type HELP followed by the parameter name.
+
+ The following parameters allow the constrained ellipse to be
+ used provided that either of the two sets of parameters which follow
+ are completely specified.  In the first case the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A> of the
+ projected ellipse will be computed but not the correction from
+ ellipse <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A> to oblate spheroid <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target">target</A> body center ( they can disagree ).
+ If SEDR data are available, the values for SET #II will be
+ automatically computed. If data from the SEDR are not desired or available
+ the '<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#nosedr">NOSEDR</A> keyword should be used. The default is to read the
+ SEDR (Image Catalog).
+
+ SET #I
+    <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#norangle">NORANGLE</A> or <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#angle">ANGLE</A>       <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#smaa">SMAA</A>              <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#smia">SMIA</A>
+
+ SET #II
+          <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#nosedr">NOSEDR</A>
+    <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#norangle">NORANGLE</A> or <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#angle">ANGLE</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#focl">FOCL</A> or <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#focal">FOCAL</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#scale">SCALE</A>  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#radius">RADIUS</A>
+    <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#requator">REQUATOR</A>    <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#rpole">RPOLE</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#far">FAR</A>   <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#rmag">RMAG</A>  SLAT   LATI  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#ring">RING</A>
+    LATI  LONG    <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#solar">SOLAR</A>  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#planet">PLANET</A>
+
+ For additional information type HELP followed by the parameter name.
+ Program Operation Under Annealing Step.
+
+ Each of the three functions (general circle, constrained circle &
+ constrained ellipse) is allowed 6 attempts to bring N % of the
+ limb points within 1 pixel of mean radial error. If all six
+ attempts fail the smallest residual case is selected.
+ The residual returned & printed will be either:
+ 1. The mean radial error if N % of points are within 1 pixel of 
+    the fit.
+ 2. The mean error + (<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#smaa">smaa</A>/5)/ (# points selected within 50 
+    pixels radial error)
+ For each attempted fit N becomes: 80,70,60,50,40,and 30 %.   
+
+ The annealing cost or objective function to be minimized is:
+ (if n= total # pts, m=# points within <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#smaa">smaa</A>/5 radial error,
+  k=# points within 3 pixels radial error, sumdr=sum radial
+  residuals)
+
+  if(k &gt N% of n)then cost=sumdr/k
+  else if(m &gt 0)then cost=sumdr/m + (<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#smaa">smaa</A>/5)/m
+  else cost=sumdr/n + 1
+
+  The cost function is designed to punish for poor fits
+  yet reward for including more points. It's a tradeoff.
+
+ PRECISION: 
+  Some differences in intermediate results such as shown <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#below">below</A> might
+occur between successive runs of FARENC:
+*****************
+No  convergence,residual=  22.380320
+
+Constrained annealing circle fit object space:
+Line of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A>=  282.28452
+Samp of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A>=  410.81024
+Radial fit mean residual=  22.374784
+******
+No  convergence,residual=  22.374847
+
+Constrained annealing circle fit object space:
+Line of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A>=  282.29230
+Samp of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A>=  410.80789
+Radial fit mean residual=  22.374775
+******************
+  The differences above come from the first stage of the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#planet">planet</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A>
+computation (with subroutine METROPOLIS).  This stage uses random numbers
+in searching for the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#planet">planet</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A> location which best agrees with the points
+found on the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#planet">planet</A> limb.  Because of the random numbers, the results of the
+first stage vary slightly from run to run.
+  The second stage of the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#planet">planet</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A> computation, the least squares
+solution, refines the results of the first stage and produces line and sample
+coordinates that agree well from run to run and machine to machine.  The
+"<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#sigma">Sigma</A> of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#radius">Radius</A> Errors" and the "Largest Radius Error" often will vary
+slightly for different machine types.
+  In the test log for FARENC, there can be slight differences in output from
+program GEOMA for different machine types.  Likewise, there are slight
+differences in output for different machine types when FARENC is run on an
+image written by program GEOMA.  This is due to round-off building up over
+multiple processing steps.
+
+Also, updates to the SPICE kernels may cause differences in the section showing
+FINAL DATA FROM SEDR and PARAMETERS.
+
+PROGRAM HISTORY:
+
+ WRITTEN BY: J. J. Lorre         December 1, 1976
+ CONVERTED TO VAX BY:  Joel Mosher,  23 Aug. 1983
+<A NAME="CogProg"> COGNIZANT PROGRAMMER: J. J. Lorre</A>
+ REVISIONS:
+  1/25/81 -JAM-<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#update">UPDATE</A> VGR SEDR WITH OM MATRIX AND RS VECTOR
+  1/22/82 -JAM- REPLACE WATONA WITH MWATNA
+  9/29/82 -JAM- PUT BACK IN MESSAGE FOR NUMBER OF POINTS USED
+  10/6/82 -JAM- PUT IN CHANGE TO RESET '<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#offset">OFFSET</A>' WHEN <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#auto">AUTO</A> IS USED
+  10/9/82 -JAM- PUT IN NEW FIX FOR <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#offset">OFFSET</A> USING # PIXELS ON <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#planet">PLANET</A>
+  10/15/82 -JAM- PUT IN CODE TO SAVE GEOMA PARAMETERS
+  10/25/82 -JAM- REPLACE CALL TO SEDR79 WITH GETCDR
+  10/31/82 -JAM- FIX CONVERSION BACK TO GEN. ELLIPSE IN IMAGE SPACE
+  2/21/83 -JAM- REPLACE CALLS TO R4SORT WITH RBSORT
+  8/17/83 -JAM- REPLACE CALLS TO RBSORT WITH R4SORT
+  5/10/84 -CCA- DEL LABEL IO & SYS000 TO COMPUTE <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#planet">PLANET</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">CENTER</A> AND <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#radius">RADIUS</A>
+  11 Feb. 1985  - L.W.Kamp -  Get radii from PBDATA, fixed bug in IG
+                array <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#size">size</A>, removed parm INTERACT, added parm <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#fraction">FRACTION</A>,
+                cleaned up code.
+  4/12/85 -JAM- CONVERT TO VICAR2
+  5/9/85  -JAM- PUT IN '<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#nosedr">NOSEDR</A> KEYWORD
+  5/12/85 -jam- make "nogeom" the default
+  10/24/85 -CCA- FIXED OVERFLOW BUG IN LSQING, COMMENTED <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#out">OUT</A> NEW <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#auto">AUTO</A> CODE
+  86-2-11 -LWK- replaced hard-coded radii by call to PBDATA; also
+                used PBDATA for <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target">TARGET</A> parameter;
+                fixed overflow of IG;  removed parm INTERACT;
+                removed subs CURSOR, WATONA, PRNT2, RESO;
+                removed DSRNSE, NOGEOM(always=1); changed COUNT of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#inp">INP</A> to 2;
+                revised treatment of parameter defaults;
+                restored JJL's <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#auto">AUTO</A> code, controlled by new parm <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#fraction">FRACTION</A>.
+ 9/29/87 JJL 1. Introduced Metropolis annealing function.
+             2. Introduced terminator rejection based on Sobel edge
+                direction relative to the sun.
+             3. Changed excess point truncation to alternate point selection.
+ 01 Oct 1987 -  J. J. Lorre - extensive modifications:
+                 1. Selection of points only on <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#solar">solar</A> illuminated limb
+                    by computing the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#angle">angle</A> of the local edge.
+                 2. Introduction of annealing code to avoid
+                    instabilities in least squares routines when
+                    bad data is present. 'OLD keyword.
+ 5/9/88  -FFM-  Incorporate 'SEDRSRC keyword
+ 10 Jun 1988 -  G.Yagi - fix determination of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#planet">planet</A> from ERT.
+ 10 Jun 1988 -  G.Yagi - fix test of ABLE77V2 indicator.
+ 1/10/90  JJL   Converted to project independent subroutines.
+ 2/1/93  jjl  Placed annealing and least squares methods in sequence.
+ 15 Aug 93 jjl  Accepts map3 perspective input label.
+ 15 APR 94 CCA  Add output to TCL variables <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#pcl">PCL</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#pcs">PCS</A>
+ 10 Jul 95  ams  (CRI) Made portable for UNIX
+ 11 Sep 95  gmy Changed GETSPICE call to use remote SPICE server (FR 85898)
+ 27 Mar 96  SP  Changed parameters and method for obtaining SPICE data according
+                to new method specified by Gary Yagi using GETSPICE2/PUTSPICE2
+                instead of GETSPICE/PUTSPICE.  Old parameter SEDRSRC is replaced
+                by parameter <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#ckname">CKNAME</A>.       (Note that
+                the ported version does not support a second input file.)
+                Also added some VALID <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#range">range</A> checks in PDF for extreme value
+                handling.
+ 12 jun 96  SP   Add code to distinguish between OBJECT SPACE and IMAGE SPACE.
+                 (IMAGE space is raw image.  Object space is corrected for
+                 camera geometric distortion.)  This corrects an error for GLL
+                 where coordinates of limb points not converted to OBJECT
+                 SPACE for calculations of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#planet">planet</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A>.
+ 22 Jul 96  SP   Upgraded to handle IBIS tiepoint files and other mission
+                 besides GLL (allow second input file).  Put back in CCA's
+                 option for outputting <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#planet">planet</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A> to TCL variables.
+                 JJL made a major fix to correct first stage (METROPOLIS)
+                 computation of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#planet">planet</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A>.
+ 18 Aug 96 lwk  Fixed bugs in the case of Point Perspective input label;
+		added support for NIMS labels (subsolar point)
+ 20 Dec 01 GMY  Add Cassini capability (CR 7953-MIPS).  Major changes to
+                test script.
+ 20 Jul 05 lwk  Added another check in LSQP to prevent infinite loop when a matrix
+                element becomes zero
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#inp"><H3>INP</H3></A>
+ STRING- Input image;
+ (optional:) GEOM file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#out"><H3>OUT</H3></A>
+ STRING _ Output files:
+ (optional:) CURVE, POINTS, GEOMA
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#size"><H3>SIZE</H3></A>
+ 4 INTEGERS - VICAR <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#size">size</A> field
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#sl"><H3>SL</H3></A>
+ INTEGER - Starting line 
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#ss"><H3>SS</H3></A>
+ INTEGER - Starting sample
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#nl"><H3>NL</H3></A>
+ INTEGER - Number of lines
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#ns"><H3>NS</H3></A>
+ INTEGER - Number of samples
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#format"><H3>FORMAT</H3></A>
+ KEYWORD - ('HALF or 'BYTE)
+ Halfword or byte <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#format">format</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#nosedr"><H3>NOSEDR</H3></A>
+ KEYWORD - The SEDR is
+   not to be read
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#range"><H3>RANGE</H3></A>
+Real- uncertainty in
+SPICE <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#planet">planet</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#initcen"><H3>INITCEN</H3></A>
+Real, 2 values:
+initial line,samp
+of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#planet">planet</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#fds"><H3>FDS</H3></A>
+  Integer picture number.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#serno"><H3>SERNO</H3></A>
+  Integer
+  camera serial number
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center"><H3>CENTER</H3></A>
+ 2 integers for line and
+ sample of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#planet">planet</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A> 
+ in output file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#putnorth"><H3>PUTNORTH</H3></A>
+ real value of direction
+ of north in output.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#dnthresh"><H3>DNTHRESH</H3></A>
+ INTEGER - Lower pixel DN 
+ THRESHOLD.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#activity"><H3>ACTIVITY</H3></A>
+ INTEGER - Lower threshold for
+ <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#activity">ACTIVITY</A> level.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#distance"><H3>DISTANCE</H3></A>
+ INTEGER - <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#distance">Distance</A> between
+ maximum <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#activity">activity</A> value pixels.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#height"><H3>HEIGHT</H3></A>
+ REAL - acceptable ratio of
+ maximum <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#activity">activity</A> values.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#below"><H3>BELOW</H3></A>
+ INTEGER - Upper pixel value
+ limit to be considered.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#auto"><H3>AUTO</H3></A>
+ KEYWORD  - ('<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#auto">AUTO</A>)-
+Sets <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#activity">ACTIVITY</A> keyword
+Sets <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#dnthresh">DNTHRESH</A> keyword
+Sets <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#below">BELOW</A> keyword
+ automatically.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#fraction"><H3>FRACTION</H3></A>
+ REAL - <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#fraction">Fraction</A> of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target">target</A> body
+ in the image
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#offset"><H3>OFFSET</H3></A>
+ INTEGER - Dark Current <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#offset">offset</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#percent"><H3>PERCENT</H3></A>
+ REAL - Bypass <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#percent">percent</A> of top
+ of histogram.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#linc"><H3>LINC</H3></A>
+ INTEGER - Interval between
+ lines to be read for histogram.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#cluster"><H3>CLUSTER</H3></A>
+ 2 INTEGERS - Halfwidth of box,
+ minimum number of limb points
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#area"><H3>AREA</H3></A>
+ 4 INTEGERS - Field to be
+ searched for limb <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#ns">NS</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#median"><H3>MEDIAN</H3></A>
+ ODD INTEGER - Filter width
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#lcircle"><H3>LCIRCLE</H3></A>
+ KEYWORD - ('<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#lcircle">LCIRCLE</A>)-Chooses
+ candidates from row and
+ column extremes.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#sigact"><H3>SIGACT</H3></A>
+ REAL - Maximum deviation from
+ mean <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#activity">activity</A> level
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#sigma"><H3>SIGMA</H3></A>
+ REAL - Upper limit of last
+ least squares fit error.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#toleranc"><H3>TOLERANC</H3></A>
+ REAL - Tolerance for least
+ square <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#radius">radius</A> from limb.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#sunangle"><H3>SUNANGLE</H3></A>
+ REAL - Direction of sun in
+ degrees.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#print"><H3>PRINT</H3></A>
+ STRING - Prints line, sample
+ and radial error.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#maxnum"><H3>MAXNUM</H3></A>
+ INTEGER - Maximum points on a
+ line to be used for a fit.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#rescale"><H3>RESCALE</H3></A>
+ REAL - Ratio of the diameter
+ to smallest picture dimension
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#update"><H3>UPDATE</H3></A>
+ KEYWORD - <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#update">Update</A> SEDR
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#norangle"><H3>NORANGLE</H3></A>
+ REAL - Rotation <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#angle">angle</A> of
+ minor axis from north.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#angle"><H3>ANGLE</H3></A>
+ REAL - Rotation <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#angle">angle</A> of
+ minor axis from north.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#smaa"><H3>SMAA</H3></A>
+ REAL - Semimajor axis of the
+ ellipse in pixels.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#smia"><H3>SMIA</H3></A>
+ REAL - Semiminor axis of the
+ ellipse in pixels.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#focl"><H3>FOCL</H3></A>
+ REAL - Camera <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#focal">focal</A> length
+ in millimeters.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#focal"><H3>FOCAL</H3></A>
+ REAL - Camera <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#focal">focal</A> length
+ in millimeters.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#scale"><H3>SCALE</H3></A>
+ REAL - <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#scale">Scale</A> in pixels/mm.
+ of the picture.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#pscale"><H3>PSCALE</H3></A>
+ REAL - Number of pixels/mm.
+ in the camera <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#focal">focal</A> plane.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#radius"><H3>RADIUS</H3></A>
+ REAL - <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#radius">Radius</A> of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target">target</A> body in
+ kilometers.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#planet"><H3>PLANET</H3></A>
+ KEYWORD - Sets <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target">target</A> body
+ radii.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#begin"><H3>BEGIN</H3></A>
+Initial percentage
+of points required
+to fit function.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#requator"><H3>REQUATOR</H3></A>
+ REAL - <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target">target</A> body equatorial
+ <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#radius">radius</A> in kilometers.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#rpole"><H3>RPOLE</H3></A>
+ REAL - <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target">target</A> body polar
+ <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#radius">radius</A> in kilometers.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#far"><H3>FAR</H3></A>
+ REAL - Kilometers between
+ the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target">target</A> body and spacecraft.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#rmag"><H3>RMAG</H3></A>
+ REAL - Kilometers between the
+ <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target">target</A> body and spacecraft.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#slatitud"><H3>SLATITUD</H3></A>
+ REAL - Geocentric <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#latitude">latitude</A> of
+ the subspacecraft point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#latitude"><H3>LATITUDE</H3></A>
+ REAL - Geocentric <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#latitude">latitude</A> of
+ the subspacecraft point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#longitud"><H3>LONGITUD</H3></A>
+ REAL - Geocentric longitude of
+ the subspacecraft point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#solar"><H3>SOLAR</H3></A>
+ 2 REALS - <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#solar">Solar</A> subspacecraft
+ point, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#latitude">latitude</A>, longitude.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#ring"><H3>RING</H3></A>
+ REAL - <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#radius">Radius</A> of Saturns's
+ <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#ring">ring</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target"><H3>TARGET</H3></A>
+Optional 12-char string
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#target">Target</A> name (<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#planet">planet</A>,
+  satellite, or asteroid)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#spicemode"><H3>SPICEMODE</H3></A>
+Optional keyword
+Location of SPICE kernels
+(LOCAL or REMOTE)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#ckname"><H3>CKNAME</H3></A>
+Optional 4-char string
+C-kernel name
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#ckid"><H3>CKID</H3></A>
+Optional 4-char string
+C-kernel ID
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#institute"><H3>INSTITUTE</H3></A>
+Optional 4-char string
+Facility which created camera pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#purpose"><H3>PURPOSE</H3></A>
+Optional 4-char string
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#purpose">Purpose</A> for camera pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#reqnum"><H3>REQNUM</H3></A>
+Optional 4-char string
+IPL request number for created camera pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#cdate"><H3>CDATE</H3></A>
+Optional 12-char string
+Date and time camera pointing was created
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#groupid"><H3>GROUPID</H3></A>
+Optional 3-char string
+Group storing camera pointing
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#pcl"><H3>PCL</H3></A>
+ NAME--OPTIONAL
+ Specifies the name of a
+ TCL variable to contain the
+ derived <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#planet">planet</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A> line.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#pcs"><H3>PCS</H3></A>
+ NAME--OPTIONAL
+ Specifies the name of a
+ TCL variable to contain the
+ derived <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#planet">planet</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc_level2.html#center">center</A> sample.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/farenc.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

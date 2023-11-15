@@ -1,0 +1,163 @@
+<HTML>
+<HEAD><title>HTML Help for MARSINVRANGE</title></HEAD>
+<BODY>
+<H1>Help for MARSINVRANGE</H1>
+<pre>
+PURPOSE:
+MARSINVRANGE is the inverse of marsrange - it takes a range file and
+recomputes an XYZ file that closely matches the original.
+
+The purpose of this is to recompute XYZ's modified by nav/<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#rsf">RSF</A> files
+when the right eye is unavailable.  This happens, for example, if the
+image was not a stereo pair but was repointed between the left and right
+eyes.  In this case, the right eye cannot be repointed based on the left
+eye's nav - but it must be repointed in order to compute a revised XYZ.
+This program gets around that limitation by taking the original all the
+way to range, which no longer depends on the specific pointing of the
+camera.  It is then inverted to find XYZ.  The range <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#origin">origin</A> point is taken
+from the input camera model as modified by the nav/<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#rsf">RSF</A> files, so the new
+XYZ file incorporates those pointing adjustments.  Of course in the example
+case you are relying on pointing knowledge accuracy to establish the proper
+baseline, but there's no reliable way to do otherwise - nav'ing the right
+side is likely to introduce more systematic errors than simply assuming the
+baseline is correct.
+
+Even when no adjustment is made, the inversion is not perfect.  That's because
+of a subtlety in how XYZ's are computed.  The marsxyz program projects rays
+through both cameras, and picks an XYZ point halfway between these rays at
+their closest point.  The XYZ point thus does not lie exactly on the projection
+ray from the left camera.  The marsinvrange program has no knowledge of what
+this offset might be - it assumes the point is actually ON the projection ray.
+This subtle difference is unlikely to be an issue, but it should be noted.
+
+One other subtlety has to do with CAHVORE cameras.  For these cameras, the
+projection point (commonly called C) is not constant, but varies across the
+image.  Marsrange ignores this effect, projecting from a single point (the
+nominal C point) across the entire image.  Because marsinvrange is supposed
+to be an inverse, we follow the same convention and ignore this effect, instead
+projection from the single, nominal C point.
+
+Note that input pixels with a range of 0.0 are assumed to be missing; the
+output is set to (0,0,0) for these pixels.
+
+EXECUTION:
+marsinvrange <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#inp">inp</A>=range_data.img <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#out">out</A>=xyz_data.img nav=adjust.nav
+where:
+range_data.img is an input 1-band image of type REAL where each value is 
+a distance between reference point(by default camera position) and (x,y,z) 
+point.
+xyz_data.img is an output 3-band image of type REAL with the X,Y and Z values
+at that pixel in meters.
+adjust.nav is a nav file, such as from marsnav, containing pointing adjustments
+that are incorporated into the XYZ values.
+
+
+METHOD:
+At each pixel, marsinvrange uses the camera model (as adjusted by nav/<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#rsf">RSF</A>
+files) to compute a view ray.  This is normalized to assure it is a unit
+vector, then it is multiplied by the range value at that pixel.  The result
+is added to the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#origin">origin</A> (which is by default the adjusted nominal C point
+for the camera, constant across all pixels - but can be overriden via the
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#origin">ORIGIN</A> parameter).  The resulting XYZ value is converted to the output
+coordinate system and written to the file.
+
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER: B. Deen</A>
+
+HISTORY:
+  2010-03-01 B. Deen - Initial marsinvrange 
+  2020-04-30 W. Bunch - Replaced sprintfs and removed unused variables
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#inp"><H3>INP</H3></A>
+Input image.
+Must be 1 1-band file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#out"><H3>OUT</H3></A>
+Output files
+Must be 1 3-band file
+or (x,y,z) triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#origin"><H3>ORIGIN</H3></A>
+3D <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#origin">origin</A> point override
+for ranges.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsinvrange.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

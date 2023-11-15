@@ -1,0 +1,98 @@
+<HTML>
+<HEAD><title>HTML Help for EFGISO</title></HEAD>
+<BODY>
+<H1>Help for EFGISO</H1>
+<pre>
+PURPOSE:
+To create images of E F and G for the ISO (irregularly shaped object),
+and an image of the object radius.
+E F and G are used to compute the validity of conformal and authalic
+map projections.
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso_level2.html#planet">planet</A> models must conform to a standard grid and reside in a directory 
+pointed to by the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso_level2.html#path">PATH</A> keyword.
+
+EXECUTION:
+mapiso <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso_level2.html#out">out</A>=(E,F.G) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso_level2.html#planet">planet</A>=phobos <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso_level2.html#nl">nl</A>=180 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso_level2.html#ns">ns</A>=360 
+
+METHOD:
+First the program reads the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso_level2.html#planet">planet</A> model file located in <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso_level2.html#path">PATH</A>.
+This is an ascii table with west longitude, latitude, radius each 5 degrees.
+All angles are planetocentric.
+
+1&gt Construct a radius surface, which is a function of lat. and long.
+   Two dimentional cubic spline interpolation is used here.
+ 
+2&gt With the radius surface, the ISO can be constructed as
+ 
+   X = r(lat, long) cos(lat)cos (long)
+   Y = r(lat, long) cos(lat)sin (long)
+   Z = r(lat, long) sin(lat)
+ 
+3&gt From the cubic spline and the equations in (2), the partial derivatives 
+can be calculated.
+ 
+  X_lat, X_long, Y_lat, Y_long, Z_lat and Z_long.
+ 
+4&gt
+   E = (X_lat)(X_lat) + (Y_lat)(Y_lat) + (Z_lat)(Z_lat)
+   F = (X_lat)(X_long) + (Y_lat)(Y_long) + (Z_lat)(Z_long)
+   G = (X_long)(X_long) + (Y_long)(Y_long) + (Z_long)(Z_long)
+ 
+To verify that the map projection is truly conformal or authalic the 
+following constraint must be true, where:
+EFG are measured on the ISO.
+efg are mesured on the map projection of the ISO.
+
+Conformal case:
+E/e=G/g  and F/sqrt(EG)=f/sqrt(eg)
+(note: f/sqrt(eg) is the cosine of the angle between meridians and latitudes)
+
+Authalic case:
+EG-FF=eg-ff and F/sqrt(EG)=f/sqrt(eg)
+(note: ff is f*f)
+
+HISTORY:
+9-1-98  J Lorre. 
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Jean Lorre</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso_level2.html#out"><H3>OUT</H3></A>
+Output images
+E, F, G, Radius
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso_level2.html#nl"><H3>NL</H3></A>
+number lines in
+output images.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso_level2.html#ns"><H3>NS</H3></A>
+number samples in
+output images.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso_level2.html#planet"><H3>PLANET</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso_level2.html#planet">Planet</A> name
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso_level2.html#path"><H3>PATH</H3></A>
+Directory <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso_level2.html#path">path</A> for
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso_level2.html#planet">planet</A> models
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso_level2.html#nlw"><H3>NLW</H3></A>
+Size of a smoothing filter.
+Filter height in n-s direction.
+Default is 1.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso_level2.html#nsw"><H3>NSW</H3></A>
+Size of a smoothing filter.
+Filter  width in e-w direction.
+Default is 1.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso_level2.html#triaxial"><H3>TRIAXIAL</H3></A>
+Three radii: a,b,c
+Overrides <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso_level2.html#planet">planet</A>
+model.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/efgiso.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

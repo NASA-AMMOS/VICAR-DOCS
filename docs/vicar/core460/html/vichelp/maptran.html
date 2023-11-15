@@ -1,0 +1,240 @@
+<HTML>
+<HEAD><title>HTML Help for MAPTRAN</title></HEAD>
+<BODY>
+<H1>Help for MAPTRAN</H1>
+<pre>
+PURPOSE:
+Maptran converts map projected images from one projection to another.
+All images must have an image label compatible with one written by Map3.
+
+Maptran performs the transformation using a grid of tiepoints computed
+using the exact solution in subroutine convev. The tiepoints form
+polygon areas with 4 vertices each. If all 4 vertices lie on the planet
+then the polygon is mapped using a polynomial, otherwise each pixel
+in the polygon is mapped exactly. 
+
+It differs from Maptrans by performing the geom itself.
+It differs from Maptran3 by interpolating with a polynomial.
+
+USAGE & EXECUTION:
+Maptran has no projection parameters. It reads the label from the
+second input file and uses this label for the output file.
+There are two ways to execute Maptran:
+
+Method1. 
+In this mode (the default) the output file contains the projection of the
+first input file only. In this case the second input file is only used for
+its label and sizefield, the rest is ignored. Here you can use the
+'NOGEOM option in Map3 to save actually creating the second input file
+since we only want its label.
+
+Method2:
+In this mode (see the '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#mosaic">MOSAIC</A> keyword) the output file will contain the 
+second input mosaicked with the projected first input file. Here the
+second input must be a complete projected image.
+
+Example for Method1:
+
+If for example you had created a stereographic projection called: ster.img
+MAP3 overlay.img ster.img <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#nl">NL</A>=500 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#ns">NS</A>=500 'STER SCAL=10.    LINE=250. SAMP=250. LATI=-10. LONG=150. NORTH=30. 
+
+ ...and you wanted to convert it to an orthographic image
+you would then create using map3 a label with the desired target
+projection , and say 'NOGEOM  as in
+MAP3 overlay.img orth.img <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#nl">NL</A>=500 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#ns">NS</A>=500 'ORTH SCAL=10.    LINE=250. SAMP=250. LATI=-10. LONG=150. NORTH=30.    'NOGEOM
+
+ ...then you would do:
+maptran <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#inp">inp</A>=(ster.img,orth.img) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#out">out</A>=new_orth.img
+
+ ...if you didn't like the size field of orth.img you could override
+it by specifying it as:
+maptran <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#inp">inp</A>=(ster.img,orth.img) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#out">out</A>=new_orth.img <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#nl">nl</A>=600 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#ns">ns</A>=700
+
+Example for Method2:
+
+	! oblique stereographic
+MAP3 overlay.img ster.img <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#nl">NL</A>=500 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#ns">NS</A>=500 'STER SCAL=10.    LINE=250. SAMP=250. LATI=-10. LONG=150. NORTH=30. 
+
+	! oblique orthographic
+MAP3 overlay.img orth.img <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#nl">NL</A>=600 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#ns">NS</A>=700 'ORTH SCAL=10.    LINE=250. SAMP=250. LATI=-10. LONG=150. NORTH=30.
+
+maptran <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#inp">inp</A>=(ster.img,orth.img) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#out">out</A>=new_orth.img
+
+
+EFFICIENT USAGE:
+Maptran tries to stuff as much of the input into memory as possible.
+If you have a dedicated machine then recompile the program increasing
+the array dimension parameter NPIXELS to something realistic like
+10,000,000 (twenty megabytes). If your buffer is small the program
+will make many passes through the output file trying to anticipate
+where the pixels will map in the input.
+
+OPERATION:
+Maptran is a rather involved program. This outline describes the logic
+structure:
+
+Read parameters.
+
+Open input files.
+
+Read Map3 label information from both input files.
+
+Compute the smallest grid (larger than the default value) that will fit
+in the grid buffer memory. See <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#inc">INC</A> keyword.
+
+Set the output <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#nl">NL</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#ns">NS</A> values to those of the second input if NL and NS
+are not specified via parameters.
+
+Compute the input line & sample value for each output grid image
+coordinate using the mapping transformations.
+
+Compute for each grid area the number of vertices which lie on the 
+visible planet (0 to 4). Set this count to K.
+
+If all four vertices lie off the input image set K to zero.
+
+If K is 4 but any two points are separated by over 1/2 the picture
+size set K to 1. We will use K later on.
+
+Open the output file.
+
+Copy the Map3 label from the second input to the output.
+
+Open the temporary file, format it with <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#code">CODE</A> dn values (see CODE keyword),
+close it, re-open it for update.
+
+LOOP:
+
+Load a block of input lines into memory.
+If a dn is equal to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#code">CODE</A> set it to CODE+1.
+
+Loop on grid area rows.
+
+Load a block of output lines from the temporary file.
+
+Loop on grid area columns.
+
+For each area:
+
+    If the area has been completed skip it.
+
+    If K (# vertices on planet) is 0 then write zeroes to output.
+
+    If K is 4 then fit a polynomial to the vertices of the form:
+      line_in=A*line_out*samp_out+B*line_out+C*samp_out+D
+      samp_in=E*line_out*samp*<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#out">out</A>+F*line_out+G*samp_out+H
+    and use it to map the output to the input.
+
+    If K is 1,2,or 3, Compute the mapping from output to input exactly
+    using the mapping transformations for each pixel.
+
+    If the projection of the first input is of types 6,9, or 10 
+    (convev buffer item #39) then check for wraparound condition.
+
+    Each output pixel, once mapped to the input can be evaluated for 
+    a DN value. If nointerpolation is selected the nearest input neighbor
+    is selected.  If interpolation is selected then:
+
+    Cases:
+    If 4 input neighbors are &gt <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#dninter">DNINTER</A> then bilinear interpolation is done.
+    If 3 input neighbors are &gt <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#dninter">dninter</A> the fourth is extrapolated and then
+       interpolation is done.
+    If 2 input neighbors are &gt <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#dninter">dninter</A> the output pixel is determined from
+       a linear weighting of the 2 good pixels.
+    If 1 input neighbor is &gt <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#dninter">dninter</A> it is copied to the output.
+    If all the input neighbors are &lt= <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#dninter">dninter</A> the output is determined from
+       the nearest neighbor.
+
+    Notes:
+    1. All output pixels are written to an intermediate file that is
+       stored in half format. Later this file is copied to the output.
+    2. Only on the first pass through the input the valid vertices on 
+       the input are checked to see if they lie on or near the input
+       block of lines. If they do not the area is temporarily skipped.
+       See <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#range">RANGE</A> keyword.
+
+End of loop on columns.
+
+Write a block of output lines.
+
+End of loop on rows.
+
+If the last input block read does not contain the last input line 
+then go to LOOP and redo the entire output file.
+
+If any output pixel has a DN of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#code">code</A> (see code parameter) and only one
+pass has been made through the input picture then go to LOOP and redo 
+the entire input picture.
+
+If <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#mosaic">MOSAIC</A> is specified then:
+  Combine the intermediate halfword file with the second input file.
+  Pixel loop
+     If the projected pixel dn value is greater than <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#thresh">THRESH</A> place it
+     in the output otherwise put the second input file pixel in the
+     output.
+  End pixel loop.
+otherwise
+  Copy the intermediate halfword file to the output.
+
+HISTORY:
+5-15-93  J Lorre. At delivery time the subroutine SEARCV2 had not been
+         ported. This means that the line:
+           if(primary.eqs." ")then primary="SYS"
+         must be inserted into the .com file after the line:
+           if(primary.eqs."")then primary=" "
+         before delivery.
+6-05-98  R Patel AR-9644. Fixed tst pdf and pdf to prevent illegal values.
+                          Subroutine tranv was updated to make maptran work
+                          under sgi.
+19oct04  L.Kamp:  converted I*2 variables to R*4 in order to support REAL
+         format;  added support for 3-D files.
+26mar10  L.Kamp:  added check for byte data that the output pix are in byte
+         <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#range">range</A>, to prevent spikes caused by wraparound of negative interpolated
+         values.
+ORIGINALLY WRITTEN BY: Jean Lorre 5/30/93
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Lucas Kamp</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#inp"><H3>INP</H3></A>
+STRING-input datasets.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#out"><H3>OUT</H3></A>
+STRING-output dataset.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#nl"><H3>NL</H3></A>
+Output picture
+number lines
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#ns"><H3>NS</H3></A>
+Output picture
+number samples
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#nb"><H3>NB</H3></A>
+Output picture
+number <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#bands">bands</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#bands"><H3>BANDS</H3></A>
+Output picture
+starting band &
+number <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#bands">bands</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#inc"><H3>INC</H3></A>
+Grid spacing in
+pixels.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#range"><H3>RANGE</H3></A>
+pixel search <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#range">range</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#thresh"><H3>THRESH</H3></A>
+Input threshold
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#dninter"><H3>DNINTER</H3></A>
+Interpolation DN
+threshold
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#nointerp"><H3>NOINTERP</H3></A>
+No interpolation.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#code"><H3>CODE</H3></A>
+Unset pixel <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#code">code</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#mosaic"><H3>MOSAIC</H3></A>
+Specify to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#mosaic">mosaic</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran_level2.html#nocheck"><H3>NOCHECK</H3></A>
+No checking for
+wraparound
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/maptran.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

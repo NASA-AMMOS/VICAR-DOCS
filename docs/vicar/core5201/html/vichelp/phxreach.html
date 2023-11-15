@@ -1,0 +1,174 @@
+<HTML>
+<HEAD><title>HTML Help for PHXREACH</title></HEAD>
+<BODY>
+<H1>Help for PHXREACH</H1>
+<pre>
+PURPOSE:
+
+PHXREACH computes the "reachability" for the Phoenix RA (Robotic Arm)
+at each pixel.  The result is a map show which pixels can be reached by
+each instrument in each of its various configuration modes.
+
+*** THIS IS A PHOENIX-SPECIFIC PROGRAM ***
+
+The inputs for PHXREACH are the XYZ image (created by MARSXYZ).  Unlike
+its close cousin marsreach (for MER), the surface normal (UVW) is NOT
+required.
+
+The output is a single 12-band file in byte format.  The bands are described
+by the INSTRUMENT_BAND_ID and CONFIGURATION_BAND_ID, but use the following
+layout:
+
+Band  Instrument  Configuration
+----  ----------  -------------
+  1   SCOOP       ELBOW_UP
+  2   SCOOP       ELBOW_DOWN
+  3   SCOOP_BTM   ELBOW_UP
+  4   SCOOP_BTM   ELBOW_DOWN
+  5   BLADE       ELBOW_UP
+  6   BLADE       ELBOW_DOWN
+  7   ISAD1       ELBOW_UP
+  8   ISAD1       ELBOW_DOWN
+  9   ISAD2       ELBOW_UP
+  10  ISAD2       ELBOW_DOWN
+  11  TECP        ELBOW_UP
+  12  TECP        ELBOW_DOWN
+
+For all instruments, the value is either 0 (not reachable) or 255 (reachable).
+
+The geometry of the image matches that of the input XYZ file.
+
+A <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#mask">mask</A> file may optionally be provided; the XYZ's are masked off using this
+file if present (0 means to let the pixel through; 255 means to remove it).
+This historically removes the lander from consideration for the arm collision
+detection algorithm (TERRAIN in marsreach); however, terrains and collision
+detection are not implemented for PHXREACH.  See marsfilter for more on masking.
+
+EXECUTION:
+
+phxreach <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#inp">inp</A>=data.xyz <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#out">out</A>=data.reach
+where:
+data.xyz is an input 3-band image of type REAL with the X, Y and Z values
+at that pixel in meters (the unit is actually irrelevant).
+data.reach is an output 12-band image of type BYTE
+
+METHOD:
+
+Algorithm description TBD.  Kinematic models of the arm are used.
+
+Collision detection of the arm with the terrain is not implemented in this
+version.  The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#mask">MASK</A> parameter is retained however; it can specify a file to
+use as a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#mask">mask</A> to remove pixels from consideration.
+
+The actual algorithm and core code was developed by Bob Bonitz and
+Matthew Robinson of Section 348.
+
+
+HISTORY:
+  2003-06-20 B. Deen - Initial marsreach based on code from Bob Bonitz (348).
+  2007-03-17 B. Deen - Initial phxreach based on marsreach and PHX reachability
+                       code from Bob Bonitz and Matthew Robinson.
+  2019-12-24 W. Bunch - IDS-7926 - Initialized a variable; cleaned up -Wall warnings except:
+                          ra_command.c:972:59: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+                          wdStart(act_timer, loop_time, ra_act_timer_cback, (int)act_sem); /* should this be int64? */
+                        Added unit test.
+  2019-02-06 W. Bunch - IDS-7928 - Switched to constant format string in one, but not all cases.
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER: B. Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#inp"><H3>INP</H3></A>
+Input images.
+Must be 1 3-band file
+or (x,y,z) triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#out"><H3>OUT</H3></A>
+Output file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#mask"><H3>MASK</H3></A>
+Input <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#mask">mask</A> image (optional).
+Used to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#filter">filter</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#out">out</A> the XYZs'.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/phxreach.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

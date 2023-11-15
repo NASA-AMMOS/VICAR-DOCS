@@ -1,0 +1,113 @@
+<HTML>
+<HEAD><title>HTML Help for MARSICMINT</title></HEAD>
+<BODY>
+<H1>Help for MARSICMINT</H1>
+<pre>
+PURPOSE:
+Simple program to intersect two ICMs and report if the number of intersecting
+pixels is over or under the given threshold.  The threshold is a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#fraction">fraction</A>,
+with 1.0 meaning every pixel in the image and 0.0 meaning no pixels.
+
+It looks only at band 1 for efficiency, as the zero/non-zero status should
+be the same for all bands.
+
+Intersection means a non-value exists for both inputs.
+
+Both inputs must be the same size.
+
+This is intended for use by CRISP ingestion.
+
+EXECUTION:
+
+marsicmin <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#inp">inp</A>=\(icm1 icm2\)
+set <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#result">result</A> = `v2param result`
+
+the output will be 1 (pixels &gt= threshold) or 0 (pixels &lt threshold).
+
+METHOD:
+Loop through both images and count pixels that are non-zero in both.
+If count exceeds threshold, stop and report success.  If there are not
+enough pixels left to exceed the threshold, stop and report failure.
+At end of image, report <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#result">result</A>.
+
+If -<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#do_fraction">DO_FRACTION</A> is enabled, it does not stop early, but rather reads
+the entire image to compute and return the actual <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#fraction">fraction</A> of intersecting
+pixels (in <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#fraction">FRACTION</A>).  The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#result">RESULT</A> still describes whether or not it met
+the threshold.
+
+HISTORY:
+
+2020-09-04 rgd	Initial version
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Bob Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#inp"><H3>INP</H3></A>
+Input images (2 ICMs).
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#thresh"><H3>THRESH</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#fraction">Fraction</A> of image that must
+have intersections
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#result"><H3>RESULT</H3></A>
+Output <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#result">result</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#fraction"><H3>FRACTION</H3></A>
+Output <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#fraction">fraction</A>,
+iff -<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#do_fraction">DO_FRACTION</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#do_fraction"><H3>DO_FRACTION</H3></A>
+Compute full <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#fraction">fraction</A> rather
+than returning early
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#match_method"><H3>MATCH_METHOD</H3></A>
+Specifies a method
+for pointing corrections.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#match_tol"><H3>MATCH_TOL</H3></A>
+Tolerance value for
+matching pointing params
+in pointing corrections file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsicmint.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

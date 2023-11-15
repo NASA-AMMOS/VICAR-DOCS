@@ -1,0 +1,776 @@
+<HTML>
+<HEAD><title>HTML Help for MARSNAV</title></HEAD>
+<BODY>
+<H1>Help for MARSNAV</H1>
+<pre>
+PURPOSE:
+To correct the navigation (pointing, e.g. azimuth and elevation) of a set of
+overlapping images.  The corrected navigation will be placed into the output
+file as a table.  The output images can then be mosaicked using marsmos,
+marsmap, or similar programs by providing these programs the navigation table.
+MARSTIE must be run first to gather tiepoints.  The starting navigation may
+optionally be read from an input nav file as well (via the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#navtable">NAVTABLE</A> parameter).
+
+This is a multimission program derived from Mars Pathfinder's mpfnav.
+The functionality of mpfnav was split into two parts.  MARSTIE gathers
+the tiepoints, and MARSNAV uses those tiepoints to generate a pointing
+solution.
+
+MARSNAV supports any mission, instrument, and camera model supported by the
+Planetary Image Geometry (Pig) software suite.
+
+Best results are obtained if the images are all taken from the same camera
+at approximately the same position.
+
+MARSNAV can now adjust <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">surface</A> models and rover position and orientation,
+as well as instrument pointings.  See <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#do_surface">DO_SURFACE</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#do_pointing">DO_POINTING</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#do_location">DO_LOCATION</A>,
+and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#do_orientation">DO_ORIENTATION</A> keywords.
+
+EXECUTION:
+There are two ways to present input images:
+
+marsnav <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#inp">inp</A>=(a.img,b.img,c.img,...) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#out">out</A>=<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#navtable">navtable</A>.nav <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#in_tpt">in_tpt</A>=images.tpt
+or
+marsnav <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#inp">inp</A>=ascii_listoffiles <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#out">out</A>=<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#navtable">navtable</A>.nav <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#in_tpt">in_tpt</A>=images.tpt
+
+where ascii_listoffiles is a text file created by Sybase or an editor,
+containing the list of filenames to include in the mosaic, one per record.
+Up to 200 input images can be listed.
+
+An input tiepoint list must be provided.
+
+Then use one of the mosaic programs:
+
+marsmos <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#inp">inp</A>=left_listoffiles <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#out">out</A>=left_mosaic.img <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#navtable">navtable</A>=navtable.nav
+marsmos <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#inp">inp</A>=right_listoffiles <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#out">out</A>=right_mosaic.img <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#navtable">navtable</A>=navtable.nav
+
+Note that for stereo cameras such as Mars Pathfinder IMP and Mars 98 SSI,
+the same navigation solution can be used for both eyes.  Since the eyes
+are fixed to one another, stereo images taken at the same time should have
+the same navigation corrections.
+
+Note: there are two tiepoint file formats; "old" is the text-based list,
+while "xml" is an XML-based <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#format">format</A>.  The format is auto-detected on read.
+Over time "old" should be phased <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#out">out</A>.  Under some circumstances (such as
+when tiepoints are being removed), marsnav can write an output tiepoint
+file (see <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#out_tpt">OUT_TPT</A>).  This is always in the new XML <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#format">format</A>.  This can be
+converted back to the old <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#format">format</A> if necessary using marstie.
+
+USAGE:
+It is important that all images be connected to each other via tiepoints.
+If an image or block of images is not connected, the entire block can "drift"
+as a unit <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#out">out</A> of alignment.  Single images are adjusted by a "mean shift"
+amount derived from the average of all the other adjustments, in order to
+keep them from drifting too much.
+
+TBD:  The "mean shift" code is not yet implemented!
+TBD:  Improve the check so blocks are detected as well, and do something
+reasonable with them.
+
+The simplex method of finding pointing solutions can often benefit by being
+rerun multiple times, starting from where it left off the last time, as
+opposed to resetting the solution to the initial conditions.  The program
+allows this in both batch and interactive modes.  Experience has shown that
+as many as half a dozen reruns can still show improvement in the solution.
+
+METHOD:
+
+1) The simplex method is used to find that set of pointing parameters
+(often azimuth & elevation but may include other things like X/Y/Z position
+for rovers or joint angles for arm cameras), which give a camera model that
+minimizes the difference between the predicted and the actual correlated
+tiepoints.  Note that there is NO image correlation involved in this step;
+that is used only for tiepoint selection.
+
+TBD:  Need to put <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#error">error</A> bars in the pointing parameters so we have some idea
+how far to go.
+
+2) If the residual for the worst tiepoint is &gt the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#error">ERROR</A> keyword then the
+tiepoint may be adjusted or deleted in batch mode, and the solution run
+again.  The solution may be restarted from where it left off, or reset to
+the initial conditions.
+
+In Batch mode, if the worst residual is &gt <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#error">ERROR</A>, then the solution is
+rerun from where it left off (which usually improves it) a number of times
+equal to the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#recycle">RECYCLE</A> parameter.  If the residual is still too big, the worst
+tiepoint is deleted and the cycle starts over (with <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#recycle">RECYCLE</A> more reruns
+before deleting the next worst tiepoint).  This continues <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#until">until</A> the residual
+falls into line, we exceed <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#max_remove">MAX_REMOVE</A> iterations, or <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#until">until</A> we run <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#out">out</A> of
+tiepoints (but a perfect (albeit nonsensical) match should always be available
+with only 1 tiepoint).  If NOREMOVE is specified, the program terminates
+instead of removing the worst tiepoint (thus performing only set of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#recycle">RECYCLE</A>'s).
+
+If <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#max_residual">MAX_RESIDUAL</A> is set, the above is modified slightly.  At each step, instead
+of deleting the worst tiepoint, any tiepoints whose residual is abve the
+threshold are deleted.
+
+In Interactive mode, if the worst residual is &gt <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#error">ERROR</A>, then the worst tiepoint
+is presented to the user for editing using the tp program.  The user then
+has several options:
+
+a) Exit without changing anything.  This will rerun the solution, starting
+from where it left off last time.  It is often useful to do this several times.
+
+b) Modify the tiepoint and Save and Exit (ctrl-X).  This will use the modified
+tiepoint, and rerun the solution from initial conditions.
+
+c) Delete the tiepoint and Save and Exit (ctrl-X).  This will delete that
+tiepoint, and rerun the solution from initial conditions.
+
+d) Select "Special Exit Status" before exiting tp.  This will cause MARSNAV
+to accept the current solution, save the nav file, and exit, even if the
+residual is too big.
+
+See the help for MARSTIE for more on using tp with MARSNAV.
+
+3) Once the residual is &lt= <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#error">ERROR</A>, or Special Exit Status is selected, the final
+navigation solution is written to the output file.
+
+TBD:  Need to be able to say "accept this point anyway and give me the next
+worst one" from interactive mode, without exiting the entire MARSNAV session.
+
+An output tiepoint file is always generated, with the results of the batch
+or interactive editing.  Specify its name via the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#out_tpt">OUT_TPT</A> parameter, which
+defaults to "tptlist.tpt".
+
+Each time a solution is derived, the nav file is written <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#out">out</A>.  This means
+the nav file may be written dozens or hundreds of times during a run.
+However, this allows the user to break <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#out">out</A> of the program and still have
+a solution, if it just can't get the residuals low enough to terminate on
+its own.  Or, an intermediate mosaic may be generated (copy the nav file
+since it often changes) while the program is running, to check on progress.
+
+RESIDUALS:
+
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#error">error</A> function which is being minimized is called the residual.  This is
+the sum of the squares of the differences between the projected tiepoint
+location (first tiepoint projected to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">surface</A> and back into the second image)
+and the actual tiepoint location in that second image.  This causes the
+function minimization process to attempt to reduce the tiepoint errors, which
+consequently reduce image seams.  Each tiepoint is weighted equally, so more
+tiepoints in a given area will cause marsnav to "work harder" in that area,
+giving it more weight (probably at the expense of other seams elsewhere).
+For this reason, the number of tiepoints per overlapping image pair should
+usually be consistent across the mosaic.
+
+There are two ways in which this residual is modified.
+
+The most important is <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#inertia">INERTIA</A>.  This modifies the residual by adding a
+factor that makes the images tend to stay in place.  For each pointing
+parameter, the difference between the original value of the pointing parameter
+and the current value is multiplied by the corresponding <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#inertia">INERTIA</A> value, and
+the result is added to the residual.  Each pointing parameter can have a
+different value for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#inertia">INERTIA</A>.  The result of this is that, depending on the
+weight imparted by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#inertia">INERTIA</A>, images will tend to stay where they are, adjusting
+less in response to tiepoints than they otherwise would.  This has the
+beneficial effect of preventing "drift" of the entire solution.  For example,
+for a typical cylindrical projection, you can add some value to all of the
+azuimuths and not affect the residual at all.  The solution could thus "random
+walk" around in azimuth, giving incorrect results.  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#inertia">INERTIA</A> can prevent that
+by introducing an <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#error">error</A> term whenever the azimuth moves.
+
+Selecting an appropriate value for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#inertia">INERTIA</A> is a dicey proposition.  The unit
+of the residual is a distance in pixel space, squared.  Pointing parameters
+can be any unit, but are typically in degrees.  Thus the units for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#inertia">INERTIA</A>
+itself are typically pixels^2/degree.  It is best selected by trial and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#error">error</A>.
+Experience has shown that values in the range of 5 to 20 are appropriate for
+MER pointing parameters (coincidentally enough, both for mast camera angles
+and for MI joint angles).  Note that it is not uncommon to have different
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#inertia">inertia</A> values for each pointing parameter.  An INERTIA of (5,20,10) might
+be useful for the right side of a stereo mosaic.  The 20 weights elevation
+changes heavily, which tends to reduce vertical disparity.  The weights for
+azimuth and twist are less, allowing them to change more.
+
+Note that <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#inertia">INERTIA</A> applies only to image pointing parameters.  Pointing
+parameters relating to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">surface</A> models or rover localizations do not participate
+in any <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#inertia">INERTIA</A>.
+
+The second modification to the residual calculation occurs if the second
+sample number in the input tiepoint file is negative.  In this case, a
+special mode is used.  The sample part of the tiepoint is ignored; only the
+line dimension is used.  This is intended for use with horizon points, when
+clear features cannot be found in the sample direction.  A tiepoint on the
+horizon, with a negative second sample number, will bring the horizon
+into alignment vertically (thus avoiding a stairstep) without messing up the
+horizontal alignment (usually taken care of by tiepoints lower in the image).
+The line-direction <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#error">error</A> is boosted by 6x to over-emphasize these horizon
+points.  It is unclear if this mode is really helpful or not; it was put in
+on an experimental basis.  Note that the functionality of this mode (except
+for the 6x factor) has been superceded by some of the new tiepoint types,
+specifically 1-dimensional tiepoints.
+
+WARNING:
+
+The parameters <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#normal">NORMAL</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#ground">GROUND</A>, and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">SURFACE</A> should be the same as those used
+in the mosaic program and MICA (and, to a lesser extent, MARSTIE) to get
+proper results.  If adjusting the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">surface</A> model, make sure to copy the
+resulting <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">surface</A> parameters to all downstream programs.  Failure to do so
+will result in incorrect output.
+
+NOTES:
+
+Study the printout. It tells you a lot about what happened.
+
+Most stereo cameras (e.g. MPF IMP, M98 SSI) are *not* designed to have their
+nodal <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">surface</A> at the azimuth axis.  This introduces LOTS of parallax if single
+images contain objects both near and far.  Pick your tiepoints intelligently so
+you don't pick a near object in this pair and a far one in that pair.
+
+It is important to remember that this program does *NOT* generate absolute
+pointing parameters.  It only adjusts pointings relative to other images
+*in the same mosaic* such that the errors within the mosaic are minimized.
+It is not even necessarily the case that the parameters derived for a given
+image in one mosaic will work as parameters to the same image in a different
+mosaic.  They are likely to be close, but lacking any absolute reference,
+each mosaic should be nav'd independently.
+
+One or more images are usually designated as "Reference" images.  These
+images are "fixed" in that their pointing parameters are not allowed to
+change.  This "anchor" can keep the mosaic as a whole from drifting too far
+off of some absolute pointing reference.  Without a reference, the overall
+mosaic is unconstrained and could drift around significantly (but see <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#inertia">INERTIA</A>).
+With a reference, there is still no absolute certainty of pointing, but at
+least the results will be close to what the "actual" absolute pointing should
+be.  If the reference image is known to be correctly pointed in absolute
+terms, then the rest of the pointing adjustments made by this program will
+come close to the same absolute accuracy - but even this is not guaranteed.
+
+The Reference image is automatically selected as the "most connected" image,
+unless overridden by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#refimage">REFIMAGE</A>.  REFIMAGE=-1 will turn off all reference
+images.  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#refimage">REFIMAGE</A> is a list, allowing you to specify a number of reference
+images if needed.
+
+In order to accommodate large numbers of reference images, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#refimage">REFIMAGE</A> accepts
+negative numbers to represent a range,  For example, the sequence 5,-8 says
+that 5,6,7,8 are references.  This shorthand is more convenient than the old
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#until">UNTIL</A> parameter.  See the help for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#refimage">REFIMAGE</A>.
+
+A range of reference images allows one to e.g. add on to an existing,
+navigated mosaic without changing the original pointings.  Alternatively,
+individual images can be listed in <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#refimage">REFIMAGE</A>, and each one will become a
+reference.
+
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#adjref">ADJREF</A> allows some of the pointing parameters of references to be changed.
+See the help for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#adjref">ADJREF</A>.
+
+A somewhat related concept is the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#ignore">IGNORE</A> list.  Any tiepoints containing an
+image listed in the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#ignore">IGNORE</A> list will be removed from consideration.  This
+allows you to concentrate on certain images without being influenced by others
+(for example, navigating a foreground mastcam mosaic while ignoring a background
+navcam mosaic).  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#ignore">IGNORE</A> accepts ranges, like <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#refimage">REFIMAGE</A> does.
+
+PARALLEL EXECUTION
+
+This program has been parallelized using Open MP (OMP), which is built in
+to the g++ compiler.
+
+By default the number of threads used equals the number of cores on the machine
+where the program is being run (but see parallel_degree below).  The parallel
+amoeba (pamoeba) algorithm, implemented from a paper by Lee and Wiswall, is
+used to accomplish the parallelism (an earlier attempt parallelized the
+objective function itself, but this method appears superior).
+
+Parallel processing can be disabled via the -OMP_OFF keyword.  The number
+of threads can be controlled by setting the OMP_NUM_THREADS environment
+variable before running the program.  There are numerous other OMP variables
+that can be set; see the OMP documentation.  However, the number of threads
+is the only one that is likely to be useful in most cases.
+
+The parallel amoeba function has an additional parameter, PARALLEL_DEGREE,
+that is used to control how many vertices of the simplex are adjusted at the
+same time.  This defaults to about half the number of independent variables
+being adjusted (or 1 if OMP is off), but can be explicitly set via the
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#par_degree">PAR_DEGREE</A> parameter.
+
+The parallel degree is related to but is NOT the same as the number of threads.
+Parallel degree says how many vertices to look at in a single iteration.  Each
+vertex can be evaluated on its own thread, or the same thread might look at
+several vertices.  The number of threads will not exceed parallel_degree
+(except for a rare corner case and some initialization), so it controls how
+much actual parallelism is allowed.  Note that for parallel_degree == 1, the
+algorithm devolves to be (almost) identical to the serial amoeba.  There are
+two differences: 1) when scores in a simplex are tied, serial takes the
+first while pamoeba takes the last, and 2) at the end, pamoeba copies the
+"best" answer to slot 0 rather than returning an arbitrary answer.
+
+So, parallel_degree of 1 will effectively disable parallel processing, but
+will give results extremely close to the serial algorithm.  A higher degree
+of parallelism changes the algorithm by considering multiple vertices at
+once, which could have impacts on the results.  The impacts should be minor
+and in the noise, however.
+
+In general you do not want the parallel degree to approach the number of
+parameters, as the algorithm gets less efficient according to Lee and Wiswall
+(that has not yet proven with marsnav, however).  The best bet is generally
+to let it default, in which case pamoeba will pick a number around half of
+the number of parameters, that is also a multiple of the number of available
+threads (to avoid thread starvation).
+
+NOTE: Site (position and orientation) adjustment cannot be done in parallel
+mode, due to the implementation complexity involved.
+
+TIEPOINT TYPES
+
+The "xml" tiepoint file <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#format">format</A> implements 10 different types of tiepoints.
+Each includes different information, and should be used in different
+situations.  They are numbered according to the "type" field in the XML file,
+and include a snippet of XML as an example of the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#format">format</A>.
+
+Note that XYZ and angle values are translated appropriately for the specified
+coordinate systems.
+
+0) Traditional
+
+    &lttie type="0" left_key="1" right_key="2"&gt
+      &ltleft line="53.43125" samp="356.2353"/&gt
+      &ltprojected line="634.3415" samp="43.43512"/&gt
+      &ltright line="634.4556" samp="44.43252"/&gt
+      &ltflags quality="0.85635" interactive="0"/&gt
+    &lt/tie&gt
+
+Traditional tiepoint, used to tie images together.  "left" and "right" are
+the actual tiepoints; "projected" is the left projected into the right just
+for reference (not to be confused with the projection described below, which
+is different).
+
+Method: Left point is projected to the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">surface</A> model, then back into the right
+image.  The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#error">error</A> is the difference between the projection and the Right point.
+
+The parameter <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#trad_mode">TRAD_MODE</A> can be set to use an alternate measure of
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#error">error</A>. With <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#trad_mode">TRAD_MODE</A>=MISS_DISTANCE, the line/sample error described
+above is replaced with the distance in xyz space between the rays to
+the left and right tiepoints, as calculated by xvector. With
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#trad_mode">TRAD_MODE</A>=BOTH, the line/sample <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#error">error</A> and xyz miss distance errors are
+added. With both <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#trad_mode">TRAD_MODE</A>=MISS_DISTANCE and TRAD_MODE=BOTH, the xyz
+miss distance errors are scaled with the real-valued parameter
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#miss_mult">MISS_MULT</A>.
+
+1) Fiducial
+
+    &lttie type="1" left_key="1"&gt
+      &ltleft line="326.32523" samp="21.43516"/&gt
+      &ltxyz x="0.43156" y="1.3455" z="-0.65425"/&gt
+      &ltflags quality="0.764626" interactive="1"/&gt
+    &lt/tie&gt
+
+This is used to fix an image point to an absolute reference in XYZ space,
+for example a fiducial mark on the spacecraft at a known position.
+
+Method:  XYZ location is projected into the image.  The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#error">error</A> is the difference
+between that and the given point.
+
+2) 1-Dimensional
+
+    &lttie type="2" left_key="1" right_key="2"&gt
+      &ltleft line="433.53216" samp="212.5326"/&gt
+      &ltprojected line="752.43556" samp="46.53116"/&gt
+      &ltright line="756.34315" samp="45.3144"/&gt
+      &ltangle degrees="22.5316"/&gt
+      &ltflags quality="0.563226" interactive="1"/&gt
+    &lt/tie&gt
+
+This is used for cases like a horizon, where useful features exist for only
+one direction (e.g. the horizon is clearly delineated, but all points along
+the horizon look the same, making traditional tiepoints unusable).
+
+Method:  Project as in a traditional tiepoint, but the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#error">error</A> is only the
+component of the difference that is perpendicular to the given angle in image
+space.  Thus, an angle of 0 is good for a horizon; an angle of +10 means a
+horizon tilted at 10 degrees with the right side higher.  Angle is measured
+in degrees CCW from horizontal in the right image's image space.
+
+3) Infinity
+
+    &lttie type="3" left_key="1" right_key="2"&gt
+      &ltleft line="12.42156" samp="531.31135"/&gt
+      &ltprojected line="513.5311" samp="43.4314"/&gt
+      &ltright line="511.53151" samp="45.54531"/&gt
+      &ltflags quality="0.885316" interactive="1"/&gt
+    &lt/tie&gt
+
+Like a traditional tiepoint, but it projects to infinity instead of to a
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">surface</A>.  Useful for tying horizon features (distant hills, far crater walls)
+together when range should not be considered.  Needed only if position is
+being solved for (via other tiepoints).
+
+Method:  Like traditional tiepoints, but project to infinity.  Cannot be used
+to determine position (only orientation).
+
+4) Orbital XY
+
+NOT YET IMPLEMENTED
+
+    &lttie type="4" left_key="1"&gt
+      &ltleft line="531.1354" samp="76.5432"/&gt
+      &ltxy x="550.3551" y="-215.5531"/&gt
+      &ltflags quality="0.331356" interactive="1"/&gt
+    &lt/tie&gt
+
+Used to localize a rover by tying to features visible in orbital images.
+The Z value of the point is unknown.  This translates to looking at azimuth
+errors only (ignoring elevation errors).  Thus XY position and azimuth (yaw)
+orientation of the rover can be determined, but not pitch/roll or Z.
+
+Method:  Project point to get az/el.  Use that elevation to compute a Z at
+the XY location.  Project that XYZ into the image.  Use only the component
+of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#error">error</A> in the azimuth direction (requires determining the orientation of
+the image w.r.t. the coordinate system).
+
+5) Orbital XYZ
+
+    &lttie type="5" left_key="1"&gt
+      &ltleft line="531.1354" samp="76.5432"/&gt
+      &ltxyz x="550.3551" y="-215.5531" z="-5.431231"/&gt
+      &ltflags quality="0.331356" interactive="1"/&gt
+    &lt/tie&gt
+
+Like Orbital XY, but includes a Z component derived from an orbital DEM.
+This is really the same as fiducial XYZ tiepoints, except that a site-like
+coordinate system should generally be used, rather than a rover-like one.
+It's really just a different usage of the same thing.
+
+Method:  Same as Fiducial.
+
+6) Azimuth
+
+NOT YET IMPLEMENTED.
+
+    &lttie type="6" left_key="1"&gt
+      &ltleft line="124.431" samp="553.1315"/&gt
+      &ltangle degrees="54.5312"/&gt
+      &ltflags quality="0.5311" interactive="1"/&gt
+    &lt/tie&gt
+
+Used when horizon features are at a known azimuth, but elevation may not be
+known.
+
+Method:  Project the point to get az/el, then combine that el with the
+supplied azimuth and project back.  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#error">Error</A> is azimuth component only, like
+orbital XY tiepoints.
+
+7) Elevation
+
+NOT YET IMPLEMENTED
+
+    &lttie type="7" left_key="1"&gt
+      &ltleft line="55.5311" samp="10.5315"/&gt
+      &ltangle degrees="65.5315"/&gt
+      &ltflags quality="0.4312" interactive="1"/&gt
+    &lt/tie&gt
+
+Used when elevation of features is known (e.g. a distant horizon) but
+azimuth is not.  Note that if both az and el are desired, the same image
+point can be supplied with az and el separately.  (TBD: coordinate transform
+issues with that).
+
+Method:  Like azimuth tiepoint, but swap az/el.
+
+8) Z <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">Surface</A>
+
+    &lttie type="8" left_key="1" right_key="2"&gt
+      &ltleft line="53.43125" samp="356.2353"/&gt
+      &ltprojected line="634.3415" samp="43.43512"/&gt
+      &ltright line="634.4556" samp="44.43252"/&gt
+      &ltz z="-0.387"/&gt
+      &ltflags quality="0.85635" interactive="0"/&gt
+    &lt/tie&gt
+
+Like a traditional tiepoint, except that the left point is projected to a
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">surface</A> at the given Z value, rather than the main surface model.  This allows
+for example tiepoints to be acquired on a rover/lander deck (at a different Z)
+and on the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#ground">ground</A> at the same time.  The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">surface</A> model used is a plane with
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#normal">normal</A> (0,0,-1) and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#ground">ground</A> intercept (0,0,z) expressed in the coordinate frame
+in use.  TBD:  coordinate frame transformation.
+
+9) Dynamic XYZ
+
+    &lttie type="9" left_key="1" right_key="2"&gt
+      &ltleft line="53.43125" samp="356.2353"/&gt
+      &ltprojected line="634.3415" samp="43.43512"/&gt
+      &ltright line="634.4556" samp="44.43252"/&gt
+      &ltflags quality="0.85635" interactive="0"/&gt
+    &lt/tie&gt
+
+This is a tiepoint that looks like a traditional tiepoint but acts like a
+fiducial tiepoint.  The XYZ value corresponding to the Left point is looked
+up, and that is used like a fiducial to match the Right point.  This is
+useful for cases where the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">surface</A> model does not match the actual <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#ground">ground</A>
+very well, or when very different points of view are used (such as a
+localization problem, in which case any variation from the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">surface</A> model
+is problematic).
+
+This tiepoint has different requirements than the others.  In order for the
+XYZ value to be found, the list file must specify the corresponding XYZ image.
+Normally standard image files are supplied in the list, but only the label is
+looked at (not the image data).  Thus, replacing that with a similarly-labeled
+XYZ file should not cause a problem for marsnav.  (marstie does need the image
+data, so two separate lists may be necessary here).  Be careful about
+linearization modes: make sure the XYZ is either raw or linearized to match
+the image you used to acquire the tiepoints.
+
+Method: At the beginning of the run, the Left point is used to pull the XYZ
+coordinate from the input file (which must be an XYZ image).  This value is
+converted to the instrument frame (typically Rover) for that image (see next
+paragraph).  During adjustment, this XYZ value is converted back to the frame
+in use (typically Site frame), and then projected into the right image.  The
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#error">error</A> is the difference between the projection and the Right point.
+
+Note the coordinate transforms: this is a subtle point, but it allows these
+tiepoints to be used for rover localizations (do_loc and do_ori) because the
+XYZ point changes in the common (Site) frame as the rover position is moved by
+the localization adjustments.
+
+10) Miss Distance
+
+    &lttie type="10" left_key="1" right_key="2"&gt
+      &ltleft line="53.43125" samp="356.2353"/&gt
+      &ltprojected line="634.3415" samp="43.43512"/&gt
+      &ltright line="634.4556" samp="44.43252"/&gt
+      &ltflags quality="0.85635" interactive="0"/&gt
+    &lt/tie&gt
+
+This tiepoint is an adaptation of Traditional, replacing the
+line/sample pixel space <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#error">error</A> with the distance in xyz space between
+the rays to the left and right tiepoints, as calculated by xvector (the
+marsxyz algorithm). Alternatively, Traditional tiepoints can be used with
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#trad_mode">TRAD_MODE</A>=MISS_DISTANCE to have the same effect. Further, Traditional
+tiepoints with <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#trad_mode">TRAD_MODE</A>=BOTH adds the pixel and xyz errors together.
+
+The xyz errors are scaled with <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#miss_mult">MISS_MULT</A> to control the relative
+strengths of xyz and pixel space errors when both errors are combined,
+for example when mixing Traditional and Miss Distance tiepoints, or
+when using Traditional tiepoints with <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#trad_mode">TRAD_MODE</A>=BOTH.
+
+See also <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#parallel_limit">PARALLEL_LIMIT</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#range_miss">RANGE_MISS</A>, which modify how miss-distance
+tiepoints behave.
+
+
+HISTORY:
+1994-04-30 J Lorre - Initial mpfnav
+1998-07	       Split of original MARSNAV into two parts:  MARSTIE and MARSNAV
+1998-09    rgd Multimission conversion
+2013-04-02 rgd Added <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#max_residual">MAX_RESIDUAL</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#refimage">REFIMAGE</A> ranges, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#ignore">IGNORE</A>
+2014-05-21 wlb Added miss-distance tiepoints
+2014-09-23 rgd Added <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#max_remove">MAX_REMOVE</A>, squared miss-distance <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#error">error</A>
+2016-10-05 rgd Added OMP-based parallelization
+2019-10-24 wlb Initialized some variables; cleaned up some -Wall warnings
+2020-04-29 rgd Added <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#mintie">mintie</A> parameter
+2020-05-01 wlb Replaced sprintfs
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Bob Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#inp"><H3>INP</H3></A>
+Input image(s) or
+file list.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#out"><H3>OUT</H3></A>
+Output navigation
+table.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#in_tpt"><H3>IN_TPT</H3></A>
+Input tiepoint file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#out_tpt"><H3>OUT_TPT</H3></A>
+Output tiepoint file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Input navigation table.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#format"><H3>FORMAT</H3></A>
+Output <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#format">format</A> of nav file.
+if <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#format">format</A>=xml, 
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#out_solution_id">OUT_SOLUTION_ID</A> is required.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#out_solution_id"><H3>OUT_SOLUTION_ID</H3></A>
+Solution ID for OUTPUT
+nav file (required if
+XML <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#format">format</A>).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID for INPUT
+nav file, if needed.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#interact"><H3>INTERACT</H3></A>
+To select tiepoints
+manually.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#refimage"><H3>REFIMAGE</H3></A>
+Reference image override.
+Can be a list of images.
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#refimage">refimage</A>=-1 means no reference
+image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#until"><H3>UNTIL</H3></A>
+All images up to
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#refimage">REFIMAGE</A>(1) are reference
+images.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#adjref"><H3>ADJREF</H3></A>
+Allows some reference
+image params to be
+adjusted.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#ignore"><H3>IGNORE</H3></A>
+List of images to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#ignore">ignore</A>
+in the tiepoint list.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#ignore_intra"><H3>IGNORE_INTRA</H3></A>
+Causes intra-set overlaps
+(within the non-reference
+set) to be ignored.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#error"><H3>ERROR</H3></A>
+Final permitted
+pixel tiepoint
+residual.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#recycle"><H3>RECYCLE</H3></A>
+How many times to
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#recycle">recycle</A> in batch mode.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#mintie"><H3>MINTIE</H3></A>
+Min # of tiepoints
+per image
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#ftol"><H3>FTOL</H3></A>
+Tolerance value for amoeba
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#do_pointing"><H3>DO_POINTING</H3></A>
+Whether or not to
+adjust pointing
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#do_surface"><H3>DO_SURFACE</H3></A>
+Whether or not to
+adjust <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">surface</A> model
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#do_location"><H3>DO_LOCATION</H3></A>
+Which locations to
+adjust (see level 2)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#do_orientation"><H3>DO_ORIENTATION</H3></A>
+Which orientations to
+adjust (see level 2)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#remove"><H3>REMOVE</H3></A>
+Whether or not to
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#remove">remove</A> bad tiepoints
+in batch mode
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#max_residual"><H3>MAX_RESIDUAL</H3></A>
+Threshold above which
+tiepoints will be removed.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#max_remove"><H3>MAX_REMOVE</H3></A>
+Max number of loops for
+removing tiepoints.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#inertia"><H3>INERTIA</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#inertia">Inertia</A> factor for
+each pointing param.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#start_key"><H3>START_KEY</H3></A>
+Starting key number for
+tiepoint file (XML <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#format">format</A>
+only).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#trad_mode"><H3>TRAD_MODE</H3></A>
+Selects traditional or
+miss-distance tiepoints.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#miss_mult"><H3>MISS_MULT</H3></A>
+Multiplicative factor for
+miss-distance tiepoints.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#parallel_limit"><H3>PARALLEL_LIMIT</H3></A>
+Sets limit for rays being
+considered parallel for
+miss-distance tiepoints.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#range_miss"><H3>RANGE_MISS</H3></A>
+Whether or not to scale
+miss-distance tiepoints
+by the range.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#omp_on"><H3>OMP_ON</H3></A>
+Turns on or off parallel
+processing (multiple threads,
+single machine).  Default: on
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#par_degree"><H3>PAR_DEGREE</H3></A>
+Overrides the degree of
+parallelism used.  See the
+main help.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#normal"><H3>NORMAL</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#normal">normal</A> vector.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#ground"><H3>GROUND</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#ground">ground</A> point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surf_coord"><H3>SURF_COORD</H3></A>
+Coordinate system used to define
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">surface</A> parameters.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface"><H3>SURFACE</H3></A>
+The type of mars
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">surface</A> to use INFINITY, PLANE, 
+SPHERE1, SPHERE2, MESH.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surf_mesh"><H3>SURF_MESH</H3></A>
+Mesh file for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">surface</A> model
+
+VARI <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surf_csfile">SURF_CSFILE</A> 
+File containing CS for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">surface</A>
+model
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#match_method"><H3>MATCH_METHOD</H3></A>
+Specifies a method
+for pointing corrections.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#match_tol"><H3>MATCH_TOL</H3></A>
+Tolerance value for
+matching pointing params
+in pointing corrections file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+Ignored by marsnav, except
+for final <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#surface">surface</A> model.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#coord">COORD</A>/mission combos.
+Ignored by marsnav.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsnav.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

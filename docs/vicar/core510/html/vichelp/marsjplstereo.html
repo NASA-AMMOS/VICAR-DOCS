@@ -1,0 +1,304 @@
+<HTML>
+<HEAD><title>HTML Help for MARSJPLSTEREO</title></HEAD>
+<BODY>
+<H1>Help for MARSJPLSTEREO</H1>
+<pre>
+PURPOSE:
+This program computes disparity maps from a stereo pair. The images
+are assumed to be aligned (CAHV linearized), hence only the sample
+disparity map is computed. The line disparity map is output as 0
+disparity (i.e. DN matches line number).  In contrast to MARSCORR,
+this program relies on camera model to do the computations.  The
+camera model is derived from the PIG (Planetary Image Geometry)
+library in the standard way.
+
+The resulting line and sample disparity maps can be used as input to
+MARSXYZ routine to convert disparity maps to XYZ images.  That output
+can further be sent to MARSRANGE to generate range maps.  The disparity
+map file format is compatible with the output of MARSCORR; see the help
+for that program for file format details.
+
+This program is also in theory capable of performing trinocular stereo
+matching with left, right and bottom cameras.  However, THIS HAS NOT
+BEEN TESTED.
+
+The underlying correlation library works with 8-bit data only.  Since
+most mission data is 16 bits (really 12, in a 16-bit image), a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#percent">percent</A>
+linear stretch is done to convert to byte before sending the image into
+the correlator.  This results in some loss of precision but shouldn't
+cause too much trouble in practice.  Normally the histograms for all
+inputs are combined so a single stretch is performed, but if the cameras
+are of unequal brightness, the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#separate">SEPARATE</A> flag will cause the images to be
+stretched independently.  The correlator is rather sensitive to overall
+brightness levels.
+
+This routine is based on the JPL Stereo code developed in the JPL
+Robotics Division.  Great deal of help and explanation was provided by
+Mark Maimone &ltmwm@helios.jpl.nasa.gov&gt. 
+
+In this program, input images must be projected from CAHVOR/CAHVORE
+space to CAHV space, i.e. run MARSCAHV routine to remove distortion. 
+The underlying correlation library supports CAHVOR/CAHVORE models,
+but simply does an internal warp to CAHV before correlating.  It was
+thus decided that the complexity of supporting CAHVOR/CAHVORE directly
+was not worthwhile, since CAHV images are normally created anyway.
+
+If pyramid level is not zero, image dimensions are truncated(if necessary)
+to the max. multiple of pyramid level.  For example if pyramid=2 and image
+size is 258x258, the correlation will be done on 256x256 subframe and the 
+extra input pixels will be ignored.
+
+The underlying JPL Stereo code can only handle images up to 2048 x 2048.
+If the image is larger than that, it is automatically downsampled until it
+fits within 2048 x 2048.  The pyramid level is reduced as well, so that
+the effective result is identical to what would have happened if JPL Stereo
+could handle larger images (i.e. the downsizing is transparent).  However,
+the pyramid level must be big enough to accommodate this; if it goes negative
+the program will abend.
+
+EXECUTION:
+  
+  marsjplstereo <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#inp">inp</A>=(left.img, right.img) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#out">out</A>=disparity.img params
+or
+  marsjplstereo <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#inp">inp</A>=(left.img, right.img, lower.img) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#out">out</A>=disparity.img) params
+
+  left.img - left image of the stereo pair
+  right.img - right image of the stereo pair
+  lower.img - lower image for the trinocular stereo. Not used for binocular stereo
+  disparity.img - output disparity map.  Can be a single 2-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#band">band</A> file or two
+      1-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#band">band</A> files.
+  parameters : see below.
+
+NOTE. 
+  Parameter space for this routine has not been explored fully. Some
+comments on the default values and their ranges are given in the
+parameter section. 
+
+<A NAME="examples">EXAMPLE</A>
+
+Convert images from CAHVOR space to CAHV and update camera model
+information in the labels : 
+
+  marscahv left.img left_cahv
+  marscahv right.img right_cahv
+
+Run the JPL Stereo algorithm with window size 15 : 
+
+  marsjplstereo <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#inp">inp</A>=(left_cahv, right_cahv) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#out">out</A>=(disparity.img) window = 15
+
+Convert from disparity to XYZ maps
+
+  marsxyz <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#inp">inp</A>=( left_cahv, right_cahv ) dispar=disparity.img <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#out">out</A>=xyz.img 
+
+OPERATION :
+ 
+  This algorithm is descried in part in Matthies [1992]. Here's a quote
+from the abstract of this paper. 
+" .. The statistical and algorithmic aspects employ random field models 
+of the disparity map, Bayesian formulations of single-scale matching,
+and area-based image comparison. The implementation builds bandpass
+pyramids and produces disparity maps... ". 
+  
+
+REFERENCES : (kindly supplied by Mark Maimone)
+
+(in order of relevance) 
+
+L. H. Matthies, 1992 ,Stereo vision for planetary rovers: stochastic modeling
+to near real-time implementation, Int. Jour. of Computer Vision, 8(1), pp71-91
+
+L. Matthies, A. Kelly, T. Litwin, G. Tharp, 1996, Obstacle
+Detection for Unmanned Ground Vehicles: A Progress Report, in Robotics
+Research: the 7th International Symposium, Springer-Verlag
+
+Yalin Xiong, Larry Matthies, 1997, Error Analysis of a Real-Time
+Stereo System, in CVPR, pp. 1087-1093, 
+URL "http://www.cs.cmu.edu/~yx/papers/StereoError97.pdf"
+
+
+DEVELOPER NOTES
+
+All files in this package with the exception of marsjplstereo.* and
+cmod_fp_stubs.h, are part of the correlator package obtained from Mark
+Maimone.  Many have been modified to compile in the VICAR environment or
+to fix bugs (e.g. more blobs than a short can handle, changed to long;
+precision differences between Solaris and Linux).  However, an attempt has
+been made to keep the changes to a minimum.  The original delivery is in
+B. Deen's "mer" email folder if needed.
+
+
+FUTURE WORK
+
+- Loosen the ultra conservative approach to the Maximum
+  Disparity. Currently the left edge of valid dispairty map values
+  starts at the maximum disparity value.
+- Allow min/<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#maxdisp">maxdisp</A> to be expressed in meters of range (for user convenience)
+- Add parameter to turn off LRLOS (reverse correlation check) option.  That
+  would only be useful for investigation of problems.
+- Add ability to output disparity space for a given row, again to investigate
+  bad correlations (SetRowsToSearch() in the correlator code).
+- <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#separate">Separate</A> horizontal/vertical window size parameters
+
+
+HISTORY:
+
+  2000-02        - Original version
+  2000-03-10 abi - Revision 1.1 Initial revision
+  2000-04-16 abi - Revision 1.2 Minor bugs eliminated 
+  2000-09-26 abi - Revision 1.3 Linux compatibility issue resolved
+  2003-01-16 rgd - Revision 1.4 Converted to use PIG library; cleaned up for MER;
+                                support for 16-bit input images.
+  2003-01-28 rgd - Revision 2.0 Installed new version of correlator from
+                                M. Maimone's group; added <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#uncertainty">Uncertainty</A> parameter
+  2016-05-31 rgd - Revision 2.1 Added automatic downsampling for large images.
+  2019-10-02 wlb - IDS-7926 - Initialized some variables;
+                   IDS-7928 - Corrected some printf formatting directives 
+                              (pointers should have been %lx, not %x);
+                   Commented some unused variables; Added explicit return types
+                   for some functions; Added includes for open and creat. Added
+                   tst.pdf and tst.log to test dir.
+  2019-12-23 wlb - IDS-7926 - Initialized a variable.
+  2020-03-24 wlb - IDS-7927 - Replaced sprintf() calls.
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Bob Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#inp"><H3>INP</H3></A>
+Left/right stereo pair images
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#out"><H3>OUT</H3></A>
+Output disparity map
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation filename
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#pyrlevel"><H3>PYRLEVEL</H3></A>
+Pyramid level
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#windowsize"><H3>WINDOWSIZE</H3></A>
+Size of correlation window
+in pixels.  Default 7.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#mindisp"><H3>MINDISP</H3></A>
+Minimum disparity value
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#maxdisp"><H3>MAXDISP</H3></A>
+Maximum disparity value
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#blobsize"><H3>BLOBSIZE</H3></A>
+Minimum size of "blobs" (regions
+of connected pixels) to accept.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#uncertainty"><H3>UNCERTAINTY</H3></A>
+Enable and set value for
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#uncertainty">uncertainty</A> filtering.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#percent"><H3>PERCENT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#percent">Percent</A> stretch limit for HALF-&gtBYTE
+conversion.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#separate"><H3>SEPARATE</H3></A>
+Specifies <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#separate">separate</A> stretches for
+input images.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#band"><H3>BAND</H3></A>
+The vicar image
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#band">band</A> number.
+Defaults to 1
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#separation"><H3>SEPARATION</H3></A>
+Set maximum Euclidean <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#separation">separation</A>
+for trinocular stereo only
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#threshold"><H3>THRESHOLD</H3></A>
+Set <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#uncertainty">uncertainty</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#threshold">threshold</A> for
+trinocular stereo only
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#match_method"><H3>MATCH_METHOD</H3></A>
+Specifies a method
+for pointing corrections.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#match_tol"><H3>MATCH_TOL</H3></A>
+Tolerance value for
+matching pointing params
+in pointing corrections file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+pointing correction.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsjplstereo.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

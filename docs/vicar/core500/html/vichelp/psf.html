@@ -1,0 +1,116 @@
+<HTML>
+<HEAD><title>HTML Help for PSF</title></HEAD>
+<BODY>
+<H1>Help for PSF</H1>
+<pre>
+PURPOSE
+
+Determine point spread function from image
+
+OPERATION
+
+This program copies a point spread function (PSF) contained in the
+input image to an output image in a format suitable for the production
+of the optical transfer function (OTF) by program "fft22".  The
+program was designed to be used in the procedure "restore", which deconvolves
+the point spread function from an image, but can also be used in stand-
+alone mode.
+
+The input image is normally a star or the output of an appropriate test target
+from a camera test.
+
+The <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#area">AREA</A> parameter restricts where in the image the psf object occurs. For
+example, if the PSF is from a starfield there may be other stars in the field
+you wish to ignore. Similarly the output from a camera calibration test target
+may have a border or other types of targets in the field.
+EXECUTION FORMAT:
+
+  psf  IN  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#out">OUT</A>  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#size">SIZE</A>  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#area">AREA</A>  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#shift">SHIFT</A>
+
+where:	IN	is the input image.
+	<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#out">OUT</A>	is the output point spread function.
+	<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#size">SIZE</A>	is the size of the output file, and should be
+		  the same dimension as the image to which the
+		  OTF will be applied.
+	<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#area">AREA</A>	is a required parameter defining the location of
+		  the point spread function in the input image.
+	<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#shift">SHIFT</A>   is an optional parameter determining whether the
+		  PSF <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#area">area</A> will be allowed to <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#shift">shift</A> in the input. SHIFT
+          is like what FFTFLIP does for FFTs.
+METHOD
+
+First, the program determines the mean of the DNs lying on the border
+of the region defined by the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#area">AREA</A> parameter.  This mean is used as the
+background DN value.  The subimage of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#size">size</A> determined by <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#area">AREA</A> minus the
+background value is the PSF.
+
+Next, the program determines the centroid of the PSF.  The subimage is
+quartered about the pixel closest to the centroid and is copied into
+the four corners of the output data set.  (This process is intended to
+eliminate translation of an image when deconvolved with the point spread
+function, although subpixel translations will still be present.)  The
+rest of the output file is left empty (0 DN).  
+
+The program works with BYTE, HALF, FULL and REAL formats. Its output
+format is the same as the input.  
+
+It warns you if <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#negative">negative</A> numbers are found in the image. If so, it
+returns a value of 1 in the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#negative">NEGATIVE</A> return parameter.
+
+RESTRICTIONS
+
+    For REAL images <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#negative">negative</A> values are converted to 0. So centroid is
+only computed from positive values. If it is important, you may convert 
+images with <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#negative">negative</A> values to all positive by MAXMIN and F2 before
+processing with PSF.
+
+HISTORY:
+
+Written by:  J.J.Lorre,  1 Jan. 1978
+<A NAME="CogProg">Current Cognizant Programmer:  Ray Bambery</A>
+Revisions:
+  1985-03-29 L.W.Kamp - Converted to VAX
+  1995-01-02 A.Scop (CRI) - Made portable for UNIX
+  2012-12-29 RJB - Fixes for 64-bit Linux under gfortran 4.7.2
+  2013-08-24 Ray Bambery - Fixed crash when used with BYTE images
+                Got message with BYTE images:
+    *** glibc detected *** /data/rjb/ada/src/psf: free(): invalid next <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#size">size</A> (fast): 0x00000000011deeb0 ***
+    ======= Backtrace: =========
+    /lib64/libc.so.6[0x36e8275916]
+                Program now accepts BYTE, HALF, FULL and REAL images
+                Added <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#negative">NEGATIVE</A> return parameter.
+  2016-06-08 Walt Bunch - Migrated to MIPL.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#inp"><H3>INP</H3></A>
+Input image
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#out"><H3>OUT</H3></A>
+Output PSF
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#size"><H3>SIZE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#size">Size</A> of output file.
+ = (<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#ns">NS</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#sl"><H3>SL</H3></A>
+Starting line
+(always 1)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#ss"><H3>SS</H3></A>
+Starting sample
+(always 1)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#nl"><H3>NL</H3></A>
+Number of Lines
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#ns"><H3>NS</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#area"><H3>AREA</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#area">Area</A> containing PSF.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#shift"><H3>SHIFT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#shift">Shift</A> PSF about new
+centroid?
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#negative"><H3>NEGATIVE</H3></A>
+A return parameter. If 1 then
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf_level2.html#negative">negative</A> numbers were found in
+image.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/psf.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

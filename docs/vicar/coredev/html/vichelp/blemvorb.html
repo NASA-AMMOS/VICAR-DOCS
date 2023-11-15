@@ -1,0 +1,125 @@
+<HTML>
+<HEAD><title>HTML Help for BLEMVORB</title></HEAD>
+<BODY>
+<H1>Help for BLEMVORB</H1>
+<pre>
+Removes blemishs, wrinkles and warts from image space Viking Orbiter images.
+
+ EXECUTION:
+
+  blemvorb input-file output-file '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#half">HALF</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#area">AREA</A>=(i1,i2,i3,i4) 
+
+ OPERATION:
+
+  If no user parameters are specified, the label is scanned and the
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#camera">camera</A> serial number is retrieved,the blemishes are retrieved, and
+the portion of the input image specified in <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#size">SIZE</A> is copied into the
+output file. Additional blemishes can be removed from input image
+using the removal option below. 
+Removal option:
+   Form:
+
+     <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#area">AREA</A>=(sl1,sb1,nl1,nb1,sl2,sb2,nl2,nb2,...,slk,sbk,nlk,nbk)
+       where
+    slk = starting line of rectangle k
+    sbk = starting <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#byte">byte</A> of rectangle k
+    nlk = number lines in rectangle k
+nbk = number of bytes in rectangle k
+
+   Function:
+
+These parameters cause the rectangular areas specified to be removed
+from the picture and to be replaced with an average of nearby points.
+Specifically, let R be the rectangle located between lines L1 and L2
+and samples S1 and S2 and assume R is to be eliminated. Let M be the
+line coordinate of a point within R, and let N be its coordinate. Let
+X(A,B) be the data number of a point located at line A, sample B. 
+Then:              X(M,S1)   X(M,S2)   X(L1,N)  X(L2,N)
+                   ------- + ------- + ------ + -------
+                   (N-S1)    (S2-N)    (M-L1)   (L2-M)
+  X(M,N)   =      ---------------------------------------
+                      1          1       1        1
+                   ------- + ------- + ------ + -------
+                   (N-S1)     (S2-N)   (M-L1)   (L2-M)
+
+ In other words, if (E,F) is within a rectangle to be eliminated, 
+
+                    PL   PR   PT   PB
+                    -- + -- + -- + --
+                    DL   DR   DT   DB
+   X(E,F)  =      ---------------------
+                    1    1    1    1
+                    -- + -- + -- + --
+                    DL   DR   DT   DB
+
+ where PL, PR, PT, and PB are the intensities of the nearest points
+to the left, right, top, and bottom outside the rectangle and DL, DR,
+DT, and DB are the distances to those points. If a rectangle to be
+eliminated occurs at the edge of a picture, only those terms in the
+above equations for which intensities exist in the input are used.
+Thus, if the rectangle to be removed occurs in the lower left hand
+corner of a picture, the terms dealing with L2 and S2 in the first
+equation and those dealing with DL and DB in the DL and DB in the
+second equation are not used. 
+RESTRICTIONS:
+
+ The input image be be in raw, image space. It must not have had its
+geometry changed in any way since being read off the EDR.
+
+<A NAME="examples">EXAMPLES:</A>
+
+ blemvorb A B
+ This operation copies the picture in file A to file B and removes 
+the blemishes
+
+ blemvorb <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#size">SIZE</A>=(1,1,300,300) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#area">AREA</A>=(1,1,25,25,101,51,25,30) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#inp">inp</A>=A <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#out">out</A>=B
+ This operation copies the top left 300 x 300 square of the  picture
+in file A into file B removing the 2 rectangles  specified by the
+ <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#area">AREA</A> parameter.
+
+ blemvorb <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#size">SIZE</A>=(75,99,300,400) '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#half">HALF</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#area">AREA</A>=(100,200,10,5) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#inp">inp</A>=A <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#out">out</A>=B
+ Given a halfword (16 bits per pixel) picture 400 lines by 500
+ samples (1000 bytes). The output picture will contain the 300
+ lines and 200 samples staring at line 75 and sample 50 and the
+ 10 line by 5 sample block starting at line 100 and sample 200
+ (in the input picture) is to be averaged <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#out">out</A>. 
+
+ HISTORY:
+  Written BY:  Joel Mosher
+<A NAME="CogProg">  Cognizant Programmer: None</A>
+  Revision: new 29-MAR-1986 renamed from SAR to BLEMVORB
+            1   10-JUL-1991 modified to call new VOLABV2
+            2   01-JUL-1994 Made portable for UNIX  AS (CRI)
+            3   07-MAR-1995 Fixed tst pdf as per FR 85747
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#inp"><H3>INP</H3></A>
+Viking Orbiter image
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#out"><H3>OUT</H3></A>
+output image
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#size"><H3>SIZE</H3></A>
+4 integers <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#ns">ns</A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#sl"><H3>SL</H3></A>
+integer starting line
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#ss"><H3>SS</H3></A>
+integer starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#nl"><H3>NL</H3></A>
+integer number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#ns"><H3>NS</H3></A>
+integer number of samples.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#half"><H3>HALF</H3></A>
+keyword halfword input format
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#byte"><H3>BYTE</H3></A>
+keyword <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#byte">byte</A> input format
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#area"><H3>AREA</H3></A>
+integer, multiples of 4
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#ns">ns</A> locations of blemishes
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#camera"><H3>CAMERA</H3></A>
+integer VO <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#camera">camera</A> serial number
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#sn"><H3>SN</H3></A>
+integer VO <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb_level2.html#camera">camera</A> serial number
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/blemvorb.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

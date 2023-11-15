@@ -1,0 +1,114 @@
+<HTML>
+<HEAD><title>HTML Help for REPAIR</title></HEAD>
+<BODY>
+<H1>Help for REPAIR</H1>
+<pre>
+      REPAIR identifies bad lines (lines that are inconsistent with the
+surrounding lines) and replaces them by interpolation of the nearest good 
+lines. If the locations of the bad lines or line segments are known, the user 
+may list the offending lines and use the ALL <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#mode">mode</A> to repair just those lines.
+If the locations of the bad lines are unknown, the program decides which lines
+are bad by computing the interline correlation (and optionally the differences
+in the means and the variances).
+      REPAIR can now repair multichannel data in BSQ or BIL organizations. All
+channels are tested in aggregate, and if the line is found to be bad, the line
+is replaced in all channels. No specific channel repairs are presently 
+implemented.
+ OPERATION
+      There are three modes of operation to REPAIR. The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#corr">CORR</A> and MV modes 
+differ only in the tests employed to determine bad lines, but the ALL <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#mode">mode</A> 
+does no statistical testing, and is more closely related to the earlier VICAR 
+program SAR. 
+      In the ALL <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#mode">mode</A>, lines or regions are specified by the user via the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#area">AREA</A>,
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#lineset">LINESET</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#badline">BADLINE</A>, and/or <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#modulo">MODULO</A> parameters. These regions are replaced by means
+of a linear interpolation, using the lines immediately above and below the 
+region. Interpolation is performed in the line direction only, and the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#area">area</A> 
+outside the specified regions is unchanged.
+      In the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#corr">CORR</A> and MV modes, the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#area">AREA</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#lineset">LINESET</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#badline">BADLINE</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#modulo">MODULO</A> 
+parameters are used to identify regions to be examined for bad lines. If all 
+three parameters are defaulted, the entire image is tested. Each line that is 
+to be checked is tested by the following procedure:
+      A. The line is compared to two reference lines: the last good line, and 
+         the average of the next line and the last good line.
+      B. If the correlation coefficients between the test line and both of the
+         reference lines is less than the value of <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#corr">CORR</A>, then the line is 
+         considered bad. There is one exception to this test. If the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#zok">ZOK</A> (Zero
+         OK) keyword is in effect, lines that are all zeroes are passed as
+         good. The correlation coefficient is undefined for lines of constant 
+         value, requiring this special case. A correlation coefficient of 0.0 
+         is assigned to all other cases involving lines of constant DN.
+      C. If the MV (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#mean">Mean</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#variance">Variance</A>) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#mode">mode</A> is in effect, then two additional 
+         tests are employed. The test line is considered bad if its <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#mean">mean</A> is 
+         different than the means of the reference lines by more than the value 
+         of <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#mean">MEAN</A>, or if its <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#variance">variance</A> is different than both the reference line 
+         variances by more than the value of <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#variance">VARIANCE</A>.
+ If a line is found to be bad, the entire line is replaced by a linear
+ interpolation of the last good line and the next good line. 
+      This algorithm is fairly sensitive to the values of the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#corr">CORR</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#mean">MEAN</A>, and
+ <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#variance">VARIANCE</A> parameters. It may be necessary to run this program more than once
+ in order to find an appropriate set of values. In general, the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#corr">CORR</A> and 
+ <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#variance">VARIANCE</A> values provide the best tests for random noise and hashed lines. The
+ test of the means should only rarely be needed to reject a line.
+      The coordinates used in the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#area">AREA</A> parameter (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#ns">NS</A>,...) refer to the
+ input image, not the output image. This is important only if, in the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#size">size</A>
+ field, the starting line or starting sample is not one. 
+      The user should also be aware that if two regions specified by <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#area">AREA</A>, 
+ <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#lineset">LINESET</A>, or <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#badline">BADLINE</A> contain the same line, the two regions will be combined 
+ into one larger region that contains both original regions. This can cause
+ problems, especially in the ALL <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#mode">mode</A>, where more pixels may be modified than
+ were intended.
+      This program will run on byte, halfword, fullword, or real data. Up to
+ 100 regions may by given by each of the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#area">AREA</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#lineset">LINESET</A>, and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#badline">BADLINE</A> parameters.
+ If either <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#mean">MEAN</A> or <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#variance">VARIANCE</A> is not defaulted, the MV <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#mode">mode</A> is automatically
+ used.
+ ORIGINAL PROGRAMMER:  John Addington
+ 
+<A NAME="CogProg"> CURRENT COGNIZANT PROGRAMMER: Ron Alley</A>
+
+ REVISION:  14 January, 2003  (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#modulo">MODULO</A> option added)
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#inp"><H3>INP</H3></A>
+ input data set
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#out"><H3>OUT</H3></A>
+ output data set
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#size"><H3>SIZE</H3></A>
+ output image window
+ (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#ns">NS</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#sl"><H3>SL</H3></A>
+ starting line
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#ss"><H3>SS</H3></A>
+ starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#nl"><H3>NL</H3></A>
+ number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#ns"><H3>NS</H3></A>
+ number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#mode"><H3>MODE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#corr">CORR</A>, MV, or ALL
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#area"><H3>AREA</H3></A>
+Sets of (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#ns">NS</A>) to
+be tested for bad lines
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#lineset"><H3>LINESET</H3></A>
+Sets of lines to be tested
+(<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#nl">NL</A>,SL,NL,...)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#modulo"><H3>MODULO</H3></A>
+Limit lines to those that
+are N1 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#modulo">MODULO</A> N2
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#badline"><H3>BADLINE</H3></A>
+Lines to be tested
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#corr"><H3>CORR</H3></A>
+Tolerance level for
+interline correlation.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#mean"><H3>MEAN</H3></A>
+Tolerance level for
+difference in means.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#variance"><H3>VARIANCE</H3></A>
+Tolerance level for
+difference in variances.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair_level2.html#zok"><H3>ZOK</H3></A>
+Are lines of Zero DN OK?
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/repair.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

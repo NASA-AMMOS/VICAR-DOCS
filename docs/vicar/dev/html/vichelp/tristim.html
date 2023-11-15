@@ -1,0 +1,129 @@
+<HTML>
+<HEAD><title>HTML Help for TRISTIM</title></HEAD>
+<BODY>
+<H1>Help for TRISTIM</H1>
+<pre>
+"tristim" is a Vicar applications program that will calculate the tristimulus
+values and chromaticity coordinates for a given spectrum, which may be of
+intensity, reflectivity, or transmittivity. Tristimulus values and chromaticity
+coordinates are quantities which must be known to do color reconstruction.  
+For a complete discussion of colorimetry, see Reference 1.
+ 
+EXECUTION:
+
+tristim PARAMS
+
+where PARAMS are parameters listed in Tutor mode.  (There are no input or
+output datasets.)
+OPERATION:
+ 
+"tristim" computes tristimulus values for a spectrum by the formulas:
+ 
+  X = k * SUM( F(i) * x'(i) )
+  Y = k * SUM( F(i) * y'(i) )
+  Z = k * SUM( F(i) * z'(i) )
+ 
+where:   X, Y, and Z are the tristimulus values,
+ 
+         F is the input spectral distribution of intensity, reflectivity,
+         or transmittivity.
+ 
+         x', y', and z' are the C.I.E. standard colorimetric observer
+         values, also known as the color matching functions, optionally
+         weighted by a specified illuminant,
+ 
+         and i is the wavelength.
+ 
+The sums are taken from i = 380 nm to 770 nm.
+
+The constant k is defined by the relation:
+
+                    100
+         k = -------------------
+             SUM( S(i) * y'(i) )
+
+         where S(i) is the spectral <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim_level2.html#radiance">radiance</A> of the illuminant.
+ 
+For standard illuminants D55, D65, D75, A, B, and C, the color matching
+functions have been weighted by the relative spectral power distributions
+of these illuminants in such a way that k=1.  The XENON illuminant
+weighting functions have also been computed so that k=1.  However, XENON
+is not a standard of the C.I.E. and refers only to the JPL 12-inch light
+cannon on 13 April 1976 (see Reference 2).
+ 
+If the user is using some other illuminant, k will have to be computed
+separately.  This can easily be done with another execution of TRISTIM,
+inputting the spectral <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim_level2.html#radiance">radiance</A> of the illuminant for the 40 radiance
+values, and then taking the ratio of 100 and the Y tristimulus value.
+ 
+"tristim" also outputs the chromaticity coordinates of the spectrum in
+question.  These are related by the equations:
+ 
+          X                  Y                  Z
+    x = ----- ,        y = ----- ,        z = ----- .
+        X+Y+Z              X+Y+Z              X+Y+Z
+The user-supplied input spectrum (<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim_level2.html#radiance">RADIANCE</A>) may be specified as a multiple 
+of up to ten separate spectral distributions, of exactly 40 points each 
+(R1,...,R400). This can represent a series of filters through which light 
+passes.
+ 
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim_level2.html#radiance">RADIANCE</A> values R1,...,R40 can also be modified (for whatever reason) 
+by the equation:
+ 
+   NEW_RADIANCE(i) = Ri * <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim_level2.html#mult">MULT</A> + <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim_level2.html#add">ADD</A>
+
+where <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim_level2.html#mult">MULT</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim_level2.html#add">ADD</A> are the values specified for the parameters of those
+names.
+In addition, the user may specify Continuum and Background spectra, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim_level2.html#contin">CONTIN</A>
+and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim_level2.html#back">BACK</A>, which will be applied to the input spectrum according to the
+following formula:
+
+                        (Ri - <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim_level2.html#back">BACK</A>(i))
+   NEW_RADIANCE(i) = -------------------
+                     (<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim_level2.html#contin">CONTIN</A>(i) - <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim_level2.html#back">BACK</A>(i))
+
+This can be useful to process spectrophotometric tracings of inputs in
+certain colors and of a white reference input.
+REFERENCES
+
+1. Judd, D.B., and G, Wyszecki, "Color in Business, Science, and Industry",
+   Third Edition, 1975, John Wiley and Sons.
+ 
+2. JPL IOM 26 April 1976, To: L. Snyder, From: M. Benesh, New Photometric
+   Characteristics of 12" (30-cm) Light Cannon No. 1.
+ 
+ 
+TIMING
+ 
+TRISTIM takes about 4 CPU seconds to run.
+<A NAME="CogProg">COGNIZANT PROGRAMMER</A>
+ 
+Written by:  Joel Mosher,  1 Oct. 1977
+ 
+Converted to VAX by:  L. W. Kamp,  10 Jan. 1984
+ 
+<A NAME="CogProg">Current Cognizant Programmer:  L. W. Kamp</A>
+
+Made portable for UNIX   Alan Scop (CRI) 2 May 1994
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim_level2.html#illumin"><H3>ILLUMIN</H3></A>
+KEYWORD: Valid = D55, D65,
+D75, A, B, C, CMF, XENON.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim_level2.html#radiance"><H3>RADIANCE</H3></A>
+List of Radiances
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim_level2.html#add"><H3>ADD</H3></A>
+Constant added to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim_level2.html#radiance">RADIANCE</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim_level2.html#mult"><H3>MULT</H3></A>
+Constant by which <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim_level2.html#radiance">RADIANCE</A>
+is multiplied.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim_level2.html#contin"><H3>CONTIN</H3></A>
+Continuum reference spectrum
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim_level2.html#back"><H3>BACK</H3></A>
+Background spectrum
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tristim.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

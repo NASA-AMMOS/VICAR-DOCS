@@ -1,0 +1,98 @@
+<HTML>
+<HEAD><title>HTML Help for OMCOR2</title></HEAD>
+<BODY>
+<H1>Help for OMCOR2</H1>
+<pre>
+PURPOSE
+This program updates the first input IBIS SEDR file by changing 
+the OM Euler angles in columns 21,22,23 which define <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#camera">camera</A>
+pointing via the OM matrix. "omcor2" performs a global function
+minimization of tiepoint residuals by determining the OM
+matrices which cause the tiepoints to disagree between image
+pairs by a minimum.
+ 
+The GLL flight projects permit very little error in north angle. We suggest
+that you use the '<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#fit2">FIT2</A> parameter to reflect this. Your solutions will improve.
+
+"omcor2" differs from omcor in two ways:
+1. Control images are not permitted to move (their OM matrices
+   are considered known).
+2. "omcor2" permits the use of a <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#zonal">zonal</A> velocity flow model to shift
+   tiepoints to the common time of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#ground">ground</A> control image.
+   This permits a global solution for the navigation for non solid
+   objects like jupiter. See the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#zonal">ZONAL</A> keyword.
+3. The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#fit2">FIT2</A> keyword permits the north angle to remain fixed for all images.
+
+EXECUTION
+omcor2 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#inp">inp</A>=(SEDR.INT,TIEPOINTS.INT,GEOM.COR)
+or-
+omcor2 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#inp">inp</A>=(SEDR.INT,TIEPOINTS.INT)
+
+<A NAME="examples">EXAMPLE: (Galileo)</A>
+See mosaicking procedure MANUAL4 in MANMATCH.PDF (Help file).
+
+omcor2 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#inp">inp</A>=(jupsedr.int,jupmatch.int)      '<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#zonal">zonal</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#project">project</A>=GLL <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#camera">camera</A>=1 '<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#fit2">fit2</A>
+
+PRECISION
+The differences between the unported and ported VAX test logs and the 
+differences between the VAX and UNIX test logs are due to the image
+space mode being invoked with <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#object">object</A> space data.  The discrepency is
+probably due to two factors:
+1. There is no clear solution (bogus test case) so the solution is 
+probably very sensitive to precision.
+2. Many transformations are made from image to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#object">object</A> space resulting in
+small errors which get fed into the minimization scheme.
+
+HISTORY
+27 AUG 96  ARV  (CIT)  Added <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#fit2">FIT2</A> capability
+10 JUL 95  AMS  (CRI)  Made portable for UNIX
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#inp"><H3>INP</H3></A>
+First input= SEDR.INT produced
+ by program "ibisnav"
+Second input=TIEPOINTS.INT
+ by program "manmatch"
+Third input=
+A "geoma" distortion file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#project"><H3>PROJECT</H3></A>
+Specifies  the 
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#project">project</A>. 
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#object"><H3>OBJECT</H3></A>
+Causes images to be 
+considered geometrically
+corrected.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#fit2"><H3>FIT2</H3></A>
+Causes kappa (north angle)
+to be kept fixed.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#camera"><H3>CAMERA</H3></A>
+The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#camera">camera</A> serial number.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#ground"><H3>GROUND</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#ground">Ground</A> control frames
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#toleranc"><H3>TOLERANC</H3></A>
+fractional convergence
+tolerance.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#old"><H3>OLD</H3></A>
+Source of Euler
+angles in SEDR.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#zonal"><H3>ZONAL</H3></A>
+Use <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#zonal">zonal</A> flow.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#zvp"><H3>ZVP</H3></A>
+Name of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2_level2.html#zonal">zonal</A>
+flow file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/omcor2.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

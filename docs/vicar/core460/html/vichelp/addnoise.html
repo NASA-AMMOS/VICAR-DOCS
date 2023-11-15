@@ -1,0 +1,87 @@
+<HTML>
+<HEAD><title>HTML Help for ADDNOISE</title></HEAD>
+<BODY>
+<H1>Help for ADDNOISE</H1>
+<pre>
+PURPOSE:
+
+Addnoise creates three types of noise:
+1. Additive gaussian noise.
+2. Shot noise (multiplicative ccd type noise).
+3. Bit error noise.
+
+EXECUTION:
+
+addnoise <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#inp">inp</A>=a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#out">out</A>=b <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#sigma">sigma</A>=10.            Additive gaussian noise 
+addnoise <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#inp">inp</A>=a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#out">out</A>=b <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#gain">gain</A>=30.             ccd shot noise
+addnoise <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#inp">inp</A>=a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#out">out</A>=b <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#rate">rate</A>=100 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#bits">bits</A>=8      bit error noise
+
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#seed">SEED</A> parameter is provided so the same random patterns can be generated.
+If it is defaulted the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#seed">seed</A> for the random number generator comes from the
+system time.
+
+Note, more than one noise can be simulated at one time. If you specify "<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#sigma">sigma</A>"
+and "<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#gain">gain</A>" and "<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#rate">rate</A>" for example, you'll get all three. The ordering of
+these is:
+first  shot noise
+second additive noise
+third  bit noise
+
+METHOD:
+
+Additive noise:
+dn_out= dn_in + <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#sigma">sigma</A>
+
+Shot noise:
+dn_out = sqrt(1/<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#gain">gain</A>) * sqrt(dn_in) * x + dn_in
+where x is a random gaussian distribution with a mean deviation of 1.0
+
+Bit error noise:
+A pixel <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#rate">rate</A> is computed from the bit rate.
+A random number selects the pixels to hit.
+Another random number selects the bit to flip.
+
+LIMITATIONS:
+
+    1. The maximum ns of image is 32768
+
+HISTORY:
+
+Original Programmer :	Jean Lorre  11-1-1998
+
+2012-06-18 - Ray Bambery - gfortran 4.6.3 revealed that
+             rangen parameters are (long,float) so
+             created integer*8 dseed replacement for
+             integer*4 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#seed">seed</A>. get_seconds parameter 
+             is also integer*8, converted all internal
+             write (*,*) to xvmessage
+2013-08-26 - Ray Bambery - called new get_seconds_big and rangen_big
+             to fix the long int (integer*8) problem
+2016-05-26 - Walt Bunch - reverted _big calls to original calls now
+             that we've all moved on to gcc 4.x.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#in"><H3>IN</H3></A>
+Input image 
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#out"><H3>OUT</H3></A>
+Output image
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#sigma"><H3>SIGMA</H3></A>
+The standard deviation
+of the distribution
+for additive noise.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#gain"><H3>GAIN</H3></A>
+Ccd <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#gain">gain</A> constant
+in electrons/dn.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#rate"><H3>RATE</H3></A>
+Bit error <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#rate">rate</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#bits"><H3>BITS</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#bits">Bits</A> per pixel.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#seed"><H3>SEED</H3></A>
+The starting <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise_level2.html#seed">seed</A> for the
+random number generator
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/addnoise.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

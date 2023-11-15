@@ -1,0 +1,579 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+
+<title>ProxyLogger</title>
+<meta name="date" content="2021-10-19">
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../../../../../script.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
+var altColor = "altColor";
+var rowColor = "rowColor";
+var tableTab = "tableTab";
+var activeTableTab = "activeTableTab";
+</script>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+
+<div class="topNav"><a name="navbar.top">
+
+</a>
+<div class="skipNav"><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/#skip.navbar.top" title="Skip navigation links">Skip navigation links</a></div>
+<a name="navbar.top.firstrow">
+
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../../../../overview-summary.html">Overview</a></li>
+<li><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/package-tree.html">Tree</a></li>
+<li><a href="../../../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../../../index-all.html">Index</a></li>
+<li><a href="../../../../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../../../../../jpl/mipl/pgs/utils/logging/server/ProxyHandler.html" title="class in jpl.mipl.pgs.utils.logging.server"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li>Next&nbsp;Class</li>
+</ul>
+<ul class="navList">
+<li><a href="../../../../../../index.html?jpl/mipl/pgs/utils/logging/server/ProxyLogger.html" target="_top">Frames</a></li>
+<li><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/ProxyLogger.html" target="_top">No&nbsp;Frames</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_top">
+<li><a href="../../../../../../allclasses-noframe.html">All&nbsp;Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript">
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>Summary:&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/#field.summary">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/#method.summary">Method</a></li>
+</ul>
+<ul class="subNavList">
+<li>Detail:&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/#field.detail">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/#method.detail">Method</a></li>
+</ul>
+</div>
+<a name="skip.navbar.top">
+
+</a></div>
+
+
+<div class="header">
+<div class="subTitle">jpl.mipl.pgs.utils.logging.server</div>
+<h2 title="Class ProxyLogger" class="title">Class ProxyLogger</h2>
+</div>
+<div class="contentContainer">
+<ul class="inheritance">
+<li>java.lang.Object</li>
+<li>
+<ul class="inheritance">
+<li>java.util.logging.Logger</li>
+<li>
+<ul class="inheritance">
+<li>jpl.mipl.pgs.utils.logging.server.ProxyLogger</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<dl>
+<dt>All Implemented Interfaces:</dt>
+<dd>java.io.Externalizable, java.io.Serializable</dd>
+</dl>
+<dl>
+<dt>Direct Known Subclasses:</dt>
+<dd><a href="../../../../../../jpl/mipl/pgs/utils/logging/server/PhxProxyLogger.html" title="class in jpl.mipl.pgs.utils.logging.server">PhxProxyLogger</a></dd>
+</dl>
+<hr>
+<br>
+<pre>public class <span class="typeNameLabel">ProxyLogger</span>
+extends java.util.logging.Logger
+implements java.io.Externalizable</pre>
+<div class="block">Proxy logger is a specialized type of java.util.logging.Logger class.
+ It is used to redirect log messages to a server of type LogServer_IF.
+ This is achived as follows. When the ProxyLogger is created, it creates (and adds to it's
+ list of Handlers) a ProxyHandler with a reference to a log server and an absolute path to the
+ log file name. Any log messages received by this logger are redirected to the ProxyHandler
+ (and any other handler's in this logger's list). The ProxyHandler in turn sends the
+ log message to the log server along with the logger name (which is the name of the
+ log file). Thus the normal usage of this logger is just like that of a java.util.logging.Logger.
+
+
+ The current scheme is as follows. The part
+ before '...' shows creation process, the part between the two '...' shows usage
+ and the last part shows log file closing process.
+
+ \msc
+   Client,Client1,ProxyLogger,ProxyHandler,LogServer,Logger[label="JLgr",ID="1"],GC;
+
+   Client=>ProxyLogger[label="ProxyLogger(fileName,logSrv)",ID="2"];
+   ProxyLogger=>ProxyHandler[label="ProxyHandler(fileName,logSrv)"];
+   ProxyHandler=>LogServer[label="createLogger(fileName) increment refCount for this logger",ID="3"];
+   ...;
+   Client1=>ProxyLogger[label="info(msg)"];
+   ProxyLogger=>ProxyHandler[label="publish(LogRecord)"];
+   ProxyHandler=>LogServer[label="log(fileName,LogRecord)",ID="4"];
+   LogServer=>Logger[label="log(LogRecord)"];
+   ...;
+   Clinet=>ProxyLogger[label="close()",ID="5"];
+   ProxyLogger=>ProxyHandler[close()="on all handlers"];
+   ProxyHandler=>LogServer[label="removeLogger(fileName)"];
+   LogServer=>LogServer[label="[refCount==0]closeAndRemoveLoggerFromList"];
+ \endmsc
+ <OL>
+   <LI>JLgr=java.util.logging.logger
+   <LI>fileName is the absolute file path name of log file and is also used internally as logger
+       name.
+   <LI>The server only creates a new logger if one with the fileName does not exists. In either case
+       the refCount is incremented for logger with the fileName name.
+   <LI>Note that the user is Client1, not Client, which has no idea what is the name of the logger.
+       In Phoenix case, the Scheduler creates the ProxyLogger and passes it to the JBPM execution
+       engine in the request Map. The engine uses this object to perform logging. This way
+       there can be multiple clients all logging to the same logger object (and thus same log file)
+       with out having to worry about synchronization.
+   <LI>When the logger is no longer needed, the close method should be called.
+   <LI>This calls close on each handler associated with the  logger which in turn calls
+       <code><a href="../../../../../../jpl/mipl/pgs/utils/logging/server/LogServer.html#removeLogger-java.lang.String-"><code>removeLogger(String)</code></a></code> which
+       closes the log file.
+ </OL>
+<br>
+ In this scheme, the class that calls <code>new ProxyLogger</code> is responsible for calling
+ <code>close()</code> on that logger and each ProxyHandler (or handlers that
+ uses log server) needs to call <code><a href="../../../../../../jpl/mipl/pgs/utils/logging/server/LogServer.html#createLogger-java.lang.String-"><code>createLogger(String)</code></a></code>
+ in the constructor and <code><a href="../../../../../../jpl/mipl/pgs/utils/logging/server/LogServer.html#removeLogger-java.lang.String-"><code>removeLogger(String)</code></a></code> in
+ the their <code>close()</code> method.
+ <br>
+ <pre><b>
+     Copyright 2007-Present, California Institute of Technology. 
+     ALL RIGHTS RESERVED.
+     U.S. Government Sponsorship acknowledge.
+ </b></pre></div>
+<dl>
+<dt><span class="simpleTagLabel">Author:</span></dt>
+<dd>Raj Patel {Rajesh.R.Patel@jpl.nasa.gov}</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../../../serialized-form.html#jpl.mipl.pgs.utils.logging.server.ProxyLogger">Serialized Form</a></dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="summary">
+<ul class="blockList">
+<li class="blockList">
+
+<ul class="blockList">
+<li class="blockList"><a name="field.summary">
+
+</a>
+<h3>Field Summary</h3>
+<table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Field Summary table, listing fields, and an explanation">
+<caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Field and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected <a href="../../../../../../jpl/mipl/pgs/utils/logging/server/LogServer_IF.html" title="interface in jpl.mipl.pgs.utils.logging.server">LogServer_IF</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../jpl/mipl/pgs/utils/logging/server/ProxyLogger.html#logServer">logServer</a></span></code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected java.lang.String</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../jpl/mipl/pgs/utils/logging/server/ProxyLogger.html#name">name</a></span></code>&nbsp;</td>
+</tr>
+</table>
+<ul class="blockList">
+<li class="blockList"><a name="fields.inherited.from.class.java.util.logging.Logger">
+
+</a>
+<h3>Fields inherited from class&nbsp;java.util.logging.Logger</h3>
+<code>global, GLOBAL_LOGGER_NAME</code></li>
+</ul>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="constructor.summary">
+
+</a>
+<h3>Constructor Summary</h3>
+<table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructor Summary table, listing constructors, and an explanation">
+<caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colOne" scope="col">Constructor and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../../jpl/mipl/pgs/utils/logging/server/ProxyLogger.html#ProxyLogger--">ProxyLogger</a></span>()</code>
+<div class="block">Constructor needed for Externalization process.<b>Do not use this constructor</b></div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../../jpl/mipl/pgs/utils/logging/server/ProxyLogger.html#ProxyLogger-java.lang.String-jpl.mipl.pgs.utils.logging.server.LogServer_IF-">ProxyLogger</a></span>(java.lang.String&nbsp;absoluteFilePath,
+           <a href="../../../../../../jpl/mipl/pgs/utils/logging/server/LogServer_IF.html" title="interface in jpl.mipl.pgs.utils.logging.server">LogServer_IF</a>&nbsp;logServer)</code>
+<div class="block">Creates a logger with the name <i>loggerName</i> on the <i>logServer</i>
+ with minimum of INFO level.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../../jpl/mipl/pgs/utils/logging/server/ProxyLogger.html#ProxyLogger-java.lang.String-jpl.mipl.pgs.utils.logging.server.LogServer_IF-java.util.logging.Level-">ProxyLogger</a></span>(java.lang.String&nbsp;absoluteFilePath,
+           <a href="../../../../../../jpl/mipl/pgs/utils/logging/server/LogServer_IF.html" title="interface in jpl.mipl.pgs.utils.logging.server">LogServer_IF</a>&nbsp;logServer,
+           java.util.logging.Level&nbsp;l)</code>
+<div class="block">Creates a logger with the name <i>loggerName</i> on the <i>logServer</i> with
+ the given level.</div>
+</td>
+</tr>
+</table>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="method.summary">
+
+</a>
+<h3>Method Summary</h3>
+<table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Method Summary table, listing methods, and an explanation">
+<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Method and Description</th>
+</tr>
+<tr id="i0" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../jpl/mipl/pgs/utils/logging/server/ProxyLogger.html#addHandler-java.util.logging.Handler-">addHandler</a></span>(java.util.logging.Handler&nbsp;handler)</code>
+<div class="block">Only allow adding of Serializable Handlers.</div>
+</td>
+</tr>
+<tr id="i1" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../jpl/mipl/pgs/utils/logging/server/ProxyLogger.html#close--">close</a></span>()</code>&nbsp;</td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../jpl/mipl/pgs/utils/logging/server/ProxyLogger.html#getName--">getName</a></span>()</code>&nbsp;</td>
+</tr>
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../jpl/mipl/pgs/utils/logging/server/ProxyLogger.html#readExternal-java.io.ObjectInput-">readExternal</a></span>(java.io.ObjectInput&nbsp;in)</code>&nbsp;</td>
+</tr>
+<tr id="i4" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../jpl/mipl/pgs/utils/logging/server/ProxyLogger.html#setLevel-java.util.logging.Level-">setLevel</a></span>(java.util.logging.Level&nbsp;level)</code>
+<div class="block">Change the logging level to the given level.</div>
+</td>
+</tr>
+<tr id="i5" class="rowColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../jpl/mipl/pgs/utils/logging/server/ProxyLogger.html#toString--">toString</a></span>()</code>&nbsp;</td>
+</tr>
+<tr id="i6" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../jpl/mipl/pgs/utils/logging/server/ProxyLogger.html#writeExternal-java.io.ObjectOutput-">writeExternal</a></span>(java.io.ObjectOutput&nbsp;out)</code>&nbsp;</td>
+</tr>
+</table>
+<ul class="blockList">
+<li class="blockList"><a name="methods.inherited.from.class.java.util.logging.Logger">
+
+</a>
+<h3>Methods inherited from class&nbsp;java.util.logging.Logger</h3>
+<code>config, config, entering, entering, entering, exiting, exiting, fine, fine, finer, finer, finest, finest, getAnonymousLogger, getAnonymousLogger, getFilter, getGlobal, getHandlers, getLevel, getLogger, getLogger, getParent, getResourceBundle, getResourceBundleName, getUseParentHandlers, info, info, isLoggable, log, log, log, log, log, log, log, logp, logp, logp, logp, logp, logp, logrb, logrb, logrb, logrb, logrb, logrb, removeHandler, setFilter, setParent, setResourceBundle, setUseParentHandlers, severe, severe, throwing, warning, warning</code></li>
+</ul>
+<ul class="blockList">
+<li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
+
+</a>
+<h3>Methods inherited from class&nbsp;java.lang.Object</h3>
+<code>clone, equals, finalize, getClass, hashCode, notify, notifyAll, wait, wait, wait</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="details">
+<ul class="blockList">
+<li class="blockList">
+
+<ul class="blockList">
+<li class="blockList"><a name="field.detail">
+
+</a>
+<h3>Field Detail</h3>
+<a name="name">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>name</h4>
+<pre>protected&nbsp;java.lang.String name</pre>
+</li>
+</ul>
+<a name="logServer">
+
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>logServer</h4>
+<pre>protected&nbsp;<a href="../../../../../../jpl/mipl/pgs/utils/logging/server/LogServer_IF.html" title="interface in jpl.mipl.pgs.utils.logging.server">LogServer_IF</a> logServer</pre>
+</li>
+</ul>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="constructor.detail">
+
+</a>
+<h3>Constructor Detail</h3>
+<a name="ProxyLogger-java.lang.String-jpl.mipl.pgs.utils.logging.server.LogServer_IF-java.util.logging.Level-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>ProxyLogger</h4>
+<pre>public&nbsp;ProxyLogger(java.lang.String&nbsp;absoluteFilePath,
+                   <a href="../../../../../../jpl/mipl/pgs/utils/logging/server/LogServer_IF.html" title="interface in jpl.mipl.pgs.utils.logging.server">LogServer_IF</a>&nbsp;logServer,
+                   java.util.logging.Level&nbsp;l)
+            throws java.lang.Exception</pre>
+<div class="block">Creates a logger with the name <i>loggerName</i> on the <i>logServer</i> with
+ the given level.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>absoluteFilePath</code> - the absolute file name where messages are to be logger.
+ <b>NOTE: This is also the name of the logger.</b></dd>
+<dd><code>logServer</code> - A reference to the log server object.</dd>
+<dd><code>l</code> - the minimal logging level for this logger.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code> - if a RemoteException occurs.</dd>
+</dl>
+</li>
+</ul>
+<a name="ProxyLogger-java.lang.String-jpl.mipl.pgs.utils.logging.server.LogServer_IF-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>ProxyLogger</h4>
+<pre>public&nbsp;ProxyLogger(java.lang.String&nbsp;absoluteFilePath,
+                   <a href="../../../../../../jpl/mipl/pgs/utils/logging/server/LogServer_IF.html" title="interface in jpl.mipl.pgs.utils.logging.server">LogServer_IF</a>&nbsp;logServer)
+            throws java.lang.Exception</pre>
+<div class="block">Creates a logger with the name <i>loggerName</i> on the <i>logServer</i>
+ with minimum of INFO level.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>absoluteFilePath</code> - the absolute file name where messages are to be logger.
+ <b>NOTE: This is also the name of the logger.</b></dd>
+<dd><code>logServer</code> - A reference to the log server object.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code> - if a RemoteException occurs.</dd>
+</dl>
+</li>
+</ul>
+<a name="ProxyLogger--">
+
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>ProxyLogger</h4>
+<pre>public&nbsp;ProxyLogger()</pre>
+<div class="block">Constructor needed for Externalization process.<b>Do not use this constructor</b></div>
+</li>
+</ul>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="method.detail">
+
+</a>
+<h3>Method Detail</h3>
+<a name="toString--">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>toString</h4>
+<pre>public&nbsp;java.lang.String&nbsp;toString()</pre>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code>toString</code>&nbsp;in class&nbsp;<code>java.lang.Object</code></dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the name of this logger</dd>
+</dl>
+</li>
+</ul>
+<a name="getName--">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getName</h4>
+<pre>public&nbsp;java.lang.String&nbsp;getName()</pre>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code>getName</code>&nbsp;in class&nbsp;<code>java.util.logging.Logger</code></dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the name of this logger</dd>
+</dl>
+</li>
+</ul>
+<a name="setLevel-java.util.logging.Level-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setLevel</h4>
+<pre>public&nbsp;void&nbsp;setLevel(java.util.logging.Level&nbsp;level)</pre>
+<div class="block">Change the logging level to the given level.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code>setLevel</code>&nbsp;in class&nbsp;<code>java.util.logging.Logger</code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>level</code> - the new logging level.</dd>
+</dl>
+</li>
+</ul>
+<a name="writeExternal-java.io.ObjectOutput-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeExternal</h4>
+<pre>public&nbsp;void&nbsp;writeExternal(java.io.ObjectOutput&nbsp;out)
+                   throws java.io.IOException</pre>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code>writeExternal</code>&nbsp;in interface&nbsp;<code>java.io.Externalizable</code></dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd>
+</dl>
+</li>
+</ul>
+<a name="readExternal-java.io.ObjectInput-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>readExternal</h4>
+<pre>public&nbsp;void&nbsp;readExternal(java.io.ObjectInput&nbsp;in)
+                  throws java.io.IOException,
+                         java.lang.ClassNotFoundException</pre>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code>readExternal</code>&nbsp;in interface&nbsp;<code>java.io.Externalizable</code></dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd>
+<dd><code>java.lang.ClassNotFoundException</code></dd>
+</dl>
+</li>
+</ul>
+<a name="addHandler-java.util.logging.Handler-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addHandler</h4>
+<pre>public&nbsp;void&nbsp;addHandler(java.util.logging.Handler&nbsp;handler)
+                throws java.lang.SecurityException</pre>
+<div class="block">Only allow adding of Serializable Handlers.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code>addHandler</code>&nbsp;in class&nbsp;<code>java.util.logging.Logger</code></dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.SecurityException</code></dd>
+</dl>
+</li>
+</ul>
+<a name="close--">
+
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>close</h4>
+<pre>public&nbsp;void&nbsp;close()
+           throws java.lang.Exception</pre>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code></dd>
+</dl>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+<div class="bottomNav"><a name="navbar.bottom">
+
+</a>
+<div class="skipNav"><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/#skip.navbar.bottom" title="Skip navigation links">Skip navigation links</a></div>
+<a name="navbar.bottom.firstrow">
+
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../../../../overview-summary.html">Overview</a></li>
+<li><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/package-tree.html">Tree</a></li>
+<li><a href="../../../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../../../index-all.html">Index</a></li>
+<li><a href="../../../../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../../../../../jpl/mipl/pgs/utils/logging/server/ProxyHandler.html" title="class in jpl.mipl.pgs.utils.logging.server"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li>Next&nbsp;Class</li>
+</ul>
+<ul class="navList">
+<li><a href="../../../../../../index.html?jpl/mipl/pgs/utils/logging/server/ProxyLogger.html" target="_top">Frames</a></li>
+<li><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/ProxyLogger.html" target="_top">No&nbsp;Frames</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_bottom">
+<li><a href="../../../../../../allclasses-noframe.html">All&nbsp;Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript">
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>Summary:&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/#field.summary">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/#method.summary">Method</a></li>
+</ul>
+<ul class="subNavList">
+<li>Detail:&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/#field.detail">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/dev/html/javadoc/jpl/mipl/pgs/utils/logging/server/#method.detail">Method</a></li>
+</ul>
+</div>
+<a name="skip.navbar.bottom">
+
+</a></div>
+
+</body>
+</html>

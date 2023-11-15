@@ -1,0 +1,195 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for FFT2</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2.html">FFT2</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+A VICAR labelled image file
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#out">OUT</A> specifies the output transform dataset name for a forward transform,
+or the output image dataset name for an inverse transform.
+
+The output FFT of an image with <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#nl">NL</A> lines and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#ns">NS</A> samples will be of
+COMPLEX <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#format">format</A>, with <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#ns">NS</A> lines and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#nl">NL</A> samples, i.e., it is transposed
+with respect to the input.  This is done to speed up processing.
+(The output of the inverse tranform is transposed a second time, hence
+has the same orientation as the original image.)
+
+In order to process an FFT with Vicar programs, one generally must
+first separate it into its REAL components using program CCOMP (q.v.),
+as most Vicar programs do not handle complex <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#format">format</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="size"><H3>SIZE</H3></A><pre>
+The standard <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#size">size</A> field defining the area of the input picture that is to
+be transformed.
+
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#size">SIZE</A> = (<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#sl">SL</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#ss">SS</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#nl">NL</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#ns">NS</A>).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sl"><H3>SL</H3></A><pre>
+Starting line of the area to be transformed.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ss"><H3>SS</H3></A><pre>
+Starting sample of the area to be transformed
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nl"><H3>NL</H3></A><pre>
+Number of lines in the area to be transformed.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ns"><H3>NS</H3></A><pre>
+Number of samples in the area to be transformed.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mode"><H3>MODE</H3></A><pre>
+FORWARD specifies that the fourier transform is to be from image space
+to the conjugate dimension (frequency or wavelength).  This is the default
+if the input data <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#format">format</A> is not complex.
+
+INVERSE indicates that the fourier transformation is to be from frequency
+(or wavelength) space, back to image space.  This is the default if the
+input data <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#format">format</A> is complex.
+
+Note that it is permissible to specify FORWARD for complex input data, but
+not INVERSE with non-complex data:  the FFT must always be in complex
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#format">format</A>.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="format"><H3>FORMAT</H3></A><pre>
+This keyword specifies the data <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#format">format</A> of the image file, which is the
+input file in the FORWARD <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#mode">mode</A> and the output file in the INVERSE mode.
+(The FFT file always has COMPLEX <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#format">format</A>.)
+
+Currently, this keyword is ignored in FORWARD <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#mode">mode</A>, since Vicar2 convention
+is not to override input file formats.
+
+Valid values are: BYTE, HALF, FULL, REAL, COMP.
+
+Default is BYTE.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="scratch"><H3>SCRATCH</H3></A><pre>
+This specifies a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#scratch">scratch</A> directory that is used by the program to store
+one or two intermediate files which may be required.  The two possible
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#scratch">scratch</A> files are:
+
+ 1) If <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#transpos">TRANSPOS</A> was specified, a file containing the FT after transposition
+  (INVERSE <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#mode">mode</A>) or before transposition (if REVERSE mode).
+
+ 2) A <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#scratch">scratch</A> file required by the FFT program itself during intermediate
+   steps of the processing.  It is only required when both of the following
+   conditions are met:
+ 
+   (a) the image buffer required by the program is larger than
+      the buffer <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#size">size</A> specified by the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#bufpow">BUFPOW</A> parameter. The image
+      buffer <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#size">size</A> required is N*N complex numbers, where N is the
+      smallest power of 2 that equals or exceeds both <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#nl">NL</A> and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#ns">NS</A>,
+      i.e., 8*N*N bytes; and,
+
+   (b) the output file is not large enough to be used for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#scratch">scratch</A>
+      storage.  This will be true if its <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#format">format</A> is not complex, and
+      also if the number of lines of the output is not equal to the
+      number of samples.
+
+   The default <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#bufpow">BUFPOW</A> (18) is sufficient to contain a 128*128 image.
+   However, note that a 64*256 image, say, requires a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#scratch">scratch</A> file,
+   since it is the larger of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#nl">NL</A> and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#ns">NS</A> that determines the buffer <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#size">size</A>.
+
+The second <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#scratch">scratch</A> file will be deleted at the end of the execution of 
+FFT2 by the program, but the first will remain.
+
+The default for this parameter is the local directory.  
+The user may specify a different location for any reason (e.g., if that 
+disk is full, or not available).  If this parameter is specified for a 
+case in which it is not required, it is ignored.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="bufpow"><H3>BUFPOW</H3></A><pre>
+This determines the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#size">size</A> of the buffer that the program uses to 
+transpose the FFT.  Since this buffer <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#size">size</A> (in bytes) is always a power
+of 2, this parameter specifies the power of 2 which equals the buffer
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#size">size</A>:  BUF_SIZE = 2 ** <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#bufpow">BUFPOW</A>.
+
+Since the FFT will be transposed, this buffer must be able to hold
+at least two lines of N complex numbers, where N is the larger of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#ns">NS</A>
+and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#nl">NL</A>, hence:
+                BUF_SIZE &gt= 2 * 8 * N,
+ or:
+                               2
+                <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#bufpow">BUFPOW</A> &gt= 4 + log(N).
+
+The above conditions must be met for the program to run at all.
+Furthermore, the entire transposition can be done in memory if
+BUF_SIZE &gt= 8*N*N, or <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#bufpow">BUFPOW</A> >= 3+logN.  This will speed processing,
+assuming that the memory is available and that paging is not a problem.
+The user will not in general need to specify this parameter, but it
+is provided for the following contingencies:
+
+ (a) to allow improved performance, since increasing the buffer <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#size">size</A>
+    will cut down on the amount of I/O done in the program, but can
+    increase paging if a large working set is not available;
+ 
+ (b) to obviate the need for a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#scratch">scratch</A> file (see parameter SCRATCH);
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="transpos"><H3>TRANSPOS</H3></A><pre>
+This keyword gives the user the option to transpose the FT before
+processing it (if <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#mode">MODE</A>=INVERSE was specified) or after generating it 
+(if <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#mode">MODE</A>=FORWARD was specified).  Default is not to transpose the FT.
+
+The reason for this option is that the standard FT <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#format">format</A> used by this
+procedure is the transpose of the normal standard (which follows from
+direct application of the FT formula).  The reason for this is to
+save compute time;  further ramifications of this fact are discussed 
+in the HELP text for program FFT22, q.v..  If the user wishes to have
+the FT in "normal" <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#format">format</A> (at the expense of some extra CPU time),
+then keyword <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#transpos">TRANSPOS</A> should be specified.
+
+Bear in mind that if a forward transform is taken using <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/fft2_level2.html#transpos">TRANSPOS</A>, then
+a subsequent inverse transform should also use this keyword!
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

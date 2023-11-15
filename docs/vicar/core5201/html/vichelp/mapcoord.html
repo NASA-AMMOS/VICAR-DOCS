@@ -1,0 +1,166 @@
+<HTML>
+<HEAD><title>HTML Help for MAPCOORD</title></HEAD>
+<BODY>
+<H1>Help for MAPCOORD</H1>
+<pre>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#purpose">PURPOSE</A>:
+
+MAPCOORD converts from (line,sample) to (latitude,longitude) coordinates, or
+vice-versa, for a given VICAR image.
+
+EXECUTION:
+
+    MAPCOORD <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#coordtype">COORDTYPE</A>=LINSAM <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#coordin">COORDIN</A>=(1,1,45,700,600,600)
+    MAPCOORD <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#coordtype">COORDTYPE</A>=LATLON <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#coordin">COORDIN</A>=(22.7,33.5,90.,0.)
+where
+    <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#inp">INP</A> is a VICAR image.  INP may be a map-projected or raw (image or object
+        space) image.
+    <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#coordtype">COORDTYPE</A> specifies whether the input coordinates are line-sample or
+        latitude-longitude.
+
+OPERATION:
+
+If the input image has a map-projection label (created by MAP3 or PERSLAB),
+then this label is used to determine the image geometry.
+
+If not, the image is assumed to be an unprojected image (either image-space or
+object-space). The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#program">program</A> searches the label history for GEOM or FARENC to
+determine whether it is image or object space.  If the image is image-space,
+nominal geometric distortion parameters are generated.  An attempt is made to
+retrieve the SPICE data for the image.  Only if all this is successful will the
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#program">program</A> continue with the line-sample to lat-lon calculations.
+
+PARAMETERS FOR RETRIEVING CAMERA POINTING FROM SPICE:
+
+The following parameters permit the user to retrieve a specific instance of
+camera pointing from the SPICE kernels:
+
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#spicemode">SPICEMODE</A> specifies whether SPICE data is retrieved from LOCAL kernels or
+or via the REMOTE SPICE server.  If defaulted, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#spicemode">SPICEMODE</A> is set to the value
+of the environmental variable DEFAULTSPICE.
+
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#ckname">CKNAME</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#ckid">CKID</A> are alternative ways to specify the C kernel to be used.  For
+example, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#ckname">CKNAME</A>=FARE or <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#ckid">CKID</A>=M904 specifies that MIPS_FARENC.CK is to be used.
+When specified, the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#ckid">CKID</A> parameter overrides the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#ckname">CKNAME</A> parameter.  If the
+camera pointing data is not found in the requested C kernel, the other C kernels
+are searched.
+
+Within a given C kernel, there may be a number of different versions of camera
+pointing for a given image.  The segment identifier for each version contains
+provenance information identifying the creator of the pointing data.  One or
+more of the following parameters may be used to retrieve a specific instance of
+camera pointing based upon this provenance information:
+
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#cdate">CDATE</A> specifies the date and time the camera pointing was created.
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#reqnum">REQNUM</A> identifies the request number associated with the camera pointing.
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#purpose">PURPOSE</A> identifies the purpose for creating the camera pointing.
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#program">PROGRAM</A> identifies the program which created the camera pointing.
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#spkid">SPKID</A> identifies the SP-kernel used to create the camera pointing.
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#userid">USERID</A> identifies the user who created the camera pointing.
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#groupid">GROUPID</A> identifies the group which created the camera pointing.
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#institute">INSTITUTE</A> identifies the facility which created the camera pointing.
+
+A complete list of CK and SPK IDs are located in the ASCII file assigned the
+logical name (or environmental variable) KERNELDB.
+
+The above parameters are optional, and if defaulted (or if no data is found for
+the requested version), the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#program">program</A> will attempt to locate the "best" data
+available for the given image.  See the level 2 help (via the TAE tutor mode)
+for further details.
+
+Examples:  'LOCAL <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#ckname">CKNAME</A>=NAIF specifies that SPICE data be retrieved from
+          local kernels using camera pointing from predicts or AACS telemetry.
+
+           'REMOTE <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#ckname">CKNAME</A>=FARE <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#institute">INSTITUTE</A>=MIPS <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#spkid">SPKID</A>=N015 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#userid">USERID</A>=ADC retrieves
+          the camera pointing created by Amy Culver at MIPS using the SP kernel
+          GLL_LONG_2.BSP from file MIPS_FARENC.CK via the SPICE server.  (whew!)
+
+It takes longer to search for SPICE data on the basis of provenance
+information.  If all provenance parameters are specified, for example, the
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#program">program</A> first searches through all the C kernels for an exact match.  If no
+match is found, the search is relaxed by removing the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#cdate">CDATE</A> criteria.  If no
+match is found, the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#reqnum">REQNUM</A> criteria is removed.  Etc.
+
+HISTORY:
+
+WRITTEN BY      : JEAN LORRE	07/01/93
+PORTED TO VICAR : RRP          04/21/97
+REVISIONS:
+
+21 MAY 98  GMY  Replace call to GETSPICE with call to GETSPICE4.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#inp"><H3>INP</H3></A>
+ STANDARD VICAR IMAGE
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#coordtype"><H3>COORDTYPE</H3></A>
+ SPECIFY IF POINT
+ IS/ARE IN LATLON
+ OR LINE-SAMP
+ FORMAT
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#coordin"><H3>COORDIN</H3></A>
+LINE,SAMPLE OR
+LAT,LON
+ VALUES
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#sedrsrc"><H3>SEDRSRC</H3></A>
+ KEYWORD--OPTIONAL
+ SPECIFIES DESIRED SOURCE
+ OF C-MATRIX, ME-MATRIX,
+ AND RS-VECTOR.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#out_lat"><H3>OUT_LAT</H3></A>
+OUTPUT VALUES.
+Can be latitude
+or line values
+depending on
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#coordtype">coordtype</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#out_lon"><H3>OUT_LON</H3></A>
+OUTPUT VALUES.
+Can be longitudes
+or samples
+depending upon
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#coordtype">coordtype</A>.
+.LEVEL1
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#target"><H3>TARGET</H3></A>
+Optional 12-char string
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#target">Target</A> name (planet,
+  satellite, or asteroid)
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#spicemode"><H3>SPICEMODE</H3></A>
+Optional keyword
+Location of SPICE kernels
+(LOCAL or REMOTE)
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#ckname"><H3>CKNAME</H3></A>
+Optional 4-char string
+C-kernel name
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#ckid"><H3>CKID</H3></A>
+Optional 4-char string
+C-kernel ID
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#userid"><H3>USERID</H3></A>
+Optional 3-char string
+User who created camera pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#groupid"><H3>GROUPID</H3></A>
+Optional 3-char string
+Group which created camera pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#institute"><H3>INSTITUTE</H3></A>
+Optional 4-char string
+Facility which created camera pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#purpose"><H3>PURPOSE</H3></A>
+Optional 4-char string
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#purpose">Purpose</A> for camera pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#program"><H3>PROGRAM</H3></A>
+Optional 6-char string
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#program">Program</A> which created camera pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#spkid"><H3>SPKID</H3></A>
+Optional 4-char string
+SP kernel for created camera pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#reqnum"><H3>REQNUM</H3></A>
+Optional 4-char string
+IPL request number for created camera pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord_level2.html#cdate"><H3>CDATE</H3></A>
+Optional 12-char string
+Date and time camera pointing was created
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mapcoord.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

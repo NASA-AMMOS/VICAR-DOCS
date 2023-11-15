@@ -1,0 +1,145 @@
+<HTML>
+<HEAD><title>HTML Help for TRANSCOL</title></HEAD>
+<BODY>
+<H1>Help for TRANSCOL</H1>
+<pre>
+PURPOSE:
+
+"transcol" performs two functions, depending on the options specified.
+
+The first of these is to convert long, vertically-aligned columns
+of data in an IBIS-format file into smaller vertical columns based 
+on a list of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#values">values</A> supplied by the user.  Anytime one of these values
+is found in a user-specified index column, the value in a corresponding
+data column is transferred to a specified output column.  This operation
+may be followed by AGGRG2 to obtain a more compact file.
+
+The second function "transcol" performs is the inverse of the first.
+If the relevant options are specified, "transcol" will convert short
+vertically-aligned columns of data to a longer column.
+
+EXECUTION:
+
+    Note that if the options specified don't fully and uniquely
+specify one of the two modes, an error message will be generated.
+Options are listed with their relevant function numbers in 
+parentheses in the parameter description section.  All parameters
+for a given mode must be specified.
+
+Example 1
+
+transcol <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#out">OUT</A>=B INDEX=1 DATA=3 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#values">VALUES</A>=(1,2) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#tocol">TOCOL</A>=(5,6)
+
+This TAE command will look for the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#values">values</A> 1 and 2 in index column 1
+of IBIS file A, and transfer the corresponding data <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#values">values</A> from data
+column 3 to columns 5 and 6.  The modified file is given the name B.
+Note that parameters are only checked to four characters.  This is
+an example of "transcol's" first mode.  Note, too, that all of the
+parameters specified above are required; omitting any of them will
+cause an error.  Finally, unused spaces in columns 5 and 6 are 
+filled with zeroes.
+
+Example 2
+
+	<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#indexcol">INDEXCOL</A>    1
+	<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#datacol">DATACOL</A>	    2
+	<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#values">VALUES</A>      1 2 3
+        <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#tocol">TOCOL</A>    4 6 8
+
+      Col 1   Col 2    Col 4  Col 6   Col 8
+
+	1	47	47.0	0.0	0.0
+	2	29	 0.0   29.0	0.0
+	3	32	 0.0	0.0    32.0
+	1	27	27.0	0.0	0.0
+	2	62 	 0.0   62.0	0.0
+	3	66	 0.0	0.0    66.0
+
+Example 3	
+
+transcol <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#inp">INP</A>=B <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#out">OUT</A>=C <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#fromcol">FROMCOL</A>=(5,6) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#datacol">DATACOL</A>=7 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#ncol">NCOL</A>=7
+
+This command will cause "transcol" to operate in its second mode, 
+taking data from columns 5 and 6 of IBIS-file B and putting the
+data in column 7 as illustrated in the next example.  Note that
+all of the parameters specified are required, and that mixing any
+of these (with the exception of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#datacol">DATACOL</A>) with any of the parameters 
+of the first mode will generate an error.  Finally, if <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#ncol">NCOL</A> is 
+less than <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#datacol">DATACOL</A>, DATACOL columns will be processed.
+
+Example 4
+
+	<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#fromcol">FROMCOL</A>	1 2 3
+	<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#datacol">DATACOL</A>	6
+	<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#ncol">NCOL</A>	6
+
+Input file    Col 1   Col 2   Col 3   Col 4   Col 5   Col 6
+		1	2	3	0	0	0
+		4	5	6	0	0	0
+		7	8	9	0	0	0
+Output file   Col 1   Col 2   Col 3   Col 4   Col 5   Col 6
+		1	2	3	0	0	1
+		1	2	3	0	0	2	
+		1	2	3	0	0	3
+		4	5	6	0	0	4
+		4	5	6	0	0	5
+		4	5	6	0	0	6
+		7	8	9	0	0	7
+		7	8	9	0	0	8
+		7	8	9	0	0	9
+
+Note that all of the columns of the output file, up to the column
+MAX( <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#datacol">DATACOL</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#ncol">NCOL</A>) are "stretched" to correspond to the new data 
+column.
+
+
+Restrictions:
+The only restrictions are the conventional
+restrictions on the size of IBIS interface files.
+
+Maximum column length is 250,000.
+
+
+WRITTEN BY:  A.L. Zobrist (first mode)     1 December 1976 
+	     B. Gokhman  (second mode)     9 October 1980
+             L. Bynum (written for VICAR2) 30 April 1985   
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Niles Ritter</A>
+
+REVISION:  
+	8-94 - Meredith Cox (CRI) - Made portable for UNIX
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#inp"><H3>INP</H3></A>
+STRING - IBIS input 
+         file (1,2)
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#out"><H3>OUT</H3></A>
+STRING - IBIS output 
+         file (1,2)
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#datacol"><H3>DATACOL</H3></A>
+INTEGER - Destination/source
+          column (1,2)
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#indexcol"><H3>INDEXCOL</H3></A>
+INTEGER - Indexing 
+          column (1)
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#null"><H3>NULL</H3></A>
+REAL - VALUE OF NULLIFIED ENTRIES
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#values"><H3>VALUES</H3></A>
+INTEGER - List of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#values">values</A> to 
+          match (1)
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#tocol"><H3>TOCOL</H3></A>
+INTEGER - List of output 
+          cols (1)
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#fromcol"><H3>FROMCOL</H3></A>
+INTEGER - list of short 
+          cols (2)
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol_level2.html#ncol"><H3>NCOL</H3></A>
+INTEGER - # of short 
+          cols (2)
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/transcol.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

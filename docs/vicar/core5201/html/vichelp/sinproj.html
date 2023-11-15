@@ -1,0 +1,97 @@
+<HTML>
+<HEAD><title>HTML Help for SINPROJ</title></HEAD>
+<BODY>
+<H1>Help for SINPROJ</H1>
+<pre>
+PURPOSE:
+SINPROJ reprojects a vicar image file of a sinusoidal projection of a given
+projection longitude into an image file with a different projection longitude,
+it also can produce an output file with the same projection longitude but of a
+different size, i.e. sinproj will not change the pixel size of the image but
+will change the width of the image by only reprojecting a fraction of the 
+original image.
+SINPROJ expects the projection longitude (PROJ_LON),  the starting (LON_CL) and
+ending (LON_CR) longitudes, and the starting (LAT_UC) and ending (LAT_LC)
+latitudes  for the output file to be specified, although all these values can
+be defaulted or specified by line and sample instead, with SINPROJ converting
+them from one to another internally. The input image file should also have
+these keys in its vicar label because they are needed to recalculate the new
+projection and are are used as the default values if none are specified in the
+parameters.
+When SINPROJ is run with LON_CL and LON_CR specifying the size of the output
+image and PROJ_LON not specified the projection longitude will default to the
+longitude midway between LON_CL and LON_CR; similarly if only SS and NS are
+specified PROJSAMP will be set to SS + NS/2. SINPROJ cannot reproject an image
+into an oblique sinusoidal projection. If LAT_UC and LAT_LC are specified to be
+smaller in the output image than they are in original image, the output image
+will simply cut off at those latitudes. The equator is always taken to be the
+latitude from which the projection is calculated.
+examples
+if the input image file has in its label:
+                            PROJ_LON = 180.0
+                            LON_CL = 0.0  LON_CR = 360.0
+                            LAT_UC = 90.0 LAT_LC = -90.0
+
+SINPROJ inp out PROJ_LON=0
+   output image is very lopsided with all of the image to the right
+   of the projection longitude (you probably don't want this) and
+   contains all of the input image
+SINPROJ inp out PROJ_LON=0 LON_CL=180 LON_CR = 179
+   output image is centered around the projection longitude      
+SINPROJ inp out  LON_CL=180 LON_CR = 220
+   output image is centered on a projection longitude of 200
+   and is only 1/9th as wide as the input image
+SINPROJ inp out  SS = 360 NS = 80
+   this will do the same as the previous example if there are
+   two samples per degree
+HISTORY
+
+Original Author: ??? 
+<A NAME="CogProg">Cognizant Programmer: m. jentoft-nilsen</A>
+
+history:
+  1990-02-22 FR 52797 mj-n
+  1992-03-06 MJ-N - mcr 1290 allow projections with lon_cl
+             or lon_cr outside of original longitude range of an
+             image
+  1995-01-02 J. Turner (CRI) - Made portable for UNIX 
+  2019-09-17 W. Bunch - IDS-7922 - Initialized a variable; cleaned up -Wall warnings.
+             Partially ported "bin" to UNIX to obtain "weight" and "terrain" input
+             files used by tstsinproj.pdf. Add those and tstsinproj.log to git.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sinproj_level2.html#inp"><H3>INP</H3></A>
+input image file
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sinproj_level2.html#out"><H3>OUT</H3></A>
+output image file
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sinproj_level2.html#lon_cl"><H3>LON_CL</H3></A>
+output left longitude
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sinproj_level2.html#lon_cr"><H3>LON_CR</H3></A>
+output right longitude
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sinproj_level2.html#lat_uc"><H3>LAT_UC</H3></A>
+output upper latitude
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sinproj_level2.html#lat_lc"><H3>LAT_LC</H3></A>
+output lower latitude
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sinproj_level2.html#proj_lon"><H3>PROJ_LON</H3></A>
+output projection longitude
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sinproj_level2.html#size"><H3>SIZE</H3></A>
+standard vicar size field
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sinproj_level2.html#sl"><H3>SL</H3></A>
+starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sinproj_level2.html#ss"><H3>SS</H3></A>
+starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sinproj_level2.html#nl"><H3>NL</H3></A>
+number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sinproj_level2.html#ns"><H3>NS</H3></A>
+number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sinproj_level2.html#projsamp"><H3>PROJSAMP</H3></A>
+sample number of the 
+output projection longitude
+in input file sample
+numbering
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sinproj.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sinproj.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

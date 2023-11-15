@@ -1,0 +1,140 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for GETZVAL</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/getzval.html">GETZVAL</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+     <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/getzval_level2.html#inp">INP</A>=(PIC,INT)       PIC is an image.
+                         INT   is  an  IBIS  interface  file 
+                         containing columns which give point 
+                         locations in the image PIC.
+                         No  output  file is  used  but  the 
+                         second input file is modified.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="cols"><H3>COLS</H3></A><pre>
+     <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/getzval_level2.html#cols">COLS</A>=(L,S,T,S) The   integers  L,S  specify  the   file 
+                    columns   which  contain  the  line  and 
+                    sample  coordinates  to  be  looked  up.  
+                    Column T is used to store the  resultant 
+                    grey  values.  Optional  column S stores
+                    the sigma (0 means don't store sigma)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="reject"><H3>REJECT</H3></A><pre>
+     <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/getzval_level2.html#reject">REJECT</A>=N       The  integer  N specifies that if  N  or 
+                    more  grey  values  in a  rectangle  are 
+                    less than or equal to the parameter THR-
+                    EJECT, then a "no information" marker is 
+                    stored  instead of a  grey  value.   The 
+                    marker  is  the value -999.0 .
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="threject"><H3>THREJECT</H3></A><pre>
+     <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/getzval_level2.html#threject">THREJECT</A>=M     The integer M  specifies the image value
+                    below which pixels are counted towards
+                    the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/getzval_level2.html#reject">reject</A> count threshold.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="window"><H3>WINDOW</H3></A><pre>
+     <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/getzval_level2.html#window">WINDOW</A>=W       specifies that a window of size W points 
+                    square  is  used to obtain  the  average 
+                    brightness  value.   The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/getzval_level2.html#window">window</A> will  be 
+                    centered on the line,  sample coordinate 
+                    even  if  it  is fractional.   W  is  an 
+                    integer (default value 10).  W cannot be
+                    larger than 1001.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="algor"><H3>ALGOR</H3></A><pre>
+     BILIN          specifies  bilinear  option.    When the 
+                    <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/getzval_level2.html#window">WINDOW</A> is 2 then this is normal bilinear
+                    interpolation  on the  surrounding  four
+                    pixel values.   When  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/getzval_level2.html#window">WINDOW</A> is  greater
+                    than 2  then  the  edge  pixels  of  the 
+                    <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/getzval_level2.html#window">window</A>  are  interpolated in  a bilinear
+                    fashion  and the  inside  pixels of  the
+                    <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/getzval_level2.html#window">window</A> are given full weight.    THIS IS
+                    THE RECOMMENDED OPTION.
+  
+     NOIN           specifies no-interpolation option.   The 
+                    DN-value  at the location nearest to the 
+                    one  specified by line-sample  from  the 
+                    columns L, S  will be read and stored in 
+                    the column T.
+  
+     INTEGRAL       specifies no-interpolation option using
+                    a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/getzval_level2.html#window">window</A>.  The window size must be odd.
+                    The pixel nearest to the line-sample
+                    location is the center of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/getzval_level2.html#window">window</A>.
+                    The z-value will be the average of the
+                    pixels in the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/getzval_level2.html#window">window</A>.
+ 
+     SPOT           specifies no-interpolation option using
+                    a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/getzval_level2.html#window">window</A>.  The window size must be odd.
+                    The  pixel  nearest  to the line-sample
+                    location  is the  center of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/getzval_level2.html#window">window</A>.
+                    The  z-value will be the average of the
+                    pixels in  the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/getzval_level2.html#window">window</A> that  fall within
+                    a  circular  radius of the center.  The
+                    radius is <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/getzval_level2.html#window">WINDOW</A>/2.
+                          
+     SPOT_R         same as SPOT except that the pixels are
+                    weighted inversely with distance+1.  So
+                    for the case  of line-sample at a pixel
+                    the  center pixel  has weight  1.0, the
+                    four  neighbors  weight  0.5,  the four 
+                    diagonals  weight  0.414,  etc.    This 
+                    algorithm  works  well  for  fractional
+                    line-sample locations.
+                    
+                          
+     SPOT_R2        same as  SPOT_R except that  the pixels
+                    are weighted  inversely with distance+1
+                    squared.
+                    
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="spotfac"><H3>SPOTFAC</H3></A><pre>
+Use to vary the spot_r or spot_r2 formula.  The  formulas
+use distance from the pixel center (which could be zero) so
+a constant <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/getzval_level2.html#spotfac">SPOTFAC</A> is added to guarantee non-zero.  If it is
+small, a high emphasis is placed on a nearby point and other
+points will have little effect.  Larger values will de-emphasize
+the nearest point and will, in the limit, tend towards the
+overall average of the pixels.  The default value of 2.0 is
+suggested.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="dted"><H3>DTED</H3></A><pre>
+Data logged from the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/getzval_level2.html#dted">DTED</A> disk might have this value problem.
+You can tell by using the HIST program on the data set.  The 
+input value is compared to -5000.  If larger, then the value is
+not changed.  If smaller, then -(32768 plus the value) is used
+in place of the value.  So -32767 is -1, -32766 is -2, etc.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

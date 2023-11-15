@@ -1,0 +1,96 @@
+<HTML>
+<HEAD><title>HTML Help for IBISCLST3</title></HEAD>
+<BODY>
+<H1>Help for IBISCLST3</H1>
+<pre>
+PURPOSE:
+
+"IBISCLST3" is a VICAR applications program that reads an IBIS file
+containing (x, y) points and calculates clusters for them. Cluster
+membership means that a point is within a specified line and samp
+distance from the first cluster member. Line/samp and lon/lat cluster
+centroids are optionally calculated and stored in the IBIS file.
+
+The clustering algorithm is:
+  for each point in the ordered input IBIS rows
+    if it is not in a cluster
+      create a new cluster
+      add the point to the new cluster as its anchor
+        for each remaining point in IBIS order
+          if the remaining point is within dline and dsamp of the anchor point
+            add the remaining point to the new cluster
+
+The input file must include the (x, y) point position and an extra
+column for storing the cluster ID. All referenced IBIS file values
+must be double-precision floats. The cluster ID is an integer, but is
+written as a double-precision float.
+
+EXECUTION:
+
+    IBISCLST3 INP=IFILE DLINE=YDIST DSAMP=XDIST SAMPCOL=SC LINECOL=LC CLUSTCOL=CLST PARMS
+
+where
+
+    INP   is the input IBIS file that will be modified
+    XDIST is the maximum samp distance between points
+    YDIST is the maximum line distance between points
+    SC    is the column of point sample values
+    LC    is the column of point line values
+    CLST  is the column for storing the cluster ID
+        SAMPCTR=SCTR LINECTR=LCTR
+	and
+        LONCOL=LONCOL LATCOL=LATCOL LONCTR=LONCTR LATCTR=LATCTR
+        where
+            SCTR is the column for storing the cluster centroid sample
+            LCTR is the column for storing the cluster centroid line
+            LONCOL is the column of longitude values
+            LATCOL is the column of latitude values
+            LONCTR is the column for storing the cluster centroid longitude
+            LATCTR is the column for storing the cluster centroid latitude
+
+PERFORMANCE:
+
+The clustering algorithm calculates distances between point pairs
+until cluster membership is discovered, possibly calculating all
+point pairs when there are no multi-point clusters. So the 
+complexity is O(n^2).
+
+WRITTEN BY:  W. Bunch 2016-06-16
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER: W. Bunch</A>
+
+REVISIONS:  
+    2016-06-16 WLB - Initial version.
+    2016-09-14 WLB - Fixed fencepost bug; migrated to MIPL.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisclst3_level2.html#inp"><H3>INP</H3></A>
+Input/output IBIS file.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisclst3_level2.html#dsamp"><H3>DSAMP</H3></A>
+Maximum samp distance between points.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisclst3_level2.html#dline"><H3>DLINE</H3></A>
+Maximum line distance between points.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisclst3_level2.html#sampcol"><H3>SAMPCOL</H3></A>
+IBIS sample value column.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisclst3_level2.html#linecol"><H3>LINECOL</H3></A>
+IBIS line value column.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisclst3_level2.html#clustcol"><H3>CLUSTCOL</H3></A>
+IBIS cluster ID column.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisclst3_level2.html#sampctr"><H3>SAMPCTR</H3></A>
+IBIS centroid sample column.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisclst3_level2.html#linectr"><H3>LINECTR</H3></A>
+IBIS centroid line column.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisclst3_level2.html#loncol"><H3>LONCOL</H3></A>
+IBIS longitude column.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisclst3_level2.html#latcol"><H3>LATCOL</H3></A>
+IBIS latitude column.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisclst3_level2.html#lonctr"><H3>LONCTR</H3></A>
+IBIS longitude centroid column.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisclst3_level2.html#latctr"><H3>LATCTR</H3></A>
+IBIS latitude centroid column.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisclst3.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisclst3.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

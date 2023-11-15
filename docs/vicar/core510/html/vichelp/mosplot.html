@@ -1,0 +1,400 @@
+<HTML>
+<HEAD><title>HTML Help for MOSPLOT</title></HEAD>
+<BODY>
+<H1>Help for MOSPLOT</H1>
+<pre>
+PURPOSE:
+  MOSPLOT is a program which performs three functions to assist
+  the user in the generation of a mosaic from a SEDR file. 
+
+These functions are:
+1. To plot the footprints of all the frames in a mosaic.
+2. To create an overlap file which contains all of the 
+   overlapping frame pairs in the mosaic.
+   This file is needed by MANMATCH to acquire tiepoints.
+3. To plot the residuals of tiepoints before or after the
+   global SEDR has been corrected using program OMCOR.
+   Also to plot ground control points.
+
+
+   A SEDR or Supplementary Experiment Data Record was created after
+   postprocessing for all missions up to and including Galileo in
+   the mid-1990's. During the mid-1990's this was replaced by SPICE
+   kernels created by the Navigation Ancillary Information Facility. 
+
+   It was the SEDR that allowed images to be mosaicked in cartographic
+   coordinate systems. MOSPLOT is a legacy program  that allows the
+   user to plot the seams or footprints of the mosaicked products.
+
+   The SEDR information is stored in an IBIS Tabular File.
+
+   MOSPLOT extracts information to plot the footprint of all of the
+   images in the mosaic using gnuplot. The program produces a file
+   with the .gpi extension which is gnuplot instructions. This file
+   is called by gnuplot to plot the data. A postcript file can be
+   created by specifing a name in the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#plotout">PLOTOUT</A> parameter. In this
+   case using gnuplot after exiting MOSPLOT will provide the user
+   the postscript plot.
+
+
+   In 2013 this program was upgraded for Linux and to use gnuplot.
+   The only parameters verified with this conversion were:
+   IN, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#out">OUT</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#plotout">PLOTOUT</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#project">PROJECT</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#object">OBJECT</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#print">PRINT</A> and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#latlon">LATLON</A>
+
+   There was only one inherited test file from Galileo called summ.sedr.
+   There was no 2nd, 3rd or 4th input files to test the other options.
+   So no residual plots were made or tested.
+
+   
+   
+PLOT OUTPUTS:
+
+  MOSPLOT always produces a plot by the PLOT and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#plotfmt">PLOTFMT</A> parameters.
+PLOT allows the user to display data from 5 areas on the CCD on an x,y
+plot using the gnuplot package after exiting the program. PLOT produces
+a file of gnuplot commands contained in a file having a .gpi file extension.
+Another file with an .asc extension is create containing columns of data
+that are displayed by the gpi file.
+
+   The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#plotfmt">PLOTFMT</A> parameter allows the user to generate a postscript file of
+the output for use in documentation by choosing <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#plotfmt">PLOTFMT</A>=EPS. The default
+is to generate a gnuplot interactive display.
+
+
+  PLOT NAMING CONVENTIONS
+
+  The user should enter only the parent file name without an extension
+  for the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#plotout">PLOTOUT</A> parameter.  The program will supply the extensions.
+
+  For example, if the user has an input file of indata.dat and  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#plotout">PLOTOUT</A>=outplot
+  then for the interactive plot the following files are produced:
+
+     outplot.gpi
+     indata.dat.asc
+
+  The first file is the gnuplot instruction file and the second is the
+  data file used by gnuplot.      
+
+  If the user wanted an encapsulate postscript file with <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#plotfmt">PLOTFMT</A>=eps
+  then the following files are produced:
+
+     outplot.eps.gpi
+     indata.dat.asc
+
+  Remember entering the following command gives the eps file, outplot.eps
+
+  ush gnuplot outplot.eps.gpi
+
+  If you move the gpi file to another directory, you must also move the
+  input data file, indata.dat.asc to the same directory.
+
+  Note that the gpi file produced by this program has the name of the
+  input file embedded in the plot command inside the gpi file, e.g..
+
+  plot  'indata.dat.asc' u  1: 9 t .......
+
+
+USING GNUPLOT
+
+
+  INTERACTIVE:
+
+    This program uses the gnuplot package for its plots. Gnuplot is a
+  separate package from Vicar and is not actually invoked inside this
+  program.  Instead this program creates a template of gnuplot commands
+  which are written <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#out">out</A> as a separate file. The plot is then viewed after
+  exiting this program. The file has the extension .gpi. You view
+  the plot by issuing the following command in the vicar shell.
+
+  ush gnuplot output.gpi
+
+  or external to vicar as
+
+  gnuplot output.gpi
+
+    After viewing the data, you close the plot by clicking the mouse anywhere
+  except on the top bar of the plot. Clicking on the top bar allows you
+  to move the plot to any convenient place on the terminal screen.  (While
+  the plot is displayed you cannot enter any commands to the vicar shell).
+
+  The data to be plotted by gnuplot is read from a separate file, created
+  by this program, which contains columns of data in ascii text.
+  File naming conventions are discussed in the OUTPUT section, but in this
+  case that file extension will be .asc.
+
+  It is possible to keep the plot alive for comparison purposes by issuing
+  the following command.
+
+  ush gnuplot --persist output.gpi
+
+  (You will be able to enter commamds to the vicar shell after clicking on
+  the mouse on the plot).
+
+  Note: This program creates 5 output plots per run. You bring up each plot
+  panel sequentially. You close each plot by clicking the mouse on any
+  portion of the plot.
+
+
+  HARDCOPY:
+
+  This program also allows you to create a hardcopy encapsulated postscript
+  plot suitable for publications. This file can be viewed with ghostscript
+  or gimp. The encapsulated postscript file is not created by this program
+  by by the gnuplot program from a gpi file made especially for this purpose.
+  this file has the extension, eps.gpi. You create the hardcopy plot via
+  the following command
+
+  ush gnuplot output.eps.gpi
+
+  This creates the eps file output.eps. You can view this file by
+
+  ush gimp output.eps
+
+    DEVELOPER Note:
+
+    This program used to link to the XRT plot library -lxrt. Calls to
+  that library were mitigated through a Calcomp conversion library,
+  xrtps located in the p2 subroutine library. With the conversion to
+  gnuplot, neither of these packages are used.
+
+
+EXECUTION
+
+To produce a footprint plot showing entire planet:
+Image space:
+      MOSPLOT <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">INP</A>=(SEDR.INT,GEOM.IMG) 
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#object">Object</A> space:
+      MOSPLOT <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">INP</A>=SEDR.INT '<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#object">OBJECT</A> 
+
+To produce a footprint plot showing only <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#area">area</A> of interest:
+(Oblique stereographic projection )
+Image space:
+      MOSPLOT <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">INP</A>=(SEDR.INT,GEOM.IMG) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#latlon">LATLON</A>=(45.2,167.0)
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#object">Object</A> space:
+      MOSPLOT <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">INP</A>=SEDR.INT '<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#object">OBJECT</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#latlon">LATLON</A>=(45.2,167.0)
+
+To generate an overlap file:
+Image space:
+      MOSPLOT <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">INP</A>=(SEDR.INT,GEOM.IMG) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#out">OUT</A>=OVER.INT 
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#object">Object</A> space:
+      MOSPLOT <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">INP</A>=SEDR.INT <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#out">OUT</A>=OVER.INT '<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#object">OBJECT</A> 
+NOTE: You may prefer to use the Stereographic projection mode
+to create the overlap file because it does not suffer from
+ambiguities when the poles or the prime meridian is contained
+within the mosaic. ie:
+      MOSPLOT <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">INP</A>=(SEDR.INT,GEOM.IMG) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#out">OUT</A>=OVER.INT <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#latlon">LATLON</A>=(45.2,167.0) 
+
+To produce a tiepoint residuals plot:
+Image space:
+      MOSPLOT <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">INP</A>=(SEDR.INT,MATCH.INT,GEOM.IMG) 
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#object">Object</A> space:
+      MOSPLOT <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">INP</A>=(SEDR.INT,MATCH.INT) '<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#object">OBJECT</A>
+
+To produce a residuals plot including ground control:
+Image space:
+      MOSPLOT <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">INP</A>=(SEDR.INT,MATCH.INT,GROUND.INT,GEOM.IMG) 
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#object">Object</A> space:
+      MOSPLOT <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">INP</A>=(SEDR.INT,MATCH.INT,GROUND.INT) '<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#object">OBJECT</A>
+
+Note: All the files are IBIS tabular files.
+
+<A NAME="examples">EXAMPLE: </A>
+  The following example creates an updated SEDR which can then 
+be used by MAP2 to create an accurate mosaic. The mosaic 
+consists of 4 Ganymede frames from voyager.          
+
+(create the ibis sedr file)
+  vgribis <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#out">out</A>=sedr.int fds=(2063559,2063602,2063611,2063614)           camera=5 enc=JUPITER
+
+(make first footprint plot to get center of projection)
+  mosplot <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">inp</A>=sedr.int '<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#object">object</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#nl">nl</A>=1000 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#ns">ns</A>=1000
+
+(make stereographic plot and create overlap file)
+  mosplot <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">inp</A>=sedr.int <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#out">out</A>=over.int '<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#object">object</A>           <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#nl">nl</A>=1000 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#ns">ns</A>=1000 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#latlon">latlon</A>=(-18.,184.)
+
+(generate tiepoints file interactively)
+  manmatch <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">inp</A>=(sedr.int,over.int) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#out">out</A>=match.int           dir=ud3:[cca314] 'sedr '<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#object">object</A>
+
+(create ground control points)
+  getgcp <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#out">out</A>=ground.int linc=250 sinc=250           enc=JUPITER fds=2063559 camera=5 id=1           sedr=sedr
+
+(plot tiepoints & ground control using old sedr)
+  mosplot <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">inp</A>=(sedr.int,match.int,ground.int) '<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#object">object</A>           <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#nl">nl</A>=1000 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#ns">ns</A>=1000 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#exag">exag</A>=10. <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#latlon">latlon</A>=(-18.,184.)
+
+(iteratively correct the ibis sedr file)
+  omcor <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">inp</A>=(sedr.int,match.int,ground.int) planet=JUPITER           mission=VOYAGER maxiter=(4,3) weight=0 gcpfac=0.99           omcol=8 outomcol=21
+  omcor <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">inp</A>=(sedr.int,match.int,ground.int) planet=JUPITER           mission=VOYAGER maxiter=(4,3) weight=0 gcpfac=0.8           omcol=21 outomcol=21
+  omcor <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">inp</A>=(sedr.int,match.int,ground.int) planet=JUPITER           mission=VOYAGER maxiter=(4,3) weight=0 gcpfac=0.7           omcol=21 outomcol=21
+  omcor <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">inp</A>=(sedr.int,match.int,ground.int) planet=JUPITER           mission=VOYAGER maxiter=(4,3) weight=0 gcpfac=0.6           omcol=21 outomcol=21
+  omcor <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">inp</A>=(sedr.int,match.int,ground.int) planet=JUPITER           mission=VOYAGER maxiter=(4,3) weight=0 gcpfac=0.5           omcol=21 outomcol=21
+  omcor <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">inp</A>=(sedr.int,match.int,ground.int) planet=JUPITER           mission=VOYAGER maxiter=(4,3) weight=0 gcpfac=0.4           omcol=21 outomcol=21
+  omcor <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">inp</A>=(sedr.int,match.int,ground.int) planet=JUPITER           mission=VOYAGER maxiter=(4,3) weight=0 gcpfac=0.3           omcol=21 outomcol=21
+  omcor <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">inp</A>=(sedr.int,match.int,ground.int) planet=JUPITER           mission=VOYAGER maxiter=(4,3) weight=0 gcpfac=0.2           omcol=21 outomcol=21
+  omcor <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">inp</A>=(sedr.int,match.int,ground.int) planet=JUPITER           mission=VOYAGER maxiter=(4,3) weight=0 gcpfac=0.1           omcol=21 outomcol=21
+  omcor <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">inp</A>=(sedr.int,match.int,ground.int) planet=JUPITER           mission=VOYAGER maxiter=(4,3) weight=0 gcpfac=0.0           omcol=21 outomcol=21
+
+(plot the tiepoints & ground control using the corrected sedr)
+  mosplot <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">inp</A>=(sedr.int,match.int,ground.int) '<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#new">new</A> '<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#object">object</A>           <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#nl">nl</A>=1000 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#ns">ns</A>=1000 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#exag">exag</A>=100. <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#latlon">latlon</A>=(-18.,184.)
+
+(correct the archival sedr from the ibis sedr)
+  omupdate <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp">inp</A>=sedr.int 'update encountr=jupiter camera=5
+
+  *** place the MAP2 and mosaic operations here ***
+
+
+ON THE PLOT FORMATS:
+
+  The footprint plots are closed polygons from points
+taken around the border of each frame. A number is printed
+at the line=1, sample=1 corner of each frame. This is the
+frame number, numbered from 1 to n in the same order of
+the FDS times input to VGRIBIS.
+
+  If the user specifies the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#latlon">LATLON</A> keyword then the plot will
+be an oblique stereographic projection. If <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#latlon">LATLON</A> is not
+specified then the plot will show the entire planet.
+The line and samples in the stereographic projection are
+arbitrarily based upon a scale of one degree/pixel.
+The stereographic projection does not suffer from problems
+if the poles or prime meridian is in the mosaic.
+
+  The residuals plots are superimposed on the footprint plots.
+They represent tiepoint vectors drawn from the left image lat,lon
+to the right image lat,lon and are exaggerated by <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#exag">EXAG</A> in
+the direction of the right image point. By left & right I mean
+the order of the frames input to MANMATCH in pairs.
+A CIRCLE symbol is printed at the base of each vector
+along with the number of the point.
+(left image position).
+
+  If ground control file is present then the ground control
+points are added to the above as vectors starting at the
+computed lat,lon and extending to the given lat,lon.
+They are also exaggerated. A TRIANGLE symbol is placed at the
+base of each vector (computed lat,lon position)
+along with the number of the point.
+
+FILE STRUCTURE:
+
+  The files are IBIS format tabular files. They consist
+of 512 byte records where each column of data is written as
+sequential records until exhausted. The next column begins at the
+start of the next record etc. Record #1 contains the number of points
+per column. All data is real*4 binary.
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  J J Lorre</A>
+
+REVISION HISTORY:
+
+1989-09-06 JJL Added <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#area">area</A> keyword.
+1990-03-07 JJL Corrected date & time in plot
+1990-05-26 JJL Conversion to GLL, test file update
+1990-09-24 JJL Axes reversed, Display device selectble
+1991-05-10 RGD Removed r3lib in link
+1995-07-07 JCT (CRI) Made portable for UNIX and added XRT/graph interface
+1996-10-10 SMC Added Summation mode capability, FR89818
+2002-12-22 GMY Made portable to Linux
+2012-12-09 RJB Fixed error messages, removed warnings for gfortran 4.7.2
+               64-bit Linux
+2013-01-18 RJB Converted plotting from xrtgraph to gnuplot
+2013-02-13 RJB Fixed <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#plotfmt">PLOTFMT</A> logic, documentation
+2013-02-19 RJB Fixed garbage <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#print">print</A> in "# images in SEDR file=", testfile fixes
+2013-07-13 RJB Adjusted eps format to more readable fonts
+2013-08-23 RJB Removed a date time stamp for "FOOTPRINT PLOT &ltdate&gt" which
+               is not necessary in log but causes testing problems in difference
+               logs
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#inp"><H3>INP</H3></A>
+All inputs are IBIS tabular files.
+
+First input= SEDR.INT made
+ by program VGRIBIS
+Second input= MATCH.INT made
+ by program MANMATCH
+( optional )
+Third input= GROUND.INT made
+ by program GETGCP
+( optional )
+Fourth input=GEOM.IMG made
+for program GEOMA.
+( optional )
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#out"><H3>OUT</H3></A>
+The overlap ibis file. 
+(optional) two columns
+output: col1=first frame
+number of a pair
+col2=second frame number
+of a pair
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#project"><H3>PROJECT</H3></A>
+Specifies the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#project">project</A> as
+GLL, VIKOR, MAR10, VGR-1,
+VGR-2, or MAR-9. Only used
+if the input images are in
+image space and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#project">project</A> is
+GLL.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#exag"><H3>EXAG</H3></A>
+The exaggeration factor
+used in plotting tiepoint
+residuals.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#plotout"><H3>PLOTOUT</H3></A>
+to specify the output
+PostScript filename
+for plot images
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#plotfmt"><H3>PLOTFMT</H3></A>
+ Output plot format
+ GNUPLOT or EPS
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#new"><H3>NEW</H3></A>
+To select the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#new">new</A> SEDR
+OMmatrix. Default is to
+select the  OLD SEDR
+OMmatrix
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#print"><H3>PRINT</H3></A>
+To <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#print">print</A> the contents of
+all files read and written
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#incr"><H3>INCR</H3></A>
+The spacing in pixels
+between  border points for
+plots.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#nl"><H3>NL</H3></A>
+the number of lines 
+in each image
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#ns"><H3>NS</H3></A>
+the number of samples 
+in each image
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#object"><H3>OBJECT</H3></A>
+the images going into 
+the mosaic are
+geometrically corrected 
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#latlon"><H3>LATLON</H3></A>
+Center of projection
+for stereographic
+plot.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#area"><H3>AREA</H3></A>
+Specifies a portion of 
+the stereographic 
+projection to plot. <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot_level2.html#area">AREA</A>
+is followed by 4  numbers
+indicating: upper line,
+lower line,  left sample,
+right sample.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/mosplot.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

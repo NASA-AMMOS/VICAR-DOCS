@@ -1,0 +1,102 @@
+<HTML>
+<HEAD><title>HTML Help for ZIPCOL2</title></HEAD>
+<BODY>
+<H1>Help for ZIPCOL2</H1>
+<pre>
+PURPOSE
+
+	ZIPCOL2 is used to enter data into an existing IBIS interface <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#file">file</A>.
+Data can be transferred to the interface <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#file">file</A> from another interface file,
+data cards, or both sources. Data is entered by matching keys between the
+interface <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#file">file</A> and the data sources. Pre-sorting of the interface file and
+the data sources is required. The size of the interface <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#file">file</A> is not changed
+by operation of ZIPCOL2.
+
+Alphabetic and numeric columns can be mixed in any order for indexing
+or data.  The 'alpha keyword is no longer needed.  The alphabetic
+fields can be of any length.
+
+The keyword 'NONULL is now added for the case where the receiving 
+columns are desired unchanged where a match does not occur.  This
+keyword will override any use of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#null">NULL</A> or <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#nulstr">NULSTR</A> keywords.  Also,
+dynamic allocation is used for all arrays so the only limit on size
+of tables is virtual memory size (exception: number of columns
+limited to 200 due to a problem with IBISFileGet).
+
+TAE COMMAND LINE FORMAT
+
+	zipcol2 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#inp">INP</A>=(A,B) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#incol">INCOL</A>=(X1,X2,X3,...XK) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#outcol">OUTCOL</A>=(Y1,Y2,Y3,...YK)
+		<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#null">NULL</A>=(C1,C2,...CN) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#file">FILE</A>=(D1,D2,D3,...DK,E1,E2,...EN)
+
+	Where A is the IBIS interface <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#file">file</A> being modified and B is a
+secondary input interface <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#file">file</A>.
+
+<A NAME="examples">EXAMPLE 1</A>
+
+	zipcol2 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#inp">INP</A>=(INT1,INT2) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#incol">INCOL</A>=(28,27) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#outcol">OUTCOL</A>=(1,2,3,4)
+		<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#file">FILE</A>=(6,7,8,9,10,11) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#null">NULL</A>=(0,0,0,0)
+
+	In this example, columns 6, 7, from INT2 will be used to match
+columns 28, 27 from INT1. If a match is made to columns 6,7 of INT2,
+then columns 8, 9, 10, 11 from INT2 will be placed in columns 1, 2, 3, 4
+of INT1. If no match is found zeros will be placed in columns 1, 2, 3, 4
+of INT1.
+
+<A NAME="examples">EXAMPLE 2</A>
+
+	zipcol2 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#inp">INP</A>=(INT1,INT2) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#incol">INCOL</A>=(28,27) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#outcol">OUTCOL</A>=(1,2,3,4)
+		<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#file">FILE</A>=(6,7,8,9,10,11) 'NONULL
+
+	In this example, columns 6, 7, from INT2 will be used to match
+columns 28, 27 from INT1. If a match is made to columns 6,7 of INT2,
+then columns 8, 9, 10, 11 from INT2 will be placed in columns 1, 2, 3, 4
+of INT1. If no match is found, the corresponding row of columns
+8, 9, 10, 11 will be left at the incoming value.
+
+OPERATION
+
+	ZIPCOL2 operation is as follows. Each key in the first <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#file">file</A> is checked
+against each key in the second. If a match is found, data is transferred from
+the second <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#file">file</A> to the first file. Resultant information is written in an
+update mode to the interface <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#file">file</A> being modified.
+
+Unsorted files are now detected and an error message is written followed
+by an abort, since the user must correct the calling procedure.
+
+REVISIONS
+  1981-08-25 A. L. Zobrist - Initial version.
+  1982-08-19 K. F. Evans - Revision 1.
+  1995-03-06 C. R. Schenk (CRI) - Ported to UNIX
+  2007-12-29 W. L. Bunch - Switched to USES_ANSI_C AND LIB_CARTO; misc cleanup.
+  2016-06-09 W. L. Bunch - Migrated to MIPL.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#inp"><H3>INP</H3></A>
+1. The IBIS interface <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#file">file</A>
+     being modified.
+2. The secondary input
+     interface <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#file">file</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#incol"><H3>INCOL</H3></A>
+Matching columns in first <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#file">file</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#outcol"><H3>OUTCOL</H3></A>
+Columns in first <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#file">file</A> to 
+receive data from second
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#null"><H3>NULL</H3></A>
+Values to use in numeric
+columns when no index match
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#nulstr"><H3>NULSTR</H3></A>
+Values to use in alphabetic
+columns when no index match
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#file"><H3>FILE</H3></A>
+Matching and data columns
+in second interface <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#file">file</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2_level2.html#nullmode"><H3>NULLMODE</H3></A>
+'NONULL for no data insertion
+where there is no match
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/zipcol2.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

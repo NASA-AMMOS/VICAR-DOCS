@@ -1,0 +1,178 @@
+<HTML>
+<HEAD><title>HTML Help for XYZSUN</title></HEAD>
+<BODY>
+<H1>Help for XYZSUN</H1>
+<pre>
+PURPOSE:
+To convert an ascii tiepoints file written by tracker3 into an expanded
+ascii file containing x,y,z,latitude,longitude,radius for the sun.
+This program supports solar imagery only.
+It converts image coordinates from a stereo pair into absolute solar 
+coordinates.
+(Does not run correctly on SGI, no known cause).
+
+EXECUTION:
+xyzsun <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#inp">inp</A>=tpts <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#out">out</A>=tptsxyz
+
+
+METHOD:
+xyzsun reads the times in the ascii header and constructs via the farenc 
+algorithm om matrices and rs vectors for the two images.
+It then computes the intersection of view rays for each tiepoint.
+The xyz points are stored in the output ascii file.
+The output ascii file has the same records as the input file but contains
+in addition the xyz solar coordinates.
+
+The input file contains the following information:
+linel   left image line
+sampl   left image sample
+liner   right image line
+sampr   right image sample
+dnl     left image dn
+dnr     right image dn
+
+The output file contains the following information:
+linel   left image line
+sampl   left image sample
+liner   right image line
+sampr   right image sample
+dnl     left image dn
+dnr     right image dn
+x       sun cartesian x in km   
+y       sun cartesian y in km   
+z       sun cartesian z in km   
+lat     sun centric latitude in degrees
+lon     sun centric longitude in degrees west
+r       distance from sun center in km
+dr      distance above apparent surface
+error   miss distance between view rays in km
+
+The time for the left two columns is recorded in record 2 of the tiepoints
+file in the form: asfd19920112044820.vic where the format is: yyyymmddhhmmss.
+The time for columns 3 & 4 is in record 3. These are placed there by tracker3.
+The time strings are the labels of the two input files to tracker3.
+
+The SPICE is consulted to determine the solar sub earth point at each time.
+The program assumes that both images are centered at the same image 
+coordinates.
+
+
+HISTORY:
+1-1-97  J Lorre. 
+15-Jan-2013 -lwk- fixed continued CHARACTER constant for new compiler flag on Solaris;
+                  replaced SPICE initializations with call to init_spice
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Lucas Kamp</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#inp"><H3>INP</H3></A>
+ascii tiepoints
+file from
+tracker3.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#out"><H3>OUT</H3></A>
+output ascii file
+with xyz values.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#manual"><H3>MANUAL</H3></A>
+Uses first 4
+tiepoints to 
+navigate image
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#oal"><H3>OAL</H3></A>
+Optical Axis Line
+Defaults to 256
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#oas"><H3>OAS</H3></A>
+Optical Axis Sample
+Defaults to 256
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#cenline"><H3>CENLINE</H3></A>
+Line of planet center.
+Computed from first 
+4 input tiepoints.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#censamp"><H3>CENSAMP</H3></A>
+Sample of planet center
+Computed from first 
+4 input tiepoints.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#scale"><H3>SCALE</H3></A>
+Image plane <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#scale">scale</A>.
+Pixels/mm.
+Computed from first 
+4 input tiepoints.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#focal"><H3>FOCAL</H3></A>
+Camera <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#focal">focal</A> length.
+In mm.
+Computed from first 
+4 input tiepoints.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#sclong1"><H3>SCLONG1</H3></A>
+Sub spacecraft longitude.
+Left picture.
+Degrees Planetocentric West
+Overrides SPICE
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#sclat1"><H3>SCLAT1</H3></A>
+Sub spacecraft latitude.
+Left picture.
+Degrees planetocentric.
+Overrides SPICE
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#sclong2"><H3>SCLONG2</H3></A>
+Sub spacecraft longitude.
+Right picture.
+Degrees Planetocentric West
+Overrides SPICE
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#sclat2"><H3>SCLAT2</H3></A>
+Sub spacecraft latitude.
+Right picture.
+Degrees planetocentric.
+Overrides SPICE
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#north"><H3>NORTH</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#north">North</A> angle.
+Angle of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#north">north</A> spin axis
+Degrees clockwise from up.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#range"><H3>RANGE</H3></A>
+Distance to planet.
+In km.
+Overrides SPICE
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#eradius"><H3>ERADIUS</H3></A>
+Equatorial planet 
+radius km
+DEFAULT=695990.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#pradius"><H3>PRADIUS</H3></A>
+Polar planet 
+radius km
+DEFAULT=695990.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#nospice"><H3>NOSPICE</H3></A>
+Keyword to not use
+spice kernels.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#spicefile"><H3>SPICEFILE</H3></A>
+Name of solar system
+sp kernel
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#switch"><H3>SWITCH</H3></A>
+Switches line with
+sample on input file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun_level2.html#epipolar"><H3>EPIPOLAR</H3></A>
+Sets the right image
+line to the left
+image line.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/xyzsun.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

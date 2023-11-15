@@ -1,0 +1,171 @@
+<HTML>
+<HEAD><title>HTML Help for MARSINVERTER</title></HEAD>
+<BODY>
+<H1>Help for MARSINVERTER</H1>
+<pre>
+PURPOSE:
+To reverse the 12-&gt8 bit compression in an image file by shifting or processing
+it through an Inverse Look-Up Table (ILUT).
+
+This is a multimission program.  It supports any mission, instrument,
+and camera model supported by the Planetary Image Geometry (Pig) software
+suite and its associated Radiometry models (mars_radiometry).
+
+Images are often compressed in dynamic range via a 12-&gt8 bit conversion.
+This conversion takes one of two forms:  bit shifting, which simply shifts
+the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#bits">bits</A> some specified amount, and a Look-Up Table (LUT), which can implement
+nonlinear conversions.  This program recovers the original DN values (or
+at least approximations thereof) by reversing this scaling.
+
+EXECUTION:
+
+The inputs and outputs may be presented in two ways:
+1) Normal file parameters, e.g. <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#inp">inp</A>=(a.img,b.img,c.img...)
+2) A file list, e.g. <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#inp">inp</A>=filelist.txt
+
+The file list is a simple ASCII text file containing one filename per line.
+
+If only one value is given for the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#inp">INP</A> or <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#out">OUT</A> parameter, it is assumed that
+the value is the name of a file list file.  However, if the file appears to
+be a VICAR image, or if it doesn't exist (<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#out">OUT</A> only), then it is treated as
+an actual image name.  This means that you can simply correct a single image:
+
+marsinverter <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#inp">inp</A>=a.img <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#out">out</A>=a.out
+
+without having to create file lists.
+
+The number of input filenames must match the number of output filenames, but
+it is okay if one is a file list and the other is directly entered in the
+parameter.  Up to 20 images can be inverted in a single call.
+
+OPERATION:
+
+The program looks for inverse LUT files in the calibration directories,
+as specified by the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#config_path">CONFIG_PATH</A> parameter.  It looks for files of the
+form:
+
+	ilut/&lthost_id&gt_<lut_name>.txt
+
+where host_id is the name of the mission (e.g. MER1, MER2, MSL) and lut_name
+is the name of the lookup table as specified in the label.
+
+The lookup table itself is simply a text file with (nominally) 256 lines.
+Each line contains the 8-bit value followed by the expanded value, separated
+by spaces.
+
+A few of the LUT names are special cases, with the ILUT generated
+programmatically.  The name "NONE" is a no-op (no conversion is done).
+The names "MSB_BIT7" through "MSB_BIT15" indicate a bit shift, shifing
+0 to 8 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#bits">bits</A> respectively to create a 12-bit output.
+
+The output is normally expected to be 12 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#bits">bits</A>, but the program will support
+any number of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#bits">bits</A> up to 16 using the BITS parameter (in reality this just
+affects the SAMPLE_BIT_MASK label; the actual size of the outputs is controlled
+by the ILUT file itself).  However, if the ORIGINAL_SAMPLE_BITS label exists
+(in INSTRUMENT_STATE_PARMS), that value will be used as the default for <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#bits">BITS</A>
+(the parameter will still override).
+
+Although normally used for 8-&gt12 bit expansion, in reality the program is
+more flexible, accepting anything that will fit in a (signed) integer for
+both input and output.  The ILUT file can contain more or less than 256
+entries.  However, the bit-shift special modes assume 8-&gt12.
+
+HISTORY:
+
+	Jan 2004	Initial merinverter, Hyun Lee
+	Oct 2010	Complete rewrite as marsinverter, Bob Deen
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Bob Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#inp"><H3>INP</H3></A>
+input image(s) or
+file list.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#out"><H3>OUT</H3></A>
+Output image(s) or
+file list.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#band"><H3>BAND</H3></A>
+Input image <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#band">band</A> number to 
+write to output image. Defaults 
+to all bands.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#bits"><H3>BITS</H3></A>
+Number of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#bits">bits</A> in the output.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+Not used by this program.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+Not used by this program.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#coord">COORD</A>/mission combos.
+Not used by this program.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+Not used by this program.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsinverter.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

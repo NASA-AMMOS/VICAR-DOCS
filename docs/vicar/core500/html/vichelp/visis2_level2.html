@@ -1,0 +1,127 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for VISIS2</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/visis2.html">VISIS2</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+1-10 Input file(s), depending the program mode:
+
+(A) VICAR-to-ISIS mode:
+
+The inputs are VICAR files which are combined into a single NIMS ISIS cube 
+file output.  In this case, the input files are, in order:
+
+	1) one 2DHIST file (created by program HIST2D),
+	2) 0-6 SPECPLOT files (created by program SPECPLOT), 
+	3) one merged mosaic cube file (created by program NIMSCMM2),
+	4) one co-cube file, (created by program NIMSCMM2),
+	5) optionally, one Spectral Index Image cube file 
+
+Items 1, 3, and 4 are required;  the SPECPLOT files and SII cube may be
+omitted.
+
+Note that VISIS2 checks the labels of the inputs (except for #5) for the 
+program that created it, and aborts the job if the correct one is not found.
+(This is necessary in order to identify the various inputs.)  If for some 
+reason the proper task name is not in the label of one of the inputs, the 
+user will have to add it manually.  However, for items 3 and 4, parameter 
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/visis2_level2.html#taskname">TASKNAME</A> can be used to change the task searched for.  (See Help TASKNAME.)
+
+(B) ISIS-to-VICAR mode:
+
+There is only one input file, the ISIS cube file.  The outputs must be
+the VICAR files listed above (see Help <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/visis2_level2.html#out">OUT</A>).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+Output file(s), a maximum of ten, either VICAR files generated from a
+NIMS ISIS cube file or an ISIS cube file generated from VICAR files.  
+
+If an ISIS cube file is used as input, the following outputs are generated:
+
+	1) 2DHIST file,
+	2) SPECPLOT files (0-6), 
+	3) Merged mosaic cube file
+	4) Geometry cube file
+	5) Spectral Index Image cube file
+
+Note that the user must specify the correct number of outputs corresponding
+to the number of objects in the ISIS cube.  This can be determined either
+by searching its PDS label, or by trial and error.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="histfile"><H3>HISTFILE</H3></A><pre>
+This is the name of an ascii text file containing ISIS history labels.
+
+In inverse mode, any ISIS history labels found in the input ISIS cube will 
+be written to this file, if specified.  
+
+In forward mode, if this parameter is specified, then the history labels
+will be read in and stored in the output cube history, immediately preceding
+the VISIS2 history of the job itself.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="requestr"><H3>REQUESTR</H3></A><pre>
+STRING PARAMETER - Name of processing requestor.  Used only in the generation 
+of the ISIS cube file.  Maximum of 25 characters.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="taskname"><H3>TASKNAME</H3></A><pre>
+Name of the task containing the label items defining the cube attributes.
+Normally the default (NIMSCMM2) will valid.  However, if the cube was
+was extracted from an ISIS "Qube" using VISIS2 in inverse mode, then 
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/visis2_level2.html#taskname">TASKNAME</A>=VISIS2 is required.  This keyword is used in forward mode only.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="specialp"><H3>SPECIALP</H3></A><pre>
+This a flag to indicate that the program should write a "Special Processing" 
+label item to the PDS label (forward mode only).
+
+Currently there is only one Special Processing value:
+
+SPECIAL_PROCESSING_TYPE = 1 means that the EDR used for the cube generation
+was "garbled" and had to be corrected by hand in order to be made readable.
+This correction procedure caused the resolution of some bands to be
+compromised.
+
+Other values for this parameter may be added in the future.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="to_ori"><H3>TO_ORI</H3></A><pre>
+This allows the user to specify direction of the line/sample OFFSET label
+items (inverse mode only).
+
+Normally, this is controlled by the TO_ORIGIN label keyword, but cubes made
+between 19 Oct. and 9 Dec. 1997 in Perspective projection are missing this
+item.  For these (and possible other anomalies), the user should specify
+this keyword when running VISIS2 in inverse mode.
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

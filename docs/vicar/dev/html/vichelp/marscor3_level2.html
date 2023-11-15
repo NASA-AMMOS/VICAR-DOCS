@@ -1,0 +1,854 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for MARSCOR3</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3.html">MARSCOR3</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+First left eye image, then right eye image.
+
+There is nothing actually requiring left/right order, other than convention.
+If left/right is unclear (e.g. the images are not from a stereo camera) then
+either order is acceptable.  If the output is used with MARSXYZ, the same
+order must be used.  The order must also match that of the program used to
+calculate input disparities (typically MARSJPLSTEREO).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+The line and sample disparity files.  If one filename is given, a two-banded
+file is created with line disparity as <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#band">band</A> 1 and sample disparity as band 2.
+If two filenames are given, two single-<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#band">band</A> files are created.  Line disparity
+is in file 1, and sample disparity is in file 2.
+
+See the main program help for output file contents and formatting.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="in_disp"><H3>IN_DISP</H3></A><pre>
+The input disparity images.  If one filename is given, a two-banded file
+is expected with line disparity as <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#band">band</A> 1 and sample disparity as band 2.
+If two filenames are given, the first file is expected to contain line
+disparities and the second, sample disparities.
+
+The size of the disparity image compared with the input images must be
+related as specified by the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#disp_pyramid">DISP_PYRAMID</A> parameter.
+
+See the main program help for output file contents and formatting.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mask"><H3>MASK</H3></A><pre>
+Optional output file showing the coverage of tiepoints (correlated pixels),
+in BYTE format.
+ 0 dn means the pixel could not be reached in order to be correlated.
+   (i.e. the input file had no disparity for the pixel).
+ 128 dn means a correlation was successfully performed at this location.
+ 255 dn means a correlation was attempted at this location but it failed,
+   usually because of low correlation <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#quality">quality</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out_quality"><H3>OUT_QUALITY</H3></A><pre>
+Output <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#quality">quality</A> file (optional): A REAL image containing the correlation
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#quality">quality</A> of each pixel attempted, from 0 to 1.  0 indicates either a
+correlation failure unrelated to the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#quality">QUALITY</A> setting, or a pixel that was
+not available in the input.
+
+This file could be used in conjunction with a very low <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#quality">quality</A> setting
+to allow correlation in low-<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#quality">quality</A> areas, with the result filtered
+afterwards using a higher <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#quality">quality</A> (i.e. use the output quality file as
+a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#mask">mask</A>).  Unlike marscorr/marscor2, this is a reasonably safe operation,
+as long as no gore passes were performed.  Gore passes, however, run the
+same risk as marscorr/marscor2: if there is any kind of repeating pattern
+in the image, the correlator could get "stuck" on the wrong match for the
+pattern and propogate that error.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="in_coefs"><H3>IN_COEFS</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#in_coefs">IN_COEFS</A> parameter allows the user to directly specify the transform on
+a per-pixel basis.  The input file should be a 6-<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#band">band</A> file the same size
+as the input disparity file, containing the parameters a,b,d,e,g,h.  Note
+that the translation terms, c and f, are not included because they come from
+the input disparity file.  Note that OUT_COEF can be used to save the
+final coefficients, in the same file format.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out_coefs"><H3>OUT_COEFS</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#out_coefs">OUT_COEFS</A> parameter specifies an optional file to contain the output
+coefficients from the transform.  This will be a 6-<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#band">band</A> file the same size
+as the output disparity file, containing the parameters a,b,d,e,g,h.  Note
+that the translation terms, c and f, are not included because they are in
+the output disparity file.  Note that <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#in_coefs">IN_COEFS</A> uses the same file format.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="band"><H3>BAND</H3></A><pre>
+The vicar image <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#band">band</A> number for the input images.  Defaults to 1
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="template"><H3>TEMPLATE</H3></A><pre>
+Correlation size.  Must be an odd number.  Defaults to 15 square.
+
+If only one value is given, a square <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#template">template</A> is used.  If two values are
+given, the first is the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#template">template</A> height (line direction) and the second is
+the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#template">template</A> width (sample direction).  Rectangular templates that are
+wider than they are tall should be useful for lander images.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="search"><H3>SEARCH</H3></A><pre>
+Correlation <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#search">search</A> area.  Must be an odd number.  Defaults to 35 square.
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#search">SEARCH</A> must be &gt <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#template">TEMPLATE</A>.  If SEARCH is only a bit larger than TEMPLATE
+then many correlations will abort because they will be prohibited from
+searching in promising directions. 
+
+If only one value is given, a square <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#search">search</A> area is used.  If two values are
+given, the first is the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#search">search</A> height (line direction) and the second is
+the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#search">search</A> width (sample direction).  Rectangular search areas that are
+wider than they are tall should be useful for lander images.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="quality"><H3>QUALITY</H3></A><pre>
+Minimum acceptable correlation <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#quality">quality</A>.  Correlations with qualities below
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#quality">QUALITY</A> will be rejected. Qualities range from 0 (poor) to 1 (excellent).
+
+Note that this value is the square of the correlation coefficient.  The
+definition of correlation coefficient is a/sqrt(b); we maximize a**2/b
+instead to avoid the square root calculation (negative correlations are
+checked for and given a negative result).  Therefore if a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#quality">quality</A> value of
+(for example) 0.36 is given, that corresponds to a correlation coefficient
+of 0.6.  The difference does not matter except insofar as people are used
+to using the correlation coefficient number.
+
+Defaults to 0.6  
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="gores"><H3>GORES</H3></A><pre>
+Specifies whether or not gore passes are performed.  The default is not to
+do them.  See the main help for details.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="gore_passes"><H3>GORE_PASSES</H3></A><pre>
+Specifies the maximum number of gore passes through the image to perform.
+If the value is 0, the number of passes is unlimited.  The program will
+stop making gore passes once a pass produces no more tiepoints, even if
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#gore_passes">GORE_PASSES</A> has not yet been reached.
+
+Limiting the number of gore passes prevents the correlator from "breaking
+in" to invalid areas and getting "lost", such as often happens with
+marscorr/marscor2.  Similar limiting may also be done via a high
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#gore_quality">GORE_QUALITY</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="gore_quality"><H3>GORE_QUALITY</H3></A><pre>
+Specifies the correlation <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#quality">quality</A> to be used during gore passes.  If not
+specified, the value for <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#quality">QUALITY</A> is used.
+
+Usually, a reasonably low <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#quality">quality</A>, such as 0.36, is acceptable for the main
+correlation.  This is because we know a priori that all points considered
+have passed the first correlation program, which acts as a kind of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#filter">filter</A>.
+So it is quite likely that the point is good, even with a lower <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#quality">quality</A>.
+
+However, in gore filling, that <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#filter">filter</A> no longer applies.  Any point could
+be considered for correlation.  By setting <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#gore_quality">GORE_QUALITY</A> quite high (perhaps
+.6 OR .8), WE INSURE THAT ONLY VERY GOOD POINTS ARE INCLUDED WITHOUT THE
+benefit of the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#filter">filter</A>.  This prevents the correlator from getting "lost"
+such as often happens with marscorr/marscor2 and generating spurious results.
+Points not filled in by the first correlator may still be good for marscor3,
+since the first correlator usually does only a square mapping, not a
+quadrilateral mapping, from left to right, and square doesn't always work
+very well.
+
+This value is the square of the correlation coefficient, as with <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#quality">QUALITY</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="gore_reverse"><H3>GORE_REVERSE</H3></A><pre>
+Normally, gore passes are processed top-to-bottom, left-to-right.  As
+each pixel is filled in, it becomes eligible to be a neighbor to the next
+pixel.  So a gore pass can fill in arbitrarily far to the right or down,
+but can only fill in one pixel to the left or up.  This often leads to
+diagonal edges in coverage (moving down and to the left), as each successive
+line is only able to move one pixel farther left.  Filling much up/left
+requires a huge number of gore passes.
+
+Turning on <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#gore_reverse">GORE_REVERSE</A> enables a second iteration through the data in each
+gore pass.  This second iteration processes in the reverse order... bottom-
+to-top, right-to-left.  This allows it to fill in up and to the left as well
+as down/right.  Note that one gore pass consists of going *both* directions.
+
+The reverse pass can leave diagonal coverage edges moving up and to the right.
+If 0 degrees is to the right and angles increase counterclockwise, then the
+areas between 0 and 45 degrees, and between 180 and 225 degrees, will not be
+filled by a single gore pass.  (Without reverse, the unfilled area is 0 to 225).
+For this reason, it is recommended that at least two gore passes be used if
+reverse is turned on.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="disp_pyramid"><H3>DISP_PYRAMID</H3></A><pre>
+Specifies the "pyramid level" of the input disparities.  The input is zoomed
+down by a factor of 2 ^ <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#disp_pyramid">DISP_PYRAMID</A>.  This corresponds directly to the
+PYRLEVEL parameter to MARSJPLSTEREO.
+
+A value of 1, 2, or 3 is generally recommended.  Pyramids of 0 (no zoom) are
+often susceptible to minor variations in the camera model and sometimes
+produce sparse images <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#out">out</A> of MARSJPLSTEREO.  Higher pyramid levels are less
+sensitive to the accuracy of the camera model and generally produce better
+coverage.
+
+See the main help for a discussion of the input file format and how it
+relates to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#disp_pyramid">DISP_PYRAMID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="stop_pyramid"><H3>STOP_PYRAMID</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#stop_pyramid">STOP_PYRAMID</A> parameter can be used in conjunction with <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#disp_pyramid">DISP_PYRAMID</A> and
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#multipass">MULTIPASS</A> to stop the pyramid process prematurely.  Normally <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#stop_pyramid">STOP_PYRAMID</A>
+is 0, meaning go all the way to full-res.  But if <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#stop_pyramid">STOP_PYRAMID</A> is non-0,
+the process stops there.  A value of 1 would produce a half-scale output,
+2 would produce quarter-scale, etc.  At least one pass is done regardless
+of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#stop_pyramid">STOP_PYRAMID</A>.  The intent of this is to facilitate debugging by being
+able to examine the intermediate pyramid results; operational use is not
+anticipated.  Note that the output can be fed back into another run of
+marscor3 by adjusting <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#disp_pyramid">DISP_PYRAMID</A> to the prior <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#stop_pyramid">STOP_PYRAMID</A> value.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mode"><H3>MODE</H3></A><pre>
+Specifies which <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#mode">mode</A> of the gruen correlator to use.
+
+All correlations are performed using the gruen correlation routine.  See
+the gruen documentation for details of the algorithm.
+
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#mode">MODE</A> parameter is fully described in the main program help.  Only the
+five "amoeba*" modes are recommended.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="cubic_gruen"><H3>CUBIC_GRUEN</H3></A><pre>
+At the deepest loop in the gruen correlator, the right image is interpolated
+using a bilinear interpolator by default. If using <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#cubic_gruen">CUBIC_GRUEN</A>, a bicubic
+interpolator is used. Early experiments shows that correlations based on the
+bilinear correlator are ~2-3 times faster than the bicubic one.
+However, bicubic interpolation is a better one and could improve the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#quality">quality</A>
+of the correlation. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="linear"><H3>LINEAR</H3></A><pre>
+Adds <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#linear">linear</A> <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#search">search</A> to any <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#mode">MODE</A>.  This can help when the initial point is more
+than a pixel or two away from the true point, since the various amoeba modes
+don't generally like walking more than that in the parameter space.  However,
+the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#linear">linear</A> <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#mode">mode</A> is limited to a square transform, so it may not match the
+cemra geometry very well.  See the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#mode">MODE</A> parameter and description in the
+main program help.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ftol"><H3>FTOL</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#ftol">FTOL</A> specifies the tolerance, or accuracy, in the function minimization
+process (the correlation <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#quality">quality</A>).  While directly related to accuracy of
+the results, this relationship is not simple.  See the main help for a
+more involved discussion.
+
+Higher values of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#ftol">FTOL</A> cause the program to run faster, sometimes MUCH faster,
+at the expense of some accuracy.
+
+Typical values range from .000001 (historically the only value; probably too
+tight a tolerance) to .001 or .004.  This parameter should be experimented
+with for each new type of data.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="check"><H3>CHECK</H3></A><pre>
+If non-zero, turns on reverse-<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#check">check</A> <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#mode">mode</A>.  After every point is correlated
+(whether in the main or gore passes), the pixel is again correlated in
+reverse.  Instead of left-to-right, it goes right-to-left (right is the
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#template">template</A>) using the current result as the starting point.  Thus a left-side
+coordinate is obtained that matches the right-side image.
+
+This coordinate is then compared to the original left-side coordinate.  If
+they differ by more than <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#check">CHECK</A> pixels, the point is rejected.  (This is a
+square window; line and sample are compared independently).
+
+The result is that more "bad" pixels are filtered <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#out">out</A>, at the expense of
+some time.  This may allow the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#quality">quality</A> to be lowered without getting too
+many bad matches.
+
+Note that <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#check">CHECK</A> should not be run with <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#decileft">DECILEFT</A> or <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#rotation">ROTATION</A> or X/<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#yscale">YSCALE</A>
+as the inverse affine transformation is not fully implemented yet.
+
+See also <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#check_quality">CHECK_QUALITY</A>; the reverse <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#check">check</A> is omitted if the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#quality">quality</A> is
+higher than <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#check_quality">CHECK_QUALITY</A>.
+
+Note that <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#check">CHECK</A> is not all that useful in the amoeba-only modes, because
+we start at a known peak already.  The reverse <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#check">check</A> could be more useful
+when combined with a -<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#linear">LINEAR</A> <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#search">search</A>.  A true reverse <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#check">check</A> would do an
+independent, complete right-&gtleft correlation, then compare the results.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="check_quality"><H3>CHECK_QUALITY</H3></A><pre>
+Minimum threshhold at which the reverse <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#check">check</A> is performed.  The theory
+is, if the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#quality">quality</A> is good enough, a reverse <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#check">check</A> is unnecessary.  See
+the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#check">CHECK</A> parameter.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="multipass"><H3>MULTIPASS</H3></A><pre>
+If the pyramid value is more than 1, then it is quite likely that the
+initial point obtained from the input disparity is off by more than amoeba
+can handle, giving very "patchy" results.  The amoeba algorithm really
+needs to start within a pixel or so for reliable results.
+
+To handle this case, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#multipass">MULTIPASS</A> may be specified.  If MULTIPASS is turned on
+and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#disp_pyramid">DISP_PYRAMID</A> is greater than 1, then the entire correlation process is
+repeated multiple times.  At each iteration, the input image is downsampled
+so it is twice the size of the input correlation map, for an effective
+pyramid level of 1.  The result then becomes the input disparity map for
+the next iteration.
+
+So, for example, with <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#multipass">MULTIPASS</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#disp_pyramid">DISP_PYRAMID</A>=3, then input disparity
+map is 1/8 the size of the input.  The first correlation is performed with
+a 1/4 scale image pair (the full correlation, including gore passes).
+The resulting 1/4 scale disparity is then correlated with a 1/2 scale image,
+then the result of that is correlated with the full scale image to produce
+the final result.
+
+The default is not to do multiple passes.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="filter"><H3>FILTER</H3></A><pre>
+Turns on a pre-correlation low-pass <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#filter">filter</A> of the images.  This can tend
+to reduce interpolation noise; see <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#quality">Quality</A> of Results Discussion in the
+main help.
+
+Note that the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#filter">filter</A> is applied only to the full-res image.  If -<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#multipass">MULTIPASS</A>
+is also used, only the last pass is filtered.  (Downsampling does an inherent
+filtering so it is not needed).
+
+There are two low-pass filtering techniques available:
+-<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#filter">FILTER</A> is simply an NxN average of surrounding pixels (boxcar filtering),
+with N given by <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#filter_size">FILTER_SIZE</A>.  So with FILTER_SIZE=3, the 9 surrounding pixels
+(including the central pixel) are averaged. Default value is 3.
+-GAUSSFILTER uses a Gaussian convolution to lowpass the image. The sigma (or
+standard deviation) of the gaussian is given by <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#filter_size">FILTER_SIZE</A>. Default value
+is 0.9 (which roughly corresponds to a 3x3 boxcar filtering).
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="filter_size"><H3>FILTER_SIZE</H3></A><pre>
+Specifies the size of the averaging window for -<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#filter">FILTER</A> or the sigma for
+-GAUSSFILTER.  Must be an odd in case of box <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#filter">filter</A>.  See -FILTER.
+In case of GAUSSFILTER use, the sigma of the gaussian low pass is set with
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#filter_size">FILTER_SIZE</A>. One way to decide which sigma is needed/wanted, is to think about 
+the output "resolution" equivalent you want to achieve. For instance, if you 
+wanted to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#filter">filter</A> the image such that you could decimate it with a factor of 2 (
+size reduction of 2) without introducing too much aliasing, how would you 
+relate that factor of 2 with the sigma ? There is no one answer, but a general 
+relationship that is used in the literature which gives reasonable results is:
+
+sigma = 0.8 * sqrt(T^2 -1). 
+
+With T, the output virtual sampling step (would be T=2 for our example above). 
+If you wanted to smooth a bit the image, you could use T=1.2 for instance and
+compute what sigma should be.
+
+If one value is given, it applies to both the left and right inputs.  If
+two values are given, the first applies to the left and the second to the
+right.  This allows differential filtering levels, for use e.g. when
+correlating different-scale images (such as the MSL mastcams).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="pi_source"><H3>PI_SOURCE</H3></A><pre>
+Specifies where the primary input labels come from.  The default is
+PI_FROM_DISP, meaning that the labels are transferred from the (first)
+disparity input.  This preserves the history labels that the 1-D correlator
+added.  However, it presumes that the 1-D correlator itself transferred
+labels from the input images.
+
+In the uncommon case of a disparity file where the labels are insufficient,
+PI_FROM_INP can be used.  This causes the label to be transferred from the
+first <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#inp">INP</A> parameter.  This might be necessary if e.g. a synthetic disparity
+map were created which did not have all the labels of the input.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rotation"><H3>ROTATION</H3></A><pre>
+Specifies the overall frame <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#rotation">rotation</A> (in degrees) between the two images.
+A positive value says the right image should be rotated clockwise by that
+amount in order to match the left.
+
+This is not normally needed for standard stereo pairs.  However, for repointed
+pairs, or arm-camera pairs, this can significantly improve amoeba's results.
+The solution is more stable because amoeba is less likely to go off in bad
+directions looking for the proper transform, especially when the correlations
+are marginal due to noise.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="xscale"><H3>XSCALE</H3></A><pre>
+Similar to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#rotation">ROTATION</A>, but specifies the overall X-direction <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#scaling">scaling</A> factor
+between the images.  This factor applied to the right image should produce
+an image closely matching the left image's scale.
+
+See <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#rotation">ROTATION</A> or the main help for more.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="yscale"><H3>YSCALE</H3></A><pre>
+Excactly like <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#xscale">XSCALE</A>, except it applies in the Y direction (line) instead.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="feedback_coefs"><H3>FEEDBACK_COEFS</H3></A><pre>
+If <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#feedback_coefs">FEEDBACK_COEFS</A> is on, the perspective transform coefficients are
+"remembered" from one pyramid pass to the next.  So for the next stage
+of the pyramid, the starting point uses the coefficients derived from the
+previous stage.  This helps retain the "shape" of the correlation window
+mapping across pyramid levels.
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#feedback_coefs">FEEDBACK_COEFS</A> is also used for <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#gores">gores</A> transform initialization. If ON, the
+transform coefficient of the best neighbor are used to initialize the 
+current pixel.
+See main help for further details.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rot_range"><H3>ROT_RANGE</H3></A><pre>
+Establishes limits for the allowed <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#rotation">rotation</A> values.  This is accomplished
+by setting limits on the transform coefficients based on the range input,
+so it is not a perfect limit (see discussion in main help).  If <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#scale_range">SCALE_RANGE</A>
+is given but <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#rot_range">ROT_RANGE</A> is not, ROT_RANGE defaults to -5 to +5 degrees.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="scale_range"><H3>SCALE_RANGE</H3></A><pre>
+Establishes limits for the allowed scale.  This is accomplished by setting
+limits on the transform coefficients based on the scale input, so it is not
+a perfect limit (see discussion in main help).  If <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#rot_range">ROT_RANGE</A> is given but
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#scale_range">SCALE_RANGE</A> is not, SCALE_RANGE defaults to 0.9 to 1.1.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="in_coefs_range"><H3>IN_COEFS_RANGE</H3></A><pre>
+Only used with <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#in_coefs">IN_COEFS</A>. If ON, the limit on the coefficients transforms
+will be set based on <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#in_coefs">IN_COEFS</A>. The min/max of each coefficients will be
+the limit on each coefficients. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="omp_on"><H3>OMP_ON</H3></A><pre>
+Turns on or off parallel processing.  The default is on.  The main help
+describes some environment variables that can further control parallel
+processing.  Note that this program uses standard OpenMP (which is built in
+to the gcc/g++ compilers), so further details can be found in the OpenMP
+documentation.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="data_set_name"><H3>DATA_SET_NAME</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#data_set_name">DATA_SET_NAME</A> typically identifies the instrument that acquired the
+data, the target of that instrument, and the processing level of the data.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#data_set_name">DATA_SET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="data_set_id"><H3>DATA_SET_ID</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#data_set_id">DATA_SET_ID</A> value for a given data set or product is constructed
+according to flight project naming conventions.  In most cases the
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#data_set_id">DATA_SET_ID</A> is an abbreviation of the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#data_set_name">DATA_SET_NAME</A>.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#data_set_id">DATA_SET_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="release_id"><H3>RELEASE_ID</H3></A><pre>
+When a data set is released incrementally, such as every three months during
+a mission, the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#release_id">RELEASE_ID</A> is updated each time part of the data set is released.
+For each mission(or host id if multiple spacecrafts), the first release of a data
+set should have a value of "0001".
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#release_id">RELEASE_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="product_id"><H3>PRODUCT_ID</H3></A><pre>
+Specifies a permanent, unique identifier assigned to a data product by
+its producer. Most commonly, it is the filename minus the extension.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#product_id">PRODUCT_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="producer_id"><H3>PRODUCER_ID</H3></A><pre>
+Specifies the unique identifier of an entity associated with the
+production of a data set. This value is copied to the output label,
+property IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#producer_id">PRODUCER_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="producer_inst"><H3>PRODUCER_INST</H3></A><pre>
+Specifies the identity of a university, research center, NASA center or other
+institution associated with the production of a data set.
+This value is copied to the output label, property IDENTIFICATION, keyword
+PRODUCER_INSTITUTION_NAME.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="target_name"><H3>TARGET_NAME</H3></A><pre>
+Specifies a target.  The target may be a planet, satelite, ring, region, feature,
+asteroid or comet.  This value is copied to the output label, property
+IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#target_name">TARGET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="target_type"><H3>TARGET_TYPE</H3></A><pre>
+Specifies the type of a named target. This value is copied to the output
+label, property IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#target_name">TARGET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="decileft"><H3>DECILEFT</H3></A><pre>
+Whether or not to decimate the left <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#template">template</A> image if the difference
+of resolution between the left and right images allows it, that is, if
+left image resolution is at least twice higher than right image. See main 
+program help for more information.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_ratio"><H3>MAX_RATIO</H3></A><pre>
+Maximum scale difference between the Left and Right images. This is to prevent 
+unrealistic scale difference that would render the process very long with poor
+results. In the process, if the ratio is exceeded, the transform ratio between 
+the two images is limited to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#max_ratio">MAX_RATIO</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coef_scale"><H3>COEF_SCALE</H3></A><pre>
+If the transform coefficients limits are set globally (from <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#scale_range">SCALE_RANGE</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#rot_range">ROT_RANGE</A>, 
+or IN_COEF_RANGE), this allow to adjust further these limits. COEF_SCALE is a 
+percentage. Positive values will increase the limit, negative values will decrease 
+the values. For instance, if COEF_SCALE=30, then the limit [min, max] of a 
+coefficient will be increased to [min-0.3min, max+0.3max].
+If the limits are set locally (via <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#local_limit">LOCAL_LIMIT</A>), then COEF_SCALE sets the limit
+based on each pixel transfrom coefficients. For instance, for initial parameter
+a (of a,b,d,e for affine transform), the limit will be set to [a-0.3a, a+0.3a] 
+(if COEF_SCALE=30). Negative value of COEF_SCALE have no effect for local limit
+COEF_SCALE is either a 1-value or 6-values parameters. In case of 1-value, the
+same <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#scaling">scaling</A> is applied to the 6 transform parameters (a,b,f, d,e,g). Otherwise
+a value for each is necessary. Note that not all transfrom parameters are used.
+It depends on the amoeba selected.
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME=""><H3></H3></A><pre>
+Will activate local-only limits. All global method to set transform limit will 
+be invalidated. The transform coefficients limits are defined based on the 
+transform coefficients and COEF_SCALE. 
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="scaling"><H3>SCALING</H3></A><pre>
+If <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#scaling">SCALING</A> is ON, activates the possible scaling (i.e., enlargement) of the
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#template">TEMPLATE</A> patch and/or <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#search">SEARCH</A> patch to insure that the number of "real" pixels
+in the correlated patches corresponds to user input <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#template">TEMPLATE</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#search">SEARCH</A>. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="scaling_thresh"><H3>SCALING_THRESH</H3></A><pre>
+In theory, as soon as the Left image is higher resolution than the Right, ie,
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#scaling">scaling</A> between L and R &lt 1, the upscale of the Left <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#template">template</A> is activated
+(If <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#scaling">SCALING</A> is on). However, even for a pair of image with the same theoretical
+resolution (say a Nav pair), the computed <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#scaling">scaling</A> ratio is going to be around
+1, but not a perfect 1. So upscale could go ON, although it is not really 
+needed. To alleviate this problem, the upscaling is actually done if the 
+computed <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#scaling">scaling</A> ratio is less than <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#scaling_thresh">SCALING_THRESH</A>. Default is 0.8. Note that
+when <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#scaling">scaling</A> is not activated, the correlated patches are just a subset of the
+main images taken as-is. If activated, the EWA resampler is used. If one wants
+the EWA resampler to be used no matter if <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#scaling">scaling</A> is needed (for noisy image,
+this resampler has a light low-pass filtering component), set SCALING_THRESHOLD
+to 1.
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="tiling"><H3>TILING</H3></A><pre>
+If <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#tiling">TILING</A> is ON, activates the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#scaling">scaling</A> of the correlated patches due to 
+difference in <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#tiling">tiling</A> levels between the images. This option implies that <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#scaling">SCALING</A>
+must be ON (if not, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#scaling">SCALING</A> is automatically turned ON).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="decimation"><H3>DECIMATION</H3></A><pre>
+When left/right patches are scaled up to insure that they have at least <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#template">TEMPLATE</A>
+and/or <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#search">SEARCH</A> "real" pixels, their increased size lead to longer processing time.
+However, these increased patches are oversampled by construction, whether
+because of geometric <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#scaling">scaling</A> or <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#tiling">tiling</A> scaling. In order to limit the processing
+time, if <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#decimation">DECIMATION</A> is ON, the patches are going to be downsampled in such a way
+that their size is equal to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#template">TEMPLATE</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#search">SEARCH</A>. <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#decimation">Decimation</A> of the patches only
+happens if the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#scaling">scaling</A> factor is at least 2. There is no interpolation, only 
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#decimation">decimation</A> on integer grid.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="decileft"><H3>DECILEFT</H3></A><pre>
+This is a convenience parameter for backward compatibility with previous 
+version of marscor3. Essentially when <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#decileft">DECILEFT</A> is ON, then
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#scaling">SCALING</A> is ON
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#tiling">TILING</A> is OFF
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#decimation">DECIMATION</A> is ON
+Also, only the left patch is scaled and decimated (if that is possible), not the 
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#search">SEARCH</A>.
+For new use of marscor3, this parameter should not be used. 
+
+
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="stat_filter"><H3>STAT_FILTER</H3></A><pre>
+This parameter activate a median-of-sort <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#filter">filter</A> applied to the disparity
+maps. This is meant to remove outliers, and *patch* of similarly-valued 
+outliers. 
+In a truly randomly-distributed outliers situation, a regular median <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#filter">filter</A> 
+usually doesa good job at removing them. The problem with dense correlation, 
+i.e., correlation done for each pixel of the Left image with a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#template">TEMPLATE</A>, is that
+a bogus value has high chances to be replicated in the neighbooring pixels. The
+reason is that the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#template">TEMPLATE</A> content of a neighbooring pixel has more or
+less the same content that the content of the pixel. Hence, whatever in the
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#template">TEMPLATE</A> content caused a bogus measurement for a particular pixel is likely to
+be present in the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#template">TEMPLATE</A> content of the neighboor pixel and cause a similar 
+bogus measurement. It's related to the fattening effect, a well known effect in
+correlation. As a consequence, the correlation map is polluted with *patches* of
+outliers that are hard to remove with a standard median <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#filter">filter</A>.
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#stat_filter">STAT_FILTER</A> is based on the assumption that disparity changes smoothly, so 
+we're checking that the neighborood of a given pixel has a disparity similar to 
+that given pixel. To overcome the fattening effect, the neighborood is defined 
+as the correlation <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#template">template</A> size (TEMPLATE) slightly augmented by a few pixels. 
+As explained above, the reason is that a salient feature will be seen in a 
+series of neighbooring correlation window (depends on the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#template">TEMPLATE</A> size). This
+may cause a patch of uniform outliers which may satisfy the smoothness criteria.
+Therefore a neighborood slightly larger than the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#template">template</A> size is taken. 
+Two thresholds are used to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#check">check</A> the validity of a pixel:
+- the allowed disparity amplitude difference between the queried pixel and the
+  ones in the neighborood
+- the minimum number of pixels in the neighborood that need to satisfy the 
+  disparity amplitude criteria to deem the current pixel not an outlier
+
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#filter">filter</A> works like this (think of it as sort or median filter):
+For a given pixel:
+- Compute the disparity difference between the pixels of the neighborood and 
+  the disparity of that queried pixel ("remove" the line/samp offset before). 
+- Count the number of pixel whose difference is less than a threshold
+- If that number is larger than a threshold, the current pixel is valid.
+  Otherwise, it is deemed an outlier.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="stat_extent"><H3>STAT_EXTENT</H3></A><pre>
+The number of pixels beyond the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#template">TEMPLATE</A> size that will define the neighborood.
+Default is 2. So, for instance, if <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#template">TEMPLATE</A>=9 and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marscor3_level2.html#stat_extent">STAT_EXTENT</A>=2, then the
+neighborood will be a 13x13 patch.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="stat_sthreshold"><H3>STAT_STHRESHOLD</H3></A><pre>
+This variable indicates the amount of variation in terms of disparity changes
+that is allowed in the neighborood. The default is 1.2. Note that the line/samp 
+disparity has been removed as well as the scale factor between the left and
+right image.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="stat_nthreshold"><H3>STAT_NTHRESHOLD</H3></A><pre>
+Percentage (values between 0 and 100) of the required number of *smooth* pixels
+in the neighborood to validate the current pixel as a good one.
+Default is 50. A large value will force smoothness which will remove more 
+outliers but which may also remove good values that are in an area of strong
+disparity changes. A small value will have the opposite effect, that is keep as
+much inliers are possible but letting more outliers in.
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

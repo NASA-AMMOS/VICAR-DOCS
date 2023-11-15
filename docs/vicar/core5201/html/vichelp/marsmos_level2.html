@@ -1,0 +1,830 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for MARSMOS</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos.html">MARSMOS</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+There are two options for describing input images.
+ 
+Either:
+List the image file names
+ 
+Or:
+provide an ascii file with the file names listed, one per record.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+Output image containing the mosaic.
+
+If BANDS is not specified, the output will have the same <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#number">number</A> of bands
+as the input with the most bands, and all bands will be processed.  Inputs
+with fewer than that many bands repeat their last <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#band">band</A>, so bw and color images
+can be mixed.  If BANDS is specified, the output will have a single <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#band">band</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="idx_out"><H3>IDX_OUT</H3></A><pre>
+Specifies the (optional) output filename for the index file.
+
+The index file contains, for each pixel, a halfword integer (16 bit signed)
+identifying which image the pixel came from.  0 indicates no value (black
+in the mosaic).  Numbers from 1-n match the order of files in the input list
+file (or <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#inp">INP</A> parameter, if a list file isn't given).  For most mosaics, the
+file could be converted to byte using CFORM (half is used to support more
+than 255 input files).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="icm_out"><H3>ICM_OUT</H3></A><pre>
+Specifies the (optional) output filename for the ICM file.
+
+The ICM file is an Image Coregistration Map.  It is a two-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#band">band</A> float file
+containing the line, sample coordinate of the input pixel used for the point.
+This is the same basic format as correlation maps such as MARSCOR3 produces,
+except that multiple images are involved (thus the need for the index file,
+in <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#idx_out">IDX_OUT</A>).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="navtable"><H3>NAVTABLE</H3></A><pre>
+Corrected navigation filename.
+If marsnav was run on the input images it created a table of corrected
+pointing parameters. If you refer to this table using <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#navtable">NAVTABLE</A> it
+will override the pointing parameters (e.g. azimuth and elevation) in the
+picture labels, giving you a better registered mosaic.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="input_range"><H3>INPUT_RANGE</H3></A><pre>
+The range of inputs to actually mosaic.  Normally all inputs are mosaicked.
+However, if this parameter is specified, all inputs will be used to calculate
+the output projection, but only the inputs in the specified range will be
+mosaicked.  This allows the generation of a large mosaic to be spread <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#out">out</A>
+over several nodes on a network, with a program like FASTMOS used to combine
+all the outputs together.  Note that any underlays (annotation that goes
+under the image) should be put on the *last* mosaic only for FASTMOS;
+overlays (that show on top of everything) should be on all images (or at
+least the first).
+
+The input numbers are 1-based.  If only one <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#number">number</A> is specified, it is the
+starting <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#number">number</A>; the end defaults to the # of inputs.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="bias"><H3>BIAS</H3></A><pre>
+Specifies values to multiply DN values of each input
+picture. Defaults to 1.0 for each picture. For example, 
+if there are five input images, then try
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#bias">BIAS</A>=(1.0, 1.33, 0.8, 1.90, 1.0)
+
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#bias">BIAS</A> is obsolete now; it has been replaced by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#brtcorr">BRTCORR</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="brtcorr"><H3>BRTCORR</H3></A><pre>
+Specifies an input file containing brightness corrections.  This is an
+XML file that comes from a program like marsbrt which contains correction
+factors for each image.  These factors may be additive or multiplicative
+constants to be applied to the image, or other corrections that may be
+implemented in the future.
+
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#brtcorr">BRTCORR</A> mechanism is intended to replace <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#bias">BIAS</A>.  Using them together
+should be avoided because the labels will not reflect both (the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#bias">BIAS</A>
+overrides).  If you do, however, the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#brtcorr">BRTCORR</A> corrections are applied to
+the data first, before <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#bias">BIAS</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="azout"><H3>AZOUT</H3></A><pre>
+The commanded "azimuth" of the output image. 
+Defaults to the average input azimuth.
+Measured in the coordinate system specified by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#coord">COORD</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="elout"><H3>ELOUT</H3></A><pre>
+The commanded "elevation" of the output image. 
+Defaults to the average input elevation.
+Measured in the coordinate system specified by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#coord">COORD</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="twist"><H3>TWIST</H3></A><pre>
+Sets the "<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#twist">twist</A>" value for the output camera.  This is a rotation
+applied about the pointing axis of the camera which has the effect of
+rotating the output mosaic.  Measured in degrees, with positive resulting
+in a counterclockwise rotation of the output mosaic (because it causes
+a clockwise rotation of the camera).
+
+Note that setting <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#twist">twist</A> to 0 does not by any means guarantee a "flat
+horizon" or anything else; most models have a natural <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#twist">twist</A> to them,
+which can be significant.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="outsize"><H3>OUTSIZE</H3></A><pre>
+Overrides size of the output image.  Specifying <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#outsize">OUTSIZE</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#outoff">OUTOFF</A> will cause
+the same projection to be generated even with different input images (normally
+these values are derived from the input images).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="outoff"><H3>OUTOFF</H3></A><pre>
+Overrides x/y offset values for output.  This offset is the distance from the
+camera coordinate origin to the image origin (0-based) and affects where the
+center of the projection falls in the output.  Specifying <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#outoff">OUTOFF</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#outsize">OUTSIZE</A>
+will cause the same projection to be generated even with different input
+images (normally these values are derived from the input images).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="outpos"><H3>OUTPOS</H3></A><pre>
+Overrides the camera position.  This combined with <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#azout">AZOUT</A>/<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#elout">ELOUT</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#twist">TWIST</A>
+allow the mosaic to be generated from any point of view.  Note that severe
+parallax can be introduced by changing the camera position.  See also <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#deltaz">DELTAZ</A>.
+Measured in the coordinate system specified by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#coord">COORD</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="deltaz"><H3>DELTAZ</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#deltaz">DELTAZ</A> value is added to the Z component of the camera position.
+This can be more convenient than using <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#outpos">OUTPOS</A> in certain circumstances,
+e.g. moving the camera up to achieve a vertical point of view (combined
+with <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#elout">ELOUT</A>), because you do not need to obtain the initial camera position
+a priori.
+
+If both <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#outpos">OUTPOS</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#deltaz">DELTAZ</A> are specified, the effects are cumulative:  the
+position is set to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#outpos">OUTPOS</A> and then <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#deltaz">DELTAZ</A> is applied.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="zoom"><H3>ZOOM</H3></A><pre>
+Sets the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#zoom">zoom</A> factor for the image.  A value of 1.0 results in the "natural"
+size for the mosaic; 0.5 is half size, etc.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="shift"><H3>SHIFT</H3></A><pre>
+There are two different ways of handling a subframe (or superframe, in the
+case of a mosaic) for current camera models.  The historical method has been
+to use a "nominal" model and externally handle an offset from camera model
+to physical file coordinates.  This is the intent of the Offset values, which
+are automatically calculated but may be overridden via <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#outoff">OUTOFF</A>.
+
+A newer method is to incorporate the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#shift">shift</A> (translation) represented by
+these offsets into the camera model itself.  The offsets thus become 0.
+
+If <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#shift">SHIFT</A> is specified, this newer method is used.  The default setting
+(NOSHIFT) retains the use of the offsets.
+
+Note that the output mosaic should be identical in either case!  The only
+difference will be in how the camera model in the label is formulated.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="band"><H3>BAND</H3></A><pre>
+The BSQ input file <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#band">band</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#number">number</A>. Default is to process all bands (e.g. color).
+Providing a value will cause only that one <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#band">band</A> to be processed.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="normal"><H3>NORMAL</H3></A><pre>
+The local mars <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">surface</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#normal">normal</A> vector coordinate system specified by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surf_coord">SURF_COORD</A> 
+parameter (defaults to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">surface</A> fixed).
+For most pan/tilt cameras, if the lander is not tilted this vector
+would be: <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#normal">normal</A>=(0,0,-1).  ie: x_component=0, y_component=0, z_component=-1.
+This need not be a unit vector.  This vector is used to define the
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">surface</A> plane to which image points are projected in order to minimize
+parallax.
+For SPHERE1/2 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">surface</A> models, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#normal">normal</A>'s first parameter is used to
+denote sphere's radius.  Thus to describe sphere of radius R, user
+would specify <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#normal">normal</A>=(R, 0, 0).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ground"><H3>GROUND</H3></A><pre>
+Any point on the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">surface</A>, in coordinate system specified by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surf_coord">SURF_COORD</A> parameter
+(defaults to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">surface</A> fixed).  This defines where the tilted plane is in space.  
+Although any point may be used, normally the point just "under" the origin is selected.
+Defaults:
+Mars Pathfinder:  (0.0, 0.0, 0.0)       (lander zero point is on the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#ground">ground</A>)
+Mars 98 Lander:   (0.0, 0.0, 1.64)      (lander zero point is on top of deck)
+MER           :   (0.0, 0.0, 0.294)
+For MER images taken on top of the lander, the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#ground">ground</A> is roughly at (0.0, 0.0, 0.7)
+For SPHERE1/2 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">surface</A> models, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#ground">GROUND</A> parameter is used to denote sphere's
+center.  
+    
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="surf_coord"><H3>SURF_COORD</H3></A><pre>
+The coordinate system that <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">surface</A> parameters like <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#ground">GROUND</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#normal">NORMAL</A> are defined in.
+For valid values refer to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#coord">COORD</A> parameter description.  The interpretation of the 
+values is dependent on the mission. Defaults to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">surface</A> fixed coordinate system.
+Note that no validation is done for input strings because <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#coord">COORD</A> is using the same
+values.  So user needs to be extra careful in specifying <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surf_coord">SURF_COORD</A> value.  For 
+example <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#coord">COORD</A>=local would be correctly interpreted to mean LOCAL_LEVEL because of
+validation process.  On the other hand specifying <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surf_coord">SURF_COORD</A>=local would lead
+to underlying code treating the input value as invalid and reverting to default
+which is FIXED frame.  So the values for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surf_coord">SURF_COORD</A> should be spelled exactly as
+found in the list of valid values for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#coord">COORD</A> parameter.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="surface"><H3>SURFACE</H3></A><pre>
+The type of mars <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">surface</A> to use. The surface is used to intercept view rays
+emanating from the cameras in order to model <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#out">out</A> parallax between the
+stereo cameras. The options are <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">surface</A>=INFINITY which means no surface
+is used, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">surface</A>=PLANE (the default case). If surface = PLANE then the plane
+is defined by the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#normal">NORMAL</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#ground">GROUND</A> parameters.  For the cases when PLANE 
+doesn't match local topography sufficiently well, here are two sphere <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">surface</A>
+models: <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">surface</A>=SPHERE1 and surface=SPHERE2.  SPHERE1 is useful to model
+convex surfaces like hills, it returns closest(first) ray-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">surface</A> intersection 
+point.  SPHERE2 is useful to model concave surfaces, like crater when the
+camera point is outside looking in, it returns farthest(second) ray-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">surface</A> 
+intersection point.  For the case when camera is inside the sphere <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">surface</A>, 
+like rover sitting in the crater, there is only a single intersection point
+and SPHERE1 and SPHERE2 behave exactly the same. Last, MESH is a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">surface</A>
+model defined by a mesh file (.obj) which path is given with <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surf_mesh">SURF_MESH</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="surf_mesh"><H3>SURF_MESH</H3></A><pre>
+Mesh OBJ file to use as the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">surface</A> model. For the mesh to be used,
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">SURFACE</A> must be set to MESH. The coordinates of the mesh vertices can be 
+expressed in any CS. However the mesh CS must be supplied via <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surf_csfile">SURF_CSFILE</A>.
+If <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surf_csfile">SURF_CSFILE</A> is not used, then the mesh is assumed to be to the CS that
+results from <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#coord">COORD</A> or <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surf_coord">SURF_COORD</A>
+
+VARI <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surf_csfile">SURF_CSFILE</A> 
+File name of a vicar file whose CS (contained in the labels) will be read and
+assigned to the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">SURFACE</A> model. The type of image and its content are of no
+interest, we are just reading the CS. That CS will supersede any other <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">surface</A> 
+CS definition (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#coord">COORD</A> or <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surf_coord">SURF_COORD</A>). Its typical use is to supply a CS to a
+given mesh file (expectedly the XYZ from which the mesh is computed from, but
+doesn't have to). But <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surf_csfile">SURF_CSFILE</A> could be use to define a CS in which <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#normal">NORMAL</A> 
+and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#ground">GROUND</A> for a PLANE <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">surface</A> are expressed in.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="maxnl"><H3>MAXNL</H3></A><pre>
+Maximum # output picture lines.
+Defaults to 30000.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="maxns"><H3>MAXNS</H3></A><pre>
+Maximum # output picture samples.
+Defaults to 30000.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="number"><H3>NUMBER</H3></A><pre>
+Causes the program to place an ASCII <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#number">number</A> into the mosaic at the center of
+where each input picture falls.  Numbers begin at 1 and increase in the
+order of the filenames in the input.  This permits one to determine which
+picture populated which part of the mosaic.  Defaults to NONUMBER.
+
+The DN to use for the numbers is set by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#number_dn">NUMBER_DN</A>, and the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#zoom">zoom</A> factor for
+the numbers by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#number_zoom">NUMBER_ZOOM</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="number_dn"><H3>NUMBER_DN</H3></A><pre>
+The DN to use for the image numbers.  See <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#number">NUMBER</A> keyword.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="number_zoom"><H3>NUMBER_ZOOM</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#zoom">zoom</A> factor to use for the image numbers (i.e. how big the numbers are).
+Must be a positive integer, 1 is the smallest possible.  See <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#number">NUMBER</A> keyword.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="number_start"><H3>NUMBER_START</H3></A><pre>
+Specifies the starting point for the image numbers (i.e. the first input is
+assigned this <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#number">number</A> for the image number overlays, and they increment from
+there).  Normally this will be 1, but could be set differently if only part
+of a larger mosaic is being generated.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="footprt"><H3>FOOTPRT</H3></A><pre>
+Causes "footprints" to be drawn around each input image in the output
+mosaic.  This is useful to show overlap of the images, and is often used
+in conjunction with <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#number">NUMBER</A>.
+
+There are three values:
+
+NOFOOTPRINT - No footprint is displayed.  This is the default.
+FOOTPRINT - Shows the footprint only where the edge of the image is "on top".
+    Useful to see which image is laid down first.  If the DN (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#foot_dn">FOOT_DN</A>) has
+    insufficient contrast, the footprint may not be very visible, since it
+    is interpolated like <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#normal">normal</A> pixels.
+OVERLAP - shows the entire footprints of all images, even if another image
+    overlaps the edge of the input.  Useful to see how much overlap there is
+    between images.  OVERLAP mode will slow down the program down somewhat,
+    since the borders are drawn in after the mosaic is created (to ensure that
+    all borders are drawn).
+
+The DN to use for the footprints is set by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#foot_dn">FOOT_DN</A>.  Note that the footprint
+replaces (hides) the outer row of pixels in the image.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="foot_dn"><H3>FOOT_DN</H3></A><pre>
+The DN to use for the footprints.  See <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#footprt">FOOTPRT</A> keyword.
+
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#foot_dn">FOOT_DN</A> is an array, allowing color footprints to be created.  Each element
+in <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#foot_dn">FOOT_DN</A> is used in sequence for the corresponding <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#band">band</A>.  If not enough
+elements are present in <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#foot_dn">FOOT_DN</A>, the last value is repeated.  A value of 0
+is treated as transparent, i.e. that <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#band">band</A> is not touched by the footprint.
+
+So for a color mosaic with range 0-4095, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#foot_dn">FOOT_DN</A>=4095 will plot footprints in
+white, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#foot_dn">FOOT_DN</A>=\(1,4095,4095\) will plot them in cyan, and
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#foot_dn">FOOT_DN</A>=\(0,4095,4095\) will plot them in something between cyan and white,
+dependeing on the image content of the first <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#band">band</A>.  Note that <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#foot_dn">FOOT_DN</A> is a
+floating point <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#number">number</A>, so <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#foot_dn">FOOT_DN</A>=\(0.1,4095,4095\) on an integer image will
+put a true 0 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#out">out</A> for the red <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#band">band</A> without triggering the transparency check.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="tau"><H3>TAU</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#tau">Tau</A> is a measure of atmospheric opacity.  The default for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#normal">normal</A> Mars conditions
+is 0.6. Higher <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#tau">tau</A> means more dust in the atmosphere.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rad"><H3>RAD</H3></A><pre>
+Keyword paramter that selects radiometric correction mode of the input images.
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#rad">RAD</A> (the default) enables the correction (for missions/instruments which support
+it); NORAD disables it; ZENITH_SCALED_RAD the radiometry you'd get if the sun
+were at zenith on a clear day.  The scaling factor is a combination of solar
+elevation and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#tau">tau</A>, and will have the effect of brightening up images that
+were taken near sunset.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="dnscale"><H3>DNSCALE</H3></A><pre>
+DN scaling factor.  This factor is used to convert between physical
+radiometric units (watts/(meter**2, steradian, micron)) and DN's for the
+output mosaic.  The formula is:
+
+true_radiance = offset + (factor * DN)
+
+where "offset" is 0.0 in the current implementation, and "factor" is
+1.0 / <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#dnscale">DNSCALE</A> (making the formula equivalently:  offset + (DN / DNSCALE)).
+The offset and factor (1.0/<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#dnscale">DNSCALE</A>) are written to the output mosaic label.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="dnscale_in"><H3>DNSCALE_IN</H3></A><pre>
+Three-state keyword parameter to control whether or not to apply scaling
+parameters to reconstruct floating point values.
+
+RESCALE says to do the conversion, and reconstitute the float based on the
+RADIANCE_* keywords.  Note that if there are no RADIANCE_* keywords,
+this is a no-op, so it doesn't hurt to turn this on for non-scaled images.
+
+NOSCALE says to not to the conversion.  This is what we do now.  If your
+inputs are dynamically scaled, you'll probably get surprising results.
+
+AUTOSCALE says to figure it <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#out">out</A> based on the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#dnscale_out">DNSCALE_OUT</A> parameter (see
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#dnscale_out">DNSCALE_OUT</A> for details) and -ZENITH_SCALED_RAD flag. If DNSCALE_OUT is STATIC,
+then it is NOSCALE; if <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#dnscale_out">DNSCALE_OUT</A> is DYNAMIC/IDENTIT or <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#rad">RAD</A>=ZENITH_SCALED_RAD,
+then it is RESCALE.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="dnscale_out"><H3>DNSCALE_OUT</H3></A><pre>
+Three-state keywork parameter to scale output DN values.
+
+If -STATIC is enabled, then the value specified by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#dnscale">DNSCALE</A> will be used
+as the DN scaling factor (note the unit scaling factor as well) for all
+radiometric models supplied.
+
+If -DYNAMIC is enabled, then the maximum responsivity value across all
+radiometric models will be used as the DN scaling factor (note the unit
+scaling factor as well).
+
+If -IDENTITY is enabled, then no scaling will be applied.
+ 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="config_path"><H3>CONFIG_PATH</H3></A><pre>
+A colon-separated list of directories in which to look for configuration
+and calibration files.  Environment variables are allowed in the list
+(and may themselves contain colon-separated lists).  The directories are
+searched in order for each config/cal file when it is loaded.  This allows
+multiple projectes to be supported simultaneously, and allows the user to
+override any given config/cal file.  Note that the directory structure below
+the directories specified in this path must match what the project expects.
+For example, Mars 98 expects flat fields to be in a subdirectory named
+"flat_fields" while Mars Pathfinder expects them to be directly in the
+directory specified by the path (i.e. no intermediate subdirectories).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="match_method"><H3>MATCH_METHOD</H3></A><pre>
+Specifies a method for pointing corrections.
+
+Loose method matches with pointing parameters of the image.
+Tight method matches with unique id of the image.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="match_tol"><H3>MATCH_TOL</H3></A><pre>
+Tolerance value for matching pointing parameters in the pointing corrections
+file.  Used if <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#match_method">MATCH_METHOD</A>=LOOSE
+Default value is pretty arbitrary, though seems to work well so far....
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="point_method"><H3>POINT_METHOD</H3></A><pre>
+Specifies a mission-specific pointing method to use.  Normally this
+parameter is not used, in which case the "default" pointing methods
+are used.  Some missions may have special, or alternate, pointing
+methods available, which are indicated by this string (for example,
+backlash models, using arm joint angles instead of x/y/z/az/el, etc).
+A substring search is used, so multiple methods (where that makes sense)
+can be specified by separating the keywords with commas.
+
+Note that nav files created using one pointing method will most likely
+not be compatible with a mosaic created using a different pointing method.
+
+The methods available vary per mission, but some methods available at
+the time of this writing are:
+
+BACKLASH : Mars 98 SSI only.  Selects a backlash pointing model,
+which adjusts the telemetered azimuth and elevation values based on
+knowledge of the camera's mechanical backlash and the direction the
+motor was travelling when the image was taken.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nosite"><H3>NOSITE</H3></A><pre>
+Disables all label-derived parameters to the Site mechanism which underlies
+coordinate systems.  This forces all sites to be identical, with all rotations
+and offsets set the same.  In the case of MPF or Mars 98, this disables
+the lander quaternion and offset (sets them to identity and 0, respectively).
+This option should not be used with images taken from different vantage
+points (e.g. the spacecraft moved, or mixing a lander and a rover) or
+invalid results will be obtained.  The use of this option invalidates the
+Fixed coordinate frame; any values reported in the Fixed frame will not
+correctly reflect the orientation of the lander/rover.
+
+Obviously, this option should be rarely used; it is intended for when the
+image labels defining the site are invalid or inconsistent.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="data_set_name"><H3>DATA_SET_NAME</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#data_set_name">DATA_SET_NAME</A> typically identifies the instrument that acquired the
+data, the target of that instrument, and the processing level of the data.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#data_set_name">DATA_SET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="data_set_id"><H3>DATA_SET_ID</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#data_set_id">DATA_SET_ID</A> value for a given data set or product is constructed
+according to flight project naming conventions.  In most cases the
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#data_set_id">DATA_SET_ID</A> is an abbreviation of the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#data_set_name">DATA_SET_NAME</A>.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#data_set_id">DATA_SET_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="release_id"><H3>RELEASE_ID</H3></A><pre>
+When a data set is released incrementally, such as every three months during
+a mission, the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#release_id">RELEASE_ID</A> is updated each time part of the data set is released.
+For each mission(or host id if multiple spacecrafts), the first release of a data
+set should have a value of "0001".
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#release_id">RELEASE_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="product_id"><H3>PRODUCT_ID</H3></A><pre>
+Specifies a permanent, unique identifier assigned to a data product by
+its producer. Most commonly, it is the filename minus the extension.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#product_id">PRODUCT_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="producer_id"><H3>PRODUCER_ID</H3></A><pre>
+Specifies the unique identifier of an entity associated with the
+production of a data set. This value is copied to the output label,
+property IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#producer_id">PRODUCER_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="producer_inst"><H3>PRODUCER_INST</H3></A><pre>
+Specifies the identity of a university, research center, NASA center or other
+institution associated with the production of a data set.
+This value is copied to the output label, property IDENTIFICATION, keyword
+PRODUCER_INSTITUTION_NAME.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="target_name"><H3>TARGET_NAME</H3></A><pre>
+Specifies a target.  The target may be a planet, satelite, ring, region, feature,
+asteroid or comet.  This value is copied to the output label, property
+IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#target_name">TARGET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="target_type"><H3>TARGET_TYPE</H3></A><pre>
+Specifies the type of a named target. This value is copied to the output
+label, property IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#target_name">TARGET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="interp"><H3>INTERP</H3></A><pre>
+Keyword parameter that turns on or off interpolation of the output
+images pixel values.  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#interp">INTERP</A> (the default) enables the interpolation, 
+while NOINTERP disables it.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rsf"><H3>RSF</H3></A><pre>
+Rover State File.  This is a list of filenames to load containing
+Rover State information.  These files contain position and orientation
+information for a rover (or other mobile spacecraft) at various sites.
+They are in XML format.  See the "Rover Motion Counter (RMC) Master File SIS"
+for details on these files.
+
+Rover State Files have a priority order.  The files listed first have
+the highest priority.
+
+Environment variables may be used in the list.
+
+For MER, if a directory is specified, then that directory is searched for
+RMC Master files and any found are loaded.  The directory structure and
+filename convention is covered in the RMC SIS.  The directory specified
+is the one containing "master", so if &ltdir&gt is the name specified in the
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#rsf">RSF</A> parameter, the following files will be searched for:
+
+&ltdir&gt/master/<mission>_Master.svf
+&ltdir&gt/master/<mission>_Site_<n>_Master.rvf
+
+The name of each file loaded is printed to the stdout log for reference.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="debug_rsf"><H3>DEBUG_RSF</H3></A><pre>
+If enabled, this causes the internal database of RMC locations to be
+printed <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#out">out</A> to the stdout log.  This is after the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#rsf">RSF</A> files have been
+loaded and the coordinate systems read from the input label(s).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord"><H3>COORD</H3></A><pre>
+The coordinate system in which mosaic is being projected and to use for 
+the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#azout">AZOUT</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#elout">ELOUT</A> parameters.
+The interpretation of the values is dependent on the mission.  Some
+representative missions are listed here:
+
+Fixed - The Fixed frame (default).  This is the ultimate reference frame
+    (see also <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#fixed_site">FIXED_SITE</A> for rover missions).
+Instrument - The "natural" frame for the instrument (of the first input
+    image).  MPF: Lander or Rover; M98: MVACS; MER: Rover.
+Site - A major Site frame.  For rover missions, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#coord_index">COORD_INDEX</A> specifies which
+    Site frame to use.  Non-rover missions treat this as Fixed.
+Rover - An instance of the Rover frame.  For rover missions, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#coord_index">COORD_INDEX</A>
+    specifies which instance of the rover frame to use.  Non-rover mission
+    use the spacecraft frame (e.g. Lander for M98).
+Local_Level - An instance of a Local Level frame.  This is typically
+    coincident with the Rover frame (in XYZ) but oriented toward North
+    like the Site and Fixed frames.  For MER, this is an instance of a
+    Drive index move.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord_index"><H3>COORD_INDEX</H3></A><pre>
+The index specifies which instance of a coordinate system to use.  It is
+currently applicable only to rover-based missions, but could have other
+uses.  The index is equivalent to the Rover Motion Counter (RMC) for MER
+and FIDO.
+
+For MER/FIDO, there are many Site frames.  Each is numbered with a single
+index.  For Site Frames, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#coord_index">coord_index</A> specifies which to use.  Likewise,
+there are many Local_Level and Rover frames, corresponding to values of
+the RMC.  The multiple instances of this frame are selected by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#coord_index">COORD_INDEX</A>.
+
+Generally <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#coord_index">COORD_INDEX</A> defaults sensibly so you don't usually need to
+specify it.  It will default to the instance used by the first input.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="fixed_site"><H3>FIXED_SITE</H3></A><pre>
+Specifies which major Site is the "Fixed" Site for this run.
+
+Historically, MPF and M98 had a single "<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#surface">Surface</A> Fixed" frame which never
+moved, and which all other coordinate system frames were referenced to.
+With the advent of long-range rovers (such as MER and FIDO), that became
+insufficient.  The rover traverses far enough that errors in knowledge of
+coordinate system offset and orientation become unacceptable.
+
+For this reason, a system of major Sites was introduced.  Periodically
+during the mission, a Site frame is declared.  This then becomes the
+reference frame for all activities until the next Site is declared.
+References are kept local, and errors don't propogate across Sites.
+
+However, if images from more than one Site are combined together, the
+Site's must be placed relative to each other.  Therefore a single reference
+frame is still needed to combine different sites.
+
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#fixed_site">FIXED_SITE</A> parameter controls which of the major Site frames is
+the reference ("fixed") site for this program run.  This fixed frame
+can vary in different program runs, but is constant throughout one
+execution.
+
+If not specified, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#fixed_site">FIXED_SITE</A> defaults to the minimum Site <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#number">number</A> (i.e.
+lowest numbered, or earliest chronologically) used in all input images.
+Normally this default is sufficient; rarely must <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#fixed_site">FIXED_SITE</A> be specified.
+
+One or more Rover State Files must usually be specified in order to combine
+image from more than one Site.  These describe the relationship between
+sites.  See the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmos_level2.html#rsf">RSF</A> parameter.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="solution_id"><H3>SOLUTION_ID</H3></A><pre>
+Specifies which solution ID to use for pointng corrections.
+
+There are potentially many different definitions for the same coordinate
+system.  These are identified via a unique Solution ID.  If this parameter
+is given, only the specified solution's definition is searched for. 
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

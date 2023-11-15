@@ -1,0 +1,98 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for GTMSS</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/gtmss.html">GTMSS</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/gtmss_level2.html#inp">INP</A> specifies the input data sets.  Up to 48 are allowed.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="size"><H3>SIZE</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/gtmss_level2.html#size">SIZE</A> parameter may be used when only a sub-region of each image is to
+be concatenated; it has the format <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/gtmss_level2.html#size">SIZE</A>=(<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/gtmss_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/gtmss_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/gtmss_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/gtmss_level2.html#ns">NS</A>), where the parameters
+are starting line, starting sample, number of lines, and number of samples,
+respectively.  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/gtmss_level2.html#size">SIZE</A>=(1,1,10,10), for example, will cause gtmss to only look
+at the first ten samples of each of the first ten lines in each image, when
+performing the concatenation. The default (1,1,0,0) means use the whole image.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sl"><H3>SL</H3></A><pre>
+INTEGER - Starting line (see <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/gtmss_level2.html#size">SIZE</A>)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ss"><H3>SS</H3></A><pre>
+INTEGER - Starting sample (see <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/gtmss_level2.html#size">SIZE</A>)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nl"><H3>NL</H3></A><pre>
+INTEGER - Number of lines (see <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/gtmss_level2.html#size">SIZE</A>)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ns"><H3>NS</H3></A><pre>
+INTEGER - Number of samples (see <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/gtmss_level2.html#size">SIZE</A>)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="toler"><H3>TOLER</H3></A><pre>
+As each image is butted, the mappings are checked for whether they
+continue smoothly across the seam.  The default tolerance of one
+millionth of a pixel allows for a fair amount of numeric error in
+the calculations, which should always be carried <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/gtmss_level2.html#out">out</A> in double
+precision.
+
+See the main help for other checks on the mapping (coordinate system,
+projection, datum, rotation, scale, etc must all be the same).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mapck"><H3>MAPCK</H3></A><pre>
+The default, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/gtmss_level2.html#mapck">MAPCK</A>, will do GeoTIFF map checking (or do nothing if there
+are no GeoTIFF labels).  Using the other option, NOMAPCK, is useful to
+add extra pixels to the bottom of a GeoTIFF image, or to adjoin
+an image that is already known to be mapped correctly but doesn't have
+a GeoTIFF label.  The first, or top, image must have a correct
+GeoTIFF label.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="overlap1"><H3>OVERLAP1</H3></A><pre>
+Use if images overlap one pixel, as in DMA DTED.  
+
+The program will strip one pixel between each image, from the leftmost
+image of each pair.  The extra pixel in the last image is NOT stripped.
+So two 601 pixel images will concatenate into a 1201 pixel image.
+
+If geotiff labels are present, the location checking will account for
+the overlap pixel.  If the images do not, in fact, have an overlap and
+this keyword is used, an error would be reported if the geotiff labels
+were present, because there would be a missing pixel.
+
+Bottom line for geotiff labels, if there is not a clean butt or an overlap
+of one pixel, you have to use imcopy to cut one of the images or 
+featherv to mosaic the images.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

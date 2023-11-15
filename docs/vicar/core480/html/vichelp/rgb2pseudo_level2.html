@@ -1,0 +1,54 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for RGB2PSEUDO</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/rgb2pseudo.html">RGB2PSEUDO</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+INP specifies the input file name(s).  Normally, INP would be three
+BYTE images, representing (red, green, blue) respectively.  It could
+also be a single 3-band file.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+OUT specifies the names of the two output files.  The first output file
+is the name of an image file which will be a BYTE format VICAR image.
+The DN of each pixel represents a color given by the pseudo-color table
+in the second output file.
+
+The second output file is the name of a lookup table file which contains
+the 256 colors to be used to display the image.  It is an IBIS "Tabular"
+file, containing the three (red, green, blue) lookup tables.  This file
+is compatible with VIDS (using JLOAD-PSEUDO or JLOAD-STRETCH) and 
+Pixel Pusher (on the Macintosh; use "Open New Transfer" to view it).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nbits"><H3>NBITS</H3></A><pre>
+NBITS is the magic parameter. It is used as follows.
+
+The color of each pixel in the input is determined by taking the NBITS
+most significant bits of the red, green, and blue pixel values, and
+shifting them together to fit into one integer.  A histogram is collected
+giving the frequency of each color in the input, and the 254 most common
+colors (plus black and white) are selected.  Each of the remaining colors
+is then mapped to its nearest match (euclidean distance) in the 256 chosen.
+
+NBITS should be 3, 4, or 5.  Choosing 3 bits will force the 256 colors
+to be further apart from one another, and often gives the best results
+on a picture with a lot of disparate colors.  Five bits will tend to allow
+the chosen colors to be more similar, and is thus the best choice when 
+an image contains gradual shading.  For a quick look, 4 bits almost always
+gives reasonable results (and is thus the default). 
+
+I have found, however, that if you want the best, it pays to run all three
+and compare the results.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

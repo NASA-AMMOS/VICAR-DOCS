@@ -1,0 +1,111 @@
+<HTML>
+<HEAD><title>HTML Help for CFORM</title></HEAD>
+<BODY>
+<H1>Help for CFORM</H1>
+<pre>
+PURPOSE
+  CFORM is a VICAR applications program which converts images between any
+  of the recognized data formats and performs linear transformations
+  on images.
+
+EXECUTION
+
+  CFORM  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#inp">INP</A>  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#out">OUT</A>  PARAMS
+
+  where <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#inp">INP</A> and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#out">OUT</A> are input and output file parameters and PARAMS are
+  other parameter that are described in Tutor mode.
+
+METHOD
+
+  The program reads each image line into a buffer and treats the contents
+  of the buffer as data of type implied by the label.  Byte data are read
+  in as halfwords.  A simple linear function (stretch) is then applied to 
+  these data and they are written <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#out">out</A> in the output format specified.
+
+  If no format code is specified for <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#out">OUT</A> the following action is taken:
+    1.  If input format is BYTE, then output format is HALF.
+    2.  If input format is not BYTE, then output format is BYTE.
+ COMPLEX DATA:
+
+  The linear relation between IN and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#out">OUT</A> must be qualified for complex
+  data according to the following table:
+
+       INPUT        OUTPUT       Transformation Type
+      Format        Format
+
+      non-complex   complex       <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#out">OUT</A> = (IN*<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#sl">SL</A>+OF) + 0.0i
+      complex       non-complex   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#out">OUT</A> = |IN| * <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#sl">SL</A> + OF
+      complex       complex       <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#out">OUT</A> = IN * <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#sl">SL</A> + OF
+<A NAME="examples">EXAMPLES</A>
+
+  CFORM A B (1,1,10,20) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#irange">IRANGE</A>=(10,20) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#orange">ORANGE</A>=(-20,2000) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#oform">OFORM</A>=FULL
+    Data set B is fullword integer where the values have been scaled
+    linearly such that 10 -&gt -20 and 20 -> 2000.  Only the first 10
+    lines and 20 samples of A are passed to B.
+
+  CFORM A B <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#oform">OFORM</A>=HALF <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#so">SO</A>=(2,0)
+    Data set B's format is a halfword integer, with each input value
+    multiplied by 2.
+RESTRICTIONS
+
+ The maximum permitted line length (bytes per line) is 60,000 for BYTE
+ format and 120,000 otherwise.
+<A NAME="CogProg">COGNIZANT PROGRAMMER</A>
+
+Written by: J. J. Lorre    18 April 1980
+
+REVISIONS:
+
+  1983-06 Dan Stanfill - Converted to VAX.
+  1985-02 L. W. Kamp - Deleted FORMAT parameter, check for overflow in real-to-integer conversion, fixed test file.
+  1988-01 Florance Moss - Put conversion factors into the label.
+  2018-03-29 W. L. Bunch - Added dead code to work around gfortran optimizer bug. When compiling in 32-bits,
+             the optimizer would prevent certain loops from executing. Here's an example of the dead code:
+
+     C        This dead code (NSO is always &gt 0) is inserted to prevent the
+     C        optimizer from breaking the incrementing of J.
+     C        Current gfortran version is 4.8.5-11.el7.
+     C        When gfortran is updated, this can be removed to test for a fix.
+     C        Run tstcform.pdf and compare output with tstcform.log.
+              if (NSO.lt.0) then
+                 write(*,*) "j=",j
+              endif   
+
+<A NAME="CogProg">Current Cognizant Programmer:  W. L. Bunch</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#inp"><H3>INP</H3></A>
+Input file name
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#out"><H3>OUT</H3></A>
+Output file name
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#size"><H3>SIZE</H3></A>
+Standard VICAR <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#sl"><H3>SL</H3></A>
+Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#ss"><H3>SS</H3></A>
+Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#nl"><H3>NL</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#ns"><H3>NS</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#irange"><H3>IRANGE</H3></A>
+Pair of numbers for performing
+stretch.  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#orange">ORANGE</A> must also be
+specified.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#oform"><H3>OFORM</H3></A>
+Output storage format.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#orange"><H3>ORANGE</H3></A>
+Output range values for stretch.
+(See <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#irange">IRANGE</A>.)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#binary"><H3>BINARY</H3></A>
+Specifies that <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#binary">binary</A> labels
+must be copied to the output
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform_level2.html#so"><H3>SO</H3></A>
+(Slope,offset) for linear
+transformations.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/cform.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

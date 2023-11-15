@@ -1,0 +1,434 @@
+<HTML>
+<HEAD><title>HTML Help for MARSTIE</title></HEAD>
+<BODY>
+<H1>Help for MARSTIE</H1>
+<pre>
+PURPOSE:
+To gather tiepoints for a set of overlapping images, either manually or
+automatically.  The resulting tiepoints are output in <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#out_tpt">OUT_TPT</A> for use by
+other programs such as MARSNAV.
+
+This is a multimission program derived from Mars Pathfinder's mpfnav.
+The functionality of mpfnav was split into two parts.  MARSTIE gathers
+the tiepoints, and MARSNAV uses those tiepoints to generate a pointing
+solution.
+
+MARSTIE supports any mission, instrument, and camera model supported by the
+Planetary Image Geometry (Pig) software suite.
+
+EXECUTION:
+There are two ways to present input images:
+
+marstie <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#inp">inp</A>=(a.img,b.img,c.img,...) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#out_tpt">out_tpt</A>=tiepoints.tpt
+or
+marstie <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#inp">inp</A>=ascii_listoffiles <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#out_tpt">out_tpt</A>=tiepoints.tpt
+
+where ascii_listoffiles is a text file created by Sybase or an editor,
+containing the list of filenames to include in the mosaic, one per record.
+Up to 200 input images can be listed.
+
+Additionally, an input tiepoint list may be provided:
+
+marstie <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#inp">inp</A>=files.lis <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#in_tpt">in_tpt</A>=tiepoint1.tpt out=tiepoint2.tpt
+
+where: tiepoint1.tpt is a previously generated tiepoints list.
+
+Then use MARSNAV to generate navigation solutions, and then one of the
+mosaic programs:
+
+marsnav <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#inp">inp</A>=files.lis out=mosaic.nav <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#in_tpt">in_tpt</A>=tiepoints.tpt
+marsmos <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#inp">inp</A>=files.lis out=mosaic.img navtable=mosaic.nav
+
+Note: there are two tiepoint file formats; "old" is the text-based list,
+while "xml" is an XML-based <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#format">format</A>.  The FORMAT parameter controls which
+one to use.  Over time "old" should be phased out and eventually the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#format">FORMAT</A>
+parameter will disappear.
+
+The output file must not exist already, or the program will terminate.
+This prevents accidental overwrites of a good tiepoint file.  Also, in
+interactive mode, the tiepoint file will be saved after each invocation
+of tp.
+
+USAGE:
+The program requires that enough overlap exists for at least one tiepoint
+to be determined for each overlap pair (but see the the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#pairs">PAIRS</A> parameter).
+To operate in batch it is useful to set <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#template">template</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#search">search</A> small and
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#quality">quality</A> small in order to assure tiepoints (even if they are bad) for later
+interactive editing.
+ 
+It is important that all images be connected to each other via tiepoints.
+If an image or block of images is not connected, the entire block can "drift"
+as a unit out of alignment during the nav process.  The program will report
+single unconnected images, but not blocks of them.
+
+The program depends on having some initial pointing parameters in the
+images, so that overlaps can be detected and tiepoints found... even though
+the purpose of the program is to gather tiepoints to *correct* the pointing!
+So the initial pointings (usually predicts) must be at least somewhat close
+for the program to work.
+
+METHOD:
+
+1) Candidate points are selected around the picture <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#border">border</A> every nsw pixels.
+
+2) the camera model is used to project candidate tiepoint locations near the
+borders of each image into all of the other images.
+
+3) The 10 points with the best pixel activity are selected 
+from each overlap pair.
+
+4) The image rotation is determined and the templates rotated before
+correlation to match the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#search">search</A> area.
+
+5) the tiepoints are refined by correlating image areas using the Gruen
+correlator, with linear correlation.
+
+5.1) In batch, tiepoints with <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#quality">quality</A> &lt the QUALITY keyword are rejected.
+
+5.2) Tiepoints with excessive shifts &gt <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#maxshift">MAXSHIFT</A> are rejected.
+
+5.3) Tiepoints with shifts exceeding <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#sigma">SIGMA</A>*standard_deviation_shifts
+for each pair are rejected one at a time until only 4 remain.
+
+6) the best tiepoints (by correlation value) are selected for each image pair.
+The number selected is controlled by the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#cull">CULL</A> parameter.  Any additional
+tiepoints are rejected.
+
+7) If the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#interact">INTERACT</A> keyword is specified then the tiepoints will be presented
+for editing.
+
+7.1) In SINGLE_EDIT mode (the default), each tiepoint whose correlation
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#quality">quality</A> is less than QUALITY is displayed using the "tp" program along with
+its images. The user can change this point if desired.  Points are selected
+using the left mouse button. This makes them green (the first point is
+automatically selected for you).  Then you can adjust them using the middle
+button.  See the help for tp or the section below.
+
+7.2) In MULTI_EDIT mode, each pair with tiepoints is brought up in tp, with
+ALL tiepoints for that pair displayed.  This allows you to edit the entire
+set of tiepoints associated with each pair at once.  You have to be more
+tp-savvy to do this (using it in multi-point mode) but it can be very helpful
+when dealing with lots of tiepoints per image pair.
+
+MARSTIE performs no correlation on interactively selected points, presuming
+the user knows what s/he is doing, so be accurate!  However, tp has its own
+correlator.  Select Edit/Auto Sync Points or ctrl-A to turn on the
+auto-correlator.  As you adjust the point in one image, it will be
+interactively correlated and moved in the other image.
+
+Selecing File/Special Exit Status before exiting tp will cause MARSTIE to
+save the existing points and exit (thus you can resume the interactive
+session later).
+
+Deleting a tiepoint in tp will cause the tiepoint to disappear in MARSTIE
+as well.  If this is the only tiepoint in an image pair, this will cause the
+pair to be disconnected, which could be bad news for MARSNAV.
+
+TBD:  Some knowledge of the camera models would be useful in tp, for initial
+guesses of tiepoint locations.  Might be difficult to implement.
+
+TBD:  Auto Sync Points should be turned on by default.
+
+WARNING: The parameters <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#normal">NORMAL</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#ground">GROUND</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#surf_coord">SURF_COORD</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#surface">SURFACE</A> should be the same as
+those used in MARSNAV and the mosaic program to get proper results (although
+this is less critical with MARSTIE than with the other programs, because
+once you have a tiepoint, the model doesn't matter - the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#surface">surface</A> is used
+only to determine initial points before correlation).
+
+Most stereo cameras (e.g. MPF IMP, M98 SSI) are *not* designed to have their
+nodal <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#surface">surface</A> at the azimuth axis.  This introduces LOTS of parallax if single
+images contain objects both near and far that do not lie on the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#surface">surface</A> model.
+Pick your points intelligently so you don't pick a near object in this pair
+and a far one in that pair, and keep them as close as you can to the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#surface">surface</A>.
+
+In interactive mode the tiepoints you'll see are already correlated. If there
+is insufficient overlap the points will never correlate and will not appear.
+You can correct this by reducing the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#template">TEMPLATE</A> & <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#search">SEARCH</A> keywords to force
+tiepoints to appear even if they are incorrect, thus giving you the ability to
+set them interactively.  You can also use the ALL_PAIRS mode in conjunction
+with MULTI_EDIT and INTERACTIVE to bring up all possible <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#pairs">pairs</A> without
+regard to whether tiepoints were found or even if there's any overlap.
+
+Note:  Only tiepoints with correlations less than <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#quality">QUALITY</A> are presented for
+interactive editing.  To force interactive editing of all points, set
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#quality">QUALITY</A>=1.0.  QUALITY is ignored in MULTI_EDIT mode.
+
+
+USING TP:
+
+This is not a complete help for tp; just some pointers for use with marstie
+(and marsnav).
+
+tp makes heavy use of the *middle* button.  That is how you adjust tiepoints
+and the stretch.  The left button is for selecting menus and buttons, and
+adjusting the scrollbars.  It is also used for selecting one of multiple
+tiepoints in MULTI mode.  The right button is rarely used.
+
+For SINGLE_EDIT mode, when tp comes up, the tiepoint is already selected
+for you (it is green).  Use the middle button to adjust it on either side.
+DO NOT use the left button!!  Doing so could define another tiepoint or
+deselect the current one, which could be bad.  At that point you may need
+to consult the general tp help.  If the point turns red, try double-clicking
+the left button very carefully over the point.  You want to end up with only
+ONE tiepoint (or zero if you delete it) when done.
+
+For SINGLE_EDIT mode, if you mess up and want to start over, simply put more
+than one point in, and marstie or marsnav will re-run with the original point.
+To do this, middle-click in each image to get a pair of green points.  Select
+Edit/Save Point (or the first of the "hidden" buttons, see below).  The point
+should turn red.  Do this several times until you have several red points,
+then save and exit.  tp will be run again with the original point (only).
+
+For MULTI_EDIT mode, the above does not apply.  All tiepoints are brought
+into tp.  The current point is in green; the others are in red.  If you
+click with the middle button, the green tiepoint will be moved.  If there
+is no green tiepoint, clicking the middle button adds a new one.  Make sure
+to do Edit/Save Point (or the first of the "hidden" buttons") to save the
+new point.  Save Point is not required for existing points.  The left
+button can be used to select which point is green... DOUBLE-click on the
+point to select it in both images.  The up and down arrows on the upper left
+can also be used to select different tiepoints.
+
+For MULTI_EDIT mode, the best policy is to make sure all tiepoints are red
+before saving.  A new tiepoint that has not been saved (it's still green)
+will be discarded when you exit... yet existing tiepoints that are green
+are not discarded (don't ask, I'm sure there was a reason).  You're safe if
+everything is in red.
+
+Turning on the tp correlator (ctrl-A, or Edit/Auto Sync Points) is usually
+helpful in either mode.  You can adjust the point on either side and the
+opposite one will move in sync.  Note that it can bounce around a bit.  It
+is often necessary to select the point you want on both images several times
+until the correlator "locks in" to the right spot.  Sometimes you may have
+to turn it off (ctrl-A again) to get the point you want.  Try turning it
+back on again and tweaking one of the points, sometimes that makes it lock
+in.  One might ask why bother; but when the correlator works, it gives you
+subpixel accuracy that is difficult to obtain purely interactively.
+
+In MULTI_EDIT mode, once you get two or more tiepoints, it will use an affine
+transform to help you place additional ones.  If this works, it's a big help.
+However, if there is a lot of parallax this might not work... in which case,
+turn off "autofind" mode.
+
+Use the middle button to adjust the stretch ("Contrast") at the bottom.
+While the left button works, the middle one allows you to drag the limit
+sliders.
+
+The zoom display will automatically re-center around the point if you move
+it.  Sometimes it's worth adjusting the point in the main display just because
+you get "lost" in the zoom display.
+
+If you do a mixed-mode panorama (say, MER navcam and pancam), the automatic
+modes don't work as well (especially in marstie), so you almost have to use
+interactive mode (it gets close, but not right on).  In this case it is
+helpful to differentially zoom the images in tp.  For example, zooming the
+navcam twice as big as the pancam makes the image scale approximately the
+same, which should help in (manually) finding tiepoints.  That's one click
+on zoom + in the top display and two clicks in the bottom display.
+
+Ctrl-X is a shortcut for save-and-exit.  You should find yourself using
+ctrl-X and ctrl-A a *lot*; it is much easier than finding them in the menus.
+There is no shortcut for "special exit status"; use the menu.  As a reminder,
+setting that before exiting causes marstie to save its results and quit.
+Useful if you get tired, or decide you don't need to look at the rest.
+
+Note that marstie prints out "n of m" before each marstie call so you know
+how many more to expect.  However, that does NOT take into account the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#quality">quality</A> setting, so the actual remaining tp sessions is likely to be fewer
+(unless <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#quality">quality</A>=1.0 is used).  It also prints out the image pair for reference,
+and the correlation <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#quality">quality</A> value (useful to fine-tune just what the quality
+threshold should be).  In MULTI mode, it prints out the image pair #'s being
+edited instead.  These will be in order, so you have some idea how far to
+go.
+
+Note that the tiepoint does not have to be anywhere near the initial tiepoint.
+You can move it anywhere there is overlap.  Of course, it's more useful if
+you stay away from where the other tiepoints in this image pair are, if there
+are more than one.  Unfortunately marstie does not help you to do this in
+SINGLE_EDIT mode; you must either remember where you put previous tiepoints,
+or not worry about it.  This is one of the primary reasons for MULTI_EDIT mode.
+Keep in mind that the best results are obtained when tiepoints are gathered
+in the area you most want to have matched.  So for example if the foreground
+is important, pick points in that area instead of on the rover or on the
+horizon.  If you want a good horizon, pick points there instead of the
+foreground.  You should avoid picking points on the rover itself, unless
+the rover is what you want to match (in which case you might want to adjust
+the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#ground">GROUND</A> parameter to match the rover deck).
+
+If you can't find any useful tiepoints at all (say the overlap contains
+nothing but sky), you can delete the tiepoint using Edit/Delete Point (or
+ctrl-D), then save and exit (ctrl-X).
+
+There are 5 buttons at the top of the tp window, between the arrows after
+"No qualifier defined" and the "Autofind" menu.  There is a bug that prevents
+the button imagery from being displayed.  For reference, the buttons are
+(in order left to right):
+
+SavePoint  DeletePoint  ListPoints  ShiftLeft  ShiftRight
+
+Of these, only the first three will be useful in marstie/marsnav.  DeletePoint
+is the most useful, while ListPoints will show the actual coordinate of the
+point.  SavePoint can be used to define a bunch of bogus points to force a
+restart of tp, as described earlier, and is critical when adding new points
+in MULTI mode.
+
+Keep in mind that tp has a *lot* of capabilities that are not being used
+by marstie (or marsnav).  Explore if you want, but the above controls are
+the only ones that you should need.
+
+
+TBD:
+
+ This is what should happen eventually:
+ read tpts
+ for each image pair
+     auto-gen tiepoints if not enough currently exist
+     if interactive and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#quality">quality</A> isn't good enough
+ 	present tpts to user... one at a time or many at once?
+ 	if special exit status
+ 	    break loop
+
+
+HISTORY:
+4-30-94  Initial mpfnav by J Lorre. 
+Sep. 98  Multimission conversion by B. Deen
+July 99  Split of original MARSNAV into two parts:  MARSTIE and MARSNAV
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Bob Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#inp"><H3>INP</H3></A>
+Input image(s) or
+file list.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#out_tpt"><H3>OUT_TPT</H3></A>
+Output tiepoint file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#in_tpt"><H3>IN_TPT</H3></A>
+Input tiepoint file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#band"><H3>BAND</H3></A>
+The vicar image 
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#band">band</A> number. 
+Defaults to 1
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#border"><H3>BORDER</H3></A>
+Pixels to avoid
+on picture <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#border">border</A>.
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#border">Border</A> added to
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#template">template</A> area for
+rotation.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#template"><H3>TEMPLATE</H3></A>
+correlation size.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#search"><H3>SEARCH</H3></A>
+correlation <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#search">search</A>
+area.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#quality"><H3>QUALITY</H3></A>
+Minimum acceptable
+correlation <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#quality">quality</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#interact"><H3>INTERACT</H3></A>
+To select tiepoints
+manually.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#cull"><H3>CULL</H3></A>
+To keep only the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#cull">CULL</A> best <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#quality">quality</A>
+tiepoints per pair
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#sigma"><H3>SIGMA</H3></A>
+Keep tiepoints within
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#sigma">SIGMA</A> standard deviations
+of the mean shift
+for each pair.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#busy"><H3>BUSY</H3></A>
+Business threshold 
+which points must 
+exceed.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#maxshift"><H3>MAXSHIFT</H3></A>
+Max line/sample shift
+allowed for a tiepoint.
+Default: 100.0
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#edit_type"><H3>EDIT_TYPE</H3></A>
+SINGLE_EDIT or
+MULTI_EDIT mode
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#pairs"><H3>PAIRS</H3></A>
+TIE_PAIRS or
+ALL_PAIRS or
+NEW_PAIRS or
+ADD_PAIRS
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#sep_angle"><H3>SEP_ANGLE</H3></A>
+Maximum separation angle
+for an image pair.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#start_key"><H3>START_KEY</H3></A>
+Starting key number for
+tiepoint file (XML <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#format">format</A>
+only).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#format"><H3>FORMAT</H3></A>
+OLD or XML tiepoint
+file <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#format">format</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#normal"><H3>NORMAL</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#normal">normal</A> vector.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#ground"><H3>GROUND</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#ground">ground</A> point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#surf_coord"><H3>SURF_COORD</H3></A>
+Coordinate system used to define
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#surface">surface</A> parameters.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#surface"><H3>SURFACE</H3></A>
+The type of mars
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#surface">surface</A> to use.
+INFINITY, PLANE, SPHERE1, SPHERE2.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+Ignored by marstie.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#coord">COORD</A>/mission combos.
+Ignored by marstie.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marstie.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

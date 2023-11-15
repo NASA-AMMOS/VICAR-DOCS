@@ -1,0 +1,101 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for RPCWARPM</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpcwarpm.html">RPCWARPM</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+Input file name.  This parameter is input as:
+     INP=innam
+where "innam" is the input file name.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+Output file name. This parameter is input as:
+     OUT=outnam
+where:
+"outnam" is the output file name.VARI OUT
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ref"><H3>REF</H3></A><pre>
+reference file name. This parameter is input as:
+     REF=refnam
+where:
+"refnam" is the reference file name.
+
+This is a VICAR image that has a GeoTIFF label to specify a mapping.
+It could be an image of a geographic area, or it could be a single 
+pixel image that serves as the holder of the GeoTIFF mapping information
+only.  In the latter case only the 'coverinp case would make sense.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="interp"><H3>INTERP</H3></A><pre>
+This parameter has three valid keyword values: NOIN and BILIN.
+
+NOIN means no interpolation.   The default method (used when neither keyword 
+is specified) for computing the
+DN values of the output picture is to use a bi-linear interpolation
+on the four nearest neighbors in the input picture.  With NOIN, the
+value of the nearest point is simply used.
+For example, say a point in the output picture was determined
+to have come from point (R,P) in the input picture.  Since R and P
+are real values, we must somehow calculate a DN value for that
+point.  Take IR and IP as the truncated values.  We then have
+          VAL1                                 VAL2
+           *                                    *
+         (IR,IP)                              (IR,IP+1)
+                     POINT
+                       *
+                     (R,P)
+          VAL3                                 VAL4
+           *                                    *
+         (IR+1,IP)                           (IR+1,IP+1)
+Here, POINT is the result of a bilinear interpolation using
+VAL1, VAL2, VAL3, and VAL4.
+If NOIN is specified, then POINT would be VAL1, the nearest
+neighbor.
+
+ZNOIN specifies that a four-point interpolation is done except
+when one or more of the points used has a value equal to zero. 
+In that case the nearest method is used.
+This allows preparation of sharp edges (no interpolation rolloff)
+for mosaicking.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="typref"><H3>TYPREF</H3></A><pre>
+     1.  The keyword 'coverinp causes the procedure to map all of the
+     input image to an output image that will just contain it.   The
+     keyword gorewid allows the user to specify a zero-filled margin
+     to make the output a little larger (or negative trims smaller).
+	
+     2.  The keyword 'coverref causes the procedure to map the input
+     image to an output image that exactly matches the "reference" image.
+     Some parts of the input can be lost, or huge areas of zero-fill
+     could be added to make the images match.  The gorewid keyword has
+     no effect in this case.
+	   
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="gorewid"><H3>GOREWID</H3></A><pre>
+Added width of gores for 'coverinp case only.  This number of pixel
+columns or rows is added to all four sides.  Zero fill is used.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

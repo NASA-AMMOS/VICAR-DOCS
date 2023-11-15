@@ -1,0 +1,222 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for GTSIZE</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize.html">GTSIZE</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+If two inputs are used then both must have GeoTIFF labels and
+the mappings must be compatible for the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">size</A> operation (only the
+scale and offset can differ).
+
+If a single input is used, then the GeoTIFF label is optional.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+If the first input has a GeoTIFF label then a GeoTIFF label
+will be computed for the output taking into account the
+mapping, scale change, offset change, and (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#ss">SS</A>) windowing.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="size"><H3>SIZE</H3></A><pre>
+In the simplest case of all, the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">size</A> parameter is (1,1,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#ns">NS</A>)
+and no itie,otie is used.  The program magnifies/demagnifies
+the image to fit the output (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#ns">NS</A>).  The effect is as
+if the itie,otie was set to the outer corners of the outer
+corner pixels.  The result will be the same as VICAR program
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">SIZE</A>.
+
+If a second input (GeoTIFF reference) is given, the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">size</A>
+parameter is not used and an error occurs if it is given.
+
+In all other cases, the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">size</A> parameter is a window on the
+output grid determined by ITIE,OTIE.  If <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">size</A> is defaulted,
+then ITIE,OTIE must be given and the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">size</A> parameter will be
+set to the smallest <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">size</A> to contain the "window" used by the
+tiepoints.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sl"><H3>SL</H3></A><pre>
+See second level help for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">SIZE</A> parameter (type h size)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ss"><H3>SS</H3></A><pre>
+See second level help for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">SIZE</A> parameter (type h size)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nl"><H3>NL</H3></A><pre>
+See second level help for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">SIZE</A> parameter (type h size)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ns"><H3>NS</H3></A><pre>
+See second level help for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">SIZE</A> parameter (type h size)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="itie"><H3>ITIE</H3></A><pre>
+For example, a standard case of a 5 x 5 image to a 10 x 15
+image treating the pixels as "areas" of data would use
+
+    itie=(0.5, 0.5,  5.5,  5.5)
+    otie=(0.5, 0.5, 10.5, 15.5)
+    
+to treat the pixels as center points and map the same
+image sizes as above would use
+    
+    itie=(1.0, 1.0,  5.0,  5.0)
+    otie=(1.0, 1.0, 10.0, 15.0)
+    
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="otie"><H3>OTIE</H3></A><pre>
+See second level help for ITIE parameter (type h itie)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="azoom"><H3>AZOOM</H3></A><pre>
+There are two types of zoom.
+
+1.  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#azoom">AZOOM</A> (area zoom) which fixes the corners of the corner 
+    pixels and zooms the interval between them the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#azoom">AZOOM</A> value
+    which can be any floating point number greater than 0.0.
+    Note that an n x n image has distance n between the
+    corners of the corner pixels and it is this distance that
+    is zoomed.  So the total <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">size</A> of the image from corner (of 
+    corner pixel) to corner is approximately <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#azoom">AZOOM</A>*n.  Fractional
+    pixels may be discarded since the output image must be in
+    whole pixels.  The scale change will be exactly <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#azoom">AZOOM</A> always.
+
+2.  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#pzoom">PZOOM</A> (point zoom) which fixes the centers of the corner 
+    pixels and zooms the interval between them the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#pzoom">PZOOM</A> value
+    which can be any floating point number greater than 0.0.
+    Note that an n x n image has distance (n-1) between the
+    centers of the corner pixels and it is this distance that
+    is zoomed.  So the total <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">size</A> of the image from corner (of 
+    corner pixel) to corner is <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#pzoom">PZOOM</A>*(n-1)+1 or the closest
+    value to that if fractional pixels are involved.  The scale
+    change will be exactly <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#pzoom">PZOOM</A> always. Using PZOOM=2.0 for a
+    DTED image would cause the 601 x 1201 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">size</A> to become
+    1201 x 2401.
+
+In either case, a zoom of 2.0 approximately doubles the image
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">size</A> in pixels and a zoom of 0.5 halves the image size in pixels.
+Both zooms preserve GeoTIFF label mappings.  The pixel scale is
+always changed by an exact amount given by the zoom parameter,
+to 15 decimal places.
+
+A negative value of zoom is interpreted as -1/zoom, for example,
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#pzoom">pzoom</A>=-4 is the same as pzoom=0.25.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="pzoom"><H3>PZOOM</H3></A><pre>
+There are two types of zoom.
+
+1.  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#azoom">AZOOM</A> (area zoom) which fixes the corners of the corner 
+    pixels and zooms the interval between them the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#azoom">AZOOM</A> value
+    which can be any floating point number greater than 0.0.
+    Note that an n x n image has distance n between the
+    corners of the corner pixels and it is this distance that
+    is zoomed.  So the total <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">size</A> of the image from corner (of 
+    corner pixel) to corner is approximately <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#azoom">AZOOM</A>*n.  Fractional
+    pixels may be discarded since the output image must be in
+    whole pixels.  The scale change will be exactly <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#azoom">AZOOM</A> always.
+
+2.  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#pzoom">PZOOM</A> (point zoom) which fixes the centers of the corner 
+    pixels and zooms the interval between them the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#pzoom">PZOOM</A> value
+    which can be any floating point number greater than 0.0.
+    Note that an n x n image has distance (n-1) between the
+    centers of the corner pixels and it is this distance that
+    is zoomed.  So the total <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">size</A> of the image from corner (of 
+    corner pixel) to corner is <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#pzoom">PZOOM</A>*(n-1)+1 or the closest
+    value to that if fractional pixels are involved.  The scale
+    change will be exactly <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#pzoom">PZOOM</A> always. Using PZOOM=2.0 for a
+    DTED image would cause the 601 x 1201 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">size</A> to become
+    1201 x 2401.
+
+In either case, a zoom of 2.0 approximately doubles the image
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">size</A> in pixels and a zoom of 0.5 halves the image size in pixels.
+Both zooms preserve GeoTIFF label mappings.  The pixel scale is
+always changed by an exact amount given by the zoom parameter,
+to 15 decimal places.
+
+A negative value of zoom is interpreted as -1/zoom, for example,
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#pzoom">pzoom</A>=-4 is the same as pzoom=0.25.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="typref"><H3>TYPREF</H3></A><pre>
+The two cases for this keyword are: COVERREF and COVERINP.
+
+NORMAL CASE IS AS FOLLOWS ('COVERREF), ALSO THE DEFAULT
+
+COVERREF means that the output will adjust to cover the
+GeoTIFF reference image (the second input).  Both inputs
+must have GeoTIFF labels and the geographic mappings must
+agree.  The scales and offsets can differ.  The GeoTIFF 
+mappings will be used to calculate all details of the
+resize operation.  This option can be used to make a stack
+of geographically identical images, all with the same (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#ns">ns</A>).
+
+THE SECOND OPTION ('COVERINP) USEFUL FOR MOSAICKING AND DB
+
+The other option (COVERINP) uses the reference image to
+determine the mapping but ignores the reference image
+frame.  It instead looks at the input image frame and
+converts the entire input image.  Two things can still be
+changed by this option:
+
+    1.  The pixel "<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">size</A>", actually, the ratio of mapping
+	coordinates per pixel.  These ratios can be deter-
+	mined by dividing the corner point coordinate
+	difference by the number of pixels in the image.
+	Horizontal and vertical are treated separately.
+    2.  The pixel "shift".  Even if the pixel <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/gtsize_level2.html#size">size</A> for
+	the two images agree, they may not mosaic together
+	accurately because the pixel centers do not align.
+
+Use of the typref parameter guarantees that both of these
+problems will be corrected.  You can check this by looking
+at the shifts written for each frame in FEATHER.  They should
+all have a fraction of .000000 shown on their offsets.
+
+Another example of this option ... the user can set up
+an area or worldwide mapping by creating a GeoTIFF image
+of a small subarea.  Other images can be put into a matching
+raster grid by using the small area as a reference image.
+The main effect will be to give the same scale and fractional
+pixel offset so that tiles and mosaics will butt together
+perfectly.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

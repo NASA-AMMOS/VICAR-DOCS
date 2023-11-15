@@ -1,0 +1,166 @@
+<HTML>
+<HEAD><title>HTML Help for RATIO</title></HEAD>
+<BODY>
+<H1>Help for RATIO</H1>
+<pre>
+PURPOSE:
+RATIO operates on two input pictures to generate a third (comparison) picture.
+There are four modes of operation:
+
+	1. RATIO            <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#out">OUT</A> = GAIN*(IN1/IN2)+OFFSET
+	2. LOG RATIO        <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#out">OUT</A> = GAIN*LN(IN1/IN2)+OFFSET
+	3. DIFFERENCE       <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#out">OUT</A> = GAIN*(IN1-IN2)+OFFSET
+	4. LOG DIFFERENCE   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#out">OUT</A> = GAIN*LN(IN1-IN2+256)+OFFSET
+
+The GAIN and OFFSET values are calculated by RATIO so that either (centering
+option, default) the mean DN of the output picture will be 128, and the 
+saturation on each tail will be at most at the user-specified level, or 
+(nocentering option) the saturation on each tail will be at the user-specified
+level. The program F2 is used by RATIO to form the output picture.
+
+EXECUTION:
+
+Examples
+
+Basic Form
+
+RATIO <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#inp">INP</A>=(PIC1,PIC2) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#out">OUT</A>=RATIO
+
+This is the simplest call to RATIO.  Output picture RATIO will be made using
+the ratio of the two pictures, as in <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#mode">mode</A> 1 above.  Ratioing, then, is the
+default <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#mode">mode</A>.  To use differencing, instead, specify 'DIFFEREN.  To get a
+natural log output of either the ratio or the difference, use 'LOG or
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#mode2">MODE2</A>=LOG.  (Note: It is possible to not give an output data set name.  In
+this case, the program will print the gain and offset, but won't write an
+output data set.)
+
+Sampling Parameters
+
+RATIO <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#inp">INP</A>=(PIC1,PIC2) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#out">OUT</A>=RATIO <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#area">AREA</A>=(1,1,1024,1024) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#linc">LINC</A>=5
+
+In this example, only the upper-left corner will be used for sampling, and
+further, only every fifth line within this <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#area">area</A>.
+
+RATIO <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#inp">INP</A>=(PIC1,PIC2) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#out">OUT</A>=RATIO <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#sample">SAMPLE</A>=20.0
+
+Here, the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#sample">SAMPLE</A> parameter is used to specify that 20% of the lines in the
+image are to be used for sampling.  The default value for <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#sample">SAMPLE</A> is 5.0, so
+normally, sampling is done using only 5% of the image lines.
+
+Offset and Gain Parameters
+
+RATIO <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#inp">INP</A>=(PIC1,PIC2) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#out">OUT</A>=DIFFPIC 'DIFF <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#include">INCLUDE</A>=(-200.0,200.0)
+
+The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#include">INCLUDE</A> option is used here to specify that only difference values between
+-200.0 and 200.0 are to be used for statistics.  The default for this range
+when calculating differences is [-249.5,250.5].  This option can also be
+used to exclude certain ratio values; the default range for ratios is [0.,5.].
+If the LOG <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#mode">mode</A> is used, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#include">INCLUDE</A> applies to the value before the logarithm
+is calculated.
+
+RATIO <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#inp">INP</A>=(PIC1,PIC2) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#out">OUT</A>=DIFFPIC 'DIFF <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#threshol">THRESHOL</A>=5.0
+
+Here, the THRESHOLd option is used to toss <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#out">out</A> any difference values which
+occur less than 5.0 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#percent">percent</A> as much as the most-frequent value; these are then
+excluded from the calculations.  This option can be used for ratios, as well.
+The default value is 0.0, that is, to never exclude values only on the basis
+of frequency.  
+
+RATIO <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#inp">INP</A>=(PIC1,PIC2) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#out">OUT</A>=RATIO 'NOFILTER <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#percent">PERCENT</A>=2.0
+
+Normally, a five-element box filter is used to smooth the histogram of ratio
+and difference values.  'NOFILTER prevents filtering of the histogram.
+    The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#percent">PERCENT</A> keyword specifies the desired saturation level (in percent).
+Since the mean is pegged at DN=128, and the stretch is linear, only one end
+of the histogram will be saturated at the specified percentage.  The saturation
+at the other end will be less.  The default is 2.0 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#percent">percent</A>, as used in the
+example.
+
+Miscellaneous Parameters
+
+RATIO <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#inp">INP</A>=(PIC1,PIC2) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#out">OUT</A>=LOGRAT 'LOG 'NODISPLA <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#atm1">ATM1</A>=-0.5 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#atm2">ATM2</A>=-0.5
+
+This last example illustrates the remaining commands.  The output picture
+will be calculated from the logs of the ratios using the whole image (but
+only five <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#percent">percent</A> of the lines) as the sampling <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#area">area</A>.  Since we are calculating
+a ratio, values outside of the range [0.0,5.0] will be excluded, but no
+values will be excluded solely on the basis of frequency.  The box filtering
+will be done as normal to smooth the histogram, and the program will saturate
+the output image to two <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#percent">percent</A>.
+    Normally, the ratio (or difference) histogram is printed. 'NODISPLA
+prevents this.  Finally, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#atm1">ATM1</A> and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#atm2">ATM2</A> are real numbers which will be added to
+IN1 and IN2, respectively, before any ratios or differences are calculated. 
+These values are generally used as atmospheric correction terms and are usually
+negative.  The default is <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#atm1">ATM1</A> = <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#atm2">ATM2</A> = 0.0. 
+
+OPERATION:
+The region between the two <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#include">INCLUDE</A> values is divided into 500 equal parts.
+These become the permissible histogram values.  The input pictures are sampled
+according to the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#area">AREA</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#sample">SAMPLE</A>, and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#linc">LINC</A> parameters to form the histogram.
+Values beyond the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#include">INCLUDE</A> range are ignored.
+    The histogram is filtered, then levels populated below the THRESHOLD are
+set to zero.  The mean of this histogram is calculated .  Gain and offset 
+values are chosen so that the mean is transformed to 128 and the higher of
+the dark and bright saturation levels is equal to the requested level of
+saturation.
+    The histogram is displayed, and the gain and offset passed to the program 
+F2, which generates the output picture.
+
+WRITTEN BY:  A.R. Gillespie, 4 January 1974
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Ron Alley</A>
+REVISION:  4		4 June 1986
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#inp"><H3>INP</H3></A>
+Input data sets
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#out"><H3>OUT</H3></A>
+Output data set, if any
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#size"><H3>SIZE</H3></A>
+Standard VICAR <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#sl"><H3>SL</H3></A>
+Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#ss"><H3>SS</H3></A>
+Starting <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#sample">sample</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#ns"><H3>NS</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#nl"><H3>NL</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#center"><H3>CENTER</H3></A>
+Force output mean=128?
+(yes-&gtCENTER, no->NOCENTER) 
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#mode"><H3>MODE</H3></A>
+Calculation type 
+(RATIO,DIFFEREN)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#mode2"><H3>MODE2</H3></A>
+Log <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#mode">mode</A> selection 
+(NOLOG,LOG)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#area"><H3>AREA</H3></A>
+Sampling <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#area">area</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#sample"><H3>SAMPLE</H3></A>
+Sampling percentage
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#linc"><H3>LINC</H3></A>
+Line-increment
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#include"><H3>INCLUDE</H3></A>
+Range of values for 
+statistical inclusion
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#threshol"><H3>THRESHOL</H3></A>
+Value-frequency exclusion 
+threshold
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#mode3"><H3>MODE3</H3></A>
+Filtering selection 
+(FILTER,NOFILTER)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#percent"><H3>PERCENT</H3></A>
+Desired saturation level
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#mode4"><H3>MODE4</H3></A>
+Display control 
+(DISPLAY,NODISPLA)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#atm1"><H3>ATM1</H3></A>
+First input correction
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio_level2.html#atm2"><H3>ATM2</H3></A>
+Second input correction
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/ratio.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

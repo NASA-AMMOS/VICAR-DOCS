@@ -1,0 +1,175 @@
+<HTML>
+<HEAD><title>HTML Help for CONCOMP1</title></HEAD>
+<BODY>
+<H1>Help for CONCOMP1</H1>
+<pre>
+ PURPOSE:
+
+concomp1 is a VICAR applications program used to remove high frequency
+information (noise) components from digital images.  It is usually used as a
+post-processing procedure to remove visually distracting detail from classified
+or stratified images such as images produced by VICAR programs FASTCLAS or
+USTATS.  Such images usually are composed of a number of regions, where each
+pixel in a region has the same DN except possibly for some isolated noise
+pixels. CONCOMP1 changes the DNs of these isolated noise pixels to match the DN
+of the surrounding pixels and writes the resulting image to an output file. 
+A mask of changed pixels can be generated on request. 
+ EXECUTION:
+
+In order to determine which DNs to change, concomp1 applies a test to each
+pixel in the input image.  The test involves looking at a 3 by 3 (pixel)
+window centered around the pixel being tested.  The number of other pixels
+in the window with the same DN as the pixel being tested is found.  If this
+number is less than the threshold value specified by the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#thresh">THRESH</A> parameter,
+then the DN for the pixel being tested is changed.  The new value of the DN
+is determined by the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#mode">MODE</A> or <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#replace">REPLACE</A> parameters specified by the user.  If
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#replace">REPLACE</A> is specified, the new value is just the value specified for the REPLACE
+parameter.  If <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#mode">MODE</A> is specified, the new value is generally the mode of the DN
+distribution within the window.  More precisely, if <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#mode">MODE</A> is specified, the
+new DN is the most frequent DN in the window that lies in the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#range">range</A> of DNs
+specified for the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#range">RANGE</A> parameter.  In case of a tie in determining the 
+most frequent DN, the lowest of the DNs in the tie is used.  If no DN in
+the specified <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#range">range</A> occurs in the window, the DN of the pixel tested is not
+changed.  The <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#range">range</A> is commonly set according to the range of DNs for the
+regions of the image.  When a DN is changed, the change is not included in 
+the subsequent windows. 
+
+A mask file is specified by entering a second output file name for the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#out">OUT</A>
+parameter.  The mask file is the same <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#size">size</A> as the (first) output file.  A
+pixel in the mask file has a DN of 0 if the DN for the corresponding pixel
+in the output file was changed.  All other pixels in the mask file have a
+DN of 255.   It is possible that the DN of a pixel in the image be change to
+itself, particularly if the value of the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#thresh">THRESH</A> parameter is greater than 3.
+In this case, the corresponding pixel in the mask file will be 0.
+
+
+TAE COMMAND LINE FORMAT
+      The following command line formats show the major allowable forms:
+      concomp1 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#inp">INP</A>=a <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#out">OUT</A>=b <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#size">SIZE</A>=(<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#ns">ns</A>) optional parameters
+      concomp1 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#inp">INP</A>=a <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#out">OUT</A>=b  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#sl">SL</A>=sl <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#ss">SS</A>=ss <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#nl">NL</A>=nl <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#ns">NS</A>=ns optional parameters
+      concomp1 a b (<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#ns">ns</A>) optional parameters
+      concomp1 a b optional parameters
+
+      concomp1 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#inp">INP</A>=a <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#out">OUT</A>=(b,m) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#size">SIZE</A>=(<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#ns">ns</A>) optional parameters
+      concomp1 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#inp">INP</A>=a <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#out">OUT</A>=(b,m)  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#sl">SL</A>=sl <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#ss">SS</A>=ss <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#nl">NL</A>=nl <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#ns">NS</A>=ns optional parameters
+      concomp1 a (b,m) (<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#ns">ns</A>) optional parameters
+      concomp1 a (b,m) optional parameters
+
+       Here 'a' represents the input image file name, 
+       'b' represents the output image file name,
+       and 'm' represents the mask file name.
+<A NAME="examples">EXAMPLE</A>
+
+      concomp1 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#out">OUT</A>=B <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#thresh">THRESH</A>=1 '<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#mode">MODE</A>
+
+      In this example the center pixel of the window will be changed unless it
+      is connected to at least 1 other pixel with the same value.  The new
+      value is found by taking the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#mode">mode</A> of the distribution of values in the
+      window.
+
+
+RESTRICTIONS
+1. The input, output, and mask images must be byte data.
+ OPERATION:
+
+The operation of concomp1 is similar to the operation of a box-filtering
+routine as it uses a moving window.  However, the pixel replacements are
+based on a different decision rule.  concomp1 searches for and removes 
+isolated pixels  and/or groups of pixels.  A 3 by 3 moving window is used
+to find isolated pixels by comparing the central pixel of the window with
+its adjacent pixels.  The number of other pixels in the window with the
+same value is the 'connectivity factor'.  If the connectivity factor is
+less than the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#thresh">THRESH</A> parameter, the central pixel is replaced either by a 
+user specified value or by the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#mode">mode</A> of the distribution within the window.
+
+The window for pixels along the edges of the image is defined by conceptually
+reflecting the image data about the edges.  Thus, the second line of the image
+is conceptually duplicated above the first line, and the second pixel of each
+line is conceptually duplicated to the left of the first pixel in a line.  The
+next to last line of the image and the next to the last pixel in each line are
+handled analogously.  This method compensates for the fact that edge pixels
+have fewer real neighbors. 
+
+The following window operations will demonstrate the operation of concomp1
+on various windows.
+
+Example 1:  specifying <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#thresh">THRESH</A>=1 and '<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#mode">MODE</A>
+
+                    5   5   5                   5   5   5 
+
+            INPUT:  3   2   5          OUTPUT:  3   5   5
+
+                    4   3   3                   4   3   3
+
+Example 2:  specifying <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#thresh">THRESH</A>=4
+
+                    5   5   5
+
+            INPUT:  3   2   2          OUTPUT:  no change
+
+                    2   2   2 
+
+Example 3:  specifying <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#thresh">THRESH</A>=6, '<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#mode">MODE</A>, and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#range">RANGE</A>=(1,5)
+
+                    0   0   0                   0   0   0
+
+            INPUT:  0   0   0          OUTPUT:  0   2   0
+
+                    2   2   1                   2   2   1
+
+
+ WRITTEN BY:             Steve Pohorsky              14 Dec 1983
+
+<A NAME="CogProg"> COGNIZANT PROGRAMMER:   S. Z. Friedman              19 Dec 1980</A>
+
+ REVISIONS:
+  1994-10-03 CRI - Made portable for UNIX
+  2016-07-15 R. J. Bambery - Removed 2 GB maximum image <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#size">size</A>.
+             by changing stacka call with stacka_big call
+              Centos-7.2 & gcc-4.8.5
+  2017-05-31 W. L. Bunch - Restored stacka
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#inp"><H3>INP</H3></A>
+Input file name
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#out"><H3>OUT</H3></A>
+Output file name optionally
+followed by mask file name
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#size"><H3>SIZE</H3></A>
+Standard Vicar <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#size">size</A> field:
+  (<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#ns">NS</A>)
+You can enter <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#nl">NL</A>,
+and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#ns">NS</A> together as <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#size">SIZE</A>, OR
+enter the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#nl">NL</A>, and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#ns">NS</A>
+parameters separately.
+By default, the entire input
+image is used if these
+parameters are not entered.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#sl"><H3>SL</H3></A>
+Starting line number
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#ss"><H3>SS</H3></A>
+Starting sample number
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#nl"><H3>NL</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#ns"><H3>NS</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#thresh"><H3>THRESH</H3></A>
+Threshold of connectivity factor
+for pixel replacement.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#replace"><H3>REPLACE</H3></A>
+New DN value for pixels that
+are replaced.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#mode"><H3>MODE</H3></A>
+Enter to use the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#mode">mode</A> of
+DNs in the window as the new DN
+value for pixels that are 
+replaced.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#range"><H3>RANGE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#range">Range</A> of DNs to consider in 
+finding the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1_level2.html#mode">mode</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/concomp1.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

@@ -1,0 +1,533 @@
+<HTML>
+<HEAD><title>HTML Help for MARSECORR</title></HEAD>
+<BODY>
+<H1>Help for MARSECORR</H1>
+<pre>
+PURPOSE:
+Marsecorr, which stands for Mars Epipolar Correlation, is a correlation 
+program that accounts for all camera types and acquisition geometries between 
+two images to perform first-stage disparity map computation. This program is 
+similar to the use of marsjplstereo prior to using affine correlator marscor3.
+One of the limitation of marsjplstereo is the linearization of the images prior
+to correlation which can be highly distorded if the epipoles are close or within
+the image frames. marsjplstereo also does not support of PSPH PIG format at the
+time of writing.
+
+Instead of a pre-linearization and looking for matching pixel along the line, 
+this program follows (for each left-image pixel) the corresponding epipolar 
+curve in the right image, and locally pseudo-linearize (homography transform) 
+w.r.t. the right image prior to correlation with the left image.
+
+
+
+EXECUTION:
+Here are the main expected calls:
+
+The simplest call:
+marsecorr <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#inp">inp</A>=\(leftImage.img, rightImage\) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#out">out</A>=disparity.img
+
+Adding a post-processing <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#filter">filter</A> to remove outliers:
+marsecorr <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#inp">inp</A>=\(leftImage.img, rightImage\) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#out">out</A>=disparity.img -<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#stat_filter">STAT_FILTER</A>
+
+For non-standard stereo, long-baseline, gonio-type:
+marsecorr <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#inp">inp</A>=\(leftImage.img, rightImage\) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#out">out</A>=disparity.img -<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#stat_filter">STAT_FILTER</A>
+-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#multi_plane">MULTI_PLANE</A>
+This will be a longer process, but more robust to complex topography.
+If topography is mostly flat, don't use this. It is meant for scene where an
+approximation of the topography by a single plane orientation would be highly 
+incorrect. 
+
+If a prior topography is available, a mesh for instance, it can be used to 
+narrow down the range bracket <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#search">search</A> and estimate the surface normal. A call
+with an input mesh would be:
+marsecorr <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#inp">inp</A>=\(leftImage.img, rightImage\) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#out">out</A>=disparity.img <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#in_mesh">IN_MESH</A> =
+\(mesh.obj,file.xy\)
+file.xyz is a standard vicar file whose CS corresponds to the CS of the mesh. 
+This is a (hopefully) temporary hack to provide the CS of the mesh as, as of 
+now, the mesh ancillary does not contain enough information to reconstruct a 
+full CS. 
+
+A busier call:
+marsecorr <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#inp">inp</A>=\(leftImage.img, rightImage\) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#out">out</A>=disparity.img <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#out_coefs">out_coefs</A>=coefs.vic
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#out_quality">out_quality</A>=qual.vic <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#pyrlevel">PYRLEVEL</A>=1 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#max_range">MAX_RANGE</A>=50 -<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#stat_filter">STAT_FILTER</A>
+
+Default Options.
+Here are some of the most significant options that are activated by default:
+- Pyramidal approach:
+Images are downsampled to a small size and results are used to reduce range 
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#search">search</A> at next pyramid level. This improve speed and quality. See <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#run_pyr">RUN_PYR</A>
+- Perpendicular epipolar offset correction:
+At each pyramid level, the offset found between the match location and the
+epipolar curve (in theory should be 0, but is not because of imperfection and
+camera relative position error) is accounted for in the next pyramid level. 
+This improves speed by reducing the need for a large <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#search">SEARCH</A>. See <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#shift_epi">SHIFT_EPI</A>.
+- Horizontal plane:
+Because most in-situ images display level-ish flat ground, the level plane is
+automatically added to the list of planes used for projecting the images.
+See <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#level_plane">LEVEL_PLANE</A>.
+
+
+
+
+PROCESSING:
+The goal is to get, for each pixel of the left image, the corresponding pixel
+in the right image.
+
+The idea is to project each pixel of the left image <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#out">out</A> to the 3D world at some
+given range and on a given surface (plane usually) and backproject them to the 
+right image. A matching score is computed for each range backprojection. The 
+best score indicates the matching between left and right pixels (winner-takes-all
+strategy). However, doing this on a pixel scale leads to very long processing 
+time. Instead, a plane-sweep + local "linearization" of the camera is used to 
+process the image by "tiles", i.e., by small chunk at the scale of which the 
+transform between L and R can reasonably be approximated by an homography.
+
+The basic approach is as follow:
+- The left image is sliced in tiles (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#tile_size">TILE_SIZE</A>) and each tile is processed 
+independently (multithreading over the tiles). At the tile level, the camera 
+model is assumed to be a linear (pinhole) model. This allows to use a 
+homography transform between L and R which speeds up the process.
+- For each tile:
+  -- A list of ranges is defined such that the tile corners, once projected <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#out">out</A>
+     to the 3D world at the range locations and backprojected to the right
+     image are spaced by about <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#epi_step">EPI_STEP</A> pixels along the epipolar curve. There
+     are three ways to provide a range of "ranges" to consider (see 3D World 
+     Input Prior).
+     Along with the list of range, the projection plane orientation (or several
+     planes orientations - see <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#multi_plane">MULTI_PLANE</A>) is defined (see 3D World Input Prior). 
+  -- For each of the planes orientations in the list:
+     -- For each of the ranges in the list:
+        * A subgrid of pixels in the tile (see GRID) of the left image are 
+        projected on the current plane at the current range, and backprojected 
+        onto the right image. 
+        * An homography transform is defined from these "tiepoints" using a Least 
+        Square approach.
+        * The right image is then projected on the Left tile using the homography.
+        * The tiles are then correlated for each pixels, using the Pearson 
+        correlation coefficient. Pixel-wise, no subpixel precision.
+  -- For each pixel of the left tile, the best correlation score (for each range
+     location and plane orientation) is kept, along with the position in the 
+     right image (the disparity) and the corresponding affine transform. Note that
+     altough the process is done with an homography, an affine transform is also
+     defined from the same points and is saved instead. This is due to marscor3 
+     not supporting homography as of writing.
+
+Once all tiles are processed, the output is filtered <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#out">out</A> if <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#score_min">SCORE_MIN</A> is used
+and outlier filetered (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#stat_filter">STAT_FILTER</A>) if used.
+
+
+
+
+3D WORLD INPUT PRIOR.
+In the process of scanning the epipolar line in the Right image to find a match
+with a given Left image pixel, the Right image pixels are projected <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#out">out</A> on a
+surface plane (plane defined by a range distance from the Left camera and an
+orientation) and back-projected to the left image for comparison using 
+correlation. Both the range bracket (the list of ranges) and the orientation(s) 
+are important to maximize the chance of finding the corresponding Right pixel. 
+Depending on the situation we might have a prior knowledge (or not) of the 
+surface which could be used to guide the projection plane definition to maximize
+the chance of finding the correct match and speed up the process: 
+
+The default situation assumes no prior knowledge of the surface. In that case,
+all the range between <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#min_range">MIN_RANGE</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#max_range">MAX_RANGE</A> are tested and the surface plane 
+orientations (its normal) default to the plane perpendicular to the look 
+direction of each tile center pixel (in addition to level plane <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#level_plane">LEVEL_PLANE</A>
+which is activated by default), unless the user sets it with <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#planenorm">PLANENORM</A> or uses
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#multi_plane">MULTI_PLANE</A>. The large number of ranges/planes needed to make sure the matching 
+pixel is not missed can lead to long processing time.
+
+There are situations where a prior knowledge of the topography, even if 
+low-resolution compared to the L/R images, could be used to "guide" the depth
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#search">search</A> and surface plane orientation. For instance, the topography has been
+estimated from a NavCam pair and it could be used to process some mastcam 
+images of the same area. In that case, instead of scanning the entire <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#search">search</A> 
+space between <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#min_range">MIN_RANGE</A>/<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#max_range">MAX_RANGE</A>, a smaller bracket centered around the 
+topography prior is scanned, which can dramatically speed up the process. The
+local surface plane normal can also be estimated from that topographic prior. 
+
+There are two formats available to supply topography priors:
+- <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#in_range">IN_RANGE</A>/<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#in_normal">IN_NORMAL</A>: These files, which can be supplied independently of each
+other, are a range file and a surface normal file. They must be in the Left
+image frame, which means that it might require a pre-processing step, consisting
+in *projecting* the range and/or surface normal dataset into the Left image 
+frame. That is, same dimensions, expressed in the Left image camera CS. Pixels 
+for which the topography is unknown (gaps, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#out">out</A> of fov, etc) should be set to 0.
+- <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#in_mesh">IN_MESH</A>: A mesh (.OBJ) of the topography, along with a vicar file whose CS 
+corresponds to the CS of the mesh. Usually is will be the XYZ vicar file from 
+which the mesh was computed, but it doesn't have to. The need of a vicar file
+comes from the unablility to construct a full CS from the limited CS information
+stored in the mesh ancillary. No other information is used from the XYZ vicar
+file. Just the CS. This might change in the futur. The advantage of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#in_mesh">IN_MESH</A> over
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#in_range">IN_RANGE</A>/<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#in_normal">IN_NORMAL</A>, is that there is no need to project the topo prior into the 
+Left image. One mesh can be used on several images directly.
+
+Note that the mesh input has priority over the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#in_range">IN_RANGE</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#in_normal">IN_NORMAL</A>. If all 
+are supplied, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#in_range">IN_RANGE</A>/<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#in_normal">IN_NORMAL</A> are not used.
+
+How does the topography prior is accounted for?
+For each tile, the min/max ranges and average surface normal are computed. The
+average surface normal defines the orientation of the projection plane for that
+tile. A small range of depths centered around the min/max ranges is defined, 
+which [min range - step, max range + step], with step defined from <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#samp_range">SAMP_RANGE</A>, 
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#linear_step">LINEAR_STEP</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#power_step">POWER_STEP</A>. That depth bracket will be the depth <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#search">search</A> space for 
+that tile. 
+Depending on the coverage of the topographic prior, some tiles might be not 
+covered at all by the topography prior (large gaps in the topography, part
+of the image <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#out">out</A> of FOV w.r.t the topography prior, etc). In that case, there
+are two strategies (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#gap_input">GAP_INPUT</A>) to fill in the range and surface normal 
+for these tiles:
+- EMPTY: don't do anything. Essentially these tiles won't be processed and the
+disparity output for all pixels of that tile will be 0 (no matching)
+- FULL_SWEEP: Run the full depth scan between <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#min_range">MIN_RANGE</A>/<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#max_range">MAX_RANGE</A> with the set
+number of plane orientation (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#planenorm">PLANENORM</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#multi_plane">MULTI_PLANE</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#level_plane">LEVEL_PLANE</A>).
+
+
+PROCESSING TIME AND MULTI-THREADING
+The main process is multi-threaded using openMP. The parallelism is done on the
+tile list. The default tile size is defined from the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#template">TEMPLATE</A> size and is
+3xTEMPLATE size. Tile size cannot be smaller than <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#template">TEMPLATE</A>. They can be larger, 
+but if one wants to have optimal processing time, the tiles have to be sized in
+such a way that all threads get involved. So setting a tile size of 512x512 on a
+1024x1024 image will only use 4 threads.
+
+
+
+ELLIPSOID WEIGHTED AVERAGE (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#ewa">EWA</A>) resampler
+The combination of the two image geometries and projection plane result in 
+an affine transform between the left and right image that can have strong
+distortion. Such affine transform are the combination of a rotation, a shear
+in X and Y, and another rotation. The shear represents the minification or 
+magnification of one image w.r.t. the other in directions given by the 
+rotation. If one wants to use the affine tranform to project one image to the
+other without introducing distortion (aliasing), that directional shear must be
+accounted for. To do so, we use the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#ewa">EWA</A> resampler, which is a Gaussian kernel
+based resampler that accounts for the affine directional shear. Essentially,
+a symetric gaussian kernel interpolator in the destination image is "deformed"
+according to the affine transform to define the kernel in the source image.
+Usually, the destination is the Left image and the source the Right image.
+The objective is to get the left image and the projected right image to have
+the same frequency content. For the right image, it is dealt with the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#ewa">EWA</A>
+resampler which simultaneously low-pass the image in the necessary directions
+and interpolate the pixel values. The left image is the destination, so it
+doesn't need interpolation. However it might need a low pass filtering as some
+of the left frequencies may not be present in the right image. This is also 
+defined from the affine transform (its inverse actually). So, in practice, the 
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#ewa">EWA</A> resampler is used on both the left and right image.
+
+In a naive approach, one might uses a simple interpolator like the bicubic to
+reproject the right image and just take as-is the left image. This would 
+provide good results if the affine transform contains a negligible shear. Which
+is actually the case for a lot of situations (standard stereo). And a much
+faster approach to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#ewa">EWA</A>.
+
+The two approaches are implemented in the program and can be combined/accessed
+by with <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#ewa">EWA</A> parameter. EWA activates the use of the EWA <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#filter">filter</A> if it's needed 
+(depends on affine transform) on the Left image only, or the Right image only, 
+or both, or none (see <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#ewa">EWA</A>). If that <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#filter">filter</A> is activated for a given image (left,
+righ or both) and it is not needed given the affine transform, then the bicubic 
+interpolator is used. If it is not activated for a given image, then the bicubic 
+(for right image) or as-is (for left image) are used no matter what the affine 
+transform is. If <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#ewa">EWA</A> is activated, the threshold at which EWA is used vs bicubic 
+is controlled by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#ewa_threshold">EWA_THRESHOLD</A>. In theory <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#ewa">EWA</A> should be activated as soon as the 
+shear is &gt 1, but in practice, that threshold can go a bit higher without too
+much effect on the result, but with decreased processing time.  
+
+
+
+
+
+HISTORY:
+2018-12 ayoubfra  Initial implementation. 
+2019-05 ayoubfra  Use <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#tiling">tiling</A> and plane sweep for efficiency. 
+2019-09 ayoubfra  Add <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#in_normal">IN_NORMAL</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#in_range">IN_RANGE</A>. 
+2019-10 ayoubfra  Add <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#in_mesh">IN_MESH</A>. 
+2020-02 ayoubfra  Add PROGRESSIVE
+2020-07 ayoubfra  remove PROGRESSIVE, add <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#multi_plane">MULTI_PLANE</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#shift_epi">SHIFT_EPI</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#run_pyr">RUN_PYR</A>
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  F. Ayoub</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#inp"><H3>INP</H3></A>
+Input images.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#in_normal"><H3>IN_NORMAL</H3></A>
+Input low-res surface normal
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#in_range"><H3>IN_RANGE</H3></A>
+Input low-res surface range
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#in_mesh"><H3>IN_MESH</H3></A>
+Input mesh file
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#out"><H3>OUT</H3></A>
+Output disparity map.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#out_coefs"><H3>OUT_COEFS</H3></A>
+Output affine coefficients
+map.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#out_quality"><H3>OUT_QUALITY</H3></A>
+Output pearson correlation
+coefficient map. 
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#bands"><H3>BANDS</H3></A>
+Band id to process
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#pyrlevel"><H3>PYRLEVEL</H3></A>
+Pyramid level.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#min_range"><H3>MIN_RANGE</H3></A>
+minimum range.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#max_range"><H3>MAX_RANGE</H3></A>
+maximum range.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#right_max_dist"><H3>RIGHT_MAX_DIST</H3></A>
+plane minimum distance
+from Right camera
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#samp_range"><H3>SAMP_RANGE</H3></A>
+range sampling 
+strategy.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#linear_step"><H3>LINEAR_STEP</H3></A>
+range sampling step
+with linear strategy.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#power_step"><H3>POWER_STEP</H3></A>
+range sampling step
+with power law  strategy.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#epi_step"><H3>EPI_STEP</H3></A>
+stepping length -in pixel-
+along epipolar curve.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#template"><H3>TEMPLATE</H3></A>
+Correlation window 
+size.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#search"><H3>SEARCH</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#search">Search</A> range in epipolar
+perpendicular direction.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#score_min"><H3>SCORE_MIN</H3></A>
+Minimum correlation score
+acceptable.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#filter"><H3>FILTER</H3></A>
+pre low-pass images.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#filter_size"><H3>FILTER_SIZE</H3></A>
+Low-pass <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#filter">filter</A>
+intensity.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#filter_const"><H3>FILTER_CONST</H3></A>
+Scale low-pass <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#filter">filter</A>
+intensity.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#sep_angle"><H3>SEP_ANGLE</H3></A>
+maximum relative angle between
+left and rigth cameras
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#planenorm"><H3>PLANENORM</H3></A>
+plane normal orientation
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#hit_min_angle"><H3>HIT_MIN_ANGLE</H3></A>
+Minimum ray hit angle with
+the surface plane
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#gap_input"><H3>GAP_INPUT</H3></A>
+strategy for projection plane
+selection
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#grid_tile"><H3>GRID_TILE</H3></A>
+subgrid to define homography
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#res_ratio_max"><H3>RES_RATIO_MAX</H3></A>
+maximum allowed L/R resolution
+ratio
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#tile_size"><H3>TILE_SIZE</H3></A>
+Tile size for applying
+pinhole model
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#check"><H3>CHECK</H3></A>
+whether or not run an overlap
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#check">check</A> only
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#overlap_check"><H3>OVERLAP_CHECK</H3></A>
+output variable for potential
+overlap percentage
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#stat_filter"><H3>STAT_FILTER</H3></A>
+Activate post-process outlier
+filteting
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#stat_extent"><H3>STAT_EXTENT</H3></A>
+Number of pixel to extend the
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#filter">filter</A> neighborood window
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#stat_sthreshold"><H3>STAT_STHRESHOLD</H3></A>
+Scaler for similarity threshold
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#stat_nthreshold"><H3>STAT_NTHRESHOLD</H3></A>
+percentage of similar pixel
+in neighborood to validate pixel
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#mask_on"><H3>MASK_ON</H3></A>
+Activate mask filtering
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#mask_dn"><H3>MASK_DN</H3></A>
+DN values in image to mask
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#mask_extent"><H3>MASK_EXTENT</H3></A>
+Extend mask in X and Y
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#mask_template"><H3>MASK_TEMPLATE</H3></A>
+Extend mask based on 
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#template">template</A> size
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#out_draw"><H3>OUT_DRAW</H3></A>
+Draw epipolar curve.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#draw_coord"><H3>DRAW_COORD</H3></A>
+pixel coordinates to
+draw epipolar curve.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#tiling"><H3>TILING</H3></A>
+Activate image <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#tiling">tiling</A> 
+considertion
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#multi_plane"><H3>MULTI_PLANE</H3></A>
+Activate multi-plane
+orientations
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#multi_num"><H3>MULTI_NUM</H3></A>
+Control number of 
+planes
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#level_plane"><H3>LEVEL_PLANE</H3></A>
+Add horizontal plane
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#adjust_plane"><H3>ADJUST_PLANE</H3></A>
+adjust projection plane for
+proper incidence angle
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#shift_epi"><H3>SHIFT_EPI</H3></A>
+Activate perp epipolar
+offset correction
+ 
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#ewa"><H3>EWA</H3></A>
+Activate <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#ewa">ewa</A> resampler
+ 
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#ewa_threshold"><H3>EWA_THRESHOLD</H3></A>
+trigger <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#ewa">ewa</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#kewa_sigma"><H3>KEWA_SIGMA</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#ewa">ewa</A> gauss kernel sigma
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#kewa_nsigma"><H3>KEWA_NSIGMA</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#ewa">ewa</A> number of sigmas
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#kewa_nsamples"><H3>KEWA_NSAMPLES</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#ewa">ewa</A> kernel number of
+samples
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation filename
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#match_method"><H3>MATCH_METHOD</H3></A>
+Specifies a method
+for pointing corrections.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#match_tol"><H3>MATCH_TOL</H3></A>
+Tolerance value for
+matching pointing params
+in pointing corrections file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#omp_on"><H3>OMP_ON</H3></A>
+Turns on or off parallel
+processing (default: on)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+pointing correction.
+
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsecorr.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

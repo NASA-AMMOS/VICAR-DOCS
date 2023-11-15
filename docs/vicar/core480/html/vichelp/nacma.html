@@ -1,0 +1,161 @@
+<HTML>
+<HEAD><title>HTML Help for NACMA</title></HEAD>
+<BODY>
+<H1>Help for NACMA</H1>
+<pre>
+PURPOSE
+
+   Glynn Hulley and Simon Hook deserves much credit for this
+work.  It was their idea to apply the LANDSAT cloud detection
+algorithm to ASTER and their MATLAB scripts were used as
+the groundtruth for this program.
+
+   This program creates a cloud mask from a given ASTER image.
+The output is a binary image where clouds are marked as 1s and
+nonclouds are marked as 0s.  ASTER band images are passed to
+the program in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#inp">inp</A> parameter and are ordered 1, 2, 3, 4, 5,
+13, and 14.
+
+   This program will create temporary working files needed for
+storing reflectance values and downsampled reflectance values.
+Also tempcomp, ndsi, gv (growing vegetation), sv (scenesing
+vegatation), rs (reflective soil), are also store in temporary
+files.
+
+   If no output files are specified for the temporary data then
+default names will be given.  Please see parameter list for the
+default names.
+
+   The user may need to grow the final cloud mask by a few
+pixels.
+
+EXECUTION
+
+   The program consists of 2 pass cloud detection system.  The
+general run of the program is:
+
+   1. calculate reflectance from raw dn
+   2. calculate brightness temperature from TIR raw dn
+   3. downsample reflectance files
+   4. perform pass1
+   5. perform pass2
+
+   For details of the pass1 and pass2 algorithms, please see
+"Characterization of the Landsat-7 ETM+ Automated Cloud-Cover
+Assessment (ACCA) Algorithm" by Richard R. Irish,
+John L. Barker, Samuel N. Goward, and Terry Arvidson.  The
+article can be found in "Photogrammetric Engineering & Remote
+Sensing", Vol. 72, No. 10, October 2006, pp. 1179 - 1188.
+
+<A NAME="examples">EXAMPLES</A>
+
+   The only parameters that are necessary are ASTER bands
+(1, 2, 3, 4, 5, 13, 14) as <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#inp">inp</A>, metafile, and output mask
+file as <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#out">out</A>.  Other files can be specified for debugging
+purposes.
+
+   nacma <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#inp">inp</A>=(b1, b2, b3, b4, b5, b13, b14) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#meta">meta</A>=meta          <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#out">out</A>=cloudmask
+
+RESTRICTIONS
+
+Original Programmer: P. Kim, 18 Aug 2009
+
+Revisions:
+  2016-05-16 W. Bunch - Migrated to MIPL; replaced printf with zifmessage
+  2017-08-09 W. Bunch - Removed DEBUG from imake.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#inp"><H3>INP</H3></A>
+ 7 ASTER bands
+(1, 2, 3, 4, 5, 13, 14)
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#meta"><H3>META</H3></A>
+ metafile
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#out"><H3>OUT</H3></A>
+ output binary final cloud file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#masksnow"><H3>MASKSNOW</H3></A>
+ debug output binary snow file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#maskdesert"><H3>MASKDESERT</H3></A>
+ debug output binary desert file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#maskwarmcloud"><H3>MASKWARMCLOUD</H3></A>
+ debug output binary warm cloud file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#maskcoldcloud"><H3>MASKCOLDCLOUD</H3></A>
+ debug output binary cold cloud file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#maskice"><H3>MASKICE</H3></A>
+ debug output binary ice file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#maskcirrus"><H3>MASKCIRRUS</H3></A>
+ debug output binary cirrus file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#maskambig"><H3>MASKAMBIG</H3></A>
+ debug output binary ambiguous clouds file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#maskvalid"><H3>MASKVALID</H3></A>
+ debug output binary valid pixel file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#rad1out"><H3>RAD1OUT</H3></A>
+ debug output real band 1 radiance file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#rad2out"><H3>RAD2OUT</H3></A>
+ debug output real band 2 radiance file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#rad3out"><H3>RAD3OUT</H3></A>
+ debug output real band 3 radiance file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#rad4out"><H3>RAD4OUT</H3></A>
+ debug output real band 4 radiance file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#rad5out"><H3>RAD5OUT</H3></A>
+ debug output real band 5 radiance file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#rad13out"><H3>RAD13OUT</H3></A>
+ debug output real band 13 radiance file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#rad14out"><H3>RAD14OUT</H3></A>
+ debug output real band 14 radiance file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#ref1out"><H3>REF1OUT</H3></A>
+ output real reflectance band 1 file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#ref2out"><H3>REF2OUT</H3></A>
+ output real reflectance band 2 file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#ref3out"><H3>REF3OUT</H3></A>
+ output real reflectance band 3 file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#ref4out"><H3>REF4OUT</H3></A>
+ output real reflectance band 4 file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#ref5out"><H3>REF5OUT</H3></A>
+ output real reflectance band 5 file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#btemp13out"><H3>BTEMP13OUT</H3></A>
+ output real brightness temperature file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#btemp14out"><H3>BTEMP14OUT</H3></A>
+ output real brightness temperature file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#ref1dsout"><H3>REF1DSOUT</H3></A>
+ output downsampled real reflectance band 1 file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#ref2dsout"><H3>REF2DSOUT</H3></A>
+ output downsampled real reflectance band 2 file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#ref3dsout"><H3>REF3DSOUT</H3></A>
+ output downsampled real reflectance band 2 file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#ref4dsout"><H3>REF4DSOUT</H3></A>
+ output downsampled real reflectance band 2 file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#ref5dsout"><H3>REF5DSOUT</H3></A>
+ output downsampled real reflectance band 2 file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#filter1out"><H3>FILTER1OUT</H3></A>
+ debug output byte pass1 filter1 file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#filter2out"><H3>FILTER2OUT</H3></A>
+ debug output byte pass1 filter2 file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#filter3out"><H3>FILTER3OUT</H3></A>
+ debug output byte pass1 filter3 file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#filter4out"><H3>FILTER4OUT</H3></A>
+ debug output byte pass1 filter4 file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#filter5out"><H3>FILTER5OUT</H3></A>
+ debug output byte pass1 filter5 file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#filter6out"><H3>FILTER6OUT</H3></A>
+ debug output byte pass1 filter6 file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#filter7out"><H3>FILTER7OUT</H3></A>
+ debug output byte pass1 filter7 file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#filter8out"><H3>FILTER8OUT</H3></A>
+ debug output byte pass1 filter8 file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#tempcompout"><H3>TEMPCOMPOUT</H3></A>
+ debug output real tempcomp file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#ndsiout"><H3>NDSIOUT</H3></A>
+ debug output real ndsi file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#gvout"><H3>GVOUT</H3></A>
+ debug output real growing vegetation file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#svout"><H3>SVOUT</H3></A>
+ debug output real scenesing vegetation file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma_level2.html#rsout"><H3>RSOUT</H3></A>
+ debug output real reflective soil file
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/nacma.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

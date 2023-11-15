@@ -1,0 +1,146 @@
+<HTML>
+<HEAD><title>HTML Help for MARSXYZMERGE</title></HEAD>
+<BODY>
+<H1>Help for MARSXYZMERGE</H1>
+<pre>
+PURPOSE:
+Given a list of raster point clouds with overlapping areas, MARSXYZMERGE filters
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#out">out</A> the point clouds overlapping areas to keep only points from one point cloud.
+Two strategies are available (DENSITY and ORDER via the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#strategy">STRATEGY</A> parameter) for 
+the filtering process. The program outputs raster point clouds similar to the 
+input rasters with points set to (0,0,0) if they were discarded by the 
+filtering process.
+ 
+
+EXECUTION:
+There are two ways to present input images:
+
+marsxyzmerge <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#inp">inp</A>=(a_in.img,b_in.img,c_in.img,...) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#out">out</A>=(a_out.img,b_out.img,c_out.img,...)
+or
+marsxyzmerge <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#inp">inp</A>=ascii_listoffiles_in <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#out">out</A>=ascii_listoffiles_out
+
+where ascii_listoffiles_in is a text file created by Sybase or an editor,
+containing the list of filenames to include in the mosaic, one per record.
+Up to 200 input images can be listed. Same definition and limit with
+ascii_listoffiles_out. 
+
+
+METHOD:
+
+The input point clouds are loaded and stored in an octree structure. The octree
+is recursively subdivided into octants until a defined maximum number of points 
+(<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#max_split">MAX_SPLIT</A> parameter) are left in each octants. Once the subdivision is done, 
+the points left in each octants are analyzed with the chosen <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#strategy">strategy</A>. The 
+points from the winning point cloud are kept while all the points from all the 
+other point clouds present in the octant are rejected. In practice, points are 
+rejected by setting their XYZ values in the output raster point cloud to (0,0,0).
+
+2 filtering strategies are available: 
+
+DENSITY <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#strategy">strategy</A>: The point cloud containing the most points in the octant,i.e.,
+the densest point cloud, is kept while all the other points (from other point 
+clouds) are discarded. The assumption is that the densest point cloud brings the
+most information and is less noisy than the others.
+
+ORDER <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#strategy">strategy</A>: An octant to be filtered contains points from at least two 
+point cloud sources. The points that are kept are the one from the point cloud
+source that is first on the input list. This option is mostly useful for
+mosaicing situation. In that case, e.g., nav cam point clouds mosaicing, density
+is about the same between point clouds on overlapping areas. Traditionally, the 
+first point clouds in the input list is kept.
+
+
+INPUT/OUTPUT:
+An input XYZ raster can be either a one 3-band file or a three 1-band files. 
+Both types can be supplied simultaneously in the input list. However, it is 
+expected that the three 1-band files composing a XYZ raster are supplied 
+contiguously in the input list. In the input list, if one 1-band file is found,
+it is expected that 2 more 1-band files directly follows and are of the same
+size, and are ordered as X, Y, Z. It is the user responsability to insure that
+the input file list is correct.
+
+The output of the program are XYZ rasters that corresponds to the input rasters
+with some points filtered <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#out">out</A>. Raster size, type, labels, etc are kept 
+identical. The output list must be coherent with respect to the input list. 
+There are three options available that will depend on the number of entries in 
+the output list compared to the number of inputs.
+1 - All output XYZ rasters are saved as 3-band files, independantly of the input
+  format (one 3-band or three 1-band). This case is selected if the number of 
+  output entries is equal to the number of input XYZ rasters (which could be 
+  different from the number of files in the input list if there are 1-band 
+  files. Three 1-band files forms one XYZ raster).
+2 - Output XYZ rasters are saved in the same format (3-band or 1-band) as the 
+  input raster. 3-band XYZ input rasters are saved as 3-band XYZ rasters and
+  three 1-band XYZ input rasters are saved as three 1-band XYZ rasters. This 
+  case is selected if the number of entries in the input list is equal to the 
+  number of entries in the output list.
+3 - All output XYZ rasters are saved as three 1-band files, independantly of the
+  input format (one 3-band or three 1-band). This case is selected if the number
+  of output entries is equal to three times the number of input XYZ rasters.
+   
+
+
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  F. Ayoub</A>
+
+HISTORY:
+  2017-08-01 F. Ayoub - Initial marsxyzmerge
+  2019-12-13 W. Bunch - IDS-7926 - initialized some variables; cleaned up -Wall warnings; added unit test.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#inp"><H3>INP</H3></A>
+Input image(s) or
+file list.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#out"><H3>OUT</H3></A>
+Output image(s) or
+file list.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#max_split"><H3>MAX_SPLIT</H3></A>
+max number of point
+to carry density 
+analysis
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#strategy"><H3>STRATEGY</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#strategy">Strategy</A> to filter
+the point clouds
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzmerge.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

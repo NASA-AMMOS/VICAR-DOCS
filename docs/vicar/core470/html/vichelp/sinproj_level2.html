@@ -1,0 +1,117 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for SINPROJ</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/sinproj.html">SINPROJ</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+input image file, it needs to contain the label items: proj_lon, lon_cl,
+lon_cr, lat_uc, and lat_lc for sinproj to work
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+output image file
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="lon_cl"><H3>LON_CL</H3></A><pre>
+the longitude of the leftmost pixel at the equator for the output
+file. if not specified and if the size field is not specified the
+default is the input file's value. should be between 0.0 and 360.0
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="lon_cr"><H3>LON_CR</H3></A><pre>
+the longitude of the rightmost pixel at the equator for the output
+file if not specified and if the size field is not specified the
+default is the input file's value. LON_CR is expected to be greater
+than LON_CL but less than 360.0, if it isn't then SINPROJ interprets
+it as a wraparound, e.g. specify a reprojection from 320.0 to 20.0
+with a projection longitude of 350.0 as
+  LON_CL = 320.0 LON_CR = 20.0 PROJ_LON = 350.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="lat_uc"><H3>LAT_UC</H3></A><pre>
+the latitude of the northernmost pixel at the projection longitude
+for the output file. should be between 90.0 and -90.0
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="lat_lc"><H3>LAT_LC</H3></A><pre>
+the latitude of the southernmost pixel at the projection longitude
+for the output file. should be between 90.0 and -90.0 and should be 
+less than LAT_UC
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="proj_lon"><H3>PROJ_LON</H3></A><pre>
+the projection longitude of the sinusoidal projection for the output
+file, it usually passes through the center of the image frame. PROJ_LON
+defaults to the longitude halfway between LON_CL and LON_CR. If samples
+are specified instead of longitudes PROJ_LON is calculated from PROJSAMP
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sl"><H3>SL</H3></A><pre>
+starting line for the output file, corresponds to LAT_UC. 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ss"><H3>SS</H3></A><pre>
+starting sample for the output file, corresponds to LON_CL
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nl"><H3>NL</H3></A><pre>
+number of lines for the output file
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ns"><H3>NS</H3></A><pre>
+number of samples for the output file
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="projsamp"><H3>PROJSAMP</H3></A><pre>
+sample number of the output projection longitude for the output file 
+it needs to be specified in terms of the input file sample numbering.
+ie if the input image is 2000 samples wide and the output image is going
+to be 500 samples wide and centered on the input image :
+
+   SINPROJ inp=tst.in out=tst.out ss=750 ns=500  
+   SINPROJ inp=tst.in out=tst.out ss=750 ns=500  projsamp=1000
+
+will both give the same result
+
+   SINPROJ inp=tst.in out=tst.out ss=750 ns=500  projsamp=250
+
+will not work
+If not specified it is calculated from PROJ_LON
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

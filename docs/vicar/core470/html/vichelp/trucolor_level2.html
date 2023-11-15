@@ -1,0 +1,196 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for TRUCOLOR</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/trucolor.html">TRUCOLOR</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+INP = (input1,...,inputN), where the inputs are up to ten 
+images decalibrated by the program GALSOS.  The images must have been taken
+with different filters and must all be the same size.
+
+The input images should be reflectance images if the specified DEVICE is a film 
+recorder, and radiance images if the specified DEVICE is a color monitor. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+OUT = (redimage,greenimage,blueimage), where the outputs are image filenames 
+to be used as inputs to the display device.
+Outputs are always BYTE format.
+There is an optional fourth output file containing a 2-d histogram of
+the chromaticity space. See help file for specifics.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="colors"><H3>COLORS</H3></A><pre>
+COLORS = (1,...,10), where the colors are up to 10 special 
+colors.  There must be at least as many colors named as there are input images.
+Eight valid colors have been defined for GLL, they have the names:
+NAME     number       description                 comments
+1/3        1       GLL bright red patch
+1/12       2       GLL bright green patch
+5/7        3       GLL bright blue patch
+7/6        4       GLL dark blue patch
+11/7       5       GLL darkest blue patch
+desert     6       Earth desert yellow  
+water      7       Earth ocean blue     
+cloud      8       Earth clouds         
+Tables of XYZ tristimulus values and response in both radiance and
+reflectance for these 8 colors are built into the program already.
+If you specify the XYZ and RADIANCE values by parameter input then
+you need not specify special colors.
+Example: colors=(3,4,5)
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="conv"><H3>CONV</H3></A><pre>
+CONV=(factor1,...,factorN), where each conversion factor corresponds to an 
+input image (as they are ordered in INP).  CONV allows all input images to be
+scaled in the same units, and should be the same as those specified in the
+program GALSOS.  Each factor is multiplied by each pixel in the corresponding 
+input image.  The number of factors specified must be at most equal to the 
+number of inputs specified.
+The default is to use CONV values in the picture labels.
+Only used in the 'TV mode.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="iovf"><H3>IOVF</H3></A><pre>
+IOVF=(factor1,...,factorN), where each conversion factor corresponds to an 
+input image (as they are ordered in INP).  IOVF allows all input images to be
+scaled in the same units, and should be the same as those specified in the
+program GALSOS.  Each factor is multiplied by each pixel in the corresponding 
+input image.  The number of factors specified must be at most equal to the 
+number of inputs specified.
+The default is to use IOVF values in the picture labels.
+Only used in the 'FILM mode.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="filter"><H3>FILTER</H3></A><pre>
+The GLL filter position numbers (0 to 7) for each of the input images
+in the order of input. Defaults to the filter position in the image
+label.
+The first 5 special colors exist only for filters 1-3.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="xyz"><H3>XYZ</H3></A><pre>
+Tristimulus values in the order X, Y, Z for each special color.
+These offer a manual input. Usually they come from internal
+tables pointed to by the COLORS keyword.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="response"><H3>RESPONSE</H3></A><pre>
+The radiance or reflectance values for each special color and for
+each filter position input. In the order of each input for the
+first special color followed by the order of input for the second
+color...
+These offer a manual input. Usually they come from internal
+tables pointed to by the COLORS keyword and the FILTER keyword.
+The I/F and CONV values are included in the RESPONSE.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="device"><H3>DEVICE</H3></A><pre>
+[DEVICE = imagedevice], where "imagedevice" specifies the device on which the 
+output image files are to be displayed.  The only valid devices are 'TV 
+(Conrac 7211) and 'FILM (MDA Color Fire). 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="inc"><H3>INC</H3></A><pre>
+The interval between lines and samples to skip in the initial pass
+through the input data to obtain auto scaling.
+Default is 10
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="noauto"><H3>NOAUTO</H3></A><pre>
+To inhibit auto scaling of the Y tristimulus value. AUTO assures that
+the full dynamic range of the display is utilized.
+Defaults to 'AUTO
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nterms"><H3>NTERMS</H3></A><pre>
+Number of terms to use in the polynomial fit connecting the Yxy 
+values to DN . Can be 4 or 10. Defaults to 4. Do not try other than
+the default value.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nfits"><H3>NFITS</H3></A><pre>
+Number of points to use in the polynomial fit connecting Yxy to
+DN. Can be from NTERMS+1 to 20. Defaults to 7. Do not use other than
+the default.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="illumin"><H3>ILLUMIN</H3></A><pre>
+Illumination scaling factor. The DN*CONV or DN*I/F values used for the
+special colors only can be multiplied by ILLUMIN to assist in 
+controlling brightness. This only affects the least squares fits
+relating special colors to tristimulus values.
+You should not need to use this factor.
+DEfaults to 1.0 .
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="macbeth"><H3>MACBETH</H3></A><pre>
+Initiates an internal test of the program.
+To use this test run the program as you would normally with images.
+The output images should be ignored. Instead a printout of the
+output dn values which correspond to 24 macbeth color patches will
+be printed. Give these to Chris Capraro to load into the film
+recorder to see how close the printed patches come to the desired
+table of Yxy values.
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

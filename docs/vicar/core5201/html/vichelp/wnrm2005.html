@@ -1,0 +1,112 @@
+<HTML>
+<HEAD><title>HTML Help for WNRM2005</title></HEAD>
+<BODY>
+<H1>Help for WNRM2005</H1>
+<pre>
+This program modifies a fourier transform using the Wiener noise additive
+model for restoration.  The Wiener algorithm is similar to that 
+provided in WIENER and WNR2005, but has been modified to match a
+MATLAB script.
+
+The inputs can now have a real matrix that gives a per-pixel signal to
+noise ratio (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/wnrm2005_level2.html#sn">SN</A>) in place of the constant snr given by the parameter.
+EXECUTION:
+  WNRM2005  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/wnrm2005_level2.html#inp">INP</A>=(in,otf,snr)  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/wnrm2005_level2.html#out">OUT</A>
+
+ where:  in is the fft of the input degraded image.
+
+         otf is the optical transfer function. This represents the image
+             degradation. It is also an fft the same size as in.
+
+         snr  is the signal/noise ratio image (real format) to be applied..
+                It is optional.
+
+         <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/wnrm2005_level2.html#out">out</A> is the fft of the output image.
+
+Note that WNRM2005 has no SIZE parameter.  The output must be the same
+size as the primary input, and the other input files must also be of
+the same size.
+
+METHOD
+
+WNRM2005 applies the Wiener noise additive restoration model on a point
+by point basis:
+
+        <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/wnrm2005_level2.html#out">OUT</A>(i,j) = IN(i,j) * W(i,j)
+
+                        OTF"(i,j)
+	W(i,j) = -----------------------
+                 |OTF(i,j)|**2 + 1/<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/wnrm2005_level2.html#sn">SN</A>**2
+
+        OTF should be pre-normalized by using FFT2005 'norm option.
+
+where IN and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/wnrm2005_level2.html#out">OUT</A> are the fourier transforms before and after restoration
+respectively, W is the Wiener filter, OTF is the optical transfer function
+(the fourier transform of the point spread function), OTF" is the complex
+conjugate of OTF, and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/wnrm2005_level2.html#sn">SN</A> is the signal-to-noise ratio.
+
+<A NAME="examples">EXAMPLE</A>
+
+Generate OTF from PSF
+fft2005      amt_psf_pan.rel amt_OTF.cmp mode=forward format=comp               insect=(3375,3648) 'quadswap 'norm 'preqswap
+Convert snr psf to zero-filled fft, then convert to real*4 image
+fft2005      amt_snr_pan_high.rel xxtmp3 mode=forward format=comp               insect=(3375,3648) 'quadswap 'preqswap
+f2comp       xxtmp3 xxtmp4 size=(1,1,3375,3648) op=cabs
+Convert Image to FFT
+fft2005      amt_snap_pan.rel xxtmp1 'forward 'comp
+Apply weiner filter
+wnrm2005    (xxtmp1,amt_OTF.cmp,xxtmp4) xxtmp2 '<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/wnrm2005_level2.html#snrimg">snrimg</A>
+Convert back to image dimensions
+fft2005      xxtmp2 newimage.hlf mode=inverse format=half
+
+
+SIMULATION
+
+The operation of WNRM2005 could be replaced with the following
+vicar steps, but wnrm2005 is faster, and has less rounding errors.
+(Reference preceeding example)
+
+wnrm2005    (xxtmp1,amt_OTF.cmp,xxtmp4) xxtmp2 '<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/wnrm2005_level2.html#snrimg">snrimg</A>
+
+  equals:   (except for rounding errors)
+
+f2comp       amt_OTF.cmp xxtmp6 'conj
+f2comp       amt_OTF.cmp xxtmp7 'cabs
+f2          (xxtmp7,xxtmp4) xxtmp8 func="((in1**2)+(1/in2/in2))"
+f2comp      (xxtmp6,xxtmp8) xxtmp9 'div 'scalar
+qswp2005     xxtmp9 xxtmp7 'reverse
+f2comp      (xxtmp1,xxtmp7) xxtmp2 'mult
+
+HISTORY
+
+  
+  Sep 2007 A Zobrist  NSR input image inverted to SNR input
+
+  Nov 2007 P Kim wnrm2005 program is a spinoff from wnrm2005 to
+                 simulate matlab results for Joe Green  
+
+<A NAME="CogProg"> Current Cognizant Programmer:  P Kim, A Zobrist</A>
+ Revisions:
+Thu Jan  3 2008 wlb switched to USES_ANSI_C AND LIB_CARTO; misc cleanup  
+2022-07-27 B. Crocco afids to opensource (untested)
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/wnrm2005_level2.html#inp"><H3>INP</H3></A>
+2 or 3 input filenames
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/wnrm2005_level2.html#out"><H3>OUT</H3></A>
+Output filename
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/wnrm2005_level2.html#sn"><H3>SN</H3></A>
+Signal-to-noise ratio
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/wnrm2005_level2.html#snrimg"><H3>SNRIMG</H3></A>
+last input is noise-to-
+signal ratio array
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/wnrm2005.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/wnrm2005.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

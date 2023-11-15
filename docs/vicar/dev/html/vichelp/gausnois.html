@@ -1,0 +1,104 @@
+<HTML>
+<HEAD><title>HTML Help for GAUSNOIS</title></HEAD>
+<BODY>
+<H1>Help for GAUSNOIS</H1>
+<pre>
+PURPOSE:
+
+GAUSNOIS generates an image with random pixel values where the pixel values
+are distributed according to a gaussian (normal or bell shaped) probability
+distribution.  This type of a noise image can be useful in tests.
+
+
+EXECUTION:
+
+GAUSNOIS  NOISE.IMG  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#nl">NL</A>=200 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#ns">NS</A>=300  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#mean">MEAN</A>=100 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#sigma">SIGMA</A>=25 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#format">FORMAT</A>=BYTE  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#seed">SEED</A>=7382382
+
+This is an example using all of the parameters:  it produces a 200x300 byte
+image with <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#mean">mean</A> 100 and standard deviation 25, and starts the random number
+generator with that particular <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#seed">seed</A>.
+OPERATION
+
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#seed">SEED</A> parameter is provided so that the same random images can be generated.
+If it is defaulted, the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#seed">seed</A> for the random number generator comes from the
+system time.
+
+Convenient <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#seed">seed</A> numbers for test scripts have been: 16777215, 1073741969,
+-7382382, 4617316,-74526, 94151, 97, -768825576, and -6.
+
+Then two calls to rangen are used to generate x and y which plug into a formula
+
+u = sqrt((-2.)*log(x)) * cos(2*3.1415927*y)
+
+which, in turn are used to generate each sample value in the buffer.
+
+sample = <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#sigma">sigma</A>*u + <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#mean">mean</A>
+
+All of the parameters except the output image can be defaulted.
+PERFORMANCE:
+
+    The following performance was directed towards VAX/VMS users:
+	The ported version of GAUSNOIS is approximately half the speed of
+the original GAUSNOIS.  The primary reason for this is that the random
+number generator, RANGEN, is half the speed of the VAX/VMS routine RAN.
+Steve Pohorsky agrees that this is unavoidable without a significant
+rewrite to the program, including writing a seperate vectorized version of
+the random number generator.
+
+    The Linux version uses a call to the system time, in seconds passed
+1 Jan 70 to initialize the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#seed">seed</A>.
+
+HISTORY:
+
+VMS Original Programmer :	Frank Evans	August 1985
+<A NAME="CogProg">Cognizant Programmer:   Ray Bambery</A>
+
+Revisions:
+  1994-06    - Steve Hwan  - Ported to UNIX
+  2011-04-15 - Ray Bambery - Fails under 64-bit linux
+                    Internal call to get_seconds somehow corrupts
+                    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#sigma">sigma</A> parameter to always be zero. Fixed by
+                    reordering xvp calls. This shouldn't be but
+                    I could not find what was tromping on <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#sigma">sigma</A>.    
+  2011-05-10 - Ray Bambery - Fixed failure to create file
+                    on gfortran 4.4.4
+  2012-06-06 - Ray Bambery - gfortran 4.6.3 revealed that
+                    rangen parameters are (long,float) so 
+                    created integer*8 dseed replacement for
+                    integer*4 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#seed">seed</A> - <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#sigma">sigma</A> always became zero
+                    when <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#seed">seed</A> was entered into rangen
+  2012-06-18 - Ray Bambery - get_seconds parameter is also
+                    integer*8
+                    rangen and get_seconds parameters were what
+                    was causing <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#sigma">sigma</A> to be 0 in 4-15-2011 comments
+  2013-08-11 - Ray Bambery - changed internal calls from
+                   get_seconds to get_seconds_big and rangen to
+                   rangen_big to prevent conflict with other
+                   programs which call these routines
+  2016-06-08 - Walt Bunch - Removed "_big" from get_seconds and 
+                   rangen. Migrated back to MIPL.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#out"><H3>OUT</H3></A>
+Output image
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#ns"><H3>NS</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#nl"><H3>NL</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#mean"><H3>MEAN</H3></A>
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#mean">mean</A> of the distribution
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#sigma"><H3>SIGMA</H3></A>
+The standard deviation
+of the distribution
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#seed"><H3>SEED</H3></A>
+The starting <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#seed">seed</A> for the
+random number generator
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#format"><H3>FORMAT</H3></A>
+Output <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois_level2.html#format">format</A> (default BYTE)
+.END
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gausnois.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

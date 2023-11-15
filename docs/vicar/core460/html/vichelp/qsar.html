@@ -1,0 +1,98 @@
+<HTML>
+<HEAD><title>HTML Help for QSAR</title></HEAD>
+<BODY>
+<H1>Help for QSAR</H1>
+<pre>
+ PURPOSE:
+
+Program QSAR is used to add or subtract values from the data numbers in
+rectangular sections of an image.  For each rectangle, the user specifies
+the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#size">size</A> and position of the rectangle and the (positive or negative) value
+to be added to the data numbers of points in that rectangle.  QSAR performs
+the addition and writes the resulting image to an output file.  QSAR is 
+primarily used to correct flaws in images or, in conjunction with program GEN,
+to generate test images.
+ EXECUTION:
+
+The input image may either be byte or halfword data.  The position of the 
+rectangles are specified relative to the full input image.
+
+The maximum number of rectangles that can be specified for QSAR is limited
+by the TAE executive.  As of this writing the limit is 60 rectangles.
+If no rectangles are specified, QSAR copies the image without making any
+changes.  For each rectangle specified, the program adds the specified
+value to the data numbers of the points of that rectangle. The resulting
+data numbers are then checked for being valid for the data type (byte or
+halfword) of the image and are adjusted if invalid.  For byte data,
+data numbers less than 0 are set to 0, and data numbers greater than 255
+are set to 255.  For halfword data, data numbers less than -32768 are set to 
+-32768, and data numbers greater than 32767 are set to 32767.  Rectangles
+are allowed to overlap.  For points in more than one rectangle, the additions
+are performed in the order they are entered by the user, and adjustments
+required for validity are applied after each addition.
+
+The output image has the same data format  (byte or halfword) as the input 
+image.  
+TAE COMMAND LINE FORMAT
+      The following command line formats show the major allowable forms:
+      QSAR <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#inp">INP</A>=a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#out">OUT</A>=b <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#size">SIZE</A>=(<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#ns">ns</A>) optional parameters
+      QSAR <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#inp">INP</A>=a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#out">OUT</A>=b  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#sl">SL</A>=sl <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#ss">SS</A>=ss <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#nl">NL</A>=nl <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#ns">NS</A>=ns optional parameters
+      QSAR a b (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#ns">ns</A>) optional parameters
+      QSAR a b optional parameters
+
+       Here 'a' represents the input image file name, and
+       'b' represents the output image file name.
+<A NAME="examples">EXAMPLES</A>
+
+1.    GEN A <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#nl">NL</A>=250 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#ns">NS</A>=250 IVAL=0 LINC=0 SINC=0
+      QSAR <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#out">OUT</A>=B <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#area">AREA</A>=( 1   1  250   50   50                                    1  51  250   50  100                                    1 101  250   50  150                                    1 151  250   50  200                                    1 201  250   50  250       )
+
+      In this example the output file B is a 250x250 byte image
+      consisting of five vertical strips of different shades of gray.
+2.    GEN QSARE <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#nl">NL</A>=10 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#ns">NS</A>=10 'HALF
+      QSAR <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#inp">INP</A>=QSARE <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#out">OUT</A>=QSAREO <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#size">SIZE</A>=(2,3,8,7) FORMAT=HALF <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#area">AREA</A>=(4,6,3,1,100)
+
+      In this example the output file QSAREO is a halfword image that has
+      eight lines with seven pixels per line.  Data numbers for a three line
+      by 1 pixel rectangle are incremented by 100.
+RESTRICTIONS
+1. The input and output images must be byte or halfword data.
+2. The maximum number of pixels per line is 64000.
+3. The maximum number of rectangles that can be specified is 60, as of this
+   writing.
+
+ WRITTEN BY:             Steve Pohorsky              24 Oct 1983
+
+<A NAME="CogProg"> COGNIZANT PROGRAMMER:   Joel Mosher                 29 May 1980</A>
+
+ REVISION:               1                           29 May 1980 
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#inp"><H3>INP</H3></A>
+Input file name
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#out"><H3>OUT</H3></A>
+Output file name
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#size"><H3>SIZE</H3></A>
+Standard Vicar <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#size">size</A> field:
+Same as -  (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#ns">NS</A>)
+By default, the entire input
+image is used if these
+parameters are not entered.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#sl"><H3>SL</H3></A>
+Starting line number
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#ss"><H3>SS</H3></A>
+Starting sample number
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#nl"><H3>NL</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#ns"><H3>NS</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar_level2.html#area"><H3>AREA</H3></A>
+Specifies the rectangles and the
+values to be added to data 
+numbers.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/qsar.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

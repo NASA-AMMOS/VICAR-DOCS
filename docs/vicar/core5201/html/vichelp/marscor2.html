@@ -1,0 +1,436 @@
+<HTML>
+<HEAD><title>HTML Help for MARSCOR2</title></HEAD>
+<BODY>
+<H1>Help for MARSCOR2</H1>
+<pre>
+PURPOSE:
+To compute, from a stereo pair of images, the line and sample disparity
+of every pixel in the scene.  The output is typically run through the
+program MARSXYZ to generate X,Y,Z coordinates over the entire image.
+
+This is a 2-D correlation program derived from MARSCORR.  The primary
+difference is that MARSCOR2 has been adapted to work with parallel
+processors (using MPI), but even when run on one processor, there are
+some algorithm updates w.r.t. the original MARSCORR program.
+
+The primary algorithmic difference is that MARSCOR2 acquires seed points
+automatically.  This means that the input images must be supported by the
+PIG library, because camera model information is used to determine the seeds.
+MARSSEEDGEN is not needed for, nor can it be used with, MARSCOR2.
+
+Despite the requirements of a camera model via PIG, the input images do
+not have to be epipolar aligned or linearized, because a full 2-dimensional
+correlation is performed.  This distinguishes the program from MARSJPLSTEREO,
+which correlates in one dimension only (and thus the inputs must be aligned).
+
+EXECUTION:
+marscor2 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#inp">inp</A>=(left,right) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#out">out</A>=(disparity) params
+
+where:
+left is the left eye image of a stereo pair
+right is the corresponding right eye image of a stereo pair
+disparity is the output (2-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#band">band</A>) disparity file.
+
+Although "left" and "right" are used above, there is no actual restriction
+that the first image be left and the second be right.  Correlations are done
+from the first image to the second.  Output images (disparity and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#mask">mask</A>)
+correspond to the first image, containing matching coordinates in the second
+image.  However, for convenience, "left" and "right" are used throughout
+this help.
+
+Additionally, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#mask">mask</A> can be used to name an output file with a completion
+status, and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#out_quality">out_quality</A> can name an output file which will contain the
+correlation qualities for each pixel.
+
+PARALLEL EXECUTION:
+
+MARSCOR2 can be run in parallel on multiple machines.  This dramatically
+improves the wall-clock execution time of the program.  The MPI (Message
+Passing Interface) package is used for interprocess communication.  This is
+intended for Beowulf-style clusters, but can be used on any set of machines.
+Each node processes a rectangular tile of the image in a grid pattern.
+Because of the regular grid, only the following numbers of nodes are
+currently supported:
+
+1,2,3,4,5,6,9,10,12,15,16,18,20,24,25,28,32,36,40,44,45,48,49,50
+
+If parallel execution is not desired, nothing special need be done.
+The program will work on one processor with no extra parameters.
+This program can be recompiled without using the MPI library by removing
+the LIB_MPI definition from the imake file.  However, this is not
+necessary - the MPI-linked version will work in serial fashion just fine.
+
+Consult the MPI documentation for details on parallel execution.  However,
+for the simplest case, the following can be done:
+
+First, make sure all involved machines can be accessed via ssh from the
+main node (the one on which you start the program).  It is convenient
+to set up ssh to work without a password (consult your local System
+Administrator), but that is not required.
+
+Second, make sure that any required setups are done in your .cshrc file
+on each machine.  This includes environment variables and generally
+involves source'ing vicset1.csh and vicset2.csh.  The following is
+recommended for a .cshrc file:
+
+if ($?V2TOP == 0) then
+    setenv V2TOP /usr/local/vicar/dev    (or wherever your VICAR resides)
+    source $V2TOP/vicset1.csh
+endif
+source $V2TOP/vicset2.csh
+
+Third, make sure all pathnames are absolute and accessible from all
+machines.  The current directory is not transferred to the remote machines,
+so relative pathnames will not work.
+
+Finally, set up a file containing the node name of each machine to use.
+Node names can be repeated, in which case multiple processes will be started
+on each machine.  The first one becomes the master machine, and is often
+(but not necessarily) the one on which the program is being started.  The
+nodes should be of the same architecture (e.g. solaris vs. linux).
+For example:
+
+lowe% cat machines.solaris
+# Change this file to contain the machines that you want to use
+# to run MPI jobs on.  The format is one host name per line, with either
+#    hostname
+# or
+#    hostname:n
+# where n is the number of processors in an SMP.  The hostname should
+# be the same as the result from the command "hostname"
+lowe
+pinatubo
+potato
+wind
+
+Then the program can be run like this:
+
+$MPILIB/bin/mpirun -np 4 -machinefile machines.solaris $MARSLIB/marscor2 ...
+
+where -np is the number of processor nodes, -machinefile is the name of
+the file above (this pathname can be relative), and ... are the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#normal">normal</A>
+parameters to marscor2 (with absolute pathnames).
+
+Each node sends its stdout/stderr output to the controlling terminal,
+so messages from each node will be interleaved.
+
+
+METHOD:
+
+The process starts by finding a seed point, which is an initial guess to
+obtain a starting correlation.  Initally, the center of the tile being
+processed by the CPU is used.  Later seeds are obtained randomly within
+the tile.  The prospective seed is projected to the PIG <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#surface">surface</A> model
+and then projected back into the second image.  The locations thus obtained
+are then correlated.  If the correlation fails (or the seed has already
+been correlated), another seed point is chosen (up to a max of 100).
+
+The seed point is correlated using a wide <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#search">search</A> area (defined by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#amax">AMAX</A>(2)).
+A region is then grown from the seed outward in a spiral-like pattern until
+the picture is filled.
+
+For each pixel, the 8 neighbors are examined to find the one with the best
+correlation value so far.  This neighbor is used as the initial guess for
+the pixel in question (modified +/-1 as appropriate).  If no correlated
+neighbors are found, the pixel is skipped.  The correlation window is
+defined via the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#template">TEMPLATE</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#search">SEARCH</A> parameters.
+
+Once the region has grown to the size of the image segment for the current
+CPU (or <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#tptlimit">TPTLIMIT</A> pixels have been correlated), a second pass goes through
+the region and attempts to fill gores, or pixels that did not correlate on
+the first pass, by again examining all of its neighbors (since neighbors on
+the other side, which were not done previously, might provide a better
+starting location, which will correlate, especially near edges).  This
+process continues until no more gores are filled in a pass.
+
+After the gore-filling pass, the percent coverage of tiepoints is compared
+to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#fill_fraction">FILL_FRACTION</A>.  If not enough tiepoints have been acquired to satisfy
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#fill_fraction">FILL_FRACTION</A>, the entire process is repeated using different randomly-
+chosen seeds (up to a limit of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#max_trials">MAX_TRIALS</A> iterations).
+
+After all that, the results from all processors are combined on the master
+node (if running in parallel).  If <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#second_pass">SECOND_PASS</A> is defined, the master node
+then goes through the entire above algorithm again, this time using the
+entire image.  This tends to fill in some gaps that might otherwise occur
+at the boundaries between tiles.
+
+CORRELATIONS:
+
+All correlations are performed using the gruen correlation routine.  See
+the gruen documentation for details of the algorithm.  Seed points are
+always correlated using <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#mode">mode</A> 3 (linear followed by amoeba) to handle large
+offsets.  The rest of the points may be correlated using any gruen <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#mode">mode</A>
+via the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#mode">MODE</A> parameter:
+
+linear:            gruen <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#mode">mode</A> 0
+annealing:         gruen <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#mode">mode</A> 1
+amoeba:            gruen <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#mode">mode</A> 2
+linear_amoeba:     gruen <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#mode">mode</A> 3
+annealing_amoeba:  gruen <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#mode">mode</A> 4
+amoeba2:           gruen <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#mode">mode</A> 5
+linear_amoeba2:    gruen <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#mode">mode</A> 6
+
+Of the above, only amoeba and amoeba2 (modes 2 and 5) are recommended.  The
+others are provided only for experimentation, and may significantly increase
+the execution time of the program.  The annealing modes are not fully
+implemented in the code at this time, but it would be trivial to do so if
+desired.
+
+The amoeba <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#mode">mode</A> uses a full 6 degree of freedom <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#search">search</A> from the starting point
+(derived from the best neighbor).  The starting point must be within 2 pixels.
+The amoeba2 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#mode">mode</A> uses only 2 degrees of freedom (x/y offsets only) so it will
+be faster, at the possible expense of accuracy.  The starting point must also
+be within 2 pixels.  amoeba2 is not recommended for images that are not derived
+from a stereo camera, e.g. using different instruments or involving motion
+between the two frames.  The other modes generally do not have a 2 pixels
+starting point limitation, so they might be useful for scenes with wildly
+varying disparity values.  However, they are exceedingly slow.
+
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#template">template</A> (correlation patch) and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#search">search</A> area sizes may be rectangular
+instead of square.  For landed images such as Mars Pathfinder, the Mars 98
+lander, or MER, it may be advantageous to specify areas that are much wider
+than they are tall.
+
+OUTPUT FILE CONTENTS:
+
+All output files are in the coordinates of the first (left eye) image.
+For example if the sample disparity file has a value of 56.67 at sample 50
+it means that the sample location of a tiepoint located at sample 50 in the
+left eye image corresponds to sample 56.67 in the right eye image.   
+
+The line and sample disparities are written into two separate files, if
+two filenames are provided.  If only one filename is provided, both are
+written to a single, 2-banded file, with line in the first <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#band">band</A> and sample
+in the second.
+
+First output (or <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#band">band</A>): A REAL image containing the line disparity.  The
+line/sample coordinate of each pixel in the output defines the position
+in the left eye.  The value of the pixel contains the line coordinate of
+the corresponding pixel in the right eye image.
+
+Second output (or <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#band">band</A>): A REAL image containing the sample disparity.  The
+line/sample coordinate of each pixel in the output defines the position
+in the left eye.  The value of the pixel contains the sample coordinate of
+the corresponding pixel in the right eye image.
+
+If both line & sample disparity values are 0.000 the point has no value
+(meaning correlation failed for that point).
+
+Note that all disparity values use 1-based coordinates for the right
+image, per VICAR conventions.
+
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#mask">Mask</A> file (optional): A BYTE image showing the coverage of tiepoints.
+ 0 dn means the pixel could not be reached in order to be correlated
+   (i.e. there were no neighbors to supply an initial value, or <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#tptlimit">TPTLIMIT</A>
+   was reached).
+ 128 dn means a correlation was successfully performed at this location.
+ 255 dn means a correlation was attempted at this location but it failed,
+   usually because of low correlation <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#quality">quality</A>.
+
+Output <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#quality">quality</A> file (optional): A REAL image containing the correlation
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#quality">quality</A> of each pixel attempted, from 0 to 1.  0 indicates either a
+correlation failure unrelated to the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#quality">QUALITY</A> setting, or a pixel that was
+not reached (the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#mask">MASK</A> output can distinguish).  Note that the file will
+contain just a thin border of poor-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#quality">quality</A> pixels around each area,
+because poor-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#quality">quality</A> pixels prevent the correlator from searching farther
+in that direction.
+
+HISTORY:
+
+  1995-12-01 J Lorre - Initial MPFTPT program
+  1999-07    Bob Deen - Signficant internal restructuring and addition of features.
+             Program renamed to marscorr.  
+  2002       G. Klimeck of Section 381 - Took marscorr as a base and implemented 
+             parallel algorithms and seed derivation improvements.  
+  2003-02    Bob Deen - Integrated parallel code into VICAR; became marscor2.
+  2019-10-02 Walt Bunch - IDS-7926 - Initialized some variables.
+             Commented unused variables. Added test script and log.
+  2020-03-05 Walt Bunch - IDS-7927 - Replaced sprintf with snprintf or zvnprintf.
+  2020-03-18 Walt Bunch - IDS-7927 - Replaced zvnprintf with snprintf.
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Bob Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#inp"><H3>INP</H3></A>
+input images.
+first: left eye
+second: right eye
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#out"><H3>OUT</H3></A>
+Output file(s).
+Combined disparity,
+or (line, sample)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#mask"><H3>MASK</H3></A>
+Output <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#mask">mask</A> file
+(optional)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#out_quality"><H3>OUT_QUALITY</H3></A>
+Output <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#quality">quality</A> image
+(optional)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#band"><H3>BAND</H3></A>
+The vicar image 
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#band">band</A> number. 
+Defaults to 1
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#template"><H3>TEMPLATE</H3></A>
+correlation size
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#search"><H3>SEARCH</H3></A>
+correlation <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#search">search</A>
+area
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#quality"><H3>QUALITY</H3></A>
+Minimum acceptable
+correlation <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#quality">quality</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#tptlimit"><H3>TPTLIMIT</H3></A>
+Limit number of
+tiepoints to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#tptlimit">TPTLIMIT</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#amax"><H3>AMAX</H3></A>
+Maximum <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#template">template</A>/
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#search">search</A> areas
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#mode"><H3>MODE</H3></A>
+Correlation <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#mode">mode</A>.
+Use only amoeba,
+amoeba2.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#max_trials"><H3>MAX_TRIALS</H3></A>
+Maximum iterations for
+outer loop; i.e. how many
+seeds to try.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#fill_fraction"><H3>FILL_FRACTION</H3></A>
+Desired percentage of
+correlated pixels within
+one segment
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#second_pass"><H3>SECOND_PASS</H3></A>
+Turns on a second pass on
+the master CPU after the
+nodes are done
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#segment_border"><H3>SEGMENT_BORDER</H3></A>
+Border (in pixels) to leave
+between tiles (nodes)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#outside_border"><H3>OUTSIDE_BORDER</H3></A>
+Border (in pixels) to leave
+on the outside edge of the
+image
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#rand_seed"><H3>RAND_SEED</H3></A>
+Seeds random number generator
+if given.  0 seeds to current
+time
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#normal"><H3>NORMAL</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#normal">normal</A> vector.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#ground"><H3>GROUND</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#ground">ground</A> point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#surf_coord"><H3>SURF_COORD</H3></A>
+Coordinate system used to define
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#surface">surface</A> parameters.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#surface"><H3>SURFACE</H3></A>
+The type of mars
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#surface">surface</A> to use
+INFINITY, PLANE, SPHERE1, SPHERE2.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#match_method"><H3>MATCH_METHOD</H3></A>
+Specifies a method
+for pointing corrections.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#match_tol"><H3>MATCH_TOL</H3></A>
+Tolerance value for
+matching pointing params
+in pointing corrections file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+pointing correction.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscor2.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

@@ -1,0 +1,229 @@
+<HTML>
+<HEAD><title>HTML Help for ZINTERP</title></HEAD>
+<BODY>
+<H1>Help for ZINTERP</H1>
+<pre>
+
+PURPOSE
+
+	Interpolate elevation values from random control points
+	into a rectangular grid (A "surface" image).
+
+
+TAE COMMAND LINE <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#format">FORMAT</A>
+
+	zinterp <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#inp">INP</A>=3DCPTS.INT <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#out">OUT</A>=SURFACE.IMG <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#nl">NL</A>=250 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#ns">NS</A>=300  		<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#format">FORMAT</A>=BYTE <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#linecol">LINECOL</A>=1 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#sampcol">SAMPCOL</A>=2 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#zcol">ZCOL</A>=3 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#radius">RADIUS</A>=15.0  		<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#radexp">RADEXP</A>=10.0 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#exponent">EXPONENT</A>=2.5 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#numn">NUMN</A>=5 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#loffset">LOFFSET</A>=250  		<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#soffset">SOFFSET</A>=-50 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#zoffset">ZOFFSET</A>=1000 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#lscale">LSCALE</A>=1.5 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#sscale">SSCALE</A>=.75  		<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#zscale">ZSCALE</A>=.875 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#tron">TRON</A>=20 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#tronmode">TRONMODE</A>=1
+
+<A NAME="examples">EXAMPLES</A>
+
+	zinterp <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#inp">INP</A>=CPTS <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#out">OUT</A>=SURF <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#nl">NL</A>=150 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#ns">NS</A>=150 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#numn">NUMN</A>=10 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#zoffset">ZOFFSET</A>=500
+
+	This will create a surface image 150 square. The default
+columns in the interface file for the Line, Sample and Z values
+of the control points (1,2,3) are employed. The number of nearest
+neighbors (<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#numn">NUMN</A>) option is set to 10 which means that for every
+pixel in the surface image the 10 closest control points will
+influence the determination of the Z value. A value of 500 is added
+to the Z value of each control point. Sinze the Z value will exceed
+255, the output data set will automatically be set to HALFWORD.
+
+	zinterp <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#inp">INP</A>=CPTS <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#out">OUT</A>=SURF <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#nl">NL</A>=200 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#ns">NS</A>=100 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#radius">RADIUS</A>=25 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#radexp">RADEXP</A>=10
+
+	The same defaults apply to this example with the exception that
+the search mode is set to a radial distance from each pixel instead of
+nearest neighbor. This distance is set to 25 units away from each pixel.
+If not enough points (there is an internal default of 5 points within
+radial search mode) are found within the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#radius">radius</A>, then the radius is
+increased by <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#radexp">RADEXP</A> (in this case 10) until enough points are found.
+
+	zinterp <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#inp">INP</A>=CPTS <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#out">OUT</A>=SURF <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#nl">NL</A>=250 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#ns">NS</A>=250 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#format">FORMAT</A>=BYTE  		<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#linecol">LINECOL</A>=14 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#sampcol">SAMPCOL</A>=10 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#zcol">ZCOL</A>=1 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#zscale">ZSCALE</A>=1.5 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#tron">TRON</A>=20
+
+	This example will create a surface image 250 square using the
+default value of 5 nearest neighbors for each pixel. The columns that
+contain the values of the control points are given explicitely: column
+14 - line value; column 10 - sample value; and column 1 - the Z value.
+All Z values in the control points will have a scale factor of 1.5
+applied before usage. The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#tron">TRON</A> (TRace ON) option will notify the user
+after every 20% of the output image is created. If any Z values exceed
+255, they will be set to 255 in the output image since the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#format">FORMAT</A> was
+requested to be BYTE.
+
+OPERATION
+
+	It is recommended that control points not form clusters or be
+	positioned in obvious linear allignments (such as gathering
+	control points close together along a contour line from
+	a topographic map). Typically, 7 nearest neighbors is
+	sufficient to interpolate a synthetic surface of reasonable
+	quality. More than 7 will only modify the surface slightly
+	at the expence of CPU cycles. The control points sould be
+	scattered evenly throughout the region of interest.
+
+	The interpolated values are stored in two locations:
+	BUF and a local cache. The cache consists of two arrays,
+	NHDIST and NHELEV.  If sufficient points are found in the 
+	cache, then interpolation uses just these values.  If 
+	the cache is too small, then the elevations in BUF are
+	sorted to generate the values for interpolation.
+
+	The cache is used to improve performance in the most common
+	cases (large numbers of control points and neighborhood sizes
+	of fewer than 100 points). Sorting of elevation values by
+	by distance takes increasingly more time as the number of
+	control points increases.
+
+	If a radial search is used, the maximum size of the cache is a
+	function of the desired sample size.  The value for NMAX is set
+	to SFACTR * <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#numn">NUMN</A>.
+
+RESTRICTIONS
+
+
+
+	Number of control points must be &gt= sample size
+	Number of nearest neighbors should be around 7 (+-3)
+	Maximum number of nearest neighbors is 32
+	In the collection of control points, caution should
+	be excersized to avoid clustering of control points.
+
+REFERENCE
+
+	See SYMAP USER'S REFERENCE MANUAL (Harvard University Laboratory
+	for Computer Graphics and Spatial Analysis, 1977) Section III,
+	pages 33 through 36 - Discussion and documentation on the use of
+	the SEARCH <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#radius">RADIUS</A>, NUMBER of DATA POINTS (nearest neighbors), and
+	the INTERPOLATION GRID.
+
+	See Mark S. Monmonier, COMPUTER-ASSISTED CARTOGRAPHY Principles
+	and Prospects (Englewood Cliffs, N.J.: Prentice Hall, Inc., 1982)
+	Chapter 3 "Raster Symbols and Surface Mapping" Section titled "GRID
+	INTERPOLATION" pages 58 - 65.
+
+HISTORY
+
+        31 OCT 1994  AMS  (CRI)  Made portable for UNIX
+        21 NOV 1994  AMS  (CRI)  Added initialization of RADIAL for ANDES
+
+VALID DATA RANGES / DEFAULT VALUES
+
+	VARIABLE	    VALID VALUES	    DEFAULTS 
+	========	    ============            ========
+
+	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#numn">NUMN</A> 		    0 through 32		 5
+	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#exponent">EXPONENT</A> 	 .001 through 10.0 		2.0
+	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#loffset">LOFFSET</A> 	       any			0.0
+	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#soffset">SOFFSET</A> 	       any			0.0
+	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#zoffset">ZOFFSET</A> 	       any			0.0
+	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#lscale">LSCALE</A>		.0001 through 999999. 		1.0
+	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#sscale">SSCALE</A>		.0001 through 999999.		1.0
+	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#zscale">ZSCALE</A>		.0001 through 999999.		1.0
+	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#linecol">LINECOL</A> 	   1 through 40			 1
+	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#sampcol">SAMPCOL</A> 	   1 through 40			 2
+	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#zcol">ZCOL</A> 		   1 through 40			 3
+	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#tron">TRON</A>		       &gt=1			 0 (off)
+	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#tronmode">TRONMODE</A>	      1 or 2			 1  (%)
+
+
+PRECISION:
+  The precision of values in fullword output images is limited to six
+significant digits because "zinterp" converts all numeric values to real
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#format">format</A> before performing computations.  The variation in fullword values that
+can be expected on different MIPS-supported machines shall not differ by
+more than 1 in six significant digits.
+"zinterp" now has a very slight difference from the unported version to
+improve portability and agreement of results on different machines.  The 
+reason for this change is to handle a probably infrequent case where "zinterp"
+encounters a tie for the last place in the set of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#numn">NUMN</A> points from the input
+file used in interpolating a "z" value.  In such a case there are two points
+(with different "z" values) competing for inclusion in the set of points used
+in the interpolation.  These two points will be equidistant from the output
+pixel currently being handled by the program.  To prevent this tie from being
+broken unpredictably by floating point round-off and thus varying from
+machine to machine, "zinterp" uses a simple tiebreaking scheme that ignores
+all but the first point in a tie for last.  ("zinterp" processes the control
+points in order of ascending line value.  The tiebreaking scheme can be found
+in the source code by searching for the phrase "break ties".) Since in this
+case the set of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#numn">NUMN</A> closest points is poorly defined, the difference from the
+unported version (see the test pdf, for example,) is justified and has a
+magnitude on the order of the difference caused by increasing <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#numn">NUMN</A> by 1.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#inp"><H3>INP</H3></A>
+IBIS interface file
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#out"><H3>OUT</H3></A>
+VICAR image
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#nl"><H3>NL</H3></A>
+Number of lines in the
+output image.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#ns"><H3>NS</H3></A>
+Number of samples in the
+output image.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#format"><H3>FORMAT</H3></A>
+Output <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#format">format</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#linecol"><H3>LINECOL</H3></A>
+Column number in the interface
+file that contains the LINE
+value.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#sampcol"><H3>SAMPCOL</H3></A>
+Column number in the interface
+file that contains the SAMPLE
+value.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#zcol"><H3>ZCOL</H3></A>
+Column number in the interface
+file that contains the Z value.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#numn"><H3>NUMN</H3></A>
+Number of nearest neighbor 
+control points used for the
+calculation of each pixel.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#radius"><H3>RADIUS</H3></A>
+Search distance from current
+pixel for finding control
+points.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#radexp"><H3>RADEXP</H3></A>
+Increment to increase search
+distance in the case of
+not enough control points.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#exponent"><H3>EXPONENT</H3></A>
+Value to be applied as
+weighting function for
+interpolation.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#loffset"><H3>LOFFSET</H3></A>
+Offset value added to LINE
+of each control point after
+scaling.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#soffset"><H3>SOFFSET</H3></A>
+Offset value added to SAMPLE
+of each control point after
+scaling.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#zoffset"><H3>ZOFFSET</H3></A>
+Offset value added to Z value
+of each control point after
+scaling.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#lscale"><H3>LSCALE</H3></A>
+Scale factor applied to LINE
+value of control point before
+adding <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#loffset">LOFFSET</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#sscale"><H3>SSCALE</H3></A>
+Scale factor applied to SAMPLE
+value of control point before
+adding <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#soffset">SOFFSET</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#zscale"><H3>ZSCALE</H3></A>
+Scale factor applied to the Z
+value of control point before
+adding <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#zoffset">ZOFFSET</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#tron"><H3>TRON</H3></A>
+Enables TRace ON which reports
+information every N% complete
+or N pixels computed.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#tronmode"><H3>TRONMODE</H3></A>
+  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#tron">TRON</A> MODE: 
+1 = percent computed
+2 = <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp_level2.html#tron">TRON</A> values as N
+    pixels computed
+.END
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/zinterp.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

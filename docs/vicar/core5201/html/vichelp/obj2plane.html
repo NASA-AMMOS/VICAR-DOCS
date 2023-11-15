@@ -1,0 +1,85 @@
+<HTML>
+<HEAD><title>HTML Help for OBJ2PLANE</title></HEAD>
+<BODY>
+<H1>Help for OBJ2PLANE</H1>
+<pre>
+PURPOSE:
+Perform plane fitting to a set of mesh vertices. See method section for more 
+details. The input is a mesh. The output is a file containing the 3D average 
+vertex position and the 3D plane normal vector.
+
+EXECUTION:
+
+   OBJ2PLANE <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/obj2plane_level2.html#inp">INP</A>=mesh.obj <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/obj2plane_level2.html#out">OUT</A>=params.txt <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/obj2plane_level2.html#decimation">DECIMATION</A>=integer_value <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/obj2plane_level2.html#algo">ALGO</A>=string
+
+METHOD:
+
+The mesh vertices are first read using TINY_OBJLOADER and averaged. 
+Additionally, the plane parameters are computed.
+
+A plane is generally described by a normal vector n = [a, b, c]^T and a distance
+d, such that for point p = [x, y, z]^T on the plane n dot p + d = 0. We can 
+write this as:
+	ax + by + cz + d = 0
+
+Given the (x,y,z) positions of each vertex, a linear system of the form "AX=0" 
+can be set up, where the matrix A is composed of each vertex (x,y,z) per row 
+minus the centroid, and X = (a,b,c,d). The solution corresponds to the singular 
+vector corresponding to the least singular value from the Singular Value 
+Decomposition (SVD) of the matrix A, which is performed using the Eigen 
+Library. If A is decomposed as U*S*V^T, this vector typically corresponds to the
+right-most column of the matrix V, where the S maatrix contains the singular 
+values of A along its diagonal. This solution does not make any assumptions 
+about the input data, but can be slower for large meshes. It minimizes the 
+"geometric fit", or orthogonal distance from points to the plane.
+
+A simplified solution is to assume that z = f(x,y), which is accurate for 
+certain planar meshes but is not as robust to different types of terrain as the 
+SVD-based method. In this case, the system can be written as follows:
+	ax + by + c = z
+
+Given N data points (x[i], y[i], z[i]), the 3x3 symmetric matrix A is formed:
+
+	sum_i x[i]*x[i],    sum_i x[i]*y[i],    sum_i x[i]
+	sum_i x[i]*y[i],    sum_i y[i]*y[i],    sum_i y[i]
+	sum_i x[i],         sum_i y[i],         N
+
+Also compute the 3-element right-hand side vector b:
+	(sum_i x[i]*z[i],   sum_i y[i]*z[i],    sum_i z[i])^T
+
+Finally, the system "Ax = b" is solved, and the three components of the solution 
+vector are the coefficients to the least-square fit plane {a,b,c}. 
+
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/obj2plane_level2.html#decimation">DECIMATION</A> parameter controls how many mesh vertices are used as part of the
+linear system. A value of '1' indicates that all available vertices should be 
+used, while '10' is used to take every tenth value, etc.
+
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/obj2plane_level2.html#algo">ALGO</A> parameter defines whether the faster regression-based method, 
+"regression", or the slower but more accurate SVD-based method, "svd", should 
+be used.  
+
+
+HISTORY:
+08-Feb-2021  Initial delivery
+15-Mar-2021  Added the '<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/obj2plane_level2.html#algo">ALGO</A>' parameter
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Mauricio Hess-Flores</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/obj2plane_level2.html#inp"><H3>INP</H3></A>
+Input mesh.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/obj2plane_level2.html#out"><H3>OUT</H3></A>
+Output plane parameters file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/obj2plane_level2.html#decimation"><H3>DECIMATION</H3></A>
+Integer value for mesh triangle <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/obj2plane_level2.html#decimation">decimation</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/obj2plane_level2.html#algo"><H3>ALGO</H3></A>
+String value to distinguish between algorithm types.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/obj2plane.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/obj2plane.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

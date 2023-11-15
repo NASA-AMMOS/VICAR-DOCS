@@ -1,0 +1,138 @@
+<HTML>
+<HEAD><title>HTML Help for MARSFAKEDISP</title></HEAD>
+<BODY>
+<H1>Help for MARSFAKEDISP</H1>
+<pre>
+PURPOSE:
+Simple program to compute a "fake" disparity map by projecting the
+camera models to a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#surface">surface</A>.
+
+This program is intended as a replacement for marsjplstereo when used
+as a prelude to marscor3.  Instead of actually correlating the images,
+it uses the camera models and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#surface">surface</A> model to compute an "ideal" disparity
+map, assuming the scene exactly matches the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#surface">surface</A>.
+
+This enables marscor3 to be run on non-linearized stereo images.  With
+enough downsampling ("pyramid" levels), this synthetic disparity map gets
+close enough for marscor3 to find tiepoints and generate the full disparity
+map in most cases.
+
+The output format is the same as marsjplstereo.
+
+In theory, using -rover as a coordinate system should generate the best
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#surface">surface</A> in most cases.  (Unlike most other mars* programs, -rover causes
+the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#ground">ground</A>/<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#normal">normal</A> values to be interpreted in rover frame).  However,
+early testing has shown this not to be the case.  Some images get worse
+(when it seems they should get better), yet other images require -rover.
+
+As a compromise, -<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#average">average</A> can be specified.  This causes the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#surface">surface</A> model
+to be the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#average">average</A> of the site's  and specified frame's (usually rover) models.
+Note that both site and rover frame models look at the same parameters.  It
+is somewhat unclear why this works, but it seems to in early tests.
+
+A pyramid level of 4 should typically be given for 1024x1024 images.  This
+results in a 64x64 output.
+
+EXECUTION:
+marsjplstereo <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#inp">inp</A>=(left,right) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#out">out</A>=disparity pyr=4 -rover -<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#average">average</A>
+
+
+METHOD:
+marsfakedisp takes each pixel in the left eye, projects it down to the
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#surface">surface</A>, and projects it back into the right eye.  The resulting coordinate
+(adjusted for pyramid level) becomes the disparity value in the output file.
+
+HISTORY:
+Mar. 04  Initial version: B. Deen
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Bob Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#inp"><H3>INP</H3></A>
+Input images.
+Must be 2.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#out"><H3>OUT</H3></A>
+Output files
+One 2-band or 2 1-band.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#pyrlevel"><H3>PYRLEVEL</H3></A>
+Pyramid level for output
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#average"><H3>AVERAGE</H3></A>
+Whether or not to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#average">average</A>
+site and specified <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#surface">surface</A>
+model
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#match_method"><H3>MATCH_METHOD</H3></A>
+Specifies a method
+for pointing corrections.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#match_tol"><H3>MATCH_TOL</H3></A>
+Tolerance value for
+matching pointing params
+in pointing corrections file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#normal"><H3>NORMAL</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#normal">normal</A> vector.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#ground"><H3>GROUND</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#ground">ground</A> point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#surf_coord"><H3>SURF_COORD</H3></A>
+Coordinate system used to define
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#surface">surface</A> parameters.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#surface"><H3>SURFACE</H3></A>
+The type of mars
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#surface">surface</A> to use INFINITY, PLANE, 
+SPHERE1, SPHERE2, MESH.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#surf_mesh"><H3>SURF_MESH</H3></A>
+Mesh file for <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#surface">surface</A> model
+
+VARI <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#surf_csfile">SURF_CSFILE</A> 
+File containing CS for <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#surface">surface</A>
+model
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfakedisp.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

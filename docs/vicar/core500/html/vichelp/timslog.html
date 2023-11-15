@@ -1,0 +1,99 @@
+<HTML>
+<HEAD><title>HTML Help for TIMSLOG</title></HEAD>
+<BODY>
+<H1>Help for TIMSLOG</H1>
+<pre>
+PURPOSE:
+ 
+   TIMSLOG is a VICAR program that logs Thermal Infrared Multispectral
+Scanner (TIMS) data into a format readable to the program TIMSCAL.
+ 
+EXECUTION:
+ 
+   The following is the execution statement format for TIMSLOG:
+		 TIMSLOG RAW (PIX,AUX) PARAMS
+   where PARAMS are parameters discussed in the parameter section. 
+ 
+OPERATION:
+   TIMSLOG takes a raw TIMS data file that has been moved to disk via CONVIM
+and reformats it into two files; an image file (PIX) and an auxiliary 
+calibration data file (AUX).  The input file may be in any of three formats:
+the old NSTL (now Stennis) decommutated tape format, the old AMES decommutated
+tape format, and (the current default) the EXABYTE non-decommutated format
+from AMES.
+   The first file (PIX) consists of the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#nchan">NCHAN</A> bands of data in BIL format.
+It can be any number of lines in length.
+   The second file (AUX) is optional, and used by the program TIMSCAL to
+calibrate the raw data contained in the PIX file.  It normally has a record 
+length of 16 fullwords. <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#all">All</A> words are in REAL*4 format. The first two values 
+have the respective temperatures of the two black bodies used for calibration, 
+one seen by the sensor at the beginning of each scan sweep and one seen at the 
+end.  Generally, one BB temperature should be above any seen in PIX and one 
+should be below.  The next 12 values in the AUX file are the DN's of the two 
+black bodies as seen by each of the six bands of the sensor.  The final two
+values are the temperatures of the two ambient temperature probes.
+<A NAME="examples">EXAMPLES:</A>
+ 
+1) MOUNT /dev/rmt/0n T
+   CONVIM T <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#out">OUT</A>=RAW FILE=1 'LABEL
+   TIMSLOG RAW (PIX,AUX) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#title">TITLE</A>="MUD LAKE" 
+                                         (this is the typical sequence for
+                                          a non-decommutated EXABYTE tape)
+
+2) TIMSLOG RAW (PIX,AUX)  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#title">TITLE</A>="PETALUMA 1" 'AMES
+ 
+3) TIMSLOG RAW (BELL.PIX,BELL.AUX)  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#title">TITLE</A>="BELL" 'NSTL <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#order">ORDER</A>=(1,3,5,4,2,6)
+ 
+4) TIMSLOG RAW OUARZ.PIX <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#nchan">NCHAN</A>=1 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#title">TITLE</A>="OUARZAZATE 3" 'NSTL
+ 
+WRITTEN BY:  J. H. REIMER 
+    (VICAR2 CONVERSION AND AMESLOG REWORKING BY: R. E. WALKER     11 OCT 1984)
+ 
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  RON ALLEY  26 MAR 1991</A>
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#inp"><H3>INP</H3></A>
+Input raw TIMS file
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#out"><H3>OUT</H3></A>
+(1) Output image file
+(2) Output calibration data
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#size"><H3>SIZE</H3></A>
+Window into input
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#sl"><H3>SL</H3></A>
+Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#ss"><H3>SS</H3></A>
+Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#nl"><H3>NL</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#ns"><H3>NS</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#title"><H3>TITLE</H3></A>
+A <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#title">title</A> for the output files 
+of up to 15 characters
+Example: <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#title">TITLE</A>="DEATH VALLEY 11"
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#nchan"><H3>NCHAN</H3></A>
+The number of sequential bands
+of data
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#source"><H3>SOURCE</H3></A>
+Decommutation mode
+(EXABYTE, AMES or NSTL)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#order"><H3>ORDER</H3></A>
+Indicates the band <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#order">order</A> of the
+interleaved data.
+Example: <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#order">ORDER</A>=(1,3,2,4,6,5)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#maxbad"><H3>MAXBAD</H3></A>
+Specifies the maximum number of
+lines of which the band can be
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#out">out</A> of the sequence specified 
+with <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#order">ORDER</A>.
+Example: <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#maxbad">MAXBAD</A>=100
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#all"><H3>ALL</H3></A>
+To include nav data with 
+data calibration (<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#all">ALL</A>=ALL)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog_level2.html#org"><H3>ORG</H3></A>
+Organization of output pix dataset
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timslog.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

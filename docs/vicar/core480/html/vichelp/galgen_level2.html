@@ -1,0 +1,292 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for GALGEN</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen.html">GALGEN</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+ STRING--REQUIRED
+	<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#inp">INP</A>=(D1,D2,D3,...,Dn)
+ Inputs are flat-field images in order of increasing <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#exposure">exposure</A>.  If multiple
+ frames are acquired at a given <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#exposure">exposure</A>, these frames may be combined
+ via PICSUM.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+ STRING--REQUIRED
+	<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#out">OUT</A>=(CAL,SAT,ERR,RMS,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#dc">DC</A>)
+ The output files (CAL,SAT,ERR,RMS,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#dc">DC</A>) are images in the same format as the
+ input flat-field frames (400x400 or 800x800 for Galileo, 256x256, 512x512, or
+ 1024x1024 for Cassini):).  If the keyword  LINEAR is specified (the default),
+ all five outputs are required.  If SLOPE  is specified, then <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#dc">DC</A> should not be
+ specified, and SAT, ERR, and RMS are optional.
+
+ CAL is the Radiometric File, and contains the inverse slope term of the
+ <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#light">light</A>-transfer function for each pixel position (i,j).  The elements of CAL
+ are REAL*4 values z(i,j) such that:
+	z(i,j) = <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#scale">SCALE</A>/c  for normal pixels (inverse slope term)
+	       = 0.0   for an unsuccessful <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#fit">fit</A>.	
+ 
+ SAT contains the saturation DN value (DNfw) for each low-full-well pixel.
+ The elements of SAT are 16-bit integers s(i,j) such that:
+	s(i,j) = 32767  for normal pixels
+	       = DNfw   for low-full-well pixels
+	       = -1     for an unsuccessful <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#fit">fit</A>.
+ 
+ ERR contains the maximum absolute deviation (Emax) of the input pixels
+ from the fitted <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#light">light</A>-transfer curve.  The elements of ERR are 16-bit
+ integers f(i,j) such that:
+	f(i,j) = -1           for an unsuccessful <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#fit">fit</A>
+	       = Emax*FSCALE  otherwise.
+ where FSCALE is specified by the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#fitscale">FITSCALE</A> parameter (default=1.0).
+ 
+ RMS contains the RMS <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#error">error</A> (Erms) resulting from the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#fit">fit</A>.  The elements
+ of RMS are 16-bit integers r(i,j) such that:
+	r(i,j) = -1           for an unsuccessful <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#fit">fit</A>
+	       = Erms*FSCALE  otherwise.
+ where FSCALE is specified by the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#fitscale">FITSCALE</A> parameter (default=1.0).
+
+ If the keyword LINEAR is specified, the output Dark-Current File (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#dc">DC</A>)
+ contains the offset terms (Do) resulting from the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#fit">fit</A>.  The elements of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#dc">DC</A>
+ are 16-bit integers d(i,j) such that:
+	d(i,j) = 0  for an unsuccessful <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#fit">fit</A>
+	       = 128*Do  otherwise.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="dc"><H3>DC</H3></A><pre>
+ STRING--OPTIONAL
+ Specifies the input Dark-current file.  This parameter is required when the
+ parameter <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#fit">FIT</A> is equal to SLOPE.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="edc"><H3>EDC</H3></A><pre>
+ STRING--OPTIONAL
+ Specifies the input extended Dark-current file.  This paremter is required
+ when extened <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#exposure">exposure</A> flat fields are used in conjuntion with normal exposure
+ flat fields as input.
+ NOTE:  The parameters <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#dc">DC</A> & EXTEXP must also be specified.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="gain"><H3>GAIN</H3></A><pre>
+ INTEGER--REQUIRED for Galileo
+ Specifies camera <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#gain">gain</A> state.  Valid values are 10, 40, 100, 400 for Galileo,
+ 40, 100, 400, 1400 for Cassini.  This parameter must be given for Galileo, but
+ if not given for Cassini is extracted from the VICAR label.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="units"><H3>UNITS</H3></A><pre>
+ Specifies whether <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#light">LIGHT</A> is in LUMINANC (Relative-foot-Lamberts ) or RADIANCE
+ (nanowatts/cm**2/sr/nanometer).  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#units">UNITS</A> should be LUMINANC for Galileo and
+ RADIANCE for Cassini).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="light"><H3>LIGHT</H3></A><pre>
+ REAL-REQUIRED for Galileo
+ <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#light">LIGHT</A> gives the light cannon setting (in foot-lamberts or nanowatts/cm**2/sr/
+ nanometer) at which the flat  field images were exposed (assumed to be
+ constant throughout the sequence).  This parameter must be given for Galileo,
+ but if not given for Cassini is extracted from the VICAR label.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="exposure"><H3>EXPOSURE</H3></A><pre>
+ REAL--OPTIONAL
+ Specifies the commanded <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#exposure">exposure</A> times (in milliseconds) for each input
+ frame in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#light">light</A>-transfer sequence.  The exposures must be input either
+ via the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#exposure">EXPOSURE</A> or <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#shutter">SHUTTER</A> parameter (see below).  Not needed for the
+ <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#dc">DC</A> or <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#edc">EDC</A> input frames.  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#exposure">EXPOSURE</A> or <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#shutter">SHUTTER</A>  must be given for Galileo, but
+ if not given for Cassini is extracted from the VICAR label.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="shutter"><H3>SHUTTER</H3></A><pre>
+ INTEGER--OPTIONAL
+ This parameter is for Galileo only.   Gives the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#shutter">shutter</A> setting for each flat
+ field input image.  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#shutter">shutter</A> setting is related to commanded <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#exposure">exposure</A> time
+ as follows:
+
+       <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#shutter">Shutter</A>          <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#exposure">Exposure</A>     | Shutter           Exposure
+       Setting          time (ms)    | Setting           time (ms)
+      -------------------------------|---------------------------------
+         0                 0         |   16                 800
+         1                 4 1/6     |   17                1066 2/3
+         2                 6 1/4     |   18                1600
+         3                 8 1/3     |   19                2133 1/3
+         4                12 1/2     |   20                3200
+         5                16 2/3     |   21                4266 2/3
+         6                25         |   22                6400
+         7                33 1/3     |   23                8533 1/3
+         8                50         |   24               12800
+         9                66 2/3     |   25               17066 2/3
+        10               100         |   26               25600
+        11               133 1/3     |   27               34133 1/3
+        12               200         |   28               51200
+        13               266 2/3     |   29                   0
+        14               400         |   30                   0
+        15               533 1/3     |   31                   0
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="numb"><H3>NUMB</H3></A><pre>
+ INTEGER--OPTIONAL
+ Specifies the picture <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#scale">scale</A> for each input frame.
+     E.g. <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#numb">NUMB</A>=([Ndc,]N1,N2,N3,...,Nn[,Nedc])
+ If an input frame Di represents multiple frames that have been combined via
+ PICSUM, then Ni should equal the number of frames added together (=1 for
+ single frames).  When either a dark-current (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#dc">DC</A>) or an extended-dark-current
+ frame (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#edc">EDC</A>) are specified, then the picture scales: "Ndc" and "Nedc" should
+ be included, as needed.  If <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#numb">NUMB</A> is defaulted, the picture <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#scale">scale</A> is retrieved
+ from the image labels.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="extexpo"><H3>EXTEXPO</H3></A><pre>
+ INTEGER--OPTIONAL - GALILEO only
+ <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#extexpo">EXTEXPO</A> specifies the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#exposure">exposure</A> at which the extended-dark-current
+ correction is to be applied.
+    galgen (D1,D2,D3,D4,D5,D6,D7) CAL <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#dc">DC</A>=DC <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#edc">EDC</A>=EDC <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#extexpo">EXTEXPO</A>=5
+ The correction will be applied here to frames D5, D6, and D7.
+ NOTE:  The parameters <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#dc">DC</A> & <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#edc">EDC</A> must also be specified.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="scale"><H3>SCALE</H3></A><pre>
+ REAL--OPTIONAL--Default=1.0
+ <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#scale">SCALE</A> specifies scaling of the output slope terms.  Instead of outputing
+ 1/c in the slope file, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#scale">SCALE</A>/C is output.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="fit"><H3>FIT</H3></A><pre>
+ KEYWORD--OPTIONAL--Default=LINEAR
+ <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#fit">FIT</A> specifies whether, while fitting the input data points to the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#light">light</A>-
+ transfer curve, to solve for the slope term only (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#fit">FIT</A>=SLOPE) or to solve
+ for both the slope and offset terms (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#fit">FIT</A>=LINEAR).
+
+ If <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#fit">FIT</A>=LINEAR is specified, the input data points D1,D2,D3,...,Dn are
+ fitted to the curve:
+		Di = C*Ei + <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#dc">DC</A>
+ where the exposures Ei are computed from the commanded <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#exposure">exposure</A> times,
+ <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#light">light</A>-cannon setting, and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#shutter">shutter</A>-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#offsets">offsets</A> (see <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#exposure">EXPOSURE</A>, SHUTTER, LUMINANC, and
+ OFFSET parameters).  The inverses of the resulting slopes (1/C) are output
+ to the Radiometric File (CAL).  The resulting <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#offsets">offsets</A> are output to the
+ output dark-current file (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#dc">DC</A>).  Even though the input DC frame is not used
+ in any calculations, it still must be included as the last input frame.
+
+ If <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#fit">FIT</A>=SLOPE is specified, the input data points D1,D2,D3,...,Dn are fitted
+ to the curve:
+		Di = C*Ei + <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#dc">DC</A>
+ and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#dc">DC</A> is the input dark-current extracted from the DC parameter.
+ The inverses of the resulting slopes (1/C) are output to the Radiometric File
+ (CAL).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="fitscale"><H3>FITSCALE</H3></A><pre>
+ REAL--OPTIONAL--Default=1.0
+ Specifies a number (FSCALE) used to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#scale">scale</A> the maximum residual <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#error">error</A> (ERR)
+ and rms <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#error">error</A> (RMS) resulting from the least squares <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#fit">fit</A>.  See <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#out">OUT</A> parameter
+ for details.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="lfwpt"><H3>LFWPT</H3></A><pre>
+ KEYWORD--OPTIONAL
+ The keyword <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#lfwpt">LFWPT</A> enables the low-full-well-pixel test for automatically
+ scanning for low-full-well pixels by checking for non-linearities in the
+ input data points.  Starting with the first n data points (where n is
+ specified via the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#skip">SKIP</A> parameter), the points are iteratively included
+ in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#fit">fit</A>.  The next point (not yet included) is checked to see if it
+ falls more than a certain distance (determined from the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#error">ERROR</A> parameter)
+ below the fitted curve (in <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#units">units</A> of DN).  If a point is rejected, then
+ all points above this level are also thrown <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#out">out</A>, and the raw dn of the last
+ pixel used in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#fit">fit</A> is placed into the SAT file as a record of the
+ saturated DN level (low-full-well for the CCD).
+
+ If the keyword <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#lfwpt">LFWPT</A> is not specified, then the test is suppressed, and
+ the positions of the low-full-well pixels are retrieved from tables built
+ into the program.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="skip"><H3>SKIP</H3></A><pre>
+ INTEGER--OPTIONAL--Default=4
+ Specifies number of exposures at low end to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#skip">skip</A> before applying the low
+ full well pixel test.  See <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#lfwpt">LFWPT</A> for details.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="error"><H3>ERROR</H3></A><pre>
+ REAL--OPTIONAL-Default=(.05,1.)
+      <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#error">ERROR</A>=(delta1,delta2)
+ The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#error">ERROR</A> parameter specifies the error threshold EPS (in DN) as a linear
+ function of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#exposure">exposure</A> e (in relative-foot-Lambert-msec or picoamp-msec):
+      EPS = delta1*e + delta2
+ The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#error">error</A> threshold is applied in the low-full-well-pixel test (see
+ parameter <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#lfwpt">LFWPT</A>).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="offsets"><H3>OFFSETS</H3></A><pre>
+ STRING--REQUIRED
+ Specifies the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#shutter">Shutter</A>-Offset File.  The file is generated by program
+ CCDRECIP.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="list"><H3>LIST</H3></A><pre>
+ STRING--OPTIONAL
+ Specifies the name of the SRCH-format text file containing the names of
+ the input files to be processed.  This is an alternative to listing the 
+ filenames on the command line with the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#inp">INP</A> parameter.  
+
+ Inputs are flat-field images in order of increasing <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#exposure">exposure</A>.  If multiple
+ frames are acquired at a given <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/galgen_level2.html#exposure">exposure</A>, these frames may be combined
+ via PICSUM.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

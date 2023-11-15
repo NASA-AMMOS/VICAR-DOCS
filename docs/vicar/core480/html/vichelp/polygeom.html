@@ -1,0 +1,282 @@
+<HTML>
+<HEAD><title>HTML Help for POLYGEOM</title></HEAD>
+<BODY>
+<H1>Help for POLYGEOM</H1>
+<pre>
+PURPOSE
+
+   polygeom  performs geometric transformations to correct  for 
+   distortion  and  increase or decrease the size  of  a  point 
+   polygon  data  set.   The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#inverse">inverse</A> transformation allows  the 
+   polygon  data  set to be transformed back  to  its  original 
+   state.  polygeom is similar in format and function to GEOMA.  
+   The transformed image is subdivided into a series of quadri-
+   laterals.   As  in  GEOMA,  the user specifies a mapping  of 
+   points  from an input image to an output  image.   Within  a   
+   quadrilateral,  the  program transforms polygon points  from    
+   the input image to an output image.   The control points are   
+   specified  arbitrarily  without  restriction  to  the  image 
+   borders.   As  in  GEOMA,  two  of the four  control  points 
+   forming  corners  of any given quadrilateral  may  coincide, 
+   causing the quadrilateral to degenerate into a triangle.
+   Control  points are specified by line-sample coordinates  in 
+   the  input  and output picture.   The internal algorithm  of 
+   polygeom  is similar to GEOMA except that polygon data  sets 
+   can be transfromed much more rapidly than images.   As  with 
+   GEOMA, polygeom will accept its control parameters on a data 
+   set  instead  of  or in addition to the  conventional  VICAR 
+   parameters.   The main differences between polygeom and  the 
+   other  transformative routines is that it basically operates 
+   on  line defining polygons and not photo  images.   Thus  no 
+   interpolation of data values is required.  polygeom also has 
+   the  added capability of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#inverse">inverse</A> transfrormation.   This  is 
+   discussed further in the Operation section.   Since polygeom 
+   follows the format of GEOMA,  much of the document is simply 
+   a repeat of earlier documentation of GEOMA by J.  B. Seidman 
+   dated May 16, 1974.
+EXECUTION
+TAE COMMAND LINE FORMAT
+
+    polygeom <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#inp">INP</A>=file1 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#out">OUT</A>=file2 PARAMS or
+    polygeom <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#inp">INP</A>=file1 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#parms">PARMS</A>=parfile <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#out">OUT</A>=file2 PARAMS
+
+    where
+
+    file1                   is  the input data set containing a 
+                            picture   to  be   transformed   in 
+                            standard VICAR format.
+
+    file2                   is  the output data set into  which 
+                            the  transformed  picture is to  be 
+                            written.
+    parfile                 is  an optional parameter data  set 
+                            containing    control   parameters.  
+                            This data set must be created by the
+                            routine XVPOUT. It contains keywords
+                            and data for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#tiepoint">TIEPOINT</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#nah">NAH</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#nav">NAV</A>
+                            and can be used instead of specifying
+                            these keywords in the TAE COMMAND LINE.
+
+    PARAMS                  is   a  standard  VICAR   parameter 
+                            field.   Legal parameters are given 
+                            in Parameters.
+<A NAME="examples">EXAMPLES</A>
+
+     polygeom <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#out">OUT</A>=B <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#nah">NAH</A>=1 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#nav">NAV</A>=1 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#tiepoint">TIEPOINT</A>=(1,1,1,1,                                                 1,101,1,11,                                                 101,1,11,1,                                                 101,101,11,11)
+
+   This  example demonstrates the use of polygeom to  expand  a 
+   polygon  data set by a factor of 10,  keeping the upper left 
+   corner in the same place.
+   
+   R73 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#inp">INP</A>=RESLOC73 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#out">OUT</A>=GEOMAPAR RESPAR=(...)
+   polygeom <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#parms">PARMS</A>=GEOMAPAR <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#out">OUT</A>=B <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#ignore">IGNORE</A>=(-99.,-99.)
+
+   In   this  example,   the  program  RES73  writes   polygeom 
+   parameters  on  a data set GEOMAPAR.   These parameters  are 
+   passed  to  polygeom,  and are  concatenated  following  the 
+   parameters which were entered in the VICAR parameter field.
+
+RESTRICTIONS
+
+   The maximum number of tiepoints is 2100.
+
+
+OPERATION
+
+   polygeom  transforms the coordinate definitions of  polygons 
+   using three or four coefficients of transformation depending 
+   on the description in the parameter file.  First the program 
+   must  decide  which  coefficient to  apply.   For  this  the 
+   program  must decide which quadrilateral area in the  output 
+   picture the pixel lies.   Using the subroutine  INSIDE,  the 
+   containing  quadrilateral is selected.   The  transformation 
+   equation  is formed in the following manner.   Let the coor-   
+   dinates  of  the four control points defining  that  quadri-     
+   lateral     in     the    output    picture    be     called 
+   [x(j),y(j),j=1,2,3,4],  and in the input picture let them be 
+   called  [x'(j),y'(j),j=1,2,3,4].   (x may be considered  the 
+   line  coordinate and y the sample,  although they  could  as 
+   well be reversed for this discussion.)  The values of all 16 
+   of  these  numbers  are part of the control  parameters  for 
+   polygeom.
+   Define a transformation by
+
+                        x' = ax+by+cxy+d
+                                                         (1)
+                        y' = ex+fy+gxy+h
+
+   where  the values of the coefficients a,b,...,h  are  deter-    
+   mined by requiring that
+
+                 x'(j) = ax(j)+by(j)+cx(j)y(j)+d
+                                                         (2)
+                 y'(j) = ex(j)+fy(j)+gx(j)y(j)+h
+
+                 for j = 1,2,3,4
+
+   This  is  the  condition  that  the  defined  transformation 
+   exactly  maps the control point coordinates as specified  by 
+   the parameters.
+   The  transformation  is  used to transform  the  line-sample 
+   coordinates  of the polygon point being processed  into  its 
+   corresponding  coordinates in the output picture.  The input 
+   and  output  coordinates are defined as four  byte  floating 
+   numbers defining a polygon boundary.  In this case the pixel 
+   position  is not interpreted,  the value is either there  or 
+   not.
+
+   In  order  for  polygeom to  work  properly,  the  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#tiepoint">tiepoint</A> 
+   coordinates  in  the  output picture  must  satisfy  certain 
+   constraints.   They  must be organizable into a  rectangular 
+   matrix of points.  That is, each <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#tiepoint">tiepoint</A> must belong to one 
+   row  and one column of points,  each row must have the  same 
+   number  of points as every other row,  and each column  must 
+   have  the same number as every other column.   It should  be 
+   possible to number the rows sequentially from top to bottom, 
+   and the columns from left to right.   Quadrilaterals used by 
+   the program for performing the geometric transformation  are 
+   formed by connecting each <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#tiepoint">tiepoint</A> to the adjacent tiepoints 
+   in the same column and in the same row.
+     These  quadrilaterals  should all have the  property  that 
+   they are not concave (no interior angle of any quadrilateral 
+   should be greater than 180o). The number of areas vertically 
+   is the number of rows of tiepoints less 1, and the number of 
+   areas  horizontally  is the number of columns  of  tiepoints 
+   less 1.
+   Although  the  transformation in equation (1) is  very  well 
+   behaved within the quadrilateral in which it applies,  there 
+   is  no  assurance that it is continuous across the  boundary 
+   between  adjacent  quadrilaterals;  unless the  boundary  is 
+   precisely  vertical or horizontal.   The degree  of  discon-     
+   tinuity   depends   on   the   details   of   the   <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#tiepoint">tiepoint</A> 
+   specifications.   In some cases the discontinuity may be  so 
+   small  that  the transformed picture has no visible  defect, 
+   but in others it may be quite visible.
+
+   The user has two choices to eliminate the discontinuity.  He  
+   may  specify a rectilinear grid of output tiepoints,  or  he 
+   may  specify tiepoints in such a way that the quadrilaterals 
+   degenerate into triangles.  A quadrilateral degenerates into 
+   a  triangle if two adjacent tiepoints defining it  have  the 
+   same coordinates.  By suitable choice of tiepoints, the user 
+   can   specify  the  coordinates  in  such  a  way  that  all 
+   quadrilaterals degenerate into triangles.  Figure 2  shows a 
+   sample array of tiepoints satisfying this  condition.   When 
+   an  area is a triangle,  the cross terms in equation (1) are 
+   eliminated and the transformation becomes
+
+                        x' = ax+by+d
+                                                         (3)
+                        y' = ex+fy+h
+
+   where  the  values  of the coefficients  are  determined  by 
+   requiring that
+
+                    x'(j) = ax(j)+by(j)+d
+
+                    y'(j) = ex(j)+fy(j)+h                (4)
+
+                    for j = 1,2,3
+
+   The  values  of  j designate the  three  distinct  tiepoints 
+   defining the triangle.   Because equation (4) is linear, the 
+   transformation  is  guaranteed  to  be  continuous  at   the 
+   triangle   boundaries  and  discontinuities  in  the  output 
+   picture cannot occur.
+
+   There  is a question about how to transform picture  samples 
+   which  fall  outside  all  the  quadrilaterals  defined   by 
+   parameters.   One  answer  is  to avoid  this  situation  by 
+   specifying  the control point locations so that every sample 
+   in the output picture falls within some quadrilateral.
+   This  requires  that some control points fall exactly on  or 
+   outside  the border of the output picture.   The program  is 
+   not affected in any way by using control points outside  the 
+   picture.
+
+   If   some  picture  samples  do  fall  outside  the  defined 
+   quadrilaterals, the program will process each such sample by 
+   assigning  it to a nearby quadrilateral.   This is  done  by 
+   "extending"  the boundaries of all "edge" quadrilaterals  to 
+   the  picture  borders.   If the point falls in  two  polygon 
+   extensions,  the  closest quadrilateral is selected based on 
+   the distance of the point to the nearest center of an edge.
+   The  user  should understand that the algorithm can lead  to 
+   discontinuities  in  the processed picture  in  the  regions 
+   outside  the defined quadrilaterals,  even when the  control 
+   areas are triangles.
+   The  method of calculating the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#inverse">inverse</A> transformation is  as 
+   follows.   the  forward  transformation F is assumed  to  be 
+   nearly  linear.   A  linear  approximation  A  is  found  by 
+   dropping the XY term from F.  Given a point p,
+
+                      p' = Fp = Ap + C
+
+   then
+                         -1      -1
+                    p = F  p' = A  (p'-C)
+
+   Given  an  input  point q (in the output image  raster)  its 
+   <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#inverse">inverse</A> point is calculated by iteration.
+
+                          p1 = q-C
+
+                              -1
+                 P    = P  - A  (Fp -q)
+                  n+1    n         n
+
+   Convergence  is  tested  by examining  the  Fp -q  term  and 
+                                                 n
+   usually occurs within three iterations.
+
+   The  method relies upon the fact that Fp -q is the error and 
+                                           n
+          -1                                 
+   since F   is nearly linear, the correction is:
+                    -1            -1
+                  -F  (Fp -q) = -A  (Fp -q)
+                         n             n
+
+TIMING
+
+   A   polygon   data  set  consisting  of  38000  points   was 
+   transformed   in   about   four   minutes.     An    <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#inverse">inverse</A> 
+   transformation might be several times slower.
+
+   WRITTEN BY:             A. L. Zobrist
+
+<A NAME="CogProg">   COGNIZANT PROGRAMMER:   K. F. Evans</A>
+
+   REVISION:               1                 10 Oct 1980
+   Made portable for UNIX   ...CRI...        06 MAR 95
+
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#inp"><H3>INP</H3></A>
+Input image
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#out"><H3>OUT</H3></A>
+Output image
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#parms"><H3>PARMS</H3></A>
+Optional parameter data set
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#nah"><H3>NAH</H3></A>
+Number of areas horizontally
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#nav"><H3>NAV</H3></A>
+Number of areas vertically
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#tiepoint"><H3>TIEPOINT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#tiepoint">Tiepoint</A> coordinates
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#skip"><H3>SKIP</H3></A>
+For skipping nominal data
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#ignore"><H3>IGNORE</H3></A>
+To leave (x,y) untransformed
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#inverse"><H3>INVERSE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#inverse">Inverse</A> transformation
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#insect"><H3>INSECT</H3></A>
+Trans inside param grid
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom_level2.html#noprint"><H3>NOPRINT</H3></A>
+Keyword to suppress messages
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polygeom.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

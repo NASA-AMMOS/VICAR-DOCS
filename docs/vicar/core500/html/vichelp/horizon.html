@@ -1,0 +1,319 @@
+<HTML>
+<HEAD><title>HTML Help for HORIZON</title></HEAD>
+<BODY>
+<H1>Help for HORIZON</H1>
+<pre>
+PURPOSE:
+HORIZON detects strong and weak horizon borders for martian images.
+
+The program currently supports only grayscale format. The input images
+to the program must be a 1-band image. The program makes two assumptions
+for input images. If input images don't fullfil the assumptions, the 
+program will fail to detect horizon borders. The first assumption is 
+that sky region is above ground region. The second assumption is that 
+there is no object in sky region.
+
+The output of this program will be a Comma-separated values (CSV) file. 
+The length of the output CSV file should always be exactly the the same as 
+input image's width. Each integer value in the CSV file represents the 
+horizon border's LINE position in that specific SAMP. 
+For example:
+  324,325,-1,325,326,327, ... ...
+This means that at column(SAMP) 0, the horizon border is at row(LINE) 324;
+at column(SAMP) 1, the horizon border is at row(LINE) 325. At column(SAMP) 2, 
+the horizon border value is -1, it means there is no horizon border detected 
+or it is an outlier.
+
+EXECUTION:
+
+The program is quite sensitive to the parameters. Parameters' default values
+are chosen experimentally. In the METHOD section, the algorithm used in this
+program is introduced. Knowing exactly how the algorithm works will help
+choose parameters' values. 
+
+  1) HORIZON <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#inp">INP</A>=input.img <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#out">OUT</A>=output.horizon
+Use all default parameters' values, the program takes an input image, and then
+generate a CSV file that contains the horizon borders.
+
+  2) HORIZON <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#inp">INP</A>=input.img <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#out">OUT</A>=output.horizon <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#wh_iter_max">WH_ITER_MAX</A>=0
+By setting parameter <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#wh_iter_max">WH_ITER_MAX</A> to be 0, the program will turn off weak horizon
+detection and refinement process. This is useful when salt-and-pepper noise was
+not completely removed from preprocessing, and it is also useful when vignetting
+effects present in the input image.
+
+  3) HORIZON <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#inp">INP</A>=input.img <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#out">OUT</A>=output.horizon <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#filter_size">FILTER_SIZE</A>=9
+By default the program uses a filter window size of 7 to blend salt-and-pepper
+noise. This should work for most of cases. However, if a lot of noisy pixel 
+appear in a given N x N space, then increase <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#filter_size">FILTER_SIZE</A> should be helpful to
+blend these noisy pixels to a degree which they don't affect the sky and ground
+busyness levels calculation.
+
+  4) HORIZON <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#inp">INP</A>=input.img <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#out">OUT</A>=output.horizon <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#sh_thresh_max">SH_THRESH_MAX</A>=700
+The parameter <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#sh_thresh_max">SH_THRESH_MAX</A> defines the upper searching bound for gradient 
+magnitude image in preliminary horizon borders detection process. By decreasing
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#sh_thresh_max">SH_THRESH_MAX</A> value, the program will search more precisely for weaker horizon 
+borders. This parameter is useful when strong horizon borders appear to be weaker 
+than normal, or in another words, the sky pixels intensity is very close to ground
+pixels intensity.
+
+  5) HORIZON <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#inp">INP</A>=input.img <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#out">OUT</A>=output.horizon <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#bar_thresh">BAR_THRESH</A>=5 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baa_thresh">BAA_THRESH</A>=10
+The parameters <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#bar_thresh">BAR_THRESH</A> and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baa_thresh">BAA_THRESH</A> are used to identify and remove columns 
+without sky region. If part of detected horizon borders are too close to the top
+of image, then these horizon borders will be directly marked as false horizon,
+and the value of these horizon borders will be set to -1. (Note: based on 
+the algorithm in this program, the false horizon borders will always be very
+close to the top of image, and will appear to be a zigzag pattern.) The parameter
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#bar_thresh">BAR_THRESH</A> and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baa_thresh">BAA_THRESH</A> are useful when horizon borders occupy only part of the 
+image.
+
+
+METHOD:
+
+The horizon detection algorithm consists of the following steps:
+
+  1) Trim top, bottom, left, and right borders of the input image.
+  2) Use a min, or max, or median filter with filter window size defined by 
+     <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#filter_size">FILTER_SIZE</A> parameter to smooth <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#out">out</A> salt-and-pepper noise in input images.
+  3) Use Sobel operator to compute gradient magnitude image and gradient 
+     direction image based on the smoothed image.
+  4) Preliminary horizon borders detection by optimizing the difference of sky 
+     and ground busyness levels. Horizon borders are a 1 dimensional array that 
+     has the same width as the original input image. 
+  5) Outliers and weak horizon borders detection and refinement.
+  6) Remove the outliers that cannot be refined from pervious step. Remove the 
+     columns without sky region. 
+
+Depending on input image types, sometimes there are one or two lines appear on 
+top, bottom, left, or right of input images that are significantly brighter or 
+darker than their neighboring pixels. If these lines are not trimmed, it will 
+result in very strong edges when calculating gradient magnitude images. These 
+strong edges contribute to sky and ground busyness level calculation, and the 
+accuracy of detecting horizon borders decrease significantly. 
+
+Salt-and-pepper noise presents itself as sparsely occurring white and black pixels. 
+Median filter should be effective to remove salt-and-pepper noise; max filter should 
+be effective to remove pepper noise; min filter should be effective to remove salt 
+noise. Filter window size is crucial when removing noise, and it is usually an odd 
+number. In general, the larger the filter window size, the more blurry the resulted 
+image is.
+
+Sobel operator has one 3x3 horizontal kernel and one 3x3 vertial kernel. 
+
+  horizontal kernel:  | -1  0  1 |       vertial kernel:  | -1  -2  -1 |
+                      | -2  0  2 |                        |  0   0   0 |
+                      | -1  0  1 |                        |  1   2   1 |
+
+Convolve horizontal kernel with the original image will give us the edges horizontally 
+denoted as Gx, and convolve vertial kernel with the original image will give us the 
+edges vertically denoted as Gy. Based on the properties of the two kernels, Gx is 
+defined as increasing in the "right" direction, and Gy is defined as increasing in the 
+"down" direction. Combine Gx and Gy use the equation listed below will give us gradient 
+magnitude image and gradient direction image.
+  
+  1. G = sqrt(Gx^2 + Gy^2)    gradient magnitude image.
+  2. theta = arctan(Gy / Gx)  gradient direction image, depending on whether Gx and Gy 
+                              are positive or negative numbers, theta belongs to different
+                              quadrants. 
+
+The preliminary horizon borders are calculated by maximizing the difference of sky and 
+ground busyness levels. The optimization function Jn is defined below:
+  
+  Jn = Ground_busyness_level - Sky_busyness_level                               (1)
+
+which
+                           sum(ground pixels from gradient magnitude image)
+  Ground_busyness_level = --------------------------------------------------    (2)
+                          count(ground pixels from gradient magnitude image)
+
+                        sum(sky pixels from gradient magnitude image)
+  Sky_busyness_level = -----------------------------------------------          (3)
+                       count(sky pixels from gradient magnitude image) 
+
+The complete algorithm of finding maximum Jn value Jn_max is defined below:
+
+       thresh_max - thresh_min
+  n = ------------------------- + 1
+       search_increment_factor
+
+  for k = 1 to n
+                       thresh_max - thresh_min
+      t = thresh_min + ----------------------- x (k - 1)
+                               n - 1
+
+      for samp = 0 to image_width
+          border_tmp[samp] = image_height
+
+          for line = 0 to image_height  
+              if gradient_magnitude_image(line, samp) &gt= t
+                  border_tmp[samp] = line
+                  break
+              end if
+          end for
+      end for
+
+      compute Ground_busyness_level using equation (2) listed above
+      compute Sky_busyness_level using equation (3) listed above
+
+      Jn = Ground_busyness_level - Sky_busyness_level
+
+      if Jn &gt Jn_max
+          Jn_max = Jn
+          border = border_tmp
+      end if
+  end for
+
+Outliers and weak horizon borders detection and refinement is an iterative process. 
+The maximum iteration of detection and refinement is determined by either <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#wh_iter_max">WH_ITER_MAX</A> 
+parameter or if there is no outlier and weak horizon detected. A horizon column is 
+defined as outlier if its value is bigger or smaller than the average of its N neighbors 
+by a threshold value. Determine whether a horizon column has weak horizon above it 
+depends on two inputs from gradient magnitude image and gradient direction image. First, 
+in gradient magnitude image, if there is a pixel value that is bigger or smaller than 
+the average of all pixle values above the current detected position by a threshold value, 
+then the program will further check gradient direction image. In gradient direction image, 
+if a NxN space with the suspicious weak horizon pixel at the center contains more than 1/3 
+pixels that are almost equal to the suspicious weak horizon pixel, then the suspicious weak 
+horizon pixel will be defined as weak horizon pixel. The reason to use both gradient 
+magnitude image and gradient direction image is to increase the accuracy of weak horizon 
+detection. If only gradient magnitude image is used, the weak horizon detected can highly 
+be a salt-and-pepper noise that was not successfully removed from preprocessing step. 
+Once the horizon columns are marked as outlier or weak horizon existence, the optimizing
+difference of sky and ground busyness levels algorithm introduced above will be performed 
+on these columns individually.
+
+In order to remove columns without sky region, the program must be able to first detect
+them. The program analyzes the shape of the detected horizon borders to determine which 
+part is true horizon and which part is columns without sky region. The false horizon borders
+detected for the columns without sky region will satisfy the following two conditions:
+
+  1) very close to the top of the image.
+  2) the shape of the horizon borders appears to be in a "zigzag" pattern. 
+
+For testing condition 1, the average of horizon border is calculated, and parameters <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baa_thresh">BAA_THRESH</A>
+and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#bar_thresh">BAR_THRESH</A> threshold values are defined. For testing condition 2, the average of the absolute 
+difference of horizon border is calculated, and parameters <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baada_thresh">BAADA_THRESH</A> and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baadr_thresh">BAADR_THRESH</A> threshold
+valeus are defined. <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baa_thresh">BAA_THRESH</A> stands for border average accept threshold; <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#bar_thresh">BAR_THRESH</A> stands for 
+border average reject threshold; <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baada_thresh">BAADA_THRESH</A> stands for border average of absolute difference
+accept threshold; <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baadr_thresh">BAADR_THRESH</A> stands for border average of absolute difference reject threshold. 
+The algorithm of determining true and false horizon is shown below:
+  
+  compute border_avg
+  compute border_avg_absdiff
+
+  if border_avg &lt= <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#bar_thresh">BAR_THRESH</A> ||
+     (border_avg &lt= <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baa_thresh">BAA_THRESH</A> && border_avg_absdiff &gt= <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baada_thresh">BAADA_THRESH</A>) ||
+     border_avg_absdiff &gt= <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baadr_thresh">BAADR_THRESH</A>
+         marked as outliers or columns without sky region
+  else if border_avg &gt <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baa_thresh">BAA_THRESH</A> && border_avg_absdiff &lt <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baada_thresh">BAADA_THRESH</A>
+         marked as true horizon
+  else 
+         break the horizon borders in half, and recursively call this 
+         algorithm until all the horizon borders are categorized.      
+  end if
+
+HISTORY:
+2016-04-05 Steven Lu  - Initial horizon by Steven Lu.
+2019-07-23 Walt Bunch - IDS-7923: Removed sprintfs. Cleaned up some warnings.
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER: Steven Lu</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#inp"><H3>INP</H3></A>
+A single 1-band grayscale input image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#out"><H3>OUT</H3></A>
+A Comma-separated values (CSV) file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#sh_thresh_min"><H3>SH_THRESH_MIN</H3></A>
+Minimum threshold value for detecting strong horizon borders.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#sh_thresh_max"><H3>SH_THRESH_MAX</H3></A>
+Maximum threshold value for detection strong horizon borders.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#sh_sif"><H3>SH_SIF</H3></A>
+Strong horizon search incremental factor.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#wh_thresh_min"><H3>WH_THRESH_MIN</H3></A>
+Minimum threshold value for detecting weak horizon borders.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#wh_thresh_max"><H3>WH_THRESH_MAX</H3></A>
+Maximum threshold value for detecting weak horizon borders.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#wh_sif"><H3>WH_SIF</H3></A>
+Weak horizon search incremental factor.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#outlier_thresh"><H3>OUTLIER_THRESH</H3></A>
+If the position a horizon border is vertically away its N immediate neighbors 
+by the value of this parameter in pixels, the horizon border will be classified
+as an outlier.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#outlier_sif"><H3>OUTLIER_SIF</H3></A>
+Outlier search interval factor. 
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#wh_mag_thresh"><H3>WH_MAG_THRESH</H3></A>
+Gradient magnitude image weak horizon borders threshold value.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#wh_dir_thresh"><H3>WH_DIR_THRESH</H3></A>
+Gradient direction image weak horizon borders threshold value.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#wh_dir_sif"><H3>WH_DIR_SIF</H3></A>
+Gradient direction image weak horizon searching interval factor.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#wh_iter_max"><H3>WH_ITER_MAX</H3></A>
+Maximum iterations to search for weak horizon borders.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baa_thresh"><H3>BAA_THRESH</H3></A>
+Border average acceptance threshold value.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#bar_thresh"><H3>BAR_THRESH</H3></A>
+Border average rejection threshold value.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#bp_factor"><H3>BP_FACTOR</H3></A>
+Border partition factor.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baada_thresh"><H3>BAADA_THRESH</H3></A>
+Border average of absolute difference acceptance threshold value.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baadr_thresh"><H3>BAADR_THRESH</H3></A>
+Border average of absolute difference rejection threshold value.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#smooth_img"><H3>SMOOTH_IMG</H3></A>
+Optional output for smoothed image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#gm_img"><H3>GM_IMG</H3></A>
+Optional output for gradient magnitude image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#gd_img"><H3>GD_IMG</H3></A>
+Optional output for gradient direction image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#ql_img"><H3>QL_IMG</H3></A>
+Optional output for horizon borders overlay on top of the original
+image served for quick look purpose.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#filter_size"><H3>FILTER_SIZE</H3></A>
+The smoothing filter size in pixels.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#filter_type"><H3>FILTER_TYPE</H3></A>
+The smoothing filter type.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#trimtop"><H3>TRIMTOP</H3></A>
+Number of line(s) to cut from the upper border of the input image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#trimbot"><H3>TRIMBOT</H3></A>
+Number of line(s) to cut from the lower border of the input image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#trimleft"><H3>TRIMLEFT</H3></A>
+Number of sample(s) to cut from the left border of the input image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#trimright"><H3>TRIMRIGHT</H3></A>
+Number of sample(s) to cut from the right border of the input image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#trim_img"><H3>TRIM_IMG</H3></A>
+Optional output for image with borders trimmed.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

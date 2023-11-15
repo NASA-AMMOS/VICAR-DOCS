@@ -1,0 +1,78 @@
+<HTML>
+<HEAD><title>HTML Help for SBOXFLT</title></HEAD>
+<BODY>
+<H1>Help for SBOXFLT</H1>
+<pre>
+PURPOSE:
+SBOXFLT applies a 2-d convolutional high-pass box filter to an input image
+by taking the local mean of all pixels contained within a prescribed window 
+centered at each pixel of the input image, with reflection performed at image 
+boundaries.  Each input value is replaced with the difference between the 
+input and the local mean, plus a constant DC-level offset of 128. The filter 
+weights are equal to one within the box.  The degree of high-pass filtering 
+applied is controlled by the box width and length which may be specified.
+A lowpass option is available which replaces each input value with the
+calculated local mean.
+
+EXECUTION:
+SBOXFLT invokes BOXFLT2 with the specified parameters.  See help for BOXFLT2
+for the complete list of defaulted parameters used by BOXFLT2.
+
+Examples:
+	sboxfltx  INP  OUT  NLW=21  NSW=451
+
+	This example performs a high-pass filter of size 451 samples by 21
+	lines on the input. Reflection is performed at image boundaries.
+
+	sboxfltx  INP  OUT  NLW=21  NSW=451 'lowpass
+
+	This example performs a low-pass filter of size 451 samples by 21
+	lines on the input. Reflection is performed at image boundaries.
+
+Mode of handling boundaries:
+		a = pixel (1,1)		b = pixel (1,NS)
+		c = pixel (NL,1)	d = pixel (NL,NS)
+			+-------+-------+------- 			| d   c | c   d | d   c |
+			|       |       |       |
+			| b   a | a   b | b   a |
+			|-------|-------|-------|
+			| b   a | a   b | b   a |
+			|       |       |       |
+			| d   c | c   d | d   c |
+			|-------|-------|-------|
+			| d   c | c   d | d   c |
+			|       |       |       |
+			| b   a | a   b | b   a |
+			+-------+-------+------- 				RELECTION
+OPERATION:
+SBOXFLT applies a 2-d convolutional high-pass box filter to an input image
+by taking the local mean of all pixels contained within a prescribed window 
+centered at each pixel of the input image, with reflection performed at image 
+boundaries.  Each input value is replaced with the difference between the 
+input and the local mean, plus a constant DC-level offset of 128. The filter 
+weights are equal to one within the box.  The degree of high-pass filtering 
+applied is controlled by the box width and length which may be specified.
+A lowpass option is available which replaces each input value with the
+calculated local mean.
+
+WRITTEN BY:  
+<A NAME="CogProg">COGNIZANT PROGRAMMER:</A>
+REVISION:  Made Portable for UNIX   Richardson(CRI)  31-Oct-94 
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sboxflt_level2.html#infile"><H3>INFILE</H3></A>
+STRING - Input dataset
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sboxflt_level2.html#outfile"><H3>OUTFILE</H3></A>
+STRING - Output dataset
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sboxflt_level2.html#width"><H3>WIDTH</H3></A>
+INTEGER - Filter width in pixels
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sboxflt_level2.html#length"><H3>LENGTH</H3></A>
+INTEGER - Filter length in pixels
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sboxflt_level2.html#passfilter"><H3>PASSFILTER</H3></A>
+KEYWORD - Selects type of filtering (LOWPASS, HIGHPASS)
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sboxflt.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sboxflt.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

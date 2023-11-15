@@ -1,0 +1,221 @@
+<HTML>
+<HEAD><title>HTML Help for MARSSHOT</title></HEAD>
+<BODY>
+<H1>Help for MARSSHOT</H1>
+<pre>
+PURPOSE:
+Simple program to determine where a spectral shot is on an accompanying context
+image.
+
+While designed for M2020 SuperCam, there is nothing inherently mission-specific
+about this program, other than the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#instrument">instrument</A> name shortcut (which can be
+overridden with a specific <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#hotspot">hotspot</A> location).  It works equally well with
+MSL ChecmCam for example, and likely other instruments.
+
+EXECUTION:
+
+marsshot <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#inp">inp</A>=context.img <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">pointing</A>=\(.1 .2\) -scam-libs
+- or -
+marsshot <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#inp">inp</A>=\(context.img pre.img\) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">pointing</A>=\(.1 .2\) -ccam-libs -<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#interp">interp</A>
+
+then
+
+set line = `v2param -i 0 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#image_pos">image_pos</A>`
+set samp = `v2param -i 0 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#image_pos">image_pos</A>`
+
+METHOD:
+There are two different modes - <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#interp">interp</A> and no interp.  The default (and
+simpler case) is no <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#interp">interp</A>.
+
+NO <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#interp">INTERP</A> MODE
+----
+marsshot takes the given context image, and repoints it to the designated
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">pointing</A>.  This pointing should be the pointing used when the spectral
+observation was taken.  This creates a virtual camera model, as if the mast
+(or other device) was pointed as it was for the actual spectral observation.
+
+It then determines the "<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#hotspot">hotspot</A>", the location where the spectral observation
+would be if the context image were taken with the same <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">pointing</A>.  This can be
+provided directly via parameter, or using the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#instrument">INSTRUMENT</A> keyword.  In the
+latter case, one of the various SuperCam <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#instrument">instrument</A> modes is used to look up
+the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#hotspot">hotspot</A> in an internal table (see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#instrument">INSTRUMENT</A> keyword help below for table).
+
+The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#hotspot">hotspot</A> is then projected through the virtual camera model into space.
+The ray is intersected with the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#surface">surface</A> model (default is the infinity model;
+the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#surface">surface</A> model usually shouldn't matter), and then projected back into the
+*real* camera model provided as input.  The resulting location is printed to
+the screen, as well as provided in output variables that can be accessed via
+v2param.
+
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#interp">INTERP</A> MODE
+----
+In <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#interp">interp</A> mode, the program does the same basic thing.  However, you provide
+it with TWO context images (generally, one before and one after the shots).
+These images should be tiepointed and nav'd together to eliminate (relative)
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">pointing</A> errors between them.  In other words, make a seam-corrected mosaic
+that includes the two images (the nav file can contain more images, but only
+the two given are relevant).
+
+The program then looks at both images, both before and after the nav correction
+is applied.  It uses that information to interpolate the given location, in
+order to apply the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">pointing</A> corrections to it.
+
+The result is that the shot location is corrected via the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">pointing</A> adjustments,
+so it better matches the images.  The first image is what the image locations
+are reported relative to.
+
+Specifically, the interpolation works as follows.  Each <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">pointing</A> parameter is
+handled independently.  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">Pointing</A> parameters are usually azimuth and elevation
+for a mast-mounted camera, but that depends on the specific <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">pointing</A> model
+used (these <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">pointing</A> parameters are what must be supplied in the POINTING
+parameter).
+
+It then computes the ratio:
+
+	ratio = (shot param - raw param 1) / (raw param 2 - raw param 1)
+
+which is used as the interpolation control variable.  Then it computes the
+delta <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">pointing</A> parameters given the nav file:
+
+	delta1 = nav param 1 - raw param 1
+	delta2 = nav param 2 - raw param 2
+
+It then uses those to compute the final adjusted <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">pointing</A> parameter:
+
+	final = shot param + delta1 + ratio * (delta2 - delta1)
+
+These adjusted pointings are printed out, and then used as with the non-
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#interp">interp</A> case.
+
+NOTES:
+
+The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#surface">surface</A> model can be specified if desired, although in <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#normal">normal</A> usage the
+infinity camera model is appropriate. That's because there should not be enough
+parallax between the two locations for the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#surface">surface</A> model to matter.
+
+The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">pointing</A> parameters given are those directly used by the PointingModel
+associated with the image.  There is no check that the parameters are
+appropriate; the given ones are simply set.  The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">pointing</A> model and parameters
+are printed, so one could run the program without providing any <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">POINTING</A>
+parameters (which should return the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#hotspot">hotspot</A> value unchanged), see what the
+params are, and then provide the proper updates.  For the SuperCam RMI, the
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">pointing</A> parameters should be (azimuth, elevation) in radians.
+
+While a nav file is not strictly needed for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#interp">INTERP</A> mode, lack of one negates
+the purpose of -<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#interp">interp</A>, so one should consider it required (although this is
+not enforced).  In no-<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#interp">interp</A> mode, a nav file should not generally be used,
+because it implies corrections to the image without accompanying corrections
+to the shot locations, which is likely wrong.  Again, this is not enforced.
+
+The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#hotspot">hotspot</A>, as well as the reported positions, are all 1-based image
+coordinates, in (line, samp) order.
+
+Note that the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#hotspot">hotspot</A> image coordinates are expressed with respect to the
+full image sensor, regardless of any downsampling or subframing that might
+have occurred for this image.  However, the output coordinates are specifically
+for the given image - they DO take into account downsampling or subframing.
+
+HISTORY:
+
+2020-01-29 rgd	Initial version
+2020-02-13 rgd	Added <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#interp">interp</A> mode
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Bob Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#inp"><H3>INP</H3></A>
+Input image.
+1 for no-<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#interp">interp</A>.
+2 for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#interp">interp</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing"><H3>POINTING</H3></A>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">Pointing</A> params for
+virtual camera model
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#hotspot"><H3>HOTSPOT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#hotspot">Hotspot</A> override
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#image_pos"><H3>IMAGE_POS</H3></A>
+Optional output
+line/sample coordinate
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#instrument"><H3>INSTRUMENT</H3></A>
+Shortcut for specifying
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#hotspot">hotspot</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#interp"><H3>INTERP</H3></A>
+Turns on <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#interp">interp</A> mode
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">pointing</A>
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#match_method"><H3>MATCH_METHOD</H3></A>
+Specifies a method
+for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">pointing</A> corrections.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#match_tol"><H3>MATCH_TOL</H3></A>
+Tolerance value for
+matching <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">pointing</A> params
+in <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#pointing">pointing</A> corrections file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#normal"><H3>NORMAL</H3></A>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#normal">normal</A> vector.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#ground"><H3>GROUND</H3></A>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#ground">ground</A> point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#surf_coord"><H3>SURF_COORD</H3></A>
+Coordinate system used to define
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#surface">surface</A> parameters.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#surface"><H3>SURFACE</H3></A>
+The type of mars
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#surface">surface</A> to use INFINITY, PLANE, 
+SPHERE1, SPHERE2, MESH.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#surf_mesh"><H3>SURF_MESH</H3></A>
+Mesh file for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#surface">surface</A> model
+
+VARI <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#surf_csfile">SURF_CSFILE</A> 
+File containing CS for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#surface">surface</A>
+model
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsshot.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

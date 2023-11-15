@@ -1,0 +1,259 @@
+<HTML>
+<HEAD><title>HTML Help for M20REACH</title></HEAD>
+<BODY>
+<H1>Help for M20REACH</H1>
+<pre>
+PURPOSE:
+
+M20REACH computes the "reachability" for 6 different M2020 Arm instruments
+at each pixel.  The result is a map showing which pixels can be reached by
+each instrument in each of the various arm configuration modes.  If the 
+optional Digital Elevation Model (<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#dem">DEM</A>) file is also provided, then it performs
+collision analysis as well.
+
+*** THIS IS AN M2020-SPECIFIC PROGRAM ***
+
+The inputs for M20REACH are the XYZ image (created by MARSXYZ) and the
+surface normal (<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#uvw">UVW</A>) image (created by MARSUVW).  The XYZ and UVW data
+must have the same number of lines and the same number of samples per
+line.  The third input, Digital Elevation Model (<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#dem">DEM</A>), is optional.  DEM is 
+created by MARSORTHO program.
+
+M20REACH calls a python code, reach.py, to perform the reachability 
+computations.  M20REACH creates a pair of temporary XYZ/<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#uvw">UVW</A> files for input to 
+reach.py.  The data contents of these temporary XYZ/<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#uvw">UVW</A> files are the same as 
+the data contents of the input files <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#inp">INP</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#uvw">UVW</A> but converted into RMECH 
+coordinate system.  The output of the python code reach.py is also a temporary 
+product, and its data (image) is copied to the output file <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#out">OUT</A>.  The three 
+parameters <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#tmp_xyz">TMP_XYZ</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#tmp_uvw">TMP_UVW</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#tmp_reach">TMP_REACH</A> are used to provide the filenames for 
+the three temporary products.  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#tmp_xyz">TMP_XYZ</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#tmp_uvw">TMP_UVW</A> are used for the temporary 
+inputs to the python code with xyz and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#uvw">uvw</A> data respectively.  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#tmp_reach">TMP_REACH</A> is 
+used for the temporary output of the python code.  The default values of 
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#tmp_xyz">TMP_XYZ</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#tmp_uvw">TMP_UVW</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#tmp_reach">TMP_REACH</A> should never be changed.  The default values are
+used as templates and the 'XXXXXX' strings (6 uppercase X's) in the filename 
+templates are replaced with random 6 character strings composed of uppercase 
+and lowercase alphanumeric characters.  For example, after 'XXXXXX' replacement,
+the filenames (paths) may look like
+   /tmp/___xyz___Y6srVJ
+   /tmp/___UVW___khbWef
+   /tmp/___REACH___yeA7WK
+These temporary files should not be "captured" and used.  The labels in the
+temporary files will have errors.  They are deleted by M20REACH before it ends.
+
+The optional input <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#dem">DEM</A> filename is simply passed to reach.py if provided.  The
+data in the input <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#dem">DEM</A> file must be in RMECH coordinate system.  Unlike the 
+input XYZ/<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#uvw">UVW</A> data, M20REACH does not try to convert the input <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#dem">DEM</A> data into
+RMECH coordinate system before passing it to the python reachability code.
+
+EXECUTION:
+
+m20reach <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#inp">inp</A>=data.xyz <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#out">out</A>=data.reach <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#uvw">uvw</A>=data.uvw
+where:
+data.xyz is an input 3-band image of type REAL with the X, Y and Z values
+at that pixel in meters (the unit is actually irrelevant).
+data.<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#uvw">uvw</A> is an input 3-band image of type REAL with the U, V, and W components
+of the surface normal unit vector for each pixel.
+data.reach is an output 6-band image of type HALF.
+
+OUTPUT FILE FORMATS:
+
+The reachability output is a single 6-band file in half (16-bit int) format.
+Each band has reachability information for one instrument, which are listed in 
+INSTRUMENT_BAND_ID.  They are, in order:
+
+Band	Instrument
+----	----------
+  1	DRILL
+  2	GDRT
+  3	SHERLOC_WATSON
+  4	SHERLOC
+  5	PIXL
+  6	FCS
+
+For each instrument, there are 8 possible arm configurations.  Each
+configuration contains 2 bits of data, which define results of two tests:
+inverse kinematics (IK) (implemented) and a ground collision test (not implemented).
+All values other than 11 (binary) indicate a failure.
+
+Decimal	Binary	Description
+-------	------	-----------
+  0	  00	not reachable due to inverse kinematics and collision failure
+  1	  01	not reachable due to inverse kinematics failure 
+  2	  10	not reachable due to collision failure 
+  3	  11	no issues (best)
+
+These two bits for each of the 8 configurations are packed into the 16-bit
+integer in the file.  The table below shows which pair of bits are allocated
+to a given arm configuration, where bit 15 and bit 0 are the most significant
+bit and the least significant bit respectively:
+
+Bit Numbers	Configuration
+-----------	-------------
+15-14		Shoulder <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#out">Out</A>, Elbow Up, Wrist Up
+13-12		Shoulder <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#out">Out</A>, Elbow Up, Wrist Down
+11-10		Shoulder <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#out">Out</A>, Elbow Down, Wrist Up
+9-8		Shoulder <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#out">Out</A>, Elbow Down, Wrist Down
+7-6		Shoulder In, Elbow Up, Wrist Up
+5-4		Shoulder In, Elbow Up, Wrist Down
+3-2		Shoulder In, Elbow Down, Wrist Up
+1-0		Shoulder In, Elbow Down, Wrist Down
+
+The order is also defined in CONFIGURATION_BIT_ID.
+
+The geometry of the reachability output image matches that of the input XYZ 
+file (and the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#uvw">UVW</A> file, which should match the XYZ).  The input files can be 
+expressed in any coordinate system supported by PIG as long as they are 
+properly labeled.  However, normally XYZ will be expressed in Site frame and 
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#uvw">UVW</A> in Rover Nav frame.  Either Left-side or Right-side XYZ/UVW files may be 
+used, but the XYZ and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#uvw">UVW</A> must be consistent (using the same eye).
+
+The input XYZ and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#uvw">UVW</A> data must be internally converted into RMECH coordinate
+system for reachability computation.  Hence, the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#coord">COORD</A> keyword must always be
+RMECH (the default).
+
+
+HISTORY:
+Core algorithms: Junggon Kim and Ian Colwell
+2020-08-26 Initial m20reach by E. Sarkissian
+2021-02-17 Drill placement integrated B.Crocco
+<A NAME="CogProg">COGNIZANT PROGRAMMER: B. Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#inp"><H3>INP</H3></A>
+Input XYZ image.
+Must be 1 3-band file
+or (x,y,z) triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#out"><H3>OUT</H3></A>
+Output file.
+Must be 1 filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#uvw"><H3>UVW</H3></A>
+Input <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#uvw">UVW</A> image.
+Must be 1 3-band file
+or (u,v,w) triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#dem"><H3>DEM</H3></A>
+Optional input <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#dem">DEM</A> data.
+Must be a single 1-band file
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#turret"><H3>TURRET</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#turret">Turret</A> model to use 
+for drill placement.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#port"><H3>PORT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#port">Port</A> to use for 
+fsw_interface_server.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#voxel"><H3>VOXEL</H3></A>
+Size of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#voxel">voxel</A> for data
+reduction (helps perf)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#disable_arm"><H3>DISABLE_ARM</H3></A>
+Disables ARM configurations from
+being tested
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#tmp_xyz"><H3>TMP_XYZ</H3></A>
+Intermediate temporary product.
+Must be 1 filename (template).
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#tmp_uvw"><H3>TMP_UVW</H3></A>
+Intermediate temporary product.
+Must be 1 filename (template).
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#tmp_reach"><H3>TMP_REACH</H3></A>
+Intermediate temporary product.
+Must be 1 filename (template).
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#reach_rsvp_path"><H3>REACH_RSVP_PATH</H3></A>
+Path to RSVP "reachability" lib.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#reach_py_path"><H3>REACH_PY_PATH</H3></A>
+Path to desired Python 
+interpreter
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#reach_num_proc"><H3>REACH_NUM_PROC</H3></A>
+Number of processes
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/m20reach.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

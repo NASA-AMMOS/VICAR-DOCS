@@ -1,0 +1,142 @@
+<HTML>
+<HEAD><title>HTML Help for MARSPROJ</title></HEAD>
+<BODY>
+<H1>Help for MARSPROJ</H1>
+<pre>
+PURPOSE:
+Simple program to accept an <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#xyz">XYZ</A> coordinate (expressed in the coordinate
+frame specified by <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#coord">COORD</A>), project it through the camera model, and report
+the line/sample coordinates of the point in the supplied image.
+
+The coordinates can be output to TAE variables as well via <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#image_pos">IMAGE_POS</A>
+(use v2param to access them).
+
+In some sense, this program is the inverse of marstiexyz.  That takes a
+tiepoint in a stereo pair and reports the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#xyz">XYZ</A> location; this takes an XYZ
+location and reports the image position.  A stereo image is not needed for
+this process.
+
+TBD: Implement reverse projection: given a line/sample position, report
+the view ray origin and vector, and its intersection (if any) with the
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#surface">surface</A> model.  Possibly even its intersection with another view ray a la
+marsxyz.
+
+EXECUTION:
+marsproj <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#inp">inp</A>=input.img <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#xyz">xyz</A>=\(3.4, 2.2, -1.0\) -rover
+
+
+METHOD:
+marsproj takes the given point, projects it through the camera model, and
+reports the result.  Couldn't be simpler.
+
+There are two filters that might toss out points: <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#fov">FOV</A> and missing the image.
+Camera models do not necessarily work well when you go off the edge of the
+image.  They generally work for some time but can exhibit nonlinear behavior,
+as in going too far of the edge could actually project back into the image.
+
+For this reason, we toss out points that are outside the nominal <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#fov">FOV</A>, as
+computed by PIG.  This can be overridden by the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#fov">FOV</A> parameter; FOV=180
+will completely disable the check (but caveat emptor! That will allow
+projection from behind the camera).
+
+Also, if the projected ray does not hit the image plane, the point is
+rejected.  Sometimes however you want to get points that are just off the
+edge of the image.  Specifying -<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#miss">MISS</A> will allow points that miss the image
+plane to be projected.
+
+HISTORY:
+Oct. 07  Initial version: B. Deen
+2021-03-04 rgd	Added -<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#miss">MISS</A>
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Bob Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#inp"><H3>INP</H3></A>
+Input image.
+Must be 1.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#xyz"><H3>XYZ</H3></A>
+Input <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#xyz">XYZ</A> coordinate
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#image_pos"><H3>IMAGE_POS</H3></A>
+Optional output
+line/sample coordinate
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#fov"><H3>FOV</H3></A>
+Override computed <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#fov">FOV</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#miss"><H3>MISS</H3></A>
+Allow points that <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#miss">miss</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#match_method"><H3>MATCH_METHOD</H3></A>
+Specifies a method
+for pointing corrections.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#match_tol"><H3>MATCH_TOL</H3></A>
+Tolerance value for
+matching pointing params
+in pointing corrections file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#normal"><H3>NORMAL</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#normal">normal</A> vector.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#ground"><H3>GROUND</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#ground">ground</A> point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#surf_coord"><H3>SURF_COORD</H3></A>
+Coordinate system used to define
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#surface">surface</A> parameters.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#surface"><H3>SURFACE</H3></A>
+The type of mars
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#surface">surface</A> to use INFINITY, PLANE, 
+SPHERE1, SPHERE2, MESH.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#surf_mesh"><H3>SURF_MESH</H3></A>
+Mesh file for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#surface">surface</A> model
+
+VARI <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#surf_csfile">SURF_CSFILE</A> 
+File containing CS for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#surface">surface</A>
+model
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsproj.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

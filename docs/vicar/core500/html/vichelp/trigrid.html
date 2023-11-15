@@ -1,0 +1,111 @@
+<HTML>
+<HEAD><title>HTML Help for TRIGRID</title></HEAD>
+<BODY>
+<H1>Help for TRIGRID</H1>
+<pre>
+PURPOSE
+     The program TRIGRID takes a set of tiepoints that have been acquired for
+image registration and produces a list of triangular areas whose vertices are 
+the input tiepoints.  Associated with each output triangle is a set of six 
+coefficients.  The coefficients define the linear transformation to be used 
+to geometrically rectify the pixels within that triangle.  The input tiepoint 
+dataset must be in the format produced by PICREG; the output triangles dataset 
+is in a format compatible with the program TGEOM1.
+OPERATION
+     TRIGRID first creates a set additional, synthetic tiepoints which are
+spaced at regular intervals arround the edge of the raw image.  Inclusion of
+these added tiepoints allows triangles to be formed which surround all pixels
+in the raw image.  The synthetic tiepoints are created in the following manner:
+(1) The line and sample coordinates for the tiepoints in the raw image are 
+    placed along the image borders, at equal intervals.
+(2) For each raw tiepoint location, the three nearest input (not synthetic)
+    tiepoints are located.
+(3) Those three tiepoints are used to define a linear transformation to the 
+    rectified coordinate system, which is then used to compute the location
+    of the tiepoint in the transformed image.
+     To form triangles from these tiepoints, line segments are formed by 
+joining all possible pairs of tiepoints.  The length of each segment (in the
+raw coordinate system) is computed, and the segments are sorted by length.
+The segments are then tested for inclusion in the set of triangle sides,
+testing from short to long segments.  A segment is included if it does not
+intersect (except at endpoints) another (shorter) segment that is already
+included in the set.  The segment must meet this test in both the old and the
+new reference systems; otherwise, the segment is discarded.  Once all segments
+have been tested, the remaining segments form a grid of triangles, except in
+the case listed below.
+     This method for creating triangles may produce an incomplete or 
+unsatisfactory set of triangles under one circumstance.  If a segment
+is excluded because it crosses a shorter segment in the new reference system
+but not the old, there may be a resulting area not enclosed by a triangle.
+This will result in a part of the image being missed during rectification;
+the output image will appear to have a tear or gore in it.  Usually, this
+problem occurs only if an exterior tiepoint is involved; problems with
+interior tiepoints tend to be resolved with the inclusion of subsequent 
+(longer) segments.  In the extreme case, the tranformation may "flip over" 
+from input to output triangle. This yields a discontinuous transformation 
+across the triangle boundary, in addition to a gore. 
+     Each of these conditions is noted by a warning message.  The user 
+is advised to examine and perhaps edit the set of tiepoints before proceeding,
+if warning messages have been issued.
+     Once the set of triangles have been formed, they are sorted by output
+line of the top vertex.  The vertices of each triangle are also sorted, top
+to bottom.  The six transformation coefficients are then computed for the
+linear transformation from old triangle to new.  That is, coefficients are
+computed to solve the following two equations:
+
+          LINE    =  c *LINE    + c *SAMPLE   + c
+              in      1     <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/trigrid_level2.html#out">out</A>    2       out   3
+
+
+        SAMPLE    =  c *LINE    + c *SAMPLE   + c
+              in      4     <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/trigrid_level2.html#out">out</A>    5       out   6
+
+
+The output of TRIGRID consists of a set of records (VICAR lines), one for 
+each triangle produced.  Each record holds the following 12 values:
+
+              Sample       Meaning
+              ------       -------
+                 1         Top vertex line number, in output image
+                 2         Top vertex sample number, in output image
+                 3         Middle vertex line number, in output image
+                 4         Middle vertex sample number, in output image
+                 5         Bottom vertex line number, in output image
+                 6         Bottom vertex sample number, in output image
+               7-12        The coefficients c -c , in the two equations above.
+                                             1  6
+
+RESTRICTIONS:          The maximum number of tiepoints allowed is 1000.
+
+WRITTEN BY:            Ron Alley, November, 1993
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Ron Alley</A>
+
+REVISIONS: New
+
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/trigrid_level2.html#inp"><H3>INP</H3></A>
+Input PICREG tiepoint dataset
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/trigrid_level2.html#out"><H3>OUT</H3></A>
+Output triangles dataset
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/trigrid_level2.html#nlin"><H3>NLIN</H3></A>
+Number of lines in input image
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/trigrid_level2.html#nsin"><H3>NSIN</H3></A>
+Number of samps in input image
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/trigrid_level2.html#toppts"><H3>TOPPTS</H3></A>
+Number of synthetic tiepoints
+placed at top and bottom
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/trigrid_level2.html#sidepts"><H3>SIDEPTS</H3></A>
+Number of synthetic tiepoints
+placed on each side
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/trigrid_level2.html#envi"><H3>ENVI</H3></A>
+Name of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/trigrid_level2.html#envi">ENVI</A> tiepoint dataset,
+if the tiepoints are in <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/trigrid_level2.html#envi">ENVI</A> 
+format
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/trigrid.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/trigrid.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

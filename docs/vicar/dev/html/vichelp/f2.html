@@ -1,0 +1,310 @@
+<HTML>
+<HEAD><title>HTML Help for F2</title></HEAD>
+<BODY>
+<H1>Help for F2</H1>
+<pre>
+ PURPOSE:
+
+ F2 allows general arithmetic operations to be performed on one to
+ eighteen input images in either byte, halfword, fullword integer
+ or fullword real formats (or any combination of these types).
+ It now allows for arithmetic operations between three dimensional input files
+ and can produce a three dimensional output.  All data organizations, BSQ, BIL,
+ and BIP, are supported.  
+ The arithmetic operation is specified by a FORTRAN or C-like expression
+ which can include the following operators (synonyms connected by an =):
+    
+        + - * / ** unary-
+	LOG   = ALOG    =  LN  (all these = natural (base e) log)
+	LOG10 = ALOG10         (all these = common (base 10) log)
+        SQRT   ABS   AINT = INT
+        SIN    COS  TAN    ASIN  ACOS  ATAN  ATAN2
+        AMAX1 = MAX  AMIN1 = MIN
+        AMOD   MOD .AND.  .OR.  .XOR.  .NOT.
+        .LT.  .LE. .EQ.   .NE.  .GT.  .GE.
+
+ as well as the following C-operators:
+
+  &    &&   |    ||    %   ^   !  
+  ==   !=   &gt=   &lt=   >   <   >>   <<
+
+ Operands to F2 can be :
+	
+	integers
+	floating point numbers
+	IN1	IN2	IN3	IN4  ...  IN18
+	LINE 	SAMP    BAND
+
+ The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#function">function</A> string can include constants, including constants expressed
+ in floating point notation. The string can also include TCL variable 
+ references.  
+	
+ F2 can operate on zero inputs to generate an output using the
+ operands LINE, SAMP, and BAND.
+ The current version of F2 has the following improvements over the 
+ original (1976) version:
+
+	1.  Allows up to 18 input files
+	2.  Handles byte, halfword, fullword, or real input data files,
+	    and allows mixed <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#format">format</A> cases.
+	3.  Significant runtime speedups due to byte lookup tables
+	    and implementation of new Vicar2 I/O.
+        4.  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#function">Function</A> string parameter expanded to a maximum of 250 characters.
+	5.  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#exclude">Exclude</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#limits">limits</A>, and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#replace">replace</A> parameter provided.
+	6.  New KNUTH subroutines allow for C-Language constructs.
+	7.  Unix-Compatible byte-order independent operation.
+ F2 performs arithmetic operations on image files.  The program
+ uses two library routines, KNUTH and XKNUTH, to compile and
+ execute FORTRAN or C-like expressions entered by the parameters in the
+ <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#function">FUNCTION</A> expression such as:
+ 	
+  ((IN1+IN2)*(AINT(ALOG10(IN1*IN2**2))+3.14+IN1/22)+4*(LINE.EQ.SAMP)
+ or:
+  ((in1 + in2) % (3*(line!=samp))) &lt< 3 
+
+ IN1 is an element from the first input and IN2 is the corresponding 
+ element from the second input. KNUTH compiles the expression into 
+ instructions executable by XKNUTH. The expression is applied to the
+ pixels from  each input in XKNUTH to produce the output picture.  When
+ performing  arithmetic, F2 converts all integer operands to real and
+ executes  single precision floating point computations.  The exceptions
+ are  the logical operators .AND.(&), .OR.(|), .XOR.(^), as well as the
+ shift operators (&gt>) and (&lt<), all of which operate bitwise
+ on  the 4-byte integer equivalent to the  truncated  floating point 
+ number.  The final result from XKNUTH is converted back to integer by
+ rounding,  which is  the default, or by truncation if '<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#trunc">TRUNC</A> is specified.
+ The logical values  'TRUE'  and  'FALSE' 
+ when produced, are  interpreted as 1 and 0  respectively.  The logical NOT 
+ operates only on the  values 0 and 1.
+
+ Because of the type of calculations done on images, the routine XKNUTH
+ is designed to never abort regardless of input values.  Illegal 
+ operations result in the generation of a "reasonable" result as 
+ follows: a) divide by zero causes divide by 1.E-6;  b) log of a
+ negative number causes log its absolute value, etc.  The routine KNUTH 
+ quits processing, prints an error message and returns if a syntax 
+ error is detected in the expression string.  
+
+ To conserve time, repetitive  executions of "F2" are  stored  as a 
+ lookup table.  In the  cases  where both input and output are byte
+ data,  the table is  construced  as a straight lookup initialized with
+ every  possible  combination of  IN1  and IN2 from 1 to 256.  The table
+ is  referenced by  indexing  the  array  using the concatenation of IN1
+ and  IN2 to create  an index  number to  the vector table.  Table is 
+ dimensioned 65536 to accommodate any possible combination of 256 x 256.
+ For more information see KNUTH_LOOKUP.
+
+ In cases which either the input or output is halfword data or  the
+ inputs are small byte files, a hashing table is constructed.  The
+ equation is then executed each time it encounters a unique
+ combination of IN1 and IN2.  A key points to the storage location 
+ of the results of XKNUTH.  The key is then determined by the 
+ remainder of concatenating the two variables and dividing by 
+ 10909.  In case the key must be checked for a match of the 
+ concatenation of IN1 and IN2 which was stored. If no key is  found,
+ a solution is calculated and a concatenation of the result  of the
+ XKNUTH calculation, IN1 and IN2 is stored. In cases which  the key
+ points to an erroneous combination of IN1 and IN2, the  new values
+ and the new key are stored. 
+
+ If the operands LINE, SAMP, or BAND are used, no table is used and the
+ formula is evaluated at every pixel. This option is also used on
+ images involving fullword or real*4 length input or output, and 
+ with multiple input files (3+). 
+
+ Parameters <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#sl">SL</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#ss">SS</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#sb">SB</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#nl">NL</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#ns">NS</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#nb">NB</A> allow the user to specify a certain
+ area or volume of the input files for which the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#function">function</A> will be evaluated.
+ Alternatively the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#size">SIZE</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#bands">BANDS</A> parameters may be used.
+	
+ KNUTH compiles the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#function">function</A> expression into instructions that XKNUTH
+ can execute.  For example, the expression "IN1*10+IN2" will be
+ decomposed as
+			LOAD 1
+			MULT 22
+			ADD  2
+			RETN 0
+
+ The IN1 thru IN18 are stored in location 1 thru 18, LINE, SAMP, and BAND
+ are stored in later locations. Space is also separately reserved
+ in the executable buffer for static constants, temporary registers
+ and executable code. For more information, see KNUTH and XKNUTH.
+
+ EXECUTION:
+    The following is the execution statement for F2:
+        f2 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#inp">INP</A>  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#out">OUT</A>  PARAMS
+ where <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#inp">INP</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#out">OUT</A>, and PARAMS are parameters discussed in their respective 
+ parameter section in tutor mode.
+
+<A NAME="examples"> EXAMPLES:</A>
+
+    gen A 10 10 'BYTE
+    gen B 10 10 'BYTE
+    gen H 10 10 'HALF
+    gen F 10 10 'FULL
+    gen R 10 10 'REAL4
+	
+    f2 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#inp">INP</A>=(A,B) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#out">OUT</A>=C <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#function">FUNCTION</A>="IN2/4 + (ALOG10(IN1/IN2+3))**2"
+ 
+ This example uses the default <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#format">format</A> specification for
+ input and output.  The input files are A and B, the output is
+ file C.
+ 
+    f2 A C 'HALF <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#function">FUNCTION</A>="3.3*ALOG(IN1)"
+	
+ This example has only one input.   Output is halfword.
+ 
+    f2 (R,H) C <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#function">FUNCTION</A>="MAX(IN1,IN2)"
+ 
+ This example has mixed input real and halfword.  The output is in real
+ <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#format">format</A>.
+	
+    f2 (A,B) C <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#function">FUNCTION</A>="IN1.OR.IN2"
+	
+ The bitwise logical OR of A and B becomes C. This operation may also
+ be performed using the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#function">function</A> "in1|in2", using C-Language for
+ bitwise-or.
+	
+    f2 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#out">out</A>=c <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#size">size</A>=(1,1,100,100) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#nb">nb</A>=100 'half <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#function">function</A>="line.eq.samp.eq.band"
+	
+ Produces a 100 x 100 x 100 halfword image with a diagonal in 3D of ones in a
+ space of zeros.  In general, logical operators produce 0 for FALSE and 1 for 
+ TRUE.
+  
+ RESTRICTIONS:
+	
+The program is restricted to lines of length 64000 pixels (byte <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#format">format</A>)
+32000 pixels (halfword <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#format">format</A>), or 16000 pixels (real or fullword format).
+
+The expression must not contain more than 30 constants, 20 variables, 
+or roughly 80 operations.  Embedded blanks are allowed.
+The expression is case insensitive.
+
+If any of the input images have a (3-D) file organization other than BSQ,
+then all of the input images must have the same file organization.
+
+OPERATIONS:
+
+When performing  arithmetic, F2 converts all integer
+operands to real and executes  single precision floating point
+computations.  The exception is  .AND., .OR., .XOR.,&gt> and &lt< which
+operate on the binary equivalent of the  truncated floating
+point number.  The final result from XKNUTH is converted back to integer by
+rounding, which is the default, or by truncation if '<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#trunc">TRUNC</A> is specified.
+The logical values "TRUE'  and 'FALSE' 
+when produced, are interpreted as 1 and 0 respectively.
+The logical NOT operates only on the logical values 0 and 1. 
+A subtle consequence of converting integers to floating point is
+that exponentiation does not work as expected for negative values
+raised to an integer exponent.  This is because they are interpreted
+as the absolute value raised to a floating point exponent.
+Users should use ABS before exponentiation for even powers.  
+Odd powers can be handled using
+multiplication and the next smaller even power.
+
+All operations now operate as in standard FORTRAN and C, including
+MIN and MAX. When using the C operations "&" and "&&" recall that
+VICAR interprets "&name" as a dereference operator on the variable
+"name", so for bitwise AND put a space between args, e.g. "in1 & in2".
+For logical AND you must actually use "in1 &&&& in2", because VICAR
+interprets "&&" as an escaped single ampersand. When in doubt, use
+the command .AND. instead.
+
+ PRECISION: 
+  The precision of values in fullword output images is limited to six
+significant digits because F2 converts all numeric values to real <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#format">format</A>
+before performing computations.  The variation in fullword values that
+can be expected on different MIPS-supported machines shall not differ by 
+more than 1 in six significant digits.  
+
+ TIMING: 
+  The following CPU times for a few F2 cases were obtained on a 
+VAX 8650 (MIPL3) in July 1992.  
+                                                CPU Time
+gen f2a 2000 2000 'real
+gen f2b 2000 2000 'real
+f2 (f2a,f2b) x func="(in1+ in2)/2"              187s
+f2 (f2a,f2b) x func="in1+3.7e+05 * in2"         171s
+!
+gen f2a 2000 2000 'byte
+gen f2b 2000 2000 'byte
+f2 (f2a,f2b) x                                   13.7s
+
+For the case of a single BYTE or HALFWORD image, using program STRETCH
+with the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#function">FUNCTION</A> parameter is at least twice as fast on the VAX as using 
+the more general F2 program.
+
+
+ WRITTEN BY: 	A. L. ZOBRIST		18 FEBRUARY 1976
+
+<A NAME="CogProg"> COGNIZANT PROGRAMMER: N. D. Ritter 	09 February 1992</A>
+
+ REVISION: 	25 February 1993  (SP)  Merged in the capabilities to handle
+					3D images from F2_3D.
+		29 April    1992  (NDR) Moved some routines to KNUTH module.
+                09 February 1992  (NDR) Upgraded for Unix, C - constructs
+        	04 December 1990  (JFM) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#limits">LIMITS</A> with invalid <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#replace">REPLACE</A> parameter
+			                handled differently.
+		05 September 1990 (JFM)	<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#exclude">EXCLUDE</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#limits">LIMITS</A> AND <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#replace">REPLACE</A> parameters
+				        added to enable the user to selectively
+				        <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#exclude">exclude</A> certain input DN values from
+					arithmetic operations.
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#inp"><H3>INP</H3></A>
+ 0:18 INPUT DATA SETS
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#out"><H3>OUT</H3></A>
+ THE OUTPUT DATA SET
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#size"><H3>SIZE</H3></A>
+ 4 INTEGERS - OPTIONAL
+ A STANDARD VICAR <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#size">SIZE</A> FIELD
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#bands"><H3>BANDS</H3></A>
+(Optional) Window into input
+in band dimension
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#sl"><H3>SL</H3></A>
+ INTEGER - OPTIONAL
+ STARTING LINE
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#ss"><H3>SS</H3></A>
+ INTEGER - OPTIONAL
+ - STARTING SAMPLE
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#nl"><H3>NL</H3></A>
+ INTEGER - OPTIONAL
+ - NUMBER OF LINES
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#ns"><H3>NS</H3></A>
+ INTEGER - OPTIONAL
+ - NUMBER OF SAMPLES
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#sb"><H3>SB</H3></A>
+(OPTIONAL) STARTING BAND
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#nb"><H3>NB</H3></A>
+(OPTIONAL) NUMBER OF <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#bands">BANDS</A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#org"><H3>ORG</H3></A>
+(OPTIONAL) IMAGE ORGANIZATION
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#format"><H3>FORMAT</H3></A>
+ OUTPUT PIXEL <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#format">FORMAT</A>
+ VALID: BYTE, HALF, FULL, REAL
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#function"><H3>FUNCTION</H3></A>
+ STRING - A <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#function">FUNCTION</A> TO BE
+ APPLIED TO INPUT (&lt=250 CHARS)
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#trunc"><H3>TRUNC</H3></A>
+ THE RESULT WILL BE TRUNCATED
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#exclude"><H3>EXCLUDE</H3></A>
+ ARRAY OF VALUES TO BE 
+ EXCLUDED FROM <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#function">FUNCTION</A>
+ EVALUATION.	
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#limits"><H3>LIMITS</H3></A>
+ RANGE OF VALUES TO BE
+ INCLUDED IN <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#function">FUNCTION</A>
+ EVALUATION.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#replace"><H3>REPLACE</H3></A>
+ VALUE TO BE PLACED IN
+ OUTPUT FILE WHEN INPUT
+ VALUE IS AN EXCLUDED 
+ VALUE OR IS OUTSIDE OF
+ <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#limits">LIMITS</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2_level2.html#dumpcode"><H3>DUMPCODE</H3></A>
+ DO A SYMBOLIC DUMP OF THE
+ COMPILED CODE ?
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/f2.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

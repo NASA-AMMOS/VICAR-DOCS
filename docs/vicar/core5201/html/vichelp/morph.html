@@ -1,0 +1,105 @@
+<HTML>
+<HEAD><title>HTML Help for MORPH</title></HEAD>
+<BODY>
+<H1>Help for MORPH</H1>
+<pre>
+MORPH is used to produce intermediate images between two input images.
+It will use the geometric distortion between the input images
+and will introduce a percentage of this distortion into the outputs.
+It will also weight the input images proportionately with their 
+distance from the inputs in intensity. 
+  The geometric distortion is determined by programs TRACKER or 
+TRACKER2 which create a tiepoint grid using hundreds or thousands of
+points not necessarily in a regular pattern. Each output is
+the sum of both inputs weighted in intensity and interpolated in position.
+
+Method:
+If there are N output images and we are interested in output image
+number n where n &lt= N. And if we have two input images called left
+and right, Then the weighting would be:
+right_weight = n/(N+1)
+left_weight=1-right_weight
+Each tiepoint is interpolated to give it's equivalent position for image n.
+tiepoint_line_image_n=tiepoint_line_left_input*left_weight                        tiepoint_line_right_input*right_weight
+tiepoint_samp_image_n=tiepoint_samp_left_input*left_weight                        tiepoint_samp_right_input*right_weight
+We then create a regular grid on image n and for each intersection locate
+the nearest tiepoint on n in each of the four quadrants. If more points
+are desired the rest are found from the nearest remaining points 
+(see <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/morph_level2.html#npts">NPTS</A> keyword). 
+We then fit
+x and y polynomials going from n to the left and right images of the form:
+Y=Axy+By+Cx+D  and X=Exy+Fy+Gx+H for each grid intersection ( <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/morph_level2.html#inc">INC</A> keyword).
+The box <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/morph_level2.html#inc">INC</A> by INC centered on the grid intersection is then mapped via the
+polynomials onto the left and right images. This determines where a pixel 
+on n comes from in both input images. Each point is averaged by linearly
+weighting each polynomial based upon how far the point is from the center
+of that polynomial. Weighting is done horizontally only between adjacent
+polynomials.
+   The DN value in each input image is interpolated bilinearly and then
+combined to give the DN value for that pixel in n, thus:
+DN_n(X,Y)=DN_left*left_weight+DN_right*right_weight.
+
+Restrictions:
+Morph must place all the inputs into memory as 16 bit images. Restrictions
+can easily be aleviated by changing the parameter statement in the main
+program and recompiling it. 
+At the moment:
+  the two input images cannot exceed 1000 lines by 1000 pixels.
+  the number of tiepoints cannot exceed 10000.
+  the ratio of NS/<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/morph_level2.html#inc">INC</A> cannot exceed 150.
+In the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/morph_level2.html#npts">NPTS</A>=4 mode if a grid point has less than 4 points (one in each 
+quadrant) the grid point area is abandoned. This leads to blank space
+around the output images. Higher values of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/morph_level2.html#npts">NPTS</A> permits extrapolation.
+
+Example:
+
+tracker2 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/morph_level2.html#inp">inp</A>=(left.img,right.img) out=mark.img    grid=100 nlw=11 nsw=11 edge=10 'print window=(2,1) look=(5,5)    limit=(8,8) see=1
+morph <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/morph_level2.html#inp">inp</A>=(left.img,right.img,mark.img) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/morph_level2.html#frames">frames</A>=2 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/morph_level2.html#name">name</A>=morph
+
+(tracker2 generates a grid of tiepoints in the mark file. Morph uses
+the tiepoints field to determine the amount of distortion  between the
+images. In this case it generates two outputs 1/3 and 2/3 of the way
+between left and right images. Each output is weighted in intensity
+linearly between the inputs. Thus morph1.img has 2/3 the weight of
+left.img and 1/3 the weight of right.img . 
+The output images are named: morph1.img and morph2.img)
+
+HISTORY
+
+Written By: J Lorre			Nov 15 1992
+<A NAME="CogProg">Cognizant Programmer: J Lorre</A>
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/morph_level2.html#inp"><H3>INP</H3></A>
+Three inputs.
+#1 is the left image
+#2 is the right image.
+#3 is the mark file
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/morph_level2.html#frames"><H3>FRAMES</H3></A>
+Number of output
+images generated.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/morph_level2.html#start"><H3>START</H3></A>
+Starting output
+frame number.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/morph_level2.html#name"><H3>NAME</H3></A>
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/morph_level2.html#name">name</A> prefix
+of outputs.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/morph_level2.html#inc"><H3>INC</H3></A>
+Grid interval
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/morph_level2.html#npts"><H3>NPTS</H3></A>
+# points used
+in local fit.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/morph_level2.html#leftonly"><H3>LEFTONLY</H3></A>
+Only use left image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/morph.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/morph.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

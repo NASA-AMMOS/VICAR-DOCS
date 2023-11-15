@@ -1,0 +1,339 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for MARSRAD</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad.html">MARSRAD</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+There are two options for describing input images.
+ 
+1) List the image file names
+2) Provide an ascii file with the file names listed, one per record.
+
+If only one value is given, it is assumed that the value is the name of a
+file list file.  However, if the file appears to be a VICAR image, then it
+is treated as an actual image name.  This means that you can simply correct
+a single image:
+
+marsrad <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#inp">inp</A>=a.img <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#out">out</A>=a.out
+
+without having to create file lists.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+There are two options for describing output images.
+
+1) List the image file names
+2) Provide an ascii file with the file names listed, one per record.
+
+If only one value is given, it is assumed that the value is the name of a
+file list file.  However, if the file appears to be a VICAR image, or if
+it doesn't exist, then it is treated as an actual image name.  This means
+that you can simply correct a single image:
+
+marsrad <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#inp">inp</A>=a.img <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#out">out</A>=a.out
+
+without having to create file lists.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="band"><H3>BAND</H3></A><pre>
+Specifies which <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#band">band</A> from the input image to write to the output image file.
+If no <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#band">band</A> is specified, all bands from the input image will be processed then
+written to the output image.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="tau"><H3>TAU</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#tau">Tau</A> is a measure of atmospheric opacity.  The default for normal Mars conditions 
+is 0.6. Higher <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#tau">tau</A> means more dust in the atmosphere.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rad"><H3>RAD</H3></A><pre>
+Keyword paramter that selects radiometric correction mode of the input images.
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#rad">RAD</A> (the default) enables the correction (for missions/instruments which support 
+it); NORAD disables it; ZENITH_SCALED_RAD the radiometry you'd get if the sun 
+were at zenith on a clear day.  The scaling factor is a combination of solar 
+elevation and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#tau">tau</A>, and will have the effect of brightening up images that 
+were taken near sunset.
+  
+NORAD is not of much use in MARSRAD, since turning off radiometric correction 
+would defeat the entire purpose of MARSRAD! 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="dnscale"><H3>DNSCALE</H3></A><pre>
+DN scaling factor.  This factor is used to convert between physical
+radiometric units (watts/(meter**2, steradian, micron)) and DN's for the
+output mosaic.  The formula is:
+
+true_radiance = offset + (factor * DN)
+
+where "offset" is 0.0 in the current implementation, and "factor" is
+1.0 / <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#dnscale">DNSCALE</A> (making the formula equivalently:  offset + (DN / DNSCALE)).
+The offset and factor (1.0/<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#dnscale">DNSCALE</A>) are written to the output mosaic label.
+
+If <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#format">FORMAT</A>=REAL is specified, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#dnscale">DNSCALE</A> should be set to 1.0, or a warning
+will be printed.  The given <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#dnscale">DNSCALE</A> is still applied, however.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="dnscale_in"><H3>DNSCALE_IN</H3></A><pre>
+Three-state keyword parameter to control whether or not to apply scaling
+parameters to reconstruct floating point values.
+
+RESCALE says to do the conversion, and reconstitute the float based on the 
+RADIANCE_* keywords.  Note that if there are no RADIANCE_* keywords, 
+this is a no-op, so it doesn't hurt to turn this on for non-scaled images.
+
+NOSCALE says to not to the conversion.  This is what we do now.  If your 
+inputs are dynamically scaled, you'll probably get surprising results.
+
+AUTOSCALE says to figure it <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#out">out</A> based on the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#dnscale_out">DNSCALE_OUT</A> parameter (see 
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#dnscale_out">DNSCALE_OUT</A> for details) and -ZENITH_SCALED_RAD flag. If DNSCALE_OUT is STATIC, 
+then it is NOSCALE; if <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#dnscale_out">DNSCALE_OUT</A> is DYNAMIC/IDENTIT or <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#rad">RAD</A>=ZENITH_SCALED_RAD,
+then it is RESCALE.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="dnscale_out"><H3>DNSCALE_OUT</H3></A><pre>
+Three-state keywork parameter to scale output DN values.
+
+If -STATIC is enabled, then the value specified by <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#dnscale">DNSCALE</A> will be used
+as the DN scaling factor (note the unit scaling factor as well) for all
+radiometric models supplied.
+
+If -DYNAMIC is enabled, then the maximum responsivity value across all
+radiometric models will be used as the DN scaling factor (note the unit
+scaling factor as well).
+
+If -IDENTITY is enabled, then no scaling will be applied.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="config_path"><H3>CONFIG_PATH</H3></A><pre>
+A colon-separated list of directories in which to look for configuration
+and calibration files.  Environment variables are allowed in the list
+(and may themselves contain colon-separated lists).  The directories are
+searched in order for each config/cal file when it is loaded.  This allows
+multiple projectes to be supported simultaneously, and allows the user to
+override any given config/cal file.  Note that the directory structure below
+the directories specified in this path must match what the project expects.
+For example, Mars 98 expects flat fields to be in a subdirectory named
+"flat_fields" while Mars Pathfinder expects them to be directly in the
+directory specified by the path (i.e. no intermediate subdirectories).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="point_method"><H3>POINT_METHOD</H3></A><pre>
+Specifies a mission-specific pointing method to use.  Normally this
+parameter is not used, in which case the "default" pointing methods
+are used.  Some missions may have special, or alternate, pointing
+methods available, which are indicated by this string (for example,
+backlash models, using arm joint angles instead of x/y/z/az/el, etc).
+A substring search is used, so multiple methods (where that makes sense)
+can be specified by separating the keywords with commas.
+
+Note that nav files created using one pointing method will most likely
+not be compatible with a mosaic created using a different pointing method.
+
+The methods available vary per mission, but some methods available at
+the time of this writing are:
+
+BACKLASH : Mars 98 SSI only.  Selects a backlash pointing model,
+which adjusts the telemetered azimuth and elevation values based on
+knowledge of the camera's mechanical backlash and the direction the
+motor was travelling when the image was taken.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="format"><H3>FORMAT</H3></A><pre>
+Selects short int (HALF) or float (REAL) output <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#format">format</A>.  The default
+is short int; the values are scaled using <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#dnscale">DNSCALE</A> to the short int range.
+However, direct radiometry units can be created using -REAL.  In this case,
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#dnscale">DNSCALE</A> should be set to 1.0 (if not, a warning is printed, but DNSCALE
+*is* used).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="bits"><H3>BITS</H3></A><pre>
+If <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#bits">BITS</A> is specified (and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#format">FORMAT</A>=REAL is not), then the results are clamped
+to have that many <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#bits">bits</A>, e.g. if BITS is 12 then the results will be in the
+range 0-4095.  The sample bit mask in the label will be set appropriately.
+As a backward compatibility feature, if <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#bits">BITS</A> is not set then there is no
+clamping but the sample bit mask is still set to 15 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#bits">bits</A>.  BITS is ignored
+for floating-point files.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="data_set_name"><H3>DATA_SET_NAME</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#data_set_name">DATA_SET_NAME</A> typically identifies the instrument that acquired the
+data, the target of that instrument, and the processing level of the data.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#data_set_name">DATA_SET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="data_set_id"><H3>DATA_SET_ID</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#data_set_id">DATA_SET_ID</A> value for a given data set or product is constructed
+according to flight project naming conventions.  In most cases the
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#data_set_id">DATA_SET_ID</A> is an abbreviation of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#data_set_name">DATA_SET_NAME</A>.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#data_set_id">DATA_SET_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="release_id"><H3>RELEASE_ID</H3></A><pre>
+When a data set is released incrementally, such as every three months during
+a mission, the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#release_id">RELEASE_ID</A> is updated each time part of the data set is released.
+For each mission(or host id if multiple spacecrafts), the first release of a data
+set should have a value of "0001".
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#release_id">RELEASE_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="product_id"><H3>PRODUCT_ID</H3></A><pre>
+Specifies a permanent, unique identifier assigned to a data product by
+its producer. Most commonly, it is the filename minus the extension.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#product_id">PRODUCT_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="producer_id"><H3>PRODUCER_ID</H3></A><pre>
+Specifies the unique identifier of an entity associated with the
+production of a data set. This value is copied to the output label,
+property IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#producer_id">PRODUCER_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="producer_inst"><H3>PRODUCER_INST</H3></A><pre>
+Specifies the identity of a university, research center, NASA center or other
+institution associated with the production of a data set.
+This value is copied to the output label, property IDENTIFICATION, keyword
+PRODUCER_INSTITUTION_NAME.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="target_name"><H3>TARGET_NAME</H3></A><pre>
+Specifies a target.  The target may be a planet, satelite, ring, region, feature,
+asteroid or comet.  This value is copied to the output label, property
+IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#target_name">TARGET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="target_type"><H3>TARGET_TYPE</H3></A><pre>
+Specifies the type of a named target. This value is copied to the output
+label, property IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#target_name">TARGET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rsf"><H3>RSF</H3></A><pre>
+The Rover State File is loaded by, but not used by, marsrad.  The parameter
+exists for compatibility with subroutines used by other programs (see
+e.g. marsmap).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="debug_rsf"><H3>DEBUG_RSF</H3></A><pre>
+If enabled, this causes the internal database of RMC locations to be
+printed <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#out">out</A> to the stdout log.  This is after the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrad_level2.html#rsf">RSF</A> files have been
+loaded and the coordinate systems read from the input label(s).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord"><H3>COORD</H3></A><pre>
+This parameter is ignored by marsrad.  The parameter exists for
+compatibility with subroutines used by other programs (see e.g. marsmap).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord_index"><H3>COORD_INDEX</H3></A><pre>
+This parameter is ignored by marsrad.  The parameter exists for
+compatibility with subroutines used by other programs (see e.g. marsmap).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="fixed_site"><H3>FIXED_SITE</H3></A><pre>
+This parameter is ignored by marsrad.  The parameter exists for
+compatibility with subroutines used by other programs (see e.g. marsmap).
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

@@ -1,0 +1,267 @@
+<HTML>
+<HEAD><title>HTML Help for MARSXYZFOCUS</title></HEAD>
+<BODY>
+<H1>Help for MARSXYZFOCUS</H1>
+<pre>
+PURPOSE:
+WATSON, just like MSL MAHLI, computes and returns depth-from-focus products such 
+as the 'EDM' depth map along with the corresponding 'EZS' z-stack image.  The 
+goal of this program is to use these maps to create an actual mesh, for which an
+XYZ image needs to be created first and the run through the usual mesh processes.
+The same process applies to MSL MAHLI, except for how searching is done, and 
+also may apply to the ACI <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#camera">camera</A>.
+
+MARSXYZFOCUS takes a list of EZS/EDM parent images, typically eight, and 
+first extracts their focus values. It then creates a DN to range curve based on
+those values, given working distance values specified in meters. This curve is 
+used to determine a ray which intersects a plane parallel to the instrument's 
+sapphire window. The intersection point is saved as the output XYZ coordinate 
+for each pixel.
+
+EXECUTION:
+marsxyzfocus <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#inp">inp</A>=edm_image <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#out">out</A>=xyz_image <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#parents">parents</A>=parentimages.list
+ -OR-
+marsxyzfocus <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#inp">inp</A>=edm_image <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#out">out</A>=xyz_image focusvalues=array
+
+where:
+ - edm_image is the input EDM grayscale image
+ - xyz_image is the output XYZ image
+ - parentimages.list is a list of parent images for a given EZS/EDM pair
+ - array is a comma-separeted set of focus values for each of the parent images. 
+This array is optional, and should be used in case the input images themselves
+are unavailable.
+
+
+METHOD:
+Given a set of parent images (typically 2-31) and/or their associated focus 
+motor counts, this software first converts these values to range from the front 
+surface of the lens, or the surface of the sapphire window for cameras such as
+WATSON and ACI. In particular, for M20 the WATSON and ACI toolframes' origins 
+are at this surface. The formulas for range conversion were obtained here:  
+     https://link.springer.com/article/10.1007/s11214-021-00812-z
+     https://zenodo.org/record/5555292#.Yi-qjBDMLZ4
+
+More specifically, the coefficients for the WATSON case were obtained
+from data acquired on both Mars and Earth and describe the relation between 
+working distance (dw, originally in CENTIMETERS but converted to meters in the
+program) and stepper motor count (mopen) when the WATSON 
+dust cover is open and elements of the WATSON image are in focus. Those  
+coefficients are:
+
+	a = 1.09106×10^6
+	b = –332.921
+	c = 3.82592×10^(–2)
+	d = –1.96922×10^(–6)
+	e = 3.84562×10^(–11)
+	dw = (a*mopen^(–1) + b + c*mopen + d*mopen^2 + e*mopen^3)^–1
+
+For ACI, the formula is as follows:
+
+	a = 0.005
+	b = 20.34
+	dw = a*mopen - b
+
+As of now these values are hard-coded, but can be parameterized, preferably with 
+something in $MARS_CONFIG_PATH, so it can be adjusted if needed in the future.
+
+NOTE: Just to re-iterate since this is important, the centimeter values are 
+converted to meters within the code, to be consistent with the units used in 
+XYZ maps.
+
+Next, there is a table which describes the relationship between the grayscale
+data value (DN) in the EDM and which image corresponds to the the best focus,
+which is a function of the nmber of parent images. For the i-th parent image <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#out">out</A>
+of N in total, the DN value is computed per:
+	DN = floor(255-i*255/N)
+
+Now, we fit a curve which allows for the conversion of DN to range, given 
+the DN vector as well as the correpsonding motor counts per parent image. 
+Piecewise linear interpolation is an acceptable first-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#order">order</A> solution, but this 
+program performs a more-accurate 2nd-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#order">order</A> polynomial fit. The fit is performed
+via a least-squares solve using Eigen.
+
+Finally, converting range (in m) to XYZ involves several steps:
+
+1) Range is relative to the front surface of the sapphire window. This is the 
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#origin">origin</A> of the WATSON/ACI tool frame on M20. On MSL, the origin of the frame is 
+where the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#camera">camera</A> optic axis intersects the plane defined by the top of the 
+contact sensor pokers, which is 19mm (0.019m) in front of the lens cover. 
+Alternatively, an arbitrary offset can be provided via the "<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#proj_origin">PROJ_ORIGIN</A>"
+parameter. Given the projection <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#origin">origin</A> and the 'A' <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#camera">camera</A> orientation vector, 
+also computed previously, we can create a plane that is coincident with the 
+sapphire and is perpendicular to the optical axis. The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#origin">origin</A> and 'A' vector are
+used in Step 5 below.
+	 
+2) For each pixel, we find the closest input image, using the DN vector, and 
+extract the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#camera">camera</A> model from that image.  Currently, we have only one camera 
+model across all focuses, but in the future we may get focus-dependent <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#camera">camera</A> 
+models, so we'll pull from the correct image. Also, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#camera">camera</A> model interpolation 
+between focus values likely won't make a difference, so the closest value should 
+suffice.
+
+3) Use the chosen <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#camera">camera</A> model to project a ray into space for the current pixel.
+
+4) Use the computed range to offset the plane from (1) as defined by the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#origin">origin</A>
+and 'A' vector along the plane's normal. 
+
+5) Intersect the projected ray with the offset plane, which defines the XYZ 
+coordinate for that pixel and save the XYZ coordinate in an XYZ image.
+
+Finally, the XYZ coordinates for all pixels are saved as an XYZ image, from 
+which a mesh can be created using for example 'marsmesh':
+
+     $MARSLIB/marsmesh <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#inp">inp</A>=xyz.VIC <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#out">out</A>=mesh.obj in_skin=image.png
+	  - where image.png corresponds to the input EDM depth map, used for texture
+
+ADDITIONAL NOTES:
+
+The code does not current work well with thumbnails provided as parent images.
+Another future improvement could be to handle cases where thumbnails are 
+provided for most of the images but one full frame. That frame can be used to 
+determine the coordinate system and other functions, but the focus values should
+still be picked up from the rest of the thumbs.
+
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER: Mauricio Hess-Flores</A>
+
+HISTORY:
+  2022-04-01 M. Hess-Flores - Initial marsxyzfocus 
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#inp"><H3>INP</H3></A>
+Input EDM image file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#out"><H3>OUT</H3></A>
+Output XYZ image file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#parents"><H3>PARENTS</H3></A>
+Input parent image list.
+Typically 8 parent images
+for an EZS/EDM pair, but
+can vary from 2-31.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#focusarray"><H3>FOCUSARRAY</H3></A>
+Optional array containing
+focus values for each 
+parent image (comma-
+separated), typically
+8 values but can vary
+from 2-31.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#mission"><H3>MISSION</H3></A>
+Choose between MSL
+and M20 (default).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#camera"><H3>CAMERA</H3></A>
+Choose betwen ACI
+and WATSON (default)
+in case the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#mission">mission</A> is
+M20. If it's MSL, the
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#camera">camera</A> is always MAHLI.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#order"><H3>ORDER</H3></A>
+Polynomial <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#order">order</A> for 
+range curve fitting.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#camoffset"><H3>CAMOFFSET</H3></A>
+Distance between the
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#camera">camera</A> model and the 
+sapphire window.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#origin"><H3>ORIGIN</H3></A>
+3D <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#origin">origin</A> point override
+for ranges.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#mission">mission</A>-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#coord">COORD</A>/<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#mission">mission</A> combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#mission">mission</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#write_cm"><H3>WRITE_CM</H3></A>
+Writes the output <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#camera">camera</A> 
+model to the output depth 
+file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#proj_origin"><H3>PROJ_ORIGIN</H3></A>
+User-provided projection
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#origin">origin</A> which overrides the
+center of projection.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#po_coord"><H3>PO_COORD</H3></A>
+Coordinate system used to define
+the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus_level2.html#proj_origin">PROJ_ORIGIN</A> parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsxyzfocus.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

@@ -1,0 +1,79 @@
+<HTML>
+<HEAD><title>HTML Help for REGISTER2</title></HEAD>
+<BODY>
+<H1>Help for REGISTER2</H1>
+<pre>
+PURPOSE:
+To acquire tiepoints permitting images to be registered.
+Register2 performs 9 registrations and writes the tiepoints into the output 
+file.
+
+EXECUTION STATEMENT:
+register2 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/register2_level2.html#inp">inp</A>=listoffilenames <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/register2_level2.html#out">out</A>=tiepoints
+superres <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/register2_level2.html#inp">inp</A>=(listoffilenames,tiepoints) <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/register2_level2.html#out">out</A>=superresolutionimage
+
+where:
+listoffilenames is an ascii file with one input image file name per record.
+tiepoints is an ascii file with tiepoints.
+
+METHOD:
+Register2 selects a large region near the picture center and correlates a
+single tiepoint there. It then uses the offset to determine 9 tiepoints
+across the image. These tiepoints are written to the output. 
+Input images should be the same size.
+
+The Gruen correlation scheme used here permits distortions between 
+correlation areas of the form:
+newline=line*A+sample*B+C
+newsamp=line*D+sample*E+F
+The task of the correlator is to determine the coefficients A-F which permit 
+the best correlation value.
+
+Output file format is as follows:
+
+Picture 2
+ref_line ref_sample line sample <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/register2_level2.html#quality">quality</A>
+ref_line ref_sample line sample <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/register2_level2.html#quality">quality</A>
+ref_line ref_sample line sample <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/register2_level2.html#quality">quality</A>
+...
+Picture 3
+ref_line ref_sample line sample <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/register2_level2.html#quality">quality</A>
+ref_line ref_sample line sample <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/register2_level2.html#quality">quality</A>
+...
+Picture 4
+...
+end
+
+ref_line & ref_sample refer to the first input file which is always the
+reference. Picture 2 refers to the tiepoints connecting picture 2 to the
+reference picture etc.
+Line and sample refer to the other pictures.
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/register2_level2.html#quality">Quality</A> is a number from 0 to 1. Most good correlations have qualities
+of around .95  .
+
+PROGRAM HISTORY
+
+<A NAME="CogProg">Cognizant programmer: Jean Lorre</A>
+Revisions: New
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/register2_level2.html#inp"><H3>INP</H3></A>
+Ascii list of input files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/register2_level2.html#out"><H3>OUT</H3></A>
+Tiepoints.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/register2_level2.html#quality"><H3>QUALITY</H3></A>
+Min permitted correlation
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/register2_level2.html#quality">quality</A>. &gt 0 & &lt 1.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/register2_level2.html#sdev"><H3>SDEV</H3></A>
+Minimum permitted
+image standard deviation.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/register2.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/register2.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

@@ -1,0 +1,262 @@
+<HTML>
+<HEAD><title>HTML Help for VTIFF3O</title></HEAD>
+<BODY>
+<H1>Help for VTIFF3O</H1>
+<pre>
+   VTIFF is a Vicar2 program, which can be used to convert
+   between VICAR labeled images and TIFF <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#format">format</A> files, using
+   either scanline (strip) organization, or the newer Revision
+   6.0 TIFF tiled-image <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#format">format</A>. Currently grayscale, image-
+   lookup table pairs and RGB tripletes are supported. In addition,
+   multiple auxiliary images may be placed in the same file,
+   such as "thumbnail" preview images. GeoTIFF 1.0 georeferencing
+   parameters may also be inserted for Geographic and Albers.
+
+   Need to add:
+     sinusoidal
+     utm
+     lambert
+     polar stereographic
+
+     plus other datums
+
+   "TIFF" is a trademark of Aldus Corporation, and is a public
+   standard for platform-independent raster-image storage and
+   transmission. It is an acronym for Tagged Image File <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#format">Format</A>.
+
+CALLING SEQUENCE:
+
+	vtiff-tovic   image.tiff  image 	  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#auxil">AUXIL</A>=(files...)
+	vtiff-tovic   image.tiff  (image, lookup) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#auxil">AUXIL</A>=(files...)
+	vtiff-tovic   image.tiff  (red, grn, blu) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#auxil">AUXIL</A>=(files...)
+
+	vtiff-fromvic  image  		image.tif  [options..]
+	vtiff-fromvic  (image, lookup)  image.tif  [options..]
+	vtiff-fromvic  (red, grn, blu)  image.tif  [options..]
+
+   where image.tiff is TIFF <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#format">format</A>, and lookup is a
+   color lookup table in IDX <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#format">format</A> (1024 sample, 1 line
+   byte image, with values r1,g1,b1,0,r2,g2,b2,0,...).
+
+
+OPERATION
+
+  In the "tovicar" mode, the program unpacks the image and
+  lookup table, if desired. It will also unpack any additional
+  files and save them as specified by the AUX parameter.
+
+  In the "fromvicar" mode, you have the option of saving the
+  files in strip-mode (horizontal scanlines contiguous), which
+  makes them TIFF 5.0 compliant; or using the TIFF 6.0 tiling
+  option, which breaks the image up into rectangular tiles, and
+  saves those in a contiguous manner.
+
+  You may save multiple additional images in the same file using
+  the "AUX" parameter. If the file uses a lookup table, you may
+  include this in the second <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#inp">INP</A> parameter. It currently must be
+  an IDX-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#format">format</A> lookup table (1 line x 1024 sample byte image:
+  r1,g1,b1,0,r2..). NOTE: Tiling is a new feature, which many
+  TIFF programs cant yet handle. If so, use the default strip-mode. 
+OPERATION
+
+  You may also chose a TIFF data compression option. The
+  currently supported keywords in VTIFF are 'LZW = lempel-ziv-welch
+  compression, 'PACKBITS = Macintosh-style packbits (run-length
+  encoding) compression, or 'NOCOMP = no compression. NOTE: The
+  TIFF 6.0 standard now discourages the use of LZW, as Unisys Corp.
+  claims to have a patent on the algorithm, and so may not
+  support LZW in the future. If this is a concern, you can try
+  the 'ZIP Deflation compression, which does not have any
+  limitations.
+OPERATION
+
+  The 'JPL compression by default implies the 'ZIPJPL codec, which
+  uses a modified ZIP/Deflate compression scheme, allowing for NULL's.
+  An optional <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#nullmask">NULLMASK</A> parameter allows the specification of tiles
+  which are all zero, permitting faster,better,cheaper compression
+  on those tiles. The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#nullmask">NULLMASK</A> file should be an IBIS tabular file 
+  containing 0's on those row number corresponding
+  to NULL tiles. Use the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#maskcol">MASKCOL</A> parameter to specify which column
+  contains the NULL information.
+
+  In this version a ('JPL 'NGT) compression is also enabled, 
+  supporting National Geographic Television/JPL compression support.
+  this mechanism operates in a similar mode to the 'ZIPJPL scheme,
+  but is patented and not for general use.
+OPERATION
+
+  For RGB triplets, whether tiled or in strips, you may choose
+  to organize the data using 'CHUNKY or 'PLANAR interleaving.
+  The 'CHUNKY <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#format">format</A> is analogous to the VICAR BIP (Band-interleaved
+  by pixel) organization, and is the default. The 'PLANAR is
+  similar to BSQ (Band-sequential) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#format">format</A>, and while this permits
+  faster conversion and extraction, it is an extension to TIFF
+  that is not supported by as many TIFF-compatible programs.
+OPERATION
+
+  The latitude-longitude parmeters are extensions to TIFF to
+  permit specification of scanned map georeference data. These
+  extensions are GeoTIFF 1.0-compliant, and will not interfere with
+  any standard TIFF-reading program, which will ignore the 
+  extended data fields. For more information on the cartographic
+  TIFF extensions, see the GeoTIFF web page, and "HELP <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#proj">PROJ</A>".
+
+  In general, for the most easily exportable TIFF file, use as few
+  of the parameters as possible. 
+
+
+REVISION HISTORY
+
+   Written by:            N. D. Ritter  September 1991
+<A NAME="CogProg">   Cognizant Programmer:  W Bunch</A>
+
+   2003-09-05 WLB Added GeoTIFF support.
+   2004-07-12 WLB Added legacy cart tag support.
+   2004-10-19 WLB Added support for fourth input TIFF band.
+   2004-12-01 WLB Added support for non GeoTIFF metata (to/from TIFF image description tag).
+   2005-05-11 WLB Added support for new tags.
+   2005-06-01 WLB Bug fix.
+   2006-11-21 WLB strcpy/cat and ms_dnum bugs fixed.
+   2008-01-03 WLB Switched to USES_ANSI_C AND LIB_CARTO; misc cleanup.
+   2016-01-08 WLB Migrated to MIPL; replaced printf with zifmessage.
+   2017-02-28 WLB Added support for single-file, multi-band conversion.
+   2017-06-02 WLB Removed unnecessary warning messages.
+
+REFERENCES
+
+   "TIFF" Revision 6.0, Final - Jun 3, 1992,
+      Aldus Developers Desk, available via anonymous ftp
+      through sgi.com.
+AKNOWLEDGMENT
+
+   This program is a VICAR front-end to a public-domain
+   subroutine library of TIFF file <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#format">format</A> routines, written
+   by Sam Leffler, and extended for JPL use by Niles Ritter.
+   The source code carries the following copyright notice:
+
+   &ltquote&gt
+   Copyright (c) 1988, 1989, 1990, 1991, 1992 Sam Leffler
+   Copyright (c) 1991, 1992 Silicon Graphics, Inc.
+ 
+   Permission to use, copy, modify, distribute, and sell this software and 
+   its documentation for any purpose is hereby granted without fee, provided
+   that (i) the above copyright notices and this permission notice appear in
+   all copies of the software and related documentation, and (ii) the names of
+   Sam Leffler and Silicon Graphics may not be used in any advertising or
+   publicity relating to the software without the specific, prior written
+   permission of Sam Leffler and Silicon Graphics.
+AKNOWLEDGMENT
+   
+   THE SOFTWARE IS PROVIDED "AS-IS" AND WITHOUT WARRANTY OF ANY KIND, 
+   EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY 
+   WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  
+   
+   IN NO EVENT SHALL SAM LEFFLER OR SILICON GRAPHICS BE LIABLE FOR
+   ANY SPECIAL, INCIDENTAL, INDIRECT OR CONSEQUENTIAL DAMAGES OF ANY KIND,
+   OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+   WHETHER OR NOT ADVISED OF THE POSSIBILITY OF DAMAGE, AND ON ANY THEORY OF 
+   LIABILITY, ARISING <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#out">OUT</A> OF OR IN CONNECTION WITH THE USE OR PERFORMANCE 
+   OF THIS SOFTWARE.
+
+   &ltunquote&gt.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#inp"><H3>INP</H3></A>
+Input TIFF file
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#out"><H3>OUT</H3></A>
+Output VICAR file.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#auxil"><H3>AUXIL</H3></A>
+Auxiliary files to pull
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#out">out</A> of TIFF file.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#info"><H3>INFO</H3></A>
+Dump information only.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#size"><H3>SIZE</H3></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#sl"><H3>SL</H3></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#ss"><H3>SS</H3></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#nl"><H3>NL</H3></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#ns"><H3>NS</H3></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#metadata"><H3>METADATA</H3></A>
+Dump GeoTIFF to file
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#status"><H3>STATUS</H3></A>
+Print Progress Bar?
+
+.SUBCMD FROMVIC
+Covert from VICAR image
+to TIFF <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#format">format</A> file.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#inp"><H3>INP</H3></A>
+Input VICAR file
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#out"><H3>OUT</H3></A>
+Output TIFF file
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#auxil"><H3>AUXIL</H3></A>
+Auxiliary files to stuff
+into output TIFF file.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#tlines"><H3>TLINES</H3></A>
+Number of lines in tile
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#tsamps"><H3>TSAMPS</H3></A>
+Number of samps in tile
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#compress"><H3>COMPRESS</H3></A>
+Compression type
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#colorbits"><H3>COLORBITS</H3></A>
+Convert RGB to 8-bit?
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#tiffmode"><H3>TIFFMODE</H3></A>
+Use Strips or Tiles ?
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#intrleav"><H3>INTRLEAV</H3></A>
+Chunky Interleave:rgbrgb...?
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#lut"><H3>LUT</H3></A>
+Type of Color Lookup 
+Table to use.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#lat"><H3>LAT</H3></A>
+Ref. Latitude in (D,Min,Sec).
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#hemilat"><H3>HEMILAT</H3></A>
+North or South Latitude ?
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#long"><H3>LONG</H3></A>
+Ref. Longitude in (D,Min,Sec).
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#hemilong"><H3>HEMILONG</H3></A>
+East or West Longitude ?
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#hdegpix"><H3>HDEGPIX</H3></A>
+Horiz. (D,Min,Sec) per pixel.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#vdegpix"><H3>VDEGPIX</H3></A>
+Vert. (D,Min,Sec) per pixel.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#xpixpos"><H3>XPIXPOS</H3></A>
+X-Position of Coord. axis.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#ypixpos"><H3>YPIXPOS</H3></A>
+Y-Position of Coord. axis.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#resunit"><H3>RESUNIT</H3></A>
+Units used in X/<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#yres">YRES</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#xres"><H3>XRES</H3></A>
+#pixels per (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#resunit">RESUNIT</A>) horiz.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#yres"><H3>YRES</H3></A>
+#pixels per (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#resunit">RESUNIT</A>) vert.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#gcs"><H3>GCS</H3></A>
+Geog. Coord. System Used
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#nullmask"><H3>NULLMASK</H3></A>
+IBIS table flagging NULL tiles
+(0 = NULL, 1 = valid data)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#maskcol"><H3>MASKCOL</H3></A>
+Column containing NULL flag
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#status"><H3>STATUS</H3></A>
+Print Progress Bar?
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#proj"><H3>PROJ</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#lat">Lat</A>-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#long">Long</A>, Albers...?
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#pixsize"><H3>PIXSIZE</H3></A>
+horiz,vert Pixel Size (m)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#stdparal"><H3>STDPARAL</H3></A>
+Standard Parallels (degrees)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#nat_orig"><H3>NAT_ORIG</H3></A>
+Natural Origin (E,N)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#fal_orig"><H3>FAL_ORIG</H3></A>
+False Origin (E,N)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#fo_lat"><H3>FO_LAT</H3></A>
+False Origin Latitude
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#no_long"><H3>NO_LONG</H3></A>
+Natural Origin Longitude
+(aka Central Meridian)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o_level2.html#carttag"><H3>CARTTAG</H3></A>
+Include Old Carto tags?
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/vtiff3o.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

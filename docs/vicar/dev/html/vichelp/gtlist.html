@@ -1,0 +1,126 @@
+<HTML>
+<HEAD><title>HTML Help for GTLIST</title></HEAD>
+<BODY>
+<H1>Help for GTLIST</H1>
+<pre>
+PURPOSE
+     GTLIST is a VICAR applications program which lists information
+     in a VICAR GeoTIFF label.  Besides listing the label contents,
+     derived information about the corner point coordinates and the
+     image rotation are calculated.
+     
+     A non-image GeoTIFF file can also be listed by this program,
+     but information about the corner points is omitted.
+    	
+CALL
+     gtform <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtlist_level2.html#inp">INP</A> PARAMS
+  WHERE:
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtlist_level2.html#inp">INP</A>            is the input data set.
+     PARAMS         is a standard VICAR parameter field.
+OPERATION
+
+GTLIST reads the GeoTIFF label and the VICAR NL,NS parameters.  The
+printout is based on these.  Note that the GeoTIFF image coordinate
+system will differ systematically from the VICAR image coordinate
+(line,sample) system by a half a pixel or a whole pixel (depending 
+on whether the GeoTIFF file is "area" format or "post" format.  An
+example of a "post" formatted file is DMA DTED -- there is an
+elevation reading exactly at the initial lon-lat.
+
+If the GeoTIFF label is not attached to a VICAR image, the raster
+coordinates are applied to an hypothetical 1000 x 2000 image to help
+the user understand the mapping.  If the label does not contain raster
+coordinates (for example, just a map spec), then the label will simply
+be listed.  The user can input another hypothetical size using the
+parameters <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtlist_level2.html#listnl">LISTNL</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtlist_level2.html#listns">LISTNS</A>.  These values enter into the map
+scale calculation as well.
+
+In addition, rotation is explained.  Rotation refers to the order
+of pixels in the file.  The eight possible rotation are (here, pixel
+value represents the order of data in the file):
+
+   369    123    741    987
+0: 258 1: 456 2: 852 3: 654
+   147    789    963    321
+
+   963    789    147    321
+4: 852 5: 456 6: 258 7: 654
+   741    123    369    987
+
+Rotation 1 is the VICAR standard rotation.  It is used also by
+systems such as LAS, IDIMS, LARSYS, ERDAS, I2S, etc. and was
+adopted by LANDSAT, SPOT, and all of the planetary probes.
+It is also produced by frame grabbers since it is the
+ordering of a TV scan.  Rotation 0 is the USGS standard and is
+used, for example, for DMA DTED.
+
+The fact that an image is "rotated" is due to the different ways
+that line-sample ordering can represent a geographic east-north
+coordinate system.
+
+
+The transitions among these rotations are given by the
+following table:
+
+	   no flip              flip
+
+rotate-&gt0  90 180 270      0  90 180 270
+
+   0)   0   3   2   1      4   5   6   7
+   1)   1   0   3   2      5   6   7   4
+   2)   2   1   0   3      6   7   4   5
+   3)   3   2   1   0      7   4   5   6
+   4)   4   5   6   7      0   3   2   1
+   5)   5   6   7   4      1   0   3   2
+   6)   6   7   4   5      2   1   0   3
+   7)   7   4   5   6      3   2   1   0
+
+
+VICAR can process images with any rotation (basically by ignoring
+the fact that rotation means anything).  The exception would be
+for programs that combine images such as F2, OVERLAY, APPEND, MSS,
+FASTMOS, etc.  These correctly operate only when the images have
+the same rotation.
+
+Map scale is printed out, but this depends upon the display inches
+and map unit size in meters.  The parameters <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtlist_level2.html#mapinch">MAPINCH</A> AND <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtlist_level2.html#mapunitm">MAPUNITM</A>
+are provided for inutting these values.
+
+
+PERFORMANCE
+
+Less than 1 second.
+
+RESTRICTIONS
+------------
+
+REFERENCES
+
+     Ritter, N., Ruth, M. "GeoTIFF Format Specification, Revision 1.0",
+     JPL Cartographic Applications Group.
+     
+Original Programmer: A. L. Zobrist, 16 Aug. 1999
+<A NAME="CogProg">Current Cognizant Programmer: B. A. McGuffie</A>
+Revisions:
+  2008-01-02 WLB Switched to USES_ANSI_C AND LIB_CARTO; misc cleanup  
+  2015-11-01 WLB Migrated to MIPL
+  2016-01-13 WLB Replaced printfs with zifmessages
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtlist_level2.html#inp"><H3>INP</H3></A>
+Input file name
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtlist_level2.html#listnl"><H3>LISTNL</H3></A>
+when no image use this for nl
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtlist_level2.html#listns"><H3>LISTNS</H3></A>
+when no image use this for ns
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtlist_level2.html#mapunitm"><H3>MAPUNITM</H3></A>
+meters per map unit for scale
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtlist_level2.html#mapinch"><H3>MAPINCH</H3></A>
+inches on display or paper
+for scale
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtlist.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtlist.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

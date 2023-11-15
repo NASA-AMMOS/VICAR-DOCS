@@ -1,0 +1,153 @@
+<HTML>
+<HEAD><title>HTML Help for GTWARPXD</title></HEAD>
+<BODY>
+<H1>Help for GTWARPXD</H1>
+<pre>
+PURPOSE
+
+
+  coverref case with distort file not tested yet
+  
+     GTWARPXD reads the GeoTIFF label of a "master" or "reference" image,
+     then reads the GeoTIFF label of the input image.  It calculates
+     a set of GEOMV parameters from these and then calls GEOMV to warp
+     the input image to match the mapping of the "reference" image.
+     
+     1.  The keyword 'coverinp causes the procedure to map all of the
+     input image to an output image that will just contain it.   The
+     keyword gorewid allows the user to specify a zero-filled margin
+     to make the output a little larger (or negative trims smaller).
+	
+     2.  The keyword 'coverref causes the procedure to map the input
+     image to an output image that exactly matches the "reference" image.
+     Some parts of the input can be lost, or huge areas of zero-fill
+     could be added to make the images match.  The gorewid keyword has
+     no effect in this case.
+     
+     A sequence of post-mapping distortions can be added with the
+     parameter DISTORT.  These will be applied in sequence to the
+     warp grid developed from the mapping.  These distortions are
+     all given in pixel (newline,newsamp,oldline,oldsamp) point pairs
+     in the reference image coordinate space.  The points can be
+     irregular (tieconv is used).  THE NET RESULT IS THAT A SINGLE
+     IMAGE GEOMV WILL BE APPLIED TO AVOID MULTIPLE IMAGE RESAMPLINGS.
+     
+     See the help for the parameter DISTORT for special cases to
+     1.  save time when a sequence of calls is made
+     2.  to save the combined grid from a multi-distort call
+     3.  to do a map projection change at the end of processing
+
+CALL
+     gtwarpxd INPUT OUTPUT REF '(QUALIFIERS) PARAMS
+  WHERE:
+     INPUT          is the input data set (must have a GeoTIFF label).
+     OUTPUT         is the output data set (will have a GeoTIFF label).
+     REF            is the reference data set (must have a GeoTIFF label).
+     QUALIFIERS     consist of any of the following keywords:
+          COVERINP         smallest output that covers the input geographic area
+          COVERREF         output exactly matches the reference image.
+     PARAMS         interp,nah,nav,gorewid.
+
+  
+OPERATION
+
+First, for the 'coverinp case only, the procedure calculates the
+extrema of the input in the output pixel space.  For the 'coverref
+case, the extrema are the boundaries of the reference image.
+
+Then the procedure calculates (in an ibis file) a grid that is
+rectangular in the output space using the extrema calculated above.
+Then new columns are calculated using the GeoTIFF map projections
+in the labels of the input and reference images yielding the grid
+in the input image.  Then GEOMV is called to calculate the result.
+
+Each distortion is calculated by the following steps (coverinp case):
+
+1.  warp grid is calculated to (sl,ss,nl,ns).
+2.  tieconv is applied to the distortion points using (sl,ss,nl,ns)
+    as the bounding box.
+3.  adjustments are calculated for the four edges of the bounding box.
+4.  (newsl,newss,newnl,newns) are calculated by the adjustments.
+5.  tieconv is applied again to the distortion points using (newsl,
+    newss,newnl,newns) as the bounding box.
+6.  the warp grid from step 1 is composed with the grid from step 5
+    using the program gridcomp.
+7.  steps 2 through 6 are repeated for each distortion input with
+    the composed grid now replacing the grid started in step 1.
+8.  geomv is now applied with the composed grid and (newsl,newss,
+    newnl,newns).  The reference input is unchanged.
+
+
+PERFORMANCE
+
+The time will consist of the IBIS file grid generation and mapping
+which could be minutes for a 1000 x 1000 grid plus the GEOMV time.
+See the GEOMV document for GEOMV timing (a 4000 by 4000 image was
+transformed by a 500 x 500 grid in 99 seconds on a SPARCstation 20.
+Reducing the grid to 30 x 30 cut the time to 39 seconds.  This shows
+that the use of a large grid doesn't penalize the time too much, 1999).
+
+Restrictions
+------------
+
+The input and reference images must have GeoTIFF labels.
+
+
+Original Programmer: A. L. Zobrist, 25 Jun, 2000
+<A NAME="CogProg">Current Cognizant Programmer: A. L. Zobrist</A>
+
+HISTORY:
+2002-01-23 A. L. Zobrist
+2007-04-26 A. L. Zobrist - Got rid of geomv3x3 call, changed memsize use.
+2021-05-24 W. L. Bunch - migrated from AFIDS
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtwarpxd_level2.html#inp"><H3>INP</H3></A>
+Input file name with GeoTIFF
+label
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtwarpxd_level2.html#out"><H3>OUT</H3></A>
+Output file name
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtwarpxd_level2.html#ref"><H3>REF</H3></A>
+Reference file name with GeoTIFF
+label
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtwarpxd_level2.html#typref"><H3>TYPREF</H3></A>
+'COVERINP - output minimally
+   covers the input data
+'COVERREF - output matches the
+   ref image exactly
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtwarpxd_level2.html#nah"><H3>NAH</H3></A>
+Number of grid cells horiz.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtwarpxd_level2.html#nav"><H3>NAV</H3></A>
+Number of grid cells vert.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtwarpxd_level2.html#interp"><H3>INTERP</H3></A>
+interpolation options
+Valid: NOIN,ZNOIN,BILIN
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtwarpxd_level2.html#gorewid"><H3>GOREWID</H3></A>
+Added width of gores for
+'coverinp case only
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtwarpxd_level2.html#memsize"><H3>MEMSIZE</H3></A>
+passed to geomv vmemsize parm
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtwarpxd_level2.html#distort"><H3>DISTORT</H3></A>
+IBIS files with distortions to
+be applied after map projection;
+use format (dis1,dis2,,,); dis1
+can be output from previous call
+of GTWARPXD (see help 2)
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtwarpxd_level2.html#dcols"><H3>DCOLS</H3></A>
+Columns in IBIS files with the
+distortion (newl,news,oldl,olds)
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtwarpxd_level2.html#gridout"><H3>GRIDOUT</H3></A>
+save the composed grid and other
+variables in 3 files with this 
+root
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtwarpxd_level2.html#auxin"><H3>AUXIN</H3></A>
+additional files or spectral
+bands to apply same distortion
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtwarpxd_level2.html#auxout"><H3>AUXOUT</H3></A>
+output files for auxin files
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtwarpxd.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtwarpxd.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

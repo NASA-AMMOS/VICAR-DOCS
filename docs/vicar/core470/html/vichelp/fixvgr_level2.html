@@ -1,0 +1,175 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for FIXVGR</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr.html">FIXVGR</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+STRING--REQUIRED
+Specifies the input image.  The image must have been radiometrically
+corrected by "ficor77" and be in 16-bit integer (halfword) data format.
+It may be any <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#size">size</A> (e.g. 800x800 geometrically uncorrected,
+1000x1000 geometrically corrected, map projected) as long as it is in
+the same radiometric scale as the "ficor77" output.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+STRING--REQUIRED
+Specifies the output image.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="size"><H3>SIZE</H3></A><pre>
+4 INTEGERS--OPTIONAL
+	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#size">SIZE</A>=(<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#ns">ns</A>)
+Specifies the input image area to be processed by starting line, starting
+sample, number of lines, and number of samples.  The output image will
+be <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#nl">nl</A> x <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#ns">ns</A> samples in area.
+If defaulted, the entire image is processed.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sl"><H3>SL</H3></A><pre>
+INTEGER--OPTIONAL
+The Starting Line in the input picture to be used for the output 
+picture.  The default is <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#sl">SL</A>=1.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ss"><H3>SS</H3></A><pre>
+INTEGER--OPTIONAL
+The Starting Sample in the input picture to be used for the output
+picture.  The default is <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#ss">SS</A>=1.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nl"><H3>NL</H3></A><pre>
+INTEGER--OPTIONAL
+The Number of Lines in the input picture to be processed to the
+output picture.  If defaulted, all image lines are processed.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ns"><H3>NS</H3></A><pre>
+INTEGER--OPTIONAL
+The Number of Samples in the input picture to be processed to the
+output picture.  If defaulted, <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#ns">NS</A> is the entire width of the input image.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="planet"><H3>PLANET</H3></A><pre>
+KEYWORD--OPTIONAL
+Specifies the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#planet">planet</A>-of-encounter.  Valid values are Jupiter, Saturn, Uranus,
+or Neptune.
+
+For Voyager 1, the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#planet">planet</A>-of-encounter is always set to Jupiter, and this
+keyword is ignored (only Jupiter scale factors are available for VGR-1).
+
+If defaulted for Voyager 2, the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#planet">planet</A>-of-encounter is determined by
+searching the frame label for a valid PICNO, Spacecraft-Event-Time (SCET)
+or Earth-Received-Time (ERT), in that order.  If the fifth character of the
+PICNO is a 'J','S','U', or 'N', this is accepted as a valid <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#planet">planet</A> ID.
+Otherwise, if the SCET or ERT year is greater than 74, the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#planet">planet</A> is determined
+as follows:
+
+	ERT YEAR	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#planet">PLANET</A>	   VGR-1 Encounter   VGR-2 Encounter
+	--------	------	   ---------------   ---------------
+	less than 80	Jupiter	     Mar  5 79		Jul  9 79
+	80 to 84	Saturn	     Nov 12 80		Aug 25 81
+	85 to 87	Uranus				Jan 24 86
+	88 and beyond	Neptune				Aug 24 89
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="camera"><H3>CAMERA</H3></A><pre>
+INTEGER--OPTIONAL
+  Ex: <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#camera">CAMERA</A>=4
+Specifies the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#camera">camera</A> ID (serial number) of the input image (PIC).  This
+overrides the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#camera">camera</A> ID extracted from the image's picture label.  The
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#camera">camera</A> serial numbers of the Voyager spacecraft are:
+	4 = VGR-2 WA		6 = VGR-1 WA
+	5 = VGR-2 NA		7 = VGR-1 NA
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="filter"><H3>FILTER</H3></A><pre>
+INTEGER--OPTIONAL
+	Ex: <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#filter">FILTER</A>=4
+Specifies the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#camera">camera</A> <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#filter">filter</A> position for the input image.  The filters are
+mounted on an 8-position <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#filter">filter</A> wheel as follows:
+
+	#  Narrow-Angle   Wide-Angle
+	-  ------------   ----------
+	0  Clear	  Methane (J-S-T)
+	1  Violet	  Blue	  
+	2  Blue		  Clear
+	3  Orange	  Violet
+	4  Clear	  Na-D
+	5  Green	  Green
+	6  Green	  Methane (U)
+	7  Ultraviolet	  Orange
+
+This parameter overrides the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#filter">filter</A> position extracted from the label of
+the input image.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="noneg"><H3>NONEG</H3></A><pre>
+KEYWORD--OPTIONAL
+Valid: '<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#noneg">NONEG</A>
+Specifies that all negative DNs will be set to zero.  The default is to output
+rescaled negative numbers.  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#noneg">NONEG</A> is a relic of the IBM days when "geoma" 
+would die by ingesting negative DN values.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nocorrec"><H3>NOCORREC</H3></A><pre>
+KEYWORD--OPTIONAL
+Valid: '<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#nocorrec">NOCORREC</A>
+Specifies that no scale correction is to be done.  If both 'NOCORRECT and
+'<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#noneg">NONEG</A> are specified, the output image is the same as the input image except
+that all negative DNs have been set to zero.  If 'NOCORRECT is specified but
+'<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#noneg">NONEG</A> is not specified, the output image is an exact copy of the input
+image.  In practice, the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#noneg">NONEG</A> and NOCORRECT keywords are no longer used.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="scf"><H3>SCF</H3></A><pre>
+STRING--OPTIONAL
+	Ex:  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#scf">SCF</A>="/project/test_work/testdata/mipl/vgr/vgrscf.dat"
+Specifies the Scale Correction File, as generated by program "ficorgen".
+Note that since this file is rarely updated, the default usually points to
+the most recent file and this parameter is normally not specified.
+
+Note: The default location for the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#scf">SCF</A> points to a location at the MIPS
+facility.  When running FIXVGR at another facility, please copy the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fixvgr_level2.html#scf">SCF</A> and
+point to the new location.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

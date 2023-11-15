@@ -1,0 +1,73 @@
+<HTML>
+<HEAD><title>HTML Help for SORT</title></HEAD>
+<BODY>
+<H1>Help for SORT</H1>
+<pre>
+PURPOSE
+
+	SORT performs a multiple column sort on an IBIS interface file. The
+program starts with the column defined as primary and performs an incore sort.
+Subsequent columns are sorted only within limits established by equal values
+in previously sorted columns. The program incorporates two temporary fields as
+sorting and indexing columns. The index column can be retained for later use
+if specified.
+
+TAE COMMAND LINE FORMAT
+
+	sort <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/sort_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/sort_level2.html#sortcol">SORTCOL</A>=(B,C,D,E,...F) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/sort_level2.html#indexcol">INDEXCOL</A>=G
+	sort <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/sort_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/sort_level2.html#sortcol">SORTCOL</A>=(B,C,D,E,...F) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/sort_level2.html#descend">DESCEND</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/sort_level2.html#indexcol">INDEXCOL</A>=G
+
+	<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/sort_level2.html#inp">INP</A> is a random access file which is read from or written to depending
+on the parameters. <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/sort_level2.html#sortcol">SORTCOL</A> specifies the columns to be sorted in the order in
+which the sort is to occur. <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/sort_level2.html#descend">DESCEND</A> is a keyword whose presence indicates that
+all the columns are to be sorted in descending order. <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/sort_level2.html#indexcol">INDEXCOL</A> is an integer
+which designates the column to recieve the index numbers assigned to each
+unique combination of letters or numbers in the sorted columns created by the
+sorting process. The columns can be numdric or alphabetic, or a mixture of
+the two in the case of multiple column sorts.
+
+<A NAME="examples">EXAMPLE</A>
+
+	sort <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/sort_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/sort_level2.html#sortcol">SORTCOL</A>=(1,2) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/sort_level2.html#indexcol">INDEXCOL</A>=3
+
+	In this example an 8 character name is stored in the first 2 columns.
+The file is sorted into alphabetic order. The index stored in column 3 can be
+used in place of the names for other operations such as aggregation.
+
+OPERATION
+
+	SORT uses two temporary arrays. The first holds the SORT data and the
+second defines the boundary limits. Limits are defined using an index number
+which indicates the portion of the file to be sorted. The boundary index is
+initialized to 1 which indicates that the entire column is to be sorted. As
+subsequent sorts are made on the file the index number is broken into groupings
+of the same number which indicate the sort limits. The holding array is sorted
+each time the index changes to achieve a multiple column sort.
+
+	At the completion of the sort process, the reordering is in the form
+of pointers. The pointers are used to move all the columns of the file one at
+a time. The limit array serves as an index.
+
+WRITTEN BY		A. L. Zobrist		15 Dec 1976
+<A NAME="CogProg">COGNIZANT PROGRAMMER	K. F. Evans</A>
+DOCUMENTED BY		R. Wayne Bannister
+REVISION HISTORY
+  1995-03-06 C. Randy Schenk (CRI) - Ported to UNIX
+  2000-09-04 A. Zobrist - rewritten in C
+  2008-01-02 WLB - switched to USES_ANSI_C AND LIB_CARTO; misc cleanup  
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/sort_level2.html#inp"><H3>INP</H3></A>
+File to be sorted.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/sort_level2.html#sortcol"><H3>SORTCOL</H3></A>
+Columns to be sorted in order.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/sort_level2.html#indexcol"><H3>INDEXCOL</H3></A>
+Column to get index numbers.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/sort_level2.html#descend"><H3>DESCEND</H3></A>
+Descending order keyword.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/sort.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/sort.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

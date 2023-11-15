@@ -1,0 +1,225 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for REPAIR</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair.html">REPAIR</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+ input data set
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+ output data set
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="size"><H3>SIZE</H3></A><pre>
+ image <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#size">size</A> (<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#ns">NS</A>)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sl"><H3>SL</H3></A><pre>
+ The first line of the input image to be output.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ss"><H3>SS</H3></A><pre>
+ The first pixel of each input line to be output.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nl"><H3>NL</H3></A><pre>
+ The number of lines to be output.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ns"><H3>NS</H3></A><pre>
+ The number of pixels to be output for each line.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mode"><H3>MODE</H3></A><pre>
+      The program REPAIR operates in three different modes: <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#corr">CORR</A> (the default),
+ MV, and ALL. 
+      If ALL is specified, no statistical checking is performed, and all 
+ regions specified by the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#area">AREA</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#lineset">LINESET</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#badline">BADLINE</A> and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#modulo">MODULO</A> parameters are 
+ replaced by interpolating the nearest two lines.
+      In the CORRelation <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#mode">mode</A>, a line is considered to be a good line if the
+ correlation coefficient between it and the last good line is greater than the
+ threshold value specified by <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#corr">CORR</A>. The line is also considered good if its
+ correlation with the average of the last good line and the next line is above
+ the threshold.
+      If MV is specified, two tests are made, in addition to the correlation
+ test. The difference in means must be less than the value specified by <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#mean">MEAN</A>,
+ and the difference in variances must be less than the value specified by
+ <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#variance">VARIANCE</A>. If a line passes all three tests, it is considered good.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="area"><H3>AREA</H3></A><pre>
+      The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#area">AREA</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#lineset">LINESET</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#badline">BADLINE</A> and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#modulo">MODULO</A> parameters are used to limit the 
+ portion of the image in which lines may be replaced. <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#badline">BADLINE</A> is used to 
+ identify individual lines to be checked. <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#lineset">LINESET</A> is used to specify sets of 
+ lines, in the format (SL1,NL1,SL2,NL2,...), when the general region of concern
+ is known, but not the exact location. The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#modulo">MODULO</A> parameter is used to test
+ and/or replace bad lines that may occur in a periodic fashion.  For example,
+ <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#modulo">MODULO</A>=(4,20) could be used to test/replace every 20th line, starting with
+ Line 4. Unlike the other parameters, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#modulo">MODULO</A> acts as an additional restriction.
+ If more than one of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#area">AREA</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#lineset">LINESET</A>, and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#badline">BADLINE</A> are specified, then a line
+ is tested/replaced if it satisfies any of the parameters, but if <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#modulo">MODULO</A> and
+ another parameter is specified, then the line must meet both criteria to be
+ tested/replaced. The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#area">AREA</A> parameter allows the user to select a portion of 
+ the lines to be examined. The values for <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#area">AREA</A> must be specified in sets of 
+ four, (SL1,SS1,NL1,NS1,SL2,SS2,NL2,NS2,...). 
+      If the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#mode">MODE</A> is ALL, then all pixels in the regions specified are replaced 
+ by interpolation of the adjacent two lines. 
+      If <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#mode">MODE</A> is <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#corr">CORR</A> or MV, these values describe the region from which 
+ statistics are gathered. If a line is found to be  bad, the entire line is 
+ replaced. 
+      <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#area">AREA</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#lineset">LINESET</A>, and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#badline">BADLINE</A> accept up to 100 regions, and all three may
+ be used in the same task. However, if two of the regions contain a common
+ line, then the regions are combined (and perhaps enlarged) into the 
+ rectangular region that contains both of them.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="lineset"><H3>LINESET</H3></A><pre>
+      The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#area">AREA</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#lineset">LINESET</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#badline">BADLINE</A> and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#modulo">MODULO</A> parameters are used to limit the 
+ portion of the image in which lines may be replaced. <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#badline">BADLINE</A> is used to 
+ identify individual lines to be checked. <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#lineset">LINESET</A> is used to specify sets of 
+ lines, in the format (SL1,NL1,SL2,NL2,...), when the general region of concern
+ is known, but not the exact location. The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#modulo">MODULO</A> parameter is used to test
+ and/or replace bad lines that may occur in a periodic fashion.  For example,
+ <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#modulo">MODULO</A>=(4,20) could be used to test/replace every 20th line, starting with
+ Line 4. Unlike the other parameters, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#modulo">MODULO</A> acts as an additional restriction.
+ If more than one of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#area">AREA</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#lineset">LINESET</A>, and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#badline">BADLINE</A> are specified, then a line
+ is tested/replaced if it satisfies any of the parameters, but if <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#modulo">MODULO</A> and
+ another parameter is specified, then the line must meet both criteria to be
+ tested/replaced. The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#area">AREA</A> parameter allows the user to select a portion of 
+ the lines to be examined. The values for <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#area">AREA</A> must be specified in sets of 
+ four, (SL1,SS1,NL1,NS1,SL2,SS2,NL2,NS2,...). 
+      If the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#mode">MODE</A> is ALL, then all pixels in the regions specified are replaced 
+ by interpolation of the adjacent two lines. 
+      If <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#mode">MODE</A> is <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#corr">CORR</A> or MV, these values describe the region from which 
+ statistics are gathered. If a line is found to be  bad, the entire line is 
+ replaced. 
+      <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#area">AREA</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#lineset">LINESET</A>, and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#badline">BADLINE</A> accept up to 100 regions, and all three may
+ be used in the same task. However, if two of the regions contain a common
+ line, then the regions are combined (and perhaps enlarged) into the 
+ rectangular region that contains both of them.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="badline"><H3>BADLINE</H3></A><pre>
+      The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#area">AREA</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#lineset">LINESET</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#badline">BADLINE</A> and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#modulo">MODULO</A> parameters are used to limit the 
+ portion of the image in which lines may be replaced. <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#badline">BADLINE</A> is used to 
+ identify individual lines to be checked. <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#lineset">LINESET</A> is used to specify sets of 
+ lines, in the format (SL1,NL1,SL2,NL2,...), when the general region of concern
+ is known, but not the exact location. The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#modulo">MODULO</A> parameter is used to test
+ and/or replace bad lines that may occur in a periodic fashion.  For example,
+ <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#modulo">MODULO</A>=(4,20) could be used to test/replace every 20th line, starting with
+ Line 4. Unlike the other parameters, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#modulo">MODULO</A> acts as an additional restriction.
+ If more than one of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#area">AREA</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#lineset">LINESET</A>, and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#badline">BADLINE</A> are specified, then a line
+ is tested/replaced if it satisfies any of the parameters, but if <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#modulo">MODULO</A> and
+ another parameter is specified, then the line must meet both criteria to be
+ tested/replaced. The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#area">AREA</A> parameter allows the user to select a portion of 
+ the lines to be examined. The values for <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#area">AREA</A> must be specified in sets of 
+ four, (SL1,SS1,NL1,NS1,SL2,SS2,NL2,NS2,...). 
+      If the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#mode">MODE</A> is ALL, then all pixels in the regions specified are replaced 
+ by interpolation of the adjacent two lines. 
+      If <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#mode">MODE</A> is <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#corr">CORR</A> or MV, these values describe the region from which 
+ statistics are gathered. If a line is found to be  bad, the entire line is 
+ replaced. 
+      <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#area">AREA</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#lineset">LINESET</A>, and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#badline">BADLINE</A> accept up to 100 regions, and all three may
+ be used in the same task. However, if two of the regions contain a common
+ line, then the regions are combined (and perhaps enlarged) into the 
+ rectangular region that contains both of them.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="modulo"><H3>MODULO</H3></A><pre>
+      The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#area">AREA</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#lineset">LINESET</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#badline">BADLINE</A> and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#modulo">MODULO</A> parameters are used to limit the 
+ portion of the image in which lines may be replaced. <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#badline">BADLINE</A> is used to 
+ identify individual lines to be checked. <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#lineset">LINESET</A> is used to specify sets of 
+ lines, in the format (SL1,NL1,SL2,NL2,...), when the general region of concern
+ is known, but not the exact location. The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#modulo">MODULO</A> parameter is used to test
+ and/or replace bad lines that may occur in a periodic fashion.  For example,
+ <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#modulo">MODULO</A>=(4,20) could be used to test/replace every 20th line, starting with
+ Line 4. Unlike the other parameters, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#modulo">MODULO</A> acts as an additional restriction.
+ If more than one of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#area">AREA</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#lineset">LINESET</A>, and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#badline">BADLINE</A> are specified, then a line
+ is tested/replaced if it satisfies any of the parameters, but if <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#modulo">MODULO</A> and
+ another parameter is specified, then the line must meet both criteria to be
+ tested/replaced. The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#area">AREA</A> parameter allows the user to select a portion of 
+ the lines to be examined. The values for <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#area">AREA</A> must be specified in sets of 
+ four, (SL1,SS1,NL1,NS1,SL2,SS2,NL2,NS2,...). 
+      If the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#mode">MODE</A> is ALL, then all pixels in the regions specified are replaced 
+ by interpolation of the adjacent two lines. 
+      If <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#mode">MODE</A> is <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#corr">CORR</A> or MV, these values describe the region from which 
+ statistics are gathered. If a line is found to be  bad, the entire line is 
+ replaced. 
+      <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#area">AREA</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#lineset">LINESET</A>, and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#badline">BADLINE</A> accept up to 100 regions, and all three may
+ be used in the same task. However, if two of the regions contain a common
+ line, then the regions are combined (and perhaps enlarged) into the 
+ rectangular region that contains both of them.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="corr"><H3>CORR</H3></A><pre>
+      The parameter <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#corr">CORR</A> sets the minimum value of the correlation coefficient
+ between lines for a line to be considered good. Correlation coefficients may
+ range from 1.0 (two lines that match perfectly) to -1.0 (one line perfectly
+ matches the complement of the other).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mean"><H3>MEAN</H3></A><pre>
+       The value of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#mean">MEAN</A> is the maximum allowed difference between the means
+ of two lines for a line to be considered good.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="variance"><H3>VARIANCE</H3></A><pre>
+       The value of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#variance">VARIANCE</A> is the maximum allowed difference between the 
+ variances of two lines for a line to be considered good. The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#variance">variance</A> is the
+ square of the standard deviation.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="zok"><H3>ZOK</H3></A><pre>
+       The keyword <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/repair_level2.html#zok">ZOK</A> is used when lines that are entirely 0 DN may be
+present in the picture, and the user does not want them replaced. 
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

@@ -1,0 +1,223 @@
+<HTML>
+<HEAD><title>HTML Help for POLARECT</title></HEAD>
+<BODY>
+<H1>Help for POLARECT</H1>
+<pre>
+PURPOSE
+     POLARECT is a VICAR applications program which performs 
+     a  rectangular-to-polar  coordinate transformation  (or 
+     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#inverse">inverse</A>)  on  the input image with respect to  a  given 
+     origin.   The  purpose of this program is to  geometri-
+     cally transform an image to polar coordinates,  where R 
+     and    are  the orthogonal axes rather than  x  and  y, 
+     thereby allowing radial and circular characteristics in 
+     the  image  to  be subjected to  existing  enhancement, 
+     analysis  and transformation routines in a polar  coor-
+     dinate sense.   After polar processing,  the  resultant 
+     image may then be transformed <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#back">back</A> to rectangular coor-
+     dinates. The program will operate on BYTE and HALF images,
+     type is determined from the VICAR label.
+TAE COMMAND LINE FORMAT
+
+     polarect <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#out">OUT</A>=B <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#size">SIZE</A>=(SL,SS,NL,NS) PARAMS
+
+          where
+
+     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#inp">INP</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#out">OUT</A>       are the input and output data sets
+
+     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#size">SIZE</A>             is the standard VICAR size field.   SL 
+                      and  SS refer to starting offsets with 
+                      respect to the input image.  NL and NS 
+                      refer  to the desired  output  picture 
+                      <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#size">size</A>.
+
+     PARAMS           is the VICAR parameter field.
+OPERATION
+  
+     POLARECT  transforms the input image from the  standard 
+     rectangular  coordinate  system to a  polar  coordinate 
+     system  based on the orthogonal axes R and THETA. These 
+     orthogonal axes are represented in the polar image by R 
+     in the sample direction, and THETA in the direction  of 
+     increasing  line  count as shown  in  Figure  1.   This 
+     convention  was  used  in order to permit  the  use  an 
+     angular  resolution as small as desired,  even though a 
+     large  angular coverage may be desired,  the number  of 
+     lines in the polar image becomes large. In general, the 
+     radial  coverage  represented by the  sample  direction 
+     remains relatively small,  thereby adhering to physical 
+     record length constraints.
+            FIGURE 1.  POLARECT PARAMETER CONVENTIONS
+                                                          
+               R=R1          R---&gt         R-R2           
+              _________________________________           
+         Th=A1|                               |           
+              |                               |           
+              |                               |      
+          Th  |                               |      
+           |  |                               |           
+           |  |                               |           
+           |  |                               |           
+              |                               |      
+              |                               |      
+              |                               |           
+              |                               |           
+         Th=A2|_______________________________|           
+                                              (nl,ns)
+                    POLAR COORDINATE IMAGE                 
+     The variables defined by the parameters <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#rmin">RMIN</A> (R1), <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#rmax">RMAX</A> 
+     (R2), and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#range">RANGE</A> (A1 and A2) are also shown in Figure 1.
+
+     The  rectangular image coordinate system was  based  on 
+     the  standard  convention of the +X and  +Y  directions 
+     corresponding  to  increasing sample  and  line  counts 
+     respectively. For this reason, the (Th=0)  direction is 
+     defined  as the +X direction,  which is directed toward 
+     the  right  side  of  the  rectangular   image.   These 
+     conventions are shown in Figure 2. Also shown in Figure 
+     2  are  pictorial  rtepresentations for  the  parameter 
+     variables.
+
+         FIGURE 2.  POLARECT PARAMETER CONVENTIONS   
+                                                          
+              (1,1)          X---&gt                        
+              _________________________________           
+              |                      Th=A1    |           
+              |                       .       |           
+              |                         .     |      
+           Y  |                .          .   |      
+           |  |             R=r1 .         .  |     o     
+           |  |       ___._______._________._&gt| Th=0. 
+           |  | (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#xcen">xcen</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#ycen">ycen</A>)      .     R=r2.  |           
+              |                .          .   |      
+              |                         .     |      
+              |                       .       |           
+              |                      Th=A2    |           
+              |_______________________________|           
+                                              (nl,ns)
+                RECTANGULAR COORDINATE IMAGE           
+     Once  the  parameters have  been  determined,  POLARECT 
+     performs  the  geometric  transformation  in  a  manner 
+     similar to GEOMA,  i.e.,  every output pixel is  mapped 
+     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#back">back</A>  to its location in the input picture,  and either 
+     four-point   bilinear  interpolation  or  the   nearest 
+     neighbor method is used to determine the pixel DN.  The 
+     mapping transformations are as follows:
+
+     FORWARD MODE: For known R and THETA in the output image,
+
+                     X (INPUT)  =  R cos(Theta) + <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#xcen">XCEN</A>
+                     Y (INPUT)  =  R sin(Theta) + <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#ycen">YCEN</A>
+
+     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#inverse">INVERSE</A> MODE: For known X and Y in the output image,
+                                      2          2
+              R(INPUT) = sqrt((X-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#xcen">XCEN</A>) + (Y-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#ycen">YCEN</A>) )
+              
+                                -1
+              THETA(OUTPUT)= tan  ((Y-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#ycen">YCEN</A>)/(X-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#xcen">XCEN</A>))
+
+     Dynamic  allocation is used for the mapping  operation, 
+     with  as  much of the input picture being  loaded  into 
+     core as the partition allows.   For this reason,  it is 
+     recommended that for optimum time utilization, the user 
+     use POLARECT in the largest region possible when trans-
+     forming larger pictures (NL&NX&gt1000).
+     All  parameters in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#inverse">INVERSE</A> mode are expressible  in 
+     terms of the forward mode parameters with the exception 
+     of  the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#auto">AUTO</A> parameter which is NOT applicable  to  the 
+     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#inverse">INVERSE</A>  mode.   All  GENERAL parameters apply  to  the 
+     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#inverse">INVERSE</A> mode and unnecessary parameters are ignored.
+RESTRICTIONS
+
+     There  are  no  restrictions on image  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#size">size</A>  or  record 
+     lengths,  however,  the  user is advised of  the  rapid 
+     execution  time  increase as input and output  pictures 
+     sizes increase.
+
+TIMING
+
+     POLARECT execution time (on IBM) is approximately:
+
+     a) 16 minutes for 1350 line by 1250 sample input image,
+
+     b) 2 minutes for a 400 line by 400 sample input image,
+
+     c) 1 minute for a 325 line by 325 sample input image.
+<A NAME="examples">EXAMPLES</A>
+A.   This  example represents the simplest form of  POLARECT 
+     usage.   The  user  specifies the origin of  the  polar 
+     coordinate system,  and allows the program to calculate 
+     scaling  factors for the polar  coordinate  image.  The 
+     output  picture <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#size">size</A> is defaulted to that of the input, 
+     so that 1250 lines = 360 ,  and 1250 samples = <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#rmax">RMAX</A>  of 
+     input   picture   (881.25   in   this   case).    After 
+     transforming   to   polar   coordinates,    the   VICAR 
+     applications  programs  FILTERAA and PIXH are  applied, 
+     and  the  resulting image is transformed  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#back">back</A>  to  the 
+     rectangular coordinate format. See Figure 3A.
+
+          COPY IN A <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#size">SIZE</A>=(1,1,1250,1250)
+          polarect <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#out">OUT</A>=B '<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#auto">AUTO</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#xcen">XCEN</A>=625. <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#ycen">YCEN</A>=625.
+          FILTER B C FILTWTS
+          PISH <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#inp">INP</A>=(C,B) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#out">OUT</A>=A PIXHPAR
+          polarect A B '<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#inverse">INVERSE</A>
+     Note  that defaulting picture <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#size">size</A> may cause a loss  of 
+     detail  because  there is usually insufficient  angular 
+     resolution in the defaulted number of lines. This tends 
+     to  cause a wiggling of straight lines at large  radius 
+     when  inversely transformed.  For this  reason,  it  is 
+     recommended  that the user make the number of lines  of 
+     the polar coordinate image at least 3 times the maximum 
+     radius <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#rmax">RMAX</A>.
+
+B.   This  example  represents  the most  complex  usage  of 
+     parameters necessary for POLARECT.  The user desires an 
+     annular ring with center at (X,Y) = (-1000,500),  width 
+     500 pixels,  and minimum radius of 1250. (Corresponding 
+     to the circle passing through pixel (X,Y) = (250.,500.) 
+     to  be transformed to polar coordinates with an angular 
+     resolution of 0.01 degree per line (output).
+          COPY TAPE A <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#size">SIZE</A>=(1,1,1000,1000)
+          polarect A B NL=300 NS=500 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#xcen">XCEN</A>=-1000. <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#ycen">YCEN</A>=500.                     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#range">RANGE</A>=(-15.,+15.) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#rmin">RMIN</A>=1250. <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#rmax">RMAX</A>=1750.                     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#reso">RESO</A>=(0.01) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#rscale">RSCALE</A>=1.0
+          polarect B A NL=1000 '<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#inverse">INVERSE</A>
+
+     Written by:  W. D. Benton, 23 August 1977
+<A NAME="CogProg">     Cognizant Programmer:  B. Gokhman</A>
+     Revision:  C.R. Schenk 1-July-1994
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#inp"><H3>INP</H3></A>
+Input image
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#out"><H3>OUT</H3></A>
+Output image
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#size"><H3>SIZE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#size">Size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#inverse"><H3>INVERSE</H3></A>
+Polar to rectangular
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#back"><H3>BACK</H3></A>
+Background DN for output.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#nointerp"><H3>NOINTERP</H3></A>
+No bilinear interpolation
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#xcen"><H3>XCEN</H3></A>
+X-coord. for origin of polar sys
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#ycen"><H3>YCEN</H3></A>
+Y-coord. for origin of polar sys
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#range"><H3>RANGE</H3></A>
+Angular limits of the sector
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#rmin"><H3>RMIN</H3></A>
+Min radius of the sector
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#rmax"><H3>RMAX</H3></A>
+Max radius of the sector
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#reso"><H3>RESO</H3></A>
+Angular resolution
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#rscale"><H3>RSCALE</H3></A>
+Radial scaling factor
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#nolabel"><H3>NOLABEL</H3></A>
+Label info not used for default par
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#auto"><H3>AUTO</H3></A>
+Fits input sector to output <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect_level2.html#size">size</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/polarect.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

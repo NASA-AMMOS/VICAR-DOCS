@@ -1,0 +1,88 @@
+<HTML>
+<HEAD><title>HTML Help for GRIDCK</title></HEAD>
+<BODY>
+<H1>Help for GRIDCK</H1>
+<pre>
+PURPOSE
+
+     GRIDCK checks that a grid (in an IBIS file) is rectangular
+     (with allowance for slight irregularity) and also can return
+     the nah, nav of the grid as TAE TCL variables.
+     
+     If the points do not form a grid, the nah and nav return as
+     zero, so this can be used as a grid check for TAE TCL logic.
+     
+     
+
+TAE COMMAND LINE FORMAT
+
+     gridck <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gridck_level2.html#inp">INP</A>=A
+     gridck <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gridck_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gridck_level2.html#valnah">valnah</A>=nah <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gridck_level2.html#valnav">valnav</A>=nav
+     
+     where
+
+     A                   is the input dataset (IBIS file).
+     nah                 is a TCL integer variable to get nah.
+     nav                 is a TCL integer variable to get nav.
+
+OPERATION
+
+     The selected columns of the grid are read into an array.
+     Points are scanned, with each pair predicting where the next
+     will lie.  If the actual next point is roughly where predicted,
+     the scanning continues.  When a point does not satisfy the
+     tolerance, nah is recorded and a new line begun.  All subsequent
+     lines are done in the same fashion, except that failure to have
+     exactly nah+1 points causes the grid to be rejected.
+     
+     Then nav is calculated by (total points)/(nah+1).  Then all
+     of the vertical columns of points are checked for both 
+     tolerance and point count as were the horizontal rows.
+     
+     Usually, there are four columns in a warp grid (newline, newsamp,
+     oldline, oldsamp).  Only two are used at a time in this program,
+     for example, (oldline,oldsamp).
+
+
+TIMING
+
+     Dominated by the time to read the array in.
+     
+RESTRICTIONS
+
+     The input array is mallocked.  Compare the size of the input
+     IBIS file with system parameters.  
+
+WRITTEN BY:            A. L. Zobrist, 23 March 2003
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  A. L. Zobrist</A>
+
+REVISIONS:
+  2008-01-02 WLB Switched to USES_ANSI_C AND LIB_CARTO; misc cleanup  
+  2015-10-23 WLB Migrated to MIPL
+  2016-08-12 WLB Fixed 64-bit bug
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gridck_level2.html#inp"><H3>INP</H3></A>
+Input IBIS tabular file;
+Contains a grid
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gridck_level2.html#cols"><H3>COLS</H3></A>
+The columns containing the
+grid in order (line,samp)
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gridck_level2.html#gridtol"><H3>GRIDTOL</H3></A>
+Use to make grid-finding more
+or less tolerant
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gridck_level2.html#valnah"><H3>VALNAH</H3></A>
+TAE TCL name without &, gets
+the nah value of the grid in
+integer format, 0 if not a grid
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gridck_level2.html#valnav"><H3>VALNAV</H3></A>
+TAE TCL name without &, gets
+the nav value of the grid in
+integer format, 0 if not a grid
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gridck.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gridck.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

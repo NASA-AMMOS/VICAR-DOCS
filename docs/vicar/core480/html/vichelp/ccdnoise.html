@@ -1,0 +1,293 @@
+<HTML>
+<HEAD><title>HTML Help for CCDNOISE</title></HEAD>
+<BODY>
+<H1>Help for CCDNOISE</H1>
+<pre>
+PURPOSE:
+
+CCDNOISE determines the system gain constant (in electrons per DN) and
+read-noise floor (DN) for a CCD camera system.  The program is one of
+a series of programs designed to support radiometric calibration of flight
+imaging systems.
+
+EXECUTION:
+
+	      CCDNOISE <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#inp">INP</A>=LTF <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#out">OUT</A>=MARK PARMS
+
+The input is a Light Transfer File (LTF) containing statistical data for
+specified areas in the image for each exposure of a light transfer
+sequence.  The LTF must have been previously initialized via LTGEN and
+loaded with data via MOMGEN.
+
+The output is an optional MARK-format tiepoint data set containing the
+centers of all rejected areas (see VICAR program MARK).
+
+OPERATION:
+
+CCDNOISE performs the following steps:
+
+  1) Read data from the Light Transfer File.
+  2) Compute system gain constant and read noise for each area.
+  3) Compute mean value for system gain constant and read noise
+     and flag all areas deviating by more than 2 sigma from the mean.
+  4) Re-compute the mean value for system gain constant and read
+     noise, ignoring all flagged values as specified by the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#reject">REJECT</A>
+     parameter.
+
+The mean signal for a frame is computed by subtracting the dark current
+from the frame and computing the mean of the result.  If extended
+exposure mode frames are present in the light transfer sequence (possible
+for Galileo data), then the extended exposure dark current is subtracted 
+from these frames.
+
+If extended exposure mode frames exist, the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#extexpo">EXTEXPO</A> parameter must normally
+be specified to indicate the exposure level at which the extended exposures
+begin.
+
+   Example:  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#extexpo">EXTEXPO</A>=7 specifies that the 7th exposure level (above the
+	     dark current) begins the extended exposures.
+
+However, light-transfer sequences consisting entirely of extend-exposure
+frames should be input as if they were normal exposures, i.e. the extended-
+exposure dark-current should be inserted in place of the normal dark-current
+and the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#extexpo">EXTEXPO</A> parameter should not be used.
+
+CCDNOISE prints <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#out">out</A> the following:
+
+  1) System gain constant and read noise for each area specified.
+  2) Summary of all areas flagged for bad system gain or read noise.
+  3) If <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#dbug">DBUG</A> is specified, a summary of the mean signal and noise (DN)
+     at each exposure for each area specified.
+
+If an output file is specified, then the centers of all flagged values
+as specified by the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#reject">REJECT</A> parameter are stored in a MARK-format data
+set.
+
+If a <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">PLOT</A> file is specified, a signal vs. noise plot is generated for
+each of the five reticles of the frame.  The reticles are (1) the upper-
+left corner, (2) upper-right corner, (3) lower-left corner, (4) lower-right
+corner, and (5) center of the frame.  These reticles divide the frame into
+five regions.  Signal and noise data for the reticles are computed by 
+averaging the good areas, where each area is assigned to the region of
+the nearest reticle.  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A> file should be printed using the NOFEED
+option (see example below).
+
+A <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#table">table</A> of the values used to create each <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A> is also printed <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#out">out</A>.  This
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#table">table</A> includes the ratio of measured vs. computed noise at each exposure.
+The noise (DN) is computed as follows:
+
+	NOISE = SQRT(S/K + RDN**2)
+
+where S = signal (DN)
+      K = system gain constant (electrons per DN)
+      RDN = read noise (DN)
+
+This ratio provides a useful criteria for evaluating the quality of the
+input data (ratio should be near 1 for all exposures). 
+
+If a <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#table">TABLE</A> file is provided, the above plots will be output as columnar
+data in a tab-delimitted ASCII file.  The columns are:
+
+  exposure time in msec
+  signal reticle 1, 
+  noise ret. 1, 
+  computed noise ret. 1,
+  ....,  
+  signal ret. 5, 
+  noise ret. 5,
+  computed noise ret. 5
+
+The rows are for each exposure level.
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">PLOT</A> OUTPUTS
+
+    The other type of output come from the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">PLOT</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plotfmt">PLOTFMT</A> parameters.
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">PLOT</A> allows the user to display data from 5 areas on the CCD on an x,y 
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A> using the gnuplot package after exiting the program. PLOT produces
+a file of gnuplot commands contained in a file having a .gpi file extension.
+Another file with an .asc extension is create containing columns of data
+that are displayed by the gpi file.
+
+   The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plotfmt">PLOTFMT</A> parameter allows the user to generate a postscript file of
+the output for use in documentation by choosing <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plotfmt">PLOTFMT</A>=EPS. The default 
+is to generate a gnuplot interactive display.
+
+
+  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">PLOT</A> NAMING CONVENTIONS
+
+  The user should enter only the parent file name without an extension
+  for the PLOTOUT parameter.  The program will supply the extensions.
+
+  For example, if the user has an input file of indata.dat and  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">PLOT</A>=outplot
+  then for the interactive <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A> the following files are produced:
+
+     outplot.gpi
+     indata.dat.asc
+
+  The first file is the gnuplot instruction file and the second is the
+  data file used by gnuplot.      
+
+  If the user wanted an encapsulate postscript file with <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plotfmt">PLOTFMT</A>=eps
+  then the following files are produced:
+
+     outplot.eps.gpi
+     indata.dat.asc
+
+  Remember entering the following command gives the eps file, outplot.eps
+
+  ush gnuplot outplot.eps.gpi
+
+  If you move the gpi file to another directory, you must also move the
+  input data file, indata.dat.asc to the same directory.
+
+  Note that the gpi file produced by this program has the name of the
+  input file embedded in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A> command inside the gpi file, e.g..
+
+  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A>  'indata.dat.asc' u  1: 9 t .......
+
+
+USING GNUPLOT
+
+
+  INTERACTIVE:
+
+    This program uses the gnuplot package for its plots. Gnuplot is a
+  separate package from Vicar and is not actually invoked inside this
+  program.  Instead this program creates a template of gnuplot commands
+  which are written <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#out">out</A> as a separate file. The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A> is then viewed after
+  exiting this program. The file has the extension .gpi. You view
+  the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A> by issuing the following command in the vicar shell.
+
+  ush gnuplot output.gpi
+
+  or external to vicar as
+
+  gnuplot output.gpi
+
+    After viewing the data, you close the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A> by clicking the mouse anywhere
+  except on the top bar of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A>. Clicking on the top bar allows you
+  to move the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A> to any convenient place on the terminal screen.  (While
+  the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A> is displayed you cannot enter any commands to the vicar shell).
+
+  The data to be plotted by gnuplot is read from a separate file, created
+  by this program, which contains columns of data in ascii text.
+  File naming conventions are discussed in the OUTPUT section, but in this
+  case that file extension will be .asc.
+
+  It is possible to keep the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A> alive for comparison purposes by issuing
+  the following command.
+
+  ush gnuplot --persist output.gpi
+
+  (You will be able to enter commamds to the vicar shell after clicking on
+  the mouse on the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A>).
+
+  Note: This program creates 5 output plots per run. You bring up each <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A>
+  panel sequentially. You close each <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A> by clicking the mouse on any 
+  portion of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A>.
+
+ 
+  HARDCOPY:
+
+  This program also allows you to create a hardcopy encapsulated postscript
+  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A> suitable for publications. This file can be viewed with ghostscript
+  or gimp. The encapsulated postscript file is not created by this program
+  by by the gnuplot program from a gpi file made especially for this purpose.
+  this file has the extension, eps.gpi. You create the hardcopy <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A> via 
+  the following command
+
+  ush gnuplot output.eps.gpi
+
+  This creates the eps file output.eps. You can view this file by
+
+  ush gimp output.eps
+
+
+    DEVELOPER Notes:
+   
+  1.  This program used to link to the XRT <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A> library -lxrt. Calls to
+  that library were mitigated through a Calcomp conversion library,
+  xrtps located in the p2 subroutine library. With the conversion to
+  gnuplot, neither of these packages are used.
+
+  2.  The original xrt graph package had the X-axis data plotted wrong.
+        The lowest X value was always 0. It gave a bend in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A>.
+        The lowest X should have always had a value ne 0
+
+<A NAME="examples">EXAMPLE:</A>
+
+   CCDNOISE LTF MRK <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">PLOT</A>=NOISE.DAT <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#table">TABLE</A>=TAB.DAT
+   MARK (PIC,MRK) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#out">OUT</A>			!Scribe boxes around bad centers
+   JDISP <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#out">OUT</A>				!Display the bad areas
+   DCL PRINT/NOFEED NOISE.DAT		!Print the noise <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A>
+
+ORIGINAL PROGRAMMER: Gary Yagi, circa 1982
+<A NAME="CogProg">COGNIZANT PROGRAMMER: Gary Yagi, April 88</A>
+
+REVISION HISTORY
+
+ 13 Jul 2013 R. J. Bambery  Adjusted eps format to more readable fonts
+ 08 Jul 2013 R. J. Bambery  Rename ascii output file 
+ 05 Jul 2013 R. J. Bambery  Fixed bug in scaling values for xrang yrang
+ 18 Feb 2013 R. J. Bambery  Fix <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A> labels, test script
+ 13 Feb 2013 R. J. Bambery  Documentation and test updates
+ 16 Nov 2012 R. J. Bambery  Linux 64-bit, Gnuplot
+ 22 Apr 97...T.Huang........Ported from VAX to Unix.
+ 14 Nov 94...C.C.Avis.......Added decent test file
+  6 Jun 94...C.C.Avis.......Added tabular output
+ 20 Apr 88...G.M.Yagi.......Fix bug in <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#extexpo">EXTEXPO</A>, LABPROC.
+  3 Mar 88...G.M.Yagi.......Change PDF to treat all <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#extexpo">EXTEXPO</A> call.
+ 01 Nov 87...G.M.Yagi.......Convert to new CPLT plotting routines.
+ 10 Dec 86...G.M.Yagi.......Changed <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A> to signal vs noise.
+ 20 JUL 86...G.M.YAGI.......Code and documentation clean-up.
+ 26 JAN 85...M.E.MORRILL....VERSION 2*A RELEASED.
+ 22 JAN 85...M.E.MORRILL....ADDED <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">PLOT</A> OUTPUT FOR RATIO SHOT/THEORY. 
+ 15 JAN 85...M.E.MORRILL....ADDED SECOND PASS TO <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#reject">REJECT</A> BAD AREAS
+  5 OCT 84...M.E.MORRILL....VICAR*2 CONVERSION.
+        82...G.M.YAGI.......INITIAL RELEASE.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#inp"><H3>INP</H3></A>
+ STRING COUNT=1
+ The Light Transfer File.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#out"><H3>OUT</H3></A>
+ STRING--OPTIONAL
+ Mark-format file
+ containing centers
+ of rejected areas.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot"><H3>PLOT</H3></A>
+ STRING--OPTIONAL
+ Output <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A> file.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plotfmt"><H3>PLOTFMT</H3></A>
+ Output <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#plot">plot</A> format
+ GNUPLOT or EPS
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#table"><H3>TABLE</H3></A>
+ STRING--OPTIONAL
+ Output <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#table">table</A> file.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#dbug"><H3>DBUG</H3></A>
+ KEYWORD--OPTIONAL.
+ Diagnostic printout.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#reject"><H3>REJECT</H3></A>
+ INTEGER--OPTIONAL
+ <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#reject">REJECT</A>=0 No area rejection
+       =1 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#reject">Reject</A> bad system gain
+       =2 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#reject">Reject</A> bad noise floor
+       =3 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#reject">Reject</A> either
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#limit"><H3>LIMIT</H3></A>
+ REAL COUNT=0:2--OPTIONAL
+ <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#limit">LIMIT</A>=(loexp,hiexp)
+ Only exposures between
+ these values are used.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#extexpo"><H3>EXTEXPO</H3></A>
+ INTEGER--OPTIONAL--For Galileo only
+ Specifies exposure level
+ at which extended exposure
+ mode frames begins.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise_level2.html#nodisp"><H3>NODISP</H3></A>
+ If present, no display
+ is shown
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ccdnoise.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

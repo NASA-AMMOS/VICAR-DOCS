@@ -1,0 +1,228 @@
+<HTML>
+<HEAD><title>HTML Help for MARSSLOPE</title></HEAD>
+<BODY>
+<H1>Help for MARSSLOPE</H1>
+<pre>
+PURPOSE:
+MARSSLOPE computes one of the following slope function types:
+  Slope
+  Slope Heading
+  Slope Magnitude
+  Slope Rover Direction
+  Northerly Tilt
+  Solar Energy
+
+The inputs for MARSSLOPE are an XYZ image such as that created by the
+MARSXYZ program, and a <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#uvw">UVW</A> image such as that created by MARSUVW.
+These can each be single 3-band files or three 1-band files; see 
+MARSXYZ and MARSUVW for details.
+
+EXECUTION:
+marsslope <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#inp">inp</A>=xyz_data <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#out">out</A>=slope_data.vic <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#uvw">uvw</A>=uvw_data <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#type">type</A>=slope
+marsslope <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#inp">inp</A>=xyz_data <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#out">out</A>=slope_data.vic <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#uvw">uvw</A>=uvw_data <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#type">type</A>=heading
+marsslope <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#inp">inp</A>=xyz_data <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#out">out</A>=slope_data.vic <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#uvw">uvw</A>=uvw_data <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#type">type</A>=magnitude
+marsslope <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#inp">inp</A>=xyz_data <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#out">out</A>=slope_data.vic <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#uvw">uvw</A>=uvw_data 
+        <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#origin">origin</A>=\( 0.0,0.0,0.0\) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#type">type</A>=direction
+marsslope <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#inp">inp</A>=xyz_data <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#out">out</A>=slope_data.vic <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#uvw">uvw</A>=uvw_data <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#type">type</A>=ntilt
+marsslope <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#inp">inp</A>=xyz_data <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#out">out</A>=slope_data.vic <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#uvw">uvw</A>=uvw_data <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#type">type</A>=solar <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#sa">sa</A>=68.9
+
+marsslope <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#inp">inp</A>=\(x.vic,y.vic,z.vic\) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#out">out</A>=slope_data.vic <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#uvw">uvw</A>=\(u.vic,v.vic,w.vic\) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#type">type</A>=slope
+
+where:
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#type">type</A> is one of the following slope functions to be computed:
+  slope     - Slope
+  heading   - Slope Heading
+  magnitude - Slope Magnitude
+  direction - Slope Rover Direction
+  ntilt     - Northerly Tilt
+  solar     - Solar Energy
+
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#origin">origin</A> is an override for the input reference point. It is used only when 
+calculating Slope Rover Direction (direction)
+
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#sa">sa</A> is a solar angle, which is the angle between the vector to the sun and 
+its projection to the XY-plane at local noon. Ideally this should be the 
+elevation of the sun at local noon, but approximations to this may be used. 
+It is used only when calculating Solar Energy (solar).
+
+TBD: The solar angle should be derived from SPICE eventually.
+
+
+METHOD:
+
+Input file contents:
+
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#inp">INP</A>:  marsxyz(or similar)-generated. It consists of either three separate 
+one-band files (x, y, z), or a single 3-band file.  
+Units of XYZ input file(s) are in meters, in the coordinate system specified 
+by the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#coord">COORD</A> and COORD_SYS parameters.
+
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#uvw">UVW</A>: marsuvw(or similar)-generated normalized normal vector. It consists of 
+either three separate one-band files (x, y, z), or a single 3-band file.
+
+Calculations:
+
+Given XYZ = (x,y,z) is a point/location, and N = (u,v,w) is a normal vector,
+and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#origin">origin</A> = (x0,y0,z0), the formulas for computing slope functions are:
+
+Slope (slope):
+  S = (180/PI) * ( (PI/2) + atan( w/ sqrt( u*u + v*v ) ) );
+Pixels represent the slope of the surface at that point, in
+degrees, with 0 being horizontal (surface parallel to the X-Y coordinate
+plane).
+
+Slope Heading (heading):
+  S = (180/PI) * ( atan2(v,u) );
+Pixels represent the direction in which the slope tilts, defined as the 
+azimuth of the projection of the surface normal to the X-Y coordinate plane.
+
+Slope Magnitude (magnitude):
+  S = sqrt(u*u + v*v);
+Pixels represent the magnitude of the slope as a value between 0 (flat) 
+and 1 (vertical), equivalent to sin(slope).
+
+Slope Rover Direction (direction):
+   d = sqrt( (x-x0)*(x-x0) + (y-y0)*(y-y0) ),
+   Vx = (x-x0) / d,
+   Vy = (y-y0) / d,
+   S = -(180/PI) * atan2( Vx*u + Vy*v, -w );
+Pixels represent the component of slope (in degrees) in the radial direction 
+towards or away from the specified <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#origin">origin</A> (generally the rover position),
+with positive tilting toward the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#origin">origin</A> (representing a climb from the 
+rover's perspective).
+
+Northerly Tilt (ntilt):
+  S = (180/PI) * asin(u);
+Pixels represent the component of slope (in degrees) that points north. 
+This is defined as the complement of angle between the surface normal 
+and a vector pointing north (i.e. (1,0,0) or along the +X axis in a 
+local level frame), with a value equal (180/pi)*arcsin(nx) degrees, 
+where nx is the X component of the surface normal.  90 degrees indicates 
+the surface faces north (normal parallel to +X) while 0 indicates there 
+is no north-facing component (e.g. flat or tilted east-west only).
+Negative numbers indicate a south-facing surface.
+
+Solar Energy (solar):
+   S = u * cos(<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#sa">SA</A>*PI/180) - w * cos((90-SA)*PI/180).
+Pixels represent the relative amount of solar energy
+available at that point due solely to rover tilt, defined as the dot
+product between the surface normal and the vector to the sun at local
+noon.
+
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER: I. Yanovsky</A>
+
+HISTORY:
+  2012-01-08 I. Yanovsky and B. Deen - Initial marsslope
+  2019-12-10 W. Bunch - Initialized some variables; cleaned up some -Wall warnings; added unit test.
+  2020-05-19 W. Bunch - Replaced sprintf calls.
+  2020-07-08 rgd	Removed size limitations
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#inp"><H3>INP</H3></A>
+Input images.
+Must be 1 3-band file
+or (x,y,z) triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#out"><H3>OUT</H3></A>
+Output file
+Will be 1 
+single band file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#uvw"><H3>UVW</H3></A>
+Input image containing
+normal vector. 
+Must be 1 3-band file
+or (u,v,w) triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#type"><H3>TYPE</H3></A>
+Specifies function to be computed
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#origin"><H3>ORIGIN</H3></A>
+3D <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#origin">origin</A> point, used only for
+Slope Rover Direction (direction)
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#sa"><H3>SA</H3></A>
+Solar angle, used only for
+Solar Energy.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope_level2.html#type">type</A> of a named target.
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsslope.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

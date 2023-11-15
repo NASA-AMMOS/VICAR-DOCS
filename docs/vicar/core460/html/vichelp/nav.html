@@ -1,0 +1,1548 @@
+<HTML>
+<HEAD><title>HTML Help for NAV</title></HEAD>
+<BODY>
+<H1>Help for NAV</H1>
+<pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#purpose">PURPOSE</A>
+
+NAV is an interactive program which refines the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> pointing (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A>-matrix)
+of an <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> by locating one or more distinct features in the image.  Features
+used include the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A>, and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A> background.  The measured feature
+positions are used in combination with navigation data retrieved from the
+project SEDR or SPICE file to compute the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A>-matrix.  The C-matrix is then
+used to compute the planet-center and (optionally) the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#north">north</A>-angle.  The
+computed <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A>-matrix may be subsequently used in two ways:
+
+    1) The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A>-matrix may be stored in the SEDR or SPICE file and subsequently
+       retrieved by map-projection, mosaicking, or data analysis software.
+
+    2) The planet-center (and optionally the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#north">north</A>-angle) may be inserted as
+       parameters to these latter software.
+
+NAV contains interfaces to the Voyager, Galileo and Cassini SPICE kernels only.
+For all other missions (e.g. Space Telescope) the navigation data typically
+provided by SPICE must be manually input.
+
+Note that NAV obtains the default radii and rotation rate of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#target">target</A> body from
+a SPICE <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#pc">PC</A> kernel that is labelled GLL_CONSTANTS in the SPICE_CONFIG_FILE,
+regardless of the project actually in use.  Be sure that the SPICE_CONFIG_FILE
+in your <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#system">system</A> contains an entry for GLL_CONSTANTS if you wish to use those
+defaults.
+
+NAV uses an east-longitude <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#system">system</A>.  For Voyager, latitudes are input and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#output">output</A>
+to the user as planetographic.  Planetocentric latitudes are used for all other
+missions.  This may be modified by using the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#geocen">GEOCEN</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#geodet">GEODET</A> commands.
+
+NAV assumes that the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> has been acquired via a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#system">system</A> with a
+shutter and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#focal">focal</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A> (e.g. vidicon/CCD sensor).  See also FARENC, MANMATCH,
+and NAV2.
+
+EXECUTION
+
+(Note that NAV, like all interactive VICAR programs, cannot be run from
+the Unix shell -- it must be run under TAE/VICAR.)
+
+	USE  EPA2		!Allocate a display device
+	NAV  PIC
+
+where PIC is the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> to be navigated.  PIC must be a Voyager, Galileo or
+Cassini <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> in either byte or halfword (16-bit integer) data format.  The
+frame must be in <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>-space or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#object">object</A>-space (no picture size reduction or
+map-projection allowed).
+
+Voyager images should be 800x800 for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>-space frames and 1000x1000 for
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#object">object</A>-space frames.  Galileo images are always in <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>-space and are
+800x800 for full-frame images and 400x400 for summation-mode images.  Cassini
+images can be 1024x1024, 512x512 or 256x256 and are always in <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>-space.
+
+NAV will not operate on halfword images which contain binary labels (e.g.
+Galileo EDR).  Use program COPY to strip off the binary labels prior to
+input to NAV.
+
+NAV requires a page file quota slightly larger than normal.  The program
+is known to fail on a quota of 8000 pages and to work on a quota of
+13000 pages.
+
+Upon entry, the user will be prompted to input commands.
+
+GEOMETRIC <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">CAMERA</A> DISTORTIONS
+
+Both images which contain geometric <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> distortions (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>-space frames)
+and images which have been geometrically corrected (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#object">object</A>-space frames)
+may be input.  If a Voyager <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>-space frame is used, then the reseau locations
+for the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> must be input via the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#res">RES</A> parameter:
+
+  Example: RESLOC  (PIC,RESFILE)  R
+           NAV  PIC  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#res">RES</A>=R
+    The reseau locations are located via the Voyager program RESLOC
+    and input to NAV via the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#res">RES</A> parameter.
+
+NAV corrects for the Galileo SSI and Cassini WAC <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> distortion using a
+built-in radial distortion model.
+
+RADIOMETRIC <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">CAMERA</A> DISTORTIONS
+
+It is not necessary to correct the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> for radiometric distortions
+prior to input to NAV.  It will be desirable to do so, however, if the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">PROFILE</A> option is used to gather <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>-profile data.
+
+If the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> is radiometrically corrected, care should be taken
+to ensure that the dark-current subtraction does not truncate the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A>
+or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>, as this would lead to incorrect results when scanning for
+these features.  This problem may be avoided by inputing the halfword <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>
+(as <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#output">output</A> by FICOR77 or GALSOS) rather than the rescaled byte <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> (as
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#output">output</A> by FIT).
+
+OPERATION
+
+Upon entry, the program will display the input <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> on the monitor,
+adjusting the resolution, as necessary, to display the complete field
+of view.  If the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> is in halfword data format, the program auto-
+matically determines the dynamic <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#range">range</A> of the input DN values,
+stretching the display to saturate 0.5 percent of the data at the low
+and high ends of the DN <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#range">range</A> (see <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#astretch">ASTRETCH</A> parameter).
+
+Geometric data is retrieved from SPICE kernels and the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> pointing is reconstructed using the best available information.
+
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> pointing is broken down into 3 angular components: <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#angln">ANGLN</A>,
+the orientation of the projected spin axis, and ANGLA and ANGLB, 
+which produce offsets within the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A>.
+
+The user is prompted to specify whether <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>, or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A> navigation
+is desired:
+
+    Specify feature to be fitted (enter '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">LIMB</A>, '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">RING</A>, '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">STAR</A> or '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A>)&gt
+
+Typing '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">LIMB</A>, '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">RING</A>, or '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">STAR</A> passes control to the LIMBFIT, RINGFIT, or
+STARFIT routines, respectively.  Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A> will return control to TAE,
+with a summary of the current <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> pointing printed out.
+
+Prior to exiting, the user is prompted as to whether the SEDR should
+be updated.  If the user responds '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#y">Y</A>, then an updated <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A>-matrix is
+stored in the SEDR.  The OM-matrix, RS-vector and (line,sample) coordinates
+of the planet center are also stored in the SEDR.
+
+WHAT TO DO IF SPICE KERNELS ARE NOT AVAILABLE
+
+If the input <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> is from a mission other than Voyager, Galileo or Cassini,
+the navigation data typically retrieved from the SEDR or SPICE files must be
+manually input by the user.  First, the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#target">target</A> body should be input in the
+execution statement:
+	NAV  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#inp">INP</A>=PIC  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#target">TARGET</A>=SATURN
+When the program issues the message "Unrecognizable project.  Enter project ID",
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">type</A> NONE.
+
+Enter the LIMBFIT routine by selecting '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">LIMB</A> and enter the following navigation
+data via the '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#edit">EDIT</A> command (see below): RANG,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ssp">SSP</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#angln">ANGLN</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#fl">FL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sc">SC</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sol">SOL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#pc">PC</A>.  If SOL
+is not known, set it equal to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ssp">SSP</A>.  Use your best guess for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#pc">PC</A> and enter it
+last.  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">Type</A> '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#status">STATUS</A> to display the current navigation data.
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">Type</A> OVER=30 to draw a latitude-longitude grid of where NAV thinks the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#target">target</A>
+is located in the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>.  Make any <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scale">scale</A> adjustments by changing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#fl">FL</A>, SCALE, or
+RANG.
+
+Adjust the planet center as follows: <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">Exit</A> from <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#edit">EDIT</A> to get back to the
+LIMBFIT prompt.  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">Type</A> '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">SCAN</A> and manually move the graphics <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> so that it
+registers to the actual <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A>.  If everything looks OK, proceed with a limb
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A>.  Otherwise re-enter '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#edit">EDIT</A> and fiddle with the navigation data.
+
+For images of planetary rings, the RINGFIT routine may be similarly used.
+
+LIMBFIT ROUTINE
+
+The LIMBFIT routine navigates the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> by locating the planet <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A>.
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> may be (1) located manually by tracing the limb via the cursor
+or (2) automatically located by performing a radial <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> about an
+approximate planet-center.
+
+The LIMBFIT command processor is identified by the prompt:
+
+	LIMBFIT&gt
+
+To obtain a list of the commands supported by the LIMBFIT routine,
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">type</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#help">HELP</A>:
+
+	Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">SCAN</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#trace">TRACE</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scpts">SCPTS</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sapts">SAPTS</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sblems">SBLEMS</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sres">SRES</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#czoom">CZOOM</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#h">H</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#hist">HIST</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#stretch">STRETCH</A>,
+        <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#astretch">ASTRETCH</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gerase">GERASE</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gcolor">GCOLOR</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#overlay">OVERLAY</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#lati">LATI</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#long">LONG</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ll">LL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ls">LS</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#spikes">SPIKES</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#edit">EDIT</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#params">PARAMS</A>&gt
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">SCAN</A> will cause a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> scan.  See LIMBSCAN ALGORITHM below.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#trace">TRACE</A> will enable the user to trace the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A>.  See
+LIMBTRACE ALGORITHM below.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scpts">SCPTS</A> will display the computed <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> (overlayed in graphics).
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sapts">SAPTS</A> will display the acquired points (overlayed in graphics).
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sblems">SBLEMS</A> will display the locations of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> blemishes
+(overlayed in graphics).  The blemishes are automatically retrieved from
+blemish files located in WMS_VGR:[VGR1.NA], WMS_VGR:[VGR1.WA], and
+WMS_VGR:[VGR2].  The user may optionally specify the location of the 
+blemish file via the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#blems">BLEMS</A> parameter.  The program checks to ensure that 
+the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> serial number associated with the file (as extracted from the 
+label) matches the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> serial number associated with the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sres">SRES</A> will display the reseau locations (overlayed in graphics).
+If the reseau has not been removed, this display will give an indication
+of how accurately the reseau has been located (and consequently the
+accuracy of the geometric correction).
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#czoom">CZOOM</A>=2 will center the display about the current cursor
+position and magnify the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> to twice normal resolution. 
+Pixel interpolation is performed during magnification.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#h">H</A> will redisplay the original <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> (displayed at 1/2
+resolution).
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#hist">HIST</A> will cause the histogram (DN vs frequency) of the
+displayed <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> area to be overlayed in graphics.  Note that a
+logrithmic <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scale">scale</A> is used to display frequency.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#spikes">SPIKES</A>=3 will <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scale">scale</A> the frequencies of the histogram so
+that the third largest freqency corresponds to maximum <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scale">scale</A>.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#stretch">STRETCH</A>=(20,100) will perform a hardware stretch (linear)
+of the displayed <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#astretch">ASTRETCH</A>=(0.5,1.5) will perform an "ends-in" <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#stretch">stretch</A>:  The
+histogram of the displayed <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> area is first computed.  Low and
+high <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#stretch">stretch</A> limits are then chosen so as to saturate 0.5 and
+1.5 percent of the data at the low and high ends of the histogram
+(respectively).  The algorithm is described in detail in the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#help">help</A> information for VICAR program FIT.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gerase">GERASE</A> will erase the graphics <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A>.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A> will cause the (line,sample) and (lat,lon) or (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A>,lon)
+of the current cursor position to be reported.  Subsequent Returns
+will repeat this until <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A> is entered.  Control then returns to
+LIMBFIT or RINGFIT.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#overlay">OVERLAY</A>=15 will cause a latitude-longitude grid at 
+15 degree spacing to be overlayed on the planet.  Note that the
+latitudes used are planetographic, unless the user has specified
+planetocentric via the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#geocen">GEOCEN</A> command.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#lati">LATI</A>=35.4 will cause a parallel at 35.4 degrees latitude
+to be overlayed on the planet.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#long">LONG</A>=115.0 will cause a meridian at 115 degrees
+longitude to be overlayed on the planet.
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ll">LL</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ls">LS</A> convert from latitude-longitude to line-sample and vice-versa.
+When latitude-longitude coordinates <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ll">LL</A>=(23.3,130) are entered, the
+program reports the corresponding line-sample coordinates.
+When line-sample coordinates <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ls">LS</A>=(300,451.3) are entered, the program
+reports the corresponding latitude-longitude coordinates.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#edit">EDIT</A> will enable the user to edit the navigation data.
+See <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#edit">EDIT</A> COMMAND below.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#params">PARAMS</A> will enable the user to modify some obscure
+processing parameters.  See <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#params">PARAMS</A> COMMAND below.
+
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sef">SEF</A> command is for program development only.  Don't try it.
+
+
+LIMBSCAN ALGORITHM
+
+STEP1: The planet outline is computed (CPTS) and drawn in graphics,
+based on the nominal <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> pointing (from the SEDR).  The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A>
+appears as a solid curve, with <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> points spaced approximately two
+pixels apart.  The unilluminated portion of the planet outline is
+displayed as a broken line, with points spaced 8 pixels apart.
+
+STEP2: The user is given an opportunity to manually improve the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> pointing by moving the computed <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> (drawn in graphics)
+so that it registers with the actual <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> (displayed on the video
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A>):
+
+	Move Cursor to a point on computed <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A>
+        Hit Return when ready or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">type</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A>&gt
+
+If the user is satisfied with the current pointing, he may skip
+this step by typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A>.  Otherwise, use the trackball to select
+a point on the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> and hit Return.
+
+	Move Cursor to actual <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A>
+	Hit Return when ready or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">type</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A> if done&gt
+
+The user specifies the corresponding point on the actual <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> and
+enters Return.  The cursor displacement is used to move
+the graphics <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> to the new position.  The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> pointing is
+updated in the process.
+
+Any subsequent cursor movement followed by Return will produce
+additional displacements of the graphics <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A>.  Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A> will
+transfer control to the next step.
+
+STEP 3: A <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> is performed, starting at each point on the
+computed curve and scanning in a direction normal to the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A>, searching for a high-contrast point. 
+
+	Do you wish to do a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A>? (Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#y">Y</A> or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#n">N</A>)&gt
+
+If the user types <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#n">N</A>, then the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> step is skipped and
+control is returned to the LIMBFIT prompt with the manually
+corrected pointing from STEP 2 in effect.
+
+If the user types <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#y">Y</A>, a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> is performed.  Prior to the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A>, the user may limit the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> area involved in the scan.
+
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> is located by scanning iteratively for high-contrast
+points, with each subsequent iteration using a smaller pixel spacing
+between <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> points, a smaller search <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A>, and smaller search steps:
+
+    a) A <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> is performed using an 11x1 correlation window
+       and one-pixel search steps in a direction normal to the
+       computed <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A>.  The length of the correlation window and 
+       the search <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> may be controlled via the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#nlw">NLW</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#nsearch">NSEARCH</A>
+       parameters below.  The default search <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> is 11 pixels.
+       This implies that the user should manually register the
+       graphics <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> to within 10 pixels (see STEP 2) before
+       beginning a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A>.
+
+       In performing the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> points obscured by the planet'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A>
+       <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> or ring shadow are avoided.
+
+       If no high-contrast points are found, the LIMBSCAN algorithm
+       is terminated and control returns to the LIMBFIT prompt.
+
+    b) The high-contrast points acquired via the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> are
+       stored in an an array APTS and displayed in graphics (after
+       erasing the computed <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> CPTS).  The program automatically
+       deletes isolated points and points near reseau marks. 
+
+    <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">c</A>) The positional differences between the computed <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> points
+       and the located high-contrast points are minimized in a
+       least-square sense, resulting in line-sample offsets (DL,DS)
+       and (if <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#chi3">CHI3</A> is specified) rotation offset DT.
+
+    <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#d">d</A>) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">Camera</A> orientation angles ANGLA and ANGLB are corrected
+       based on offsets (DL,DS).  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#angln">ANGLN</A> is corrected by rotation 
+       offset DT.  The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> orientation matrix OM is then
+       recalculated.
+
+    e) The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> points CPTS are recomputed using the new <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A>
+       orientation matrix.
+
+Steps a) thru e) are repeated until no significant change occurs in
+ANGLA and ANGLB.  For the second <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A>, the pixel spacing between <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A>
+points is reduced to 1 pixel, the search step is reduced to 1/2 pixel,
+and the search <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> is reduced to 7 pixels.  
+
+After each <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A>, the (line,sample) position of the planet center
+is calculated using the updated pointing.
+
+A final <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> is performed using an 11x3 correlation window and a
+3 pixel search <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A>.  Prior to the final fit, the user is
+given an opportunity to delete any questionable points:
+
+	Do you wish to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#clean">clean</A> the curve? (Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#y">Y</A> or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#n">N</A>)&gt
+
+If the user types <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#y">Y</A>, control will be passed to a subcommand loop
+identified by the prompt:
+
+	Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#clean">CLEAN</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#h">H</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#czoom">CZOOM</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#stretch">STRETCH</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#astretch">ASTRETCH</A> or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A>&gt
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#clean">CLEAN</A>=5 will permit the user to delete all acquired high-
+contrast points within a 5 pixel <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> of the cursor position.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A> will transfer control back to the LIMBSCAN routine
+and a final fit is performed.
+
+Upon completion of steps 1-3, control is passed back to the LIMBFIT
+routine.
+
+LIMBTRACE ALGORITHM
+
+STEP1: The planet outline is computed and stored in array CPTS
+(not displayed).  If no <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> points are found, the following message
+is printed:
+		" ***<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">Limb</A> is not in picture"
+
+and control is returned to the LIMBFIT prompt.  If the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> is indeed
+in the picture, then something is wrong with the nominal pointing
+information.  The user should enter the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#edit">EDIT</A> command to revue the
+navigation data.  If the navigation data is correct, try changing
+the planet center.
+
+STEP2: The user traces the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> using the cursor.  This is performed
+in a command loop identified by the prompt:
+
+	TRACECRV&gt
+
+To <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#trace">trace</A> the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A>, select limb points via the cursor and enter RETURN
+to record the point.  Repeat this until done.  Then <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">type</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A> to
+continue to the next step.  The traced <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> points are stored in the
+array APTS.
+
+Note that <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> points may be selected even if they are obscured by the
+planet <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> or ring shadow.  However, be careful not to select points
+on the unilluminated side of the planet.
+
+Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#help">HELP</A> to obtain a list of the commands available at this prompt:
+
+	Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#d">D</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#h">H</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#czoom">CZOOM</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#stretch">STRETCH</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#astretch">ASTRETCH</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#help">HELP</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A>
+
+To delete a point, move the cursor over the point and enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#d">D</A>.
+
+The commands <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#h">H</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#czoom">CZOOM</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#stretch">STRETCH</A>, and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#astretch">ASTRETCH</A> enable the user to adjust the
+display during the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#trace">trace</A>.
+
+At least 3 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> points must be selected.  If you fail to do so, the
+following message is printed:
+
+	" ***Insufficient number of points specified"
+	" ***<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">Limb</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#trace">trace</A> terminated"
+
+and control is returned to the LIMBFIT prompt.
+
+STEP3: The positional differences between the computed <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> points
+CPTS and the traced <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> points APTS are minimized:
+
+	Specify <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">type</A> of fit (Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#chi2">CHI2</A> or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#chi3">CHI3</A>)&gt
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#chi2">CHI2</A> will minimize differences between the computed
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> (CPTS) and the traced limb (APTS) by correcting for
+translation errors in the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>.  Angles ANGLA and ANGLB of the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> orientation matrix (OM) are updated.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#chi3">CHI3</A> will correct for rotation and translation errors.
+Angles ANGLA, ANGLB, and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#angln">ANGLN</A> (the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#north">north</A> angle) of the OM
+matrix are updated.  Selection of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#chi2">CHI2</A> or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#chi3">CHI3</A> has been moved to
+the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#params">PARAMS</A> option for LIMBFIT.
+
+RINGFIT ROUTINE
+
+The RINGFIT routine navigates the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> by locating a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> of specified
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A>.  The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> may be (1) located manually by tracing the ring via the
+cursor or (2) automatically located by performing a radial <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> about an
+approximate planet-center.
+
+The RINGFIT routine is identified by the prompt:
+
+	RINGFIT&gt
+
+The operation of the RINGFIT command processor is very similar
+to that of LIMBFIT.  See LIMBFIT COMMAND above for a more complete
+description of the available commands.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">RADIUS</A>=117294 will cause a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> at that radius to be
+displayed in graphics.  The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> is assumed to lie in the equatorial
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A> of the planet.
+
+For Uranus, the orbital elements of the ten known rings have been
+stored within the program.  These orbital elements define the inclined-
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A> eccentric-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> geometry of each ring.  The ten rings are identi-
+fied within the program by the following nomenclature:
+
+	6 = <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> 6		<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#n">N</A> = eta ring
+	5 = <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> 5		G = gamma ring
+	4 = <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> 4		<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#d">D</A> = <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#delta">delta</A> ring
+	A = <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#alpha">alpha</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>		L = lambda ring (1986U1R)
+        B = beta <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>		E = epsilon ring
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">RING</A>=E will cause the epsilon ring to be displayed in
+graphics.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#srings">SRINGS</A> will cause all nine rings to be displayed in graphics.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ering">ERING</A> will enable the user to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#edit">edit</A> the orbital elements for
+the nine Uranian rings (see <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ering">ERING</A> COMMAND below).
+
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#master">MASTER</A> command is used to specify the reference coordinate <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#system">system</A>
+for making <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> measurements.  When <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#master">MASTER</A>=<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#d">D</A> is entered, for example,
+all (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A>,longitude) measurements made using the cursor command <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A>
+are with respect to the inclined <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A> of to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#delta">Delta</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>, with zero
+longitude at periapse.  When <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#master">MASTER</A>=P is entered, all measurements are
+made in the planet'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A> equatorial <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A>, with zero longitude defined to
+be the intersection between Uranus' and Earth'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A> mean equator 1950 
+(ascending node) on 10 March 1977.
+
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">RING</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#srings">SRINGS</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ering">ERING</A>, and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#master">MASTER</A> commands work for Saturn and Neptune
+as well.  The Saturn rings are identified as follows:
+
+        F = F <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>                   K = Keeler gap <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#outer">outer</A> edge
+        E = <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#outer">Outer</A> edge Encke gap     A = <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#inner">Inner</A> A <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> edge
+        <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#n">N</A> = Cassini <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#inner">inner</A> edge of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#outer">outer</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>
+        <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">S</A> = Cassini <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#inner">inner</A> edge of 4th <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#outer">outer</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>
+        W = <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#outer">Outer</A> B feature          B = <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#inner">Inner</A> B <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> edge
+        M = Maxwell gap <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#outer">outer</A> edge   R = Mid <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> feature
+        T = Titan gap <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#outer">outer</A> edge     <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A> = <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#inner">Inner</A> C <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> edge 
+
+For Saturn, the zero longitude is defined to be the intersection between
+Saturn'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A> and Earth's equator (ascending node) at <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#eme">EME</A> 1950.
+
+For Neptune, nine test orbits have been defined, the first three with
+polar orbits and the remainder with equatorial orbits.  These rings are
+identified as follows:
+    
+          Polar rings      New Satellites        Previous
+	A =  50000 Km	   5 = 1989N5  orbit     T = Triton orbit
+	B = 100000 Km	   3 = 1989N3            <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#n">N</A> = Nereid orbit
+	<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A> = 150000 Km	   4 = 1989N4
+			   2 = 1989N2
+			   1 = 1989N1
+
+For Neptune, the zero longitude is defined to be the intersection between
+Neptune'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A> and Earth's mean equator 1950 (ascending node) at time of closest
+approach.
+
+Note that the reference systems for Jupiter'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A> rings still uses the longitude
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#system">system</A> of the rotating planet.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">SCAN</A> will cause a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> scan.  See RINGSCAN ALGORITHM below.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#trace">TRACE</A> will enable the user to trace the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">RING</A>.  See RINGTRACE ALGORITHM
+below.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">PROFILE</A> will enable the user to obtain a radial or longitudinal
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">plot</A> of a specified sector of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A>.  See <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">PROFILE</A> ROUTINE below.
+
+Entering '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#phasprof">PHASPROF</A> will enable the user to obtain a constant-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#phase">phase</A> 
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">plot</A> of a specified area of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>.  See <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#phasprof">PHASPROF</A> ROUTINE below.
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rl">RL</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ls">LS</A> convert from <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">Radius</A>-longitude to line-sample and vice-versa.
+When <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">Radius</A>-longitude coordinates <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rl">RL</A>=(85000.,130) are entered, the
+program reports the corresponding line-sample coordinates.
+When line-sample coordinates <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ls">LS</A>=(300,451.3) are entered, the program
+reports the corresponding <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A>-longitude coordinates for the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#system">system</A> that is currently used.
+
+Command <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#predict">PREDICT</A> is to predict the position of an <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#object">object</A> in one frame
+from its position in another.  There are two modes of operation: Predicting
+the position of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#object">object</A> in another frame from its current position (cursor
+is used) or predicting the position of an <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#object">object</A> in the current frame
+(cursor is placed) from its position in another frame.  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#predict">Predict</A> only
+understands the Frame/Time relationship for Voyager and Cassini.
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#predict">PREDICT</A>=FRAME: The cursor position is read to determine the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#object">object</A>'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A>
+current <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#master">MASTER</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#system">system</A> longitude.  Then its longitude in FRAME is predicted.
+Only the longitude is derived from the cursor (the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#master">MASTER</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A> orbit
+is used) , for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#master">MASTER</A>=P then the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> is also taken from the cursor position.
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#predict">PREDICT</A>=(FRAME,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">RADIUS</A>):  The cursor position is read to determine the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#object">object</A>'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A>
+current <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#master">MASTER</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#system">system</A> longitude.  Then its longitude in FRAME is predicted
+by assuming a circular orbit at <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">RADIUS</A>.
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#predict">PREDICT</A>=(FRAME,LONGITUDE): The position in the current frame is predicted
+from the given LONGITUDE at another FRAME.  If in present field, the cursor
+is placed there. Uses orbit defined by <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#master">MASTER</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>.  IF MASTER=P one must
+also specify <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A>.
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#predict">PREDICT</A>=(FRAME,LONGITUDE,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">RADIUS</A>): Same as above but for a circular orbit
+in the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#master">MASTER</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A>.
+
+RINGSCAN ALGORITHM
+
+The RINGSCAN algorithm is very similar to the LIMBSCAN algorithm.
+
+STEP1: The user is first prompted to enter a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> or ring
+name:
+	Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> (km) [and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A>] or ring name...
+        Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">RADIUS</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">PLANE</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">RING</A> or '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A>&gt
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">RADIUS</A>=5433.3 will cause the resulting <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> to be performed
+on a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> 5433.3.  The ring is assumed to be in the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#master">master</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A> and to have no eccentricity.  If another plane is wanted,
+on the same line one also types <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">PLANE</A>=[<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> plane name].  Then the 
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> will be performed on a non-eccentric <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> 5433.3 in
+the specified <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A>.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">RING</A>=E will cause a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> to be perfromed on the epsilon ring
+of Uranus.
+
+RINGFIT computes the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> points for the specified ring or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A>
+and draws the curve in graphics.
+
+Entering '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A> goes to the next step.
+
+STEP2: In order to do the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A>, the program must know which
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">type</A> of edge function to use:
+
+	Specify edge <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">type</A> (Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#outer">OUTER</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#inner">INNER</A> or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#width">WIDTH</A>)&gt
+
+If the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#width">width</A> of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> is greater than 19 pixels, the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> should
+be performed on the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#inner">inner</A> or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#outer">outer</A> edge of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>.  For thin rings,
+specify its <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#width">width</A> (in pixels): E.g. WIDTH=11 will match the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">profile</A> to a gaussian with sigma=11/4.
+
+STEP3: The user manually moves the curve over the actual <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>
+exactly as in the LIMBSCAN algorithm.
+
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> proceeds in exactly the same way as in the LIMBSCAN
+algorithm.  In performing the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> points located in front
+or in back of the planet or in the planet'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A> shadow are avoided.
+
+Upon completion of steps 1-3, control is passed to the RINGFIT
+prompt.
+
+RINGTRACE ALGORITHM
+
+The RINGTRACE algorithm is similar to the LIMBTRACE algorithm
+(above) except that the user is first prompted to enter a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> name:
+
+	Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> (km) [and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A>] or ring name...
+        Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">RADIUS</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">PLANE</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">RING</A> or '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A>&gt
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">RADIUS</A>=5433.3 will cause the resulting <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> to be performed
+on a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> 5433.3.  The ring is assumed to be in the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#master">master</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A> and to have no eccentricity.  If another plane is wanted,
+on the same line one also types <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">PLANE</A>=[<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> plane name].  Then the 
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> will be performed on a non-eccentric <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> 5433.3 in
+the specified <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A>.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">RING</A>=E will enable tracing of the epsilon ring of Uranus.
+
+After tracing the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>, typing '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A> will return the user back to
+the prompt:
+
+	Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> (km) [and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A>] or ring name...
+        Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">RADIUS</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">PLANE</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">RING</A> or '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A>&gt
+
+The user may <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#trace">trace</A> additional rings (up to 10 are permitted).  Upon
+completion, the routine will simultaneously fit all rings traced,
+computing a new <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A>-matrix.  This C-matrix replaces the C-matrices
+for all rings traced.
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">PROFILE</A> ROUTINE
+
+Entering '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">PROFILE</A> at the RINGFIT prompt passes control to the PROFILE routine,
+which is identified by the prompt:
+		<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">PROFILE</A>&gt
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">PROFILE</A> routine is used to obtain radial or longitudinal plots of the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A> (coincident with the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#master">Master</A> ring plane).   Each time the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">PROFILE</A> prompt is issued, the specified profile <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">type</A> (radial or longitudinal),
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> limits, and longitude limits are reported.  Enter any missing information
+to obtain a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">plot</A>.
+
+Entering '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#help">HELP</A> will display a list of commands available at this prompt:
+    Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">TYPE</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rlimits">RLIMITS</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#llimits">LLIMITS</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#lwidth">LWIDTH</A>, '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">PLOT</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#output">OUTPUT</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#phase">PHASE</A>, '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#cp">CP</A>, '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A>, '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#h">H</A>,
+    <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rl">RL</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ls">LS</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#czoom">CZOOM</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#stretch">STRETCH</A>, '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gerase">GERASE</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gcolor">GCOLOR</A>, or '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A>.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">TYPE</A>=R causes a radial <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">plot</A> of the specified sector to be computed and
+displayed.  The radial <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">plot</A> (DN vs <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A>) is computed by averaging all pixels
+at a constant <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> and lying between the starting and ending longitudes of the
+sector.  Bilinear interpolation is used.
+
+Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">TYPE</A>=L to select a longitudinal <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">plot</A>.  Plot consists of DN averaged
+over lines of constant longitude.
+
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>-sector to be plotted is specified by the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rlimits">RLIMITS</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#llimits">LLIMITS</A> commands.
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rlimits">RLIMITS</A>=(47600,48450) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#llimits">LLIMITS</A>=(253,254) specifies the minimum and
+maximum <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> and longitude, respectively, of the desired sector.
+
+Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">TYPE</A>=<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#d">D</A> to select a diagonal radial <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">plot</A>, which is a radial plot centered
+on a specified diagonal line.  Specify the end points of the diagonal line by
+entering the end points (R1,L1) and (R2,L2) as <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rlimits">RLIMITS</A>=(R1,R2) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#llimits">LLIMITS</A>=(L1,L2).
+An additional parameter, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#lwidth">LWIDTH</A> (the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#width">width</A> of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> in degrees) is required
+for diagonal plots.
+
+This <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">plot</A> is useful in cases where the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> does not contain the same <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#range">range</A>
+of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> longitude at the ends of a desired ring radial <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">plot</A>, this method
+allows one to still get a radial <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">plot</A>.  Instead of having a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> sector with
+the same longitudinal limits at each end, the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">plot</A> is done along a diagonal
+line averaging over a constant longitudinal <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#width">width</A> (defined by the inputted
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#lwidth">LWIDTH</A> parameter in degrees).
+
+Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">TYPE</A>=<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">S</A> to select a Longitudinal smear <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">plot</A>, which is a longitudinal plot
+but averaged not over a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#range">range</A> of radii, but along a smear direction and smear
+length.  You specify the longitude limits with <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#llimits">LLIMITS</A>=(L1,L2).  You then
+specify the smear direction with the cursor on some smeared <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#object">object</A>, and then
+specify the smear length (and center <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A>) using the cursor on the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> to
+be plotted.
+
+This is useful for cases where one wants to do a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">plot</A> along longitude but for
+which the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> is smeared and lines of constant <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> are not consistant
+with the smear.  This allows one to define a smear direction (using a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A> for
+example) and to define a smear length (to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">plot</A> over).  Plot is done by
+averaging DN along this line rather than along lines of constant <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A>.
+
+Whenever new values are entered for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">TYPE</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rlimits">RLIMITS</A>, or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#llimits">LLIMITS</A>, or whenever
+'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">PLOT</A> is specified, a new plot is generated.
+
+The '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A> command may be used to read the (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A>,longitude) coordinates of any
+cursored position on the display.  This is useful in determining the desired
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>-sector limits.  The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> display may be adjusted via the '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#h">H</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#czoom">CZOOM</A>,
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#stretch">STRETCH</A>, and '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gerase">GERASE</A> commands.
+
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">plot</A> is displayed over the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> in graphics.  The (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A>,DN) or
+(longitude,DN) values of the plotted points may be read with the cursor via
+the '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#cp">CP</A> command.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#output">OUTPUT</A>=<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">PLOT</A>.DAT will generate an ASCII file of record length 31 bytes,
+containing the longitude, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A>, and DN <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#value">value</A> for each longitude (or radius)
+of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">plot</A>.  If the '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#phase">PHASE</A> keyword is appended to the SAME COMMAND LINE as
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#output">OUTPUT</A>, the ASCII file will include the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#phase">phase</A> angle at each plotted point (and
+the record length will be 37 bytes).
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#phasprof">PHASPROF</A> ROUTINE
+
+Entering '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#phasprof">PHasprof</A> at the RINGFIT prompt passes control to the PHASPROF routine,
+which is identified by the prompt:
+
+		Constant-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#phase">Phase</A> Profiling&gt
+
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#phasprof">PHASPROF</A> routine is used to obtain constant-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#phase">phase</A> plots of the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A> (coincident with the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#master">Master</A> ring plane).   
+
+Entering '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#help">HELP</A> will display a list of commands available at this prompt.
+
+The commands are
+
+  'CEnterpt, 'COrnerpt, 'REFresh, '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#edit">EDIT</A>,
+  '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">PLot</A>, 'Dnplot, 'Longplot, 'RAdiplot, 'EMisplot, 'Inciplot, 'PHasplot,
+  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#output">OUTPUT</A>=&ltfilespec&gt, '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#cp">CP</A>, '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A>, '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#h">H</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rl">RL</A>=(<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A>,longitude), <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ls">LS</A>=(line,sample),
+  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#czoom">CZoom</A>=&ltiz&gt, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#stretch">STretch</A>=(hidn,lowdn), <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#astretch">ASTRETCH</A>=(hi%,low%), '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gerase">GERASE</A>, 
+  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gcolor">GCOLOR</A>=&ltcolor&gt (or '<color>) '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#help">Help</A>, '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXit</A>
+
+Positioning the cursor & entering 'CEnterpt causes the cursor position to be
+saved as the center point of a constant-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#phase">phase</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">profile</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A>.  A dotted line 
+will appear; it will be the centerline of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">profile</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> & represents a line 
+of constant <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#phase">phase</A> going through that point.  The incidence, emission, & phase 
+angles at the center point will be printed out on the terminal.  Entering
+'CEnterpt initiates the geometry for a new <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> and any previous corner point
+(below) is lost. 
+
+Positioning the cursor & entering 'COrnerpt causes the cursor position to be 
+saved as the corner point of a constant-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#phase">phase</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">profile</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> i.e. the corner 
+point determined both the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#width">width</A> (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#range">range</A> of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#phase">phase</A> to either side of the 
+centerline) and length along the centerline of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A>.  Two dotted lines
+will appear representing the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#width">width</A> of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A>, as well as two solid lines
+representing the length of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A>.  For a narrow scan, the solid lines may 
+not be easily visible.  'CEnterpt must be entered before 'COrnerpt, and
+entering 'CEnterpt (see above) will erase any previous corner point
+information. You may adjust these points as needed, the screen is updated 
+
+Entering 'REFresh will redraw the current centerline, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#width">width</A> lines, & length 
+limit lines, if present; previous <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> lines will be erased.
+
+Entering 'EDitnav will enter the EDITNAV routine, described elsewhere, and
+will also erase any <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> information.
+
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> will sample 
+the area, averaging across the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#width">width</A> and reporting data along the length of 
+the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A>.  
+
+  'CEnterpt, 'COrnerpt, 'REFresh, '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#edit">EDIT</A>,
+  '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">PLot</A>, 'Dnplot, 'Longplot, 'RAdiplot, 'EMisplot, 'Inciplot, 'PHasplot,
+  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#output">OUTPUT</A>=&ltfilespec&gt, '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#cp">CP</A>, '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A>, '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#h">H</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rl">RL</A>=(<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A>,longitude), <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ls">LS</A>=(line,sample),
+  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#czoom">CZoom</A>=&ltiz&gt, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#stretch">STretch</A>=(hidn,lowdn), <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#astretch">ASTRETCH</A>=(hi%,low%), '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gerase">GERASE</A>, 
+  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gcolor">GCOLOR</A>=&ltcolor&gt (or '<color>) '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#help">Help</A>, '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXit</A>
+
+The '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A> command may be used to read the (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A>,longitude) coordinates of any
+cursored position on the display.  This is useful in determining the desired
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>-sector limits.  The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rl">RL</A> & <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ls">LS</A> commands convert between <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> & ring
+coordinates without involving the cursor. The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> display may be adjusted via
+the '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#h">H</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#czoom">CZoom</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#stretch">STretch</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#astretch">AStretch</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gcolor">GColor</A>, and '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gerase">GErase</A> commands.  
+
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">plot</A> is displayed over the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> in graphics.  The abscissa represents 
+the length (in pixels, approximately) of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A>, and the ordinate is
+dependent on which <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">plot</A> command was issued.  Values of the plotted points may
+be read with the cursor via the '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#cp">CP</A> command. 
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#output">OUTPUT</A>=&ltfilespec&gt will generate an ASCII file of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> 
+containing some header information, followed by a table with 7 columns of 
+numbers.  The columns represent the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">profile</A> index (i.e. distance along 
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> in pixels, approximately), longitude, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A>, DN <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#value">value</A>, incidence angle,
+emission angle, & <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#phase">phase</A> angle.  The incidence, emission, & phase angle values
+in the table are differences from nominal, not the actual angles themselves
+i.e. the photometric values in the table are the actual angles with the nominal
+values (listed in the header information) subtracted. 
+
+STARFIT ROUTINE
+
+The STARFIT routine navigates the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> by matching the stars in the image
+with a starmap computed from data retrieved from the Smithsonian Astrophysical
+Observatory (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sao">SAO</A>) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">Star</A> Catalog, Version 1984.  NAV uses a condensed version
+of the catalog, containing only the right-ascention, declination (EME50),
+magnitude, name and spectral <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">type</A> for each <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A>.  The catalog location is
+specified at the program execution statement via the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sao">SAO</A> parameter. At MIPS,
+sao_idl.str is located  in WMS_VGR:[000000] if VMS, or /project/vgr under Unix.
+Outside users can get the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sao">sao</A>.cat file from FEI using fei -g vgrrad/sao_idl.str
+Previous <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A> catalogs that that worked with NAV 
+
+Note: Other <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A> catalogs can also be used: 
+
+Catalog file              <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#purpose">Purpose</A>                Magnitude   Name       <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">Type</A>?
+agk3_idl.str      AGK3 (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#north">north</A> of -2.5 deg)        to 12      AGK3     Spectral
+jup_voy_idl.str   Jupiter approach, epoch '78     to 12      AGK3       None
+sat_voy_idl.str   Saturn approach, epoch '78      to &gt13     AGK3       None
+nep_voy_idl.str   Uranus/Neptune, epoch '86       to 12.7     <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sao">SAO</A>     Spectral
+
+
+An alternate catalog is the Guide <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">Star</A> Catalog put out by the Space Telescope 
+Science <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#institute">Institute</A>.  The relevant PDF parameter is <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gscpfx">GSCPFX</A>, and (if GSCPFX is set
+to "GSCVOL" under VMS or "/cdrom/gscvol" under Eunuuchs(tm),) NAV assumes it 
+can find the GSC files under 
+
+  GSCVOL1: & GSCVOL2:
+
+for VMS or under
+
+  /cdrom/gscvol1/ & /cdrom/gscvol2/
+
+for Eunuchs(tm).  The CDROM'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A> may be mounted by one of the following methods:
+
+VMS, local mount:
+
+    $ mount /over=id /nowrite dka400: "" GSCVOL1
+    $ mount /over=id /nowrite dka410: "" GSCVOL2
+
+VMS, NFS mount using Multinet:
+
+    $ mult nfsmount /nowrite "host.with.cds::/cdrom/gscvol1" GSCVOL1
+    $ mult nfsmount /nowrite "host.with.cds::/cdrom/gscvol2" GSCVOL2
+
+Generic Eunuchs(tm), local mount:
+
+    # mount -t hsfs /dev/sr0 /cdrom/gscvol1
+    # mount -t hsfs /dev/sr0 /cdrom/gscvol2
+
+Generic Eunuchs(tm), NFS mount:
+
+    # mount -t nfs host.with.cds::/cdrom/gscvol1 /gscvol1
+    # mount -t nfs host.with.cds::/cdrom/gscvol2 /gscvol2
+
+
+Upon entry, all stars within the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A>'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A> field-of-view are retrieved
+from the catalog and overlayed (in graphics) on the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> display.
+A histogram displaying the number of stars at each visual magnitude is
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#output">output</A> to the terminal.
+
+The STARFIT command processor is identified by the prompt:
+
+	STARFIT&gt
+
+To obtain a list of the commands supported by the STARFIT routine,
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">type</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#help">HELP</A>:
+
+	Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#himag">HIMAG</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sstars">SSTARS</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sblems">SBLEMS</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sres">SRES</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#mstars">MSTARS</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#czoom">CZOOM</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#h">H</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#hist">HIST</A>,
+        <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#spikes">SPIKES</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#stretch">STRETCH</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#astretch">ASTRETCH</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gerase">GERASE</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gcolor">GCOLOR</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rd">RD</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ls">LS</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#edit">EDIT</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#params">PARAMS</A>&gt
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#himag">HIMAG</A>=8 will redisplay the graphics starmap, such that all
+stars higher than magnitude 8 are ignored.
+!CBTC Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#himag">HIMAG</A>=8.5 will redisplay the graphics starmap, such that all
+!CBTC stars higher than magnitude 8.5 are ignored.
+
+Typing '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sstars">SSTARS</A> redisplays the starmap.
+
+Typing '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#mstars">MSTARS</A> will enable the user to register the graphics starmap
+to the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A> background in the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>.  See MOVESTAR ALGORITHM below.
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rd">RD</A>=(76.7,15.5) will cause the cursor to be moved to that
+right-ascension and declination on the display screen.  The corresponding
+line-sample coordinates are reported.
+
+Typing line-sample coordinates <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ls">LS</A>=(455,581) will cause the corresponding
+right-ascension and declination to be reported.
+
+The '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A> command may be used to read the (Right-ascension, declination)
+coordinates of any cursored position on the display.  Also information
+about the nearest <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A> to the cursored position will be listed.  The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>
+display may be adjusted via the '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#h">H</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#czoom">CZOOM</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#stretch">STRETCH</A>, and '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gerase">GERASE</A> commands.
+
+MOVESTAR ALGORITHM
+
+Upon entry, the user is supplied with the following instructions:
+
+	To select a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A>, move cursor to a graphics star
+	and hit RETURN.  You will then be asked to match
+	the selected <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A> to its <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> via the cursor.
+	Repeat to acquire more points or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">type</A> '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A> when done.
+	You may delete a point by typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#d">D</A>.
+	You may adjust the display by using <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#h">H</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#czoom">CZOOM</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#stretch">STRETCH</A>,or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#astretch">ASTRETCH</A>.
+
+This is followed by the prompt:
+
+	READY&gt
+
+When the user has selected a graphics <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A> via the cursor and enters
+RETURN, MOVESTAR reads the line-sample position of the cursor, identifies
+the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A> selected, and responds with a "beep" and the prompt:
+
+	Cursor <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> and hit RETURN&gt
+
+The user then selects the corresponding <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A> in the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> and hits
+RETURN.  This is followed by another "beep" and the READY prompt.  This
+cycle is repeated until the user types '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A>.  Be careful not to move
+the cursor until you hear the "beep", which indicates that the cursor
+has been read.  Note that the graphics stars need not be selected
+accurately since MOVESTAR searches for the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A> nearest the cursor
+position.  However, the corresponding <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> should be selected
+with care.  The display resolution will limit the accuracy of this
+selection.  Note that the default ZOOM=-2 will enable selection to the
+nearest two pixels.  Use the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#czoom">CZOOM</A> command to display areas of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>
+at higher resolution.
+
+When the user types '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A> to exit from the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A> selection loop, the
+program responds with the prompt:
+
+	Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#chi2">CHI2</A> or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#chi3">CHI3</A>&gt
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#chi2">CHI2</A> causes the line-sample position of the planet-center to
+be updated.  Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#chi3">CHI3</A> causes the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#north">north</A> angle to be updated as well.
+If 3 or more stars have been selected, use <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#chi3">CHI3</A>.
+
+Before returning control to STARFIT, the starmap is redisplayed, using
+the updated <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> pointing.
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#edit">EDIT</A> COMMAND
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#edit">EDIT</A> will transfer control to the EDIT command processor,
+identified by the prompt:
+
+	<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#edit">EDIT</A>&gt
+
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#edit">EDIT</A> command processor enables the user to modify values which
+effect the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> geometry.  These include planet constants, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A>
+constants, and geometric data.  Under normal circumstances, the user
+will never have to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#edit">edit</A> the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> geometry data since these are
+automatically retrieved from the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">Image</A> Catalog and frame label.
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#help">HELP</A> will cause of all the available commands to be listed:
+
+	Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#help">HELP</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#geodet">GEODET</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#geocen">GEOCEN</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ra">RA</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rb">RB</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rc">RC</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#lora">LORA</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">CAMERA</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#fl">FL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#oaxis">OAXIS</A>,
+	<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sc">SC</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ssp">SSP</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#pc">PC</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ispc">ISPC</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#wapc">WAPC</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#waispc">WAISPC</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#angln">ANGLN</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#range">RANGE</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#target">TARGET</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ecm">ECM</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#eme">EME</A>,
+	<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scvector">SCVECTOR</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sol">SOL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rlim">RLIM</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#status">STATUS</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#save">SAVE</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#restore">RESTORE</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#getsedr">GETSEDR</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#czoom">CZOOM</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#h">H</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#stretch">STRETCH</A>,
+        <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#astretch">ASTRETCH</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gerase">GERASE</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gcolor">GCOLOR</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#overlay">OVERLAY</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#lati">LATI</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#long">LONG</A>&gt
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A> will return control back to the RINGFIT or LIMBFIT
+command processor.
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#geodet">GEODET</A> will cause all latitudes input by the user to be
+treated as planetographic, and to report all latitudes to the user
+as planetographic.  The default for Voyager is <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#geodet">GEODET</A>.  For all other
+missions, the default is <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#geocen">GEOCEN</A>.
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#geocen">GEOCEN</A> will cause all input and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#output">output</A> latitudes to be
+treated as planetocentric.
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ra">RA</A>=241 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rb">RB</A>=235 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rc">RC</A>=232 will change the values of the planet'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A>
+major equatorial, minor equatorial, and polar radii to 241, 235, and
+232 km, respectively.
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#lora">LORA</A>=135.2 will change the orientation of the major equatorial
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> so that it points to longitude 135.2 degrees.  If <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ra">RA</A>=<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rb">RB</A>, then
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#lora">LORA</A> is undefined and should not be used.
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">CAMERA</A>=7 will change the camera-ID to VGR-1 NA.  This
+will automatically cause the nominal constants for that <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A>
+to be retrieved from tables and stored in <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#fl">FL</A>, OAL, OAS, and
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sc">SC</A> below.  The valid VGR <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> serial numbers are:
+
+	4 = VGR-2 WA		6 = VGR-1 WA
+	5 = VGR-2 NA		7 = VGR-1 NA
+
+        Valid Cassini <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> serial numbers are:
+        1=NAC  21=NAC 2x2 summation mode  41=NAC 4x4 summation mode
+        2=WAC  22=WAC 2x2 summation mode  42=WAC 4x4 summation mode
+
+Typing  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#fl">FL</A>=1200.175 will change the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#focal">focal</A> length to
+1200.175 mm.
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#oaxis">OAXIS</A>=(500,500) will place the optical axis intercept
+at (line,sample)=(500,500).
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sc">SC</A>=84.821 will change the picture <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scale">scale</A> to 84.821 pixels
+per mm on the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#focal">focal</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A>.
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ssp">SSP</A>=(-34.113,335.252) will change the spacecraft position
+to (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sclat">SCLAT</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sclon">SCLON</A>)=(-34.113,335.252).
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sol">SOL</A>=(32.3,124.5) will change the position of the sun to
+(<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sunlat">SUNLAT</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sunlon">SUNLON</A>)=(32.3,124.5).
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#pc">PC</A>=(445.3,558.4) will move the planet center to
+(SCLINE,SCSAMP)=(445.3,558.4).  This will cause the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> pointing
+to be updated.  The planet-center must be in <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#object">object</A>-space.  To
+enter an <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>-space planet-center, use <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ispc">ISPC</A>.  Note that if ISPC is
+used, the input <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> must be in image-space.
+
+If the is <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> is a narrow-angle frame from a simultaneous exposure
+and if the planet-center for the wide-angle frame is known, it may
+be entered using <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#wapc">WAPC</A> (e.g. WAPC=(455.1,376.2)).  The (line,sample)
+coordinates are converted to the narrow-angle field of view and
+the result used as the (line,sample) coordinates for the narrow-angle
+planet-center.  The planet-center must be in <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#object">object</A>-space.  To enter
+an <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>-space planet-center for the wide-angle frame, use <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#waispc">WAISPC</A>.
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#angln">ANGLN</A>=190.9 will cause the orientation of the projected
+spin axis to be changed to 190.9 degrees, measured clockwise
+from right (the positive sample direction).
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#range">RANGE</A>=4794909 will cause the distance from spacecraft to
+planet center to be changed to 4794909 km.
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#target">TARGET</A>=SATURN will change the target-ID to Saturn and
+automatically changes the polar and equatorial radii to Saturn'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A>
+nominal values.
+
+The parameters <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ecm">ECM</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#eme">EME</A>, and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scvector">SCVECTOR</A> may be used to change the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A>-matrix, ME-matrix, and spacecraft vector by entering data as
+provided by Mert Davies.  When '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ecm">ECM</A> is typed, the program prints out
+the current values for three angles defining the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> orientation
+(<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#alpha">ALPHA</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#delta">DELTA</A>, and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#kappa">KAPPA</A>) and issues the prompt:
+
+	Enter changes of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">type</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A>&gt
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#alpha">ALPHA</A>=25.2176 will modify the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#value">value</A> of ALPHA, etc.  Similiarly,
+typing '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#eme">EME</A> will permit editing of the three angles defining the
+ME-matrix (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#alpha">ALPHA</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#delta">DELTA</A>, and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#omega">OMEGA</A>).
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scvector">SCVECTOR</A>=(10833.2,36556.4,371.6) will update the spacecraft
+vector, as expressed in celestial coordinates (km).
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rlim">RLIM</A>=(76000,140000) will set the minimum and maximum <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>
+radii to 76000 and 140000 km respectively.  Note that these values
+are used only in avoiding <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> points obscured by the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> or
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> shadow during a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A>.
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#status">STATUS</A> will cause a summary of the navigation data to be
+printed.
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#save">SAVE</A> will store the current navigation data in the array
+SNAV.  Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#restore">RESTORE</A> will replace the navigation data by
+whatever is in SNAV.  Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#getsedr">GETSEDR</A> will replace the navigation
+data with the nominal pointing.
+
+The remainder of the commands are used to update the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> display
+and are as described above (see LIMBFIT ROUTINE).
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ering">ERING</A> COMMAND
+
+The orbital elements of each planetary <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#system">system</A> are read from the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">Ring</A> Orbital Elements File (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#oef">OEF</A>).  These orbital elements define the
+inclined-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A> eccentric-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> geometry of each ring.  The file may be
+specified when entering NAV, as in the following example:
+
+	NAV  PIC  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#oef">OEF</A>=RINGDATA.DAT
+
+A new orbital elements file may be created by executing program RINGORBS.
+At MIPS, the file is located in ROEF.DAT (in WMS_VGR:[000000] if VMS, 
+or /project/vgr under Unix).
+Outside users can get the ROEF.DAT file from FEI using fei -g vgrrad/roef.dat
+
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ering">ERING</A> command is used to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#edit">edit</A> the orbital elements for the current
+planetary <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#system">system</A>:
+
+	<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ering">ERING</A>&gt
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#help">HELP</A> will display a list of the commands available
+at this prompt:
+
+	Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">RING</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#status">STATUS</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#smaa">SMAA</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ecc">ECC</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#incl">INCL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#pizero">PIZERO</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#omegz">OMEGZ</A>,
+        <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ra">RA</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#dec">DEC</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#theta">THETA</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#zetaz">ZETAZ</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#restore">RESTORE</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#help">HELP</A>&gt
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">RING</A>=A will cause the orbital elements of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#alpha">alpha</A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> to be retrieved for editing.  The ring points are computed
+and displayed in graphics, based upon the current <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A>-matrix.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#status">STATUS</A> will display the orbital elements for the
+retrieved <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#smaa">SMAA</A>=5000. will change the semi-major axis to 5000 km.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ecc">ECC</A>=0.0123 will change the eccentricity to 0.0123.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#incl">INCL</A>=0.1093 will change the inclination angle of the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A> to 0.1093 degrees.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#pizero">PIZERO</A>=169.3 will change the longitude of periapse
+to 169.3 degrees.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#omegz">OMEGZ</A>=82.3 will change the longitude of the ascending
+node to 82.3 degrees.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ra">RA</A>=76.6, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#dec">DEC</A>=15.1 will change the orientation of
+planet'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#north">north</A> pole to (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ra">RA</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#dec">Dec</A>)=(76.2,15.1) degrees.  Note that
+the orientation of the pole is assumed to be constant (i.e. does
+not precess).  Also, These parameters can only be changed for
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">RING</A>=P since they are common to all of the rings.  NAV will then
+update all of the rings.
+
+Whenever one of the orbital elements is changed, the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> points
+are re-computed and re-displayed in graphics.
+
+Entering '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#restore">RESTORE</A> wil restore the original orbital elements for
+the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>.
+
+Entering '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#write">WRITE</A> will update the Orbital Elements File with the edited values.
+Note that the user cannot (i.e. does not have sufficient priviledge to) update
+the default <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#oef">OEF</A>.  If you need to tinker with the orbital elements, copy the
+file into your own directory and use the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#oef">OEF</A> parameter described above.
+Alternatively, a new <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#oef">OEF</A> can be created by executing program RINGORBS.
+
+One can define a new eccentric <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> by entering parameters in several
+"place holding" rings.  These extra rings can be accessed by specifing
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">RING</A> = ...
+
+     SATURN:  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#y">Y</A> Z
+     URANUS:  W X <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#y">Y</A> Z
+     NEPTUNE: W X <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#y">Y</A> Z
+
+These rings can then be used as the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#master">MASTER</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A>, in RINGTRACE and
+RINGSCAN, they can be drawn as <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">RING</A>=-, and the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A> can be used in <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">PROFILE</A>.
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#params">PARAMS</A> COMMAND
+
+Typing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#params">PARAMS</A> will enable user modification of processing
+parameters:
+
+	Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#nlw">NLW</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#nsw">NSW</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#nsearch">NSEARCH</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#chi2">CHI2</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#chi3">CHI3</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#dbug">DBUG</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#nodbug">NODBUG</A>&gt
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#nlw">NLW</A>=9 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#nsw">NSW</A>=5 will change the correlation window (used in the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A>) to a 9x5 area.  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#nlw">NLW</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#nsw">NSW</A> must be specified as odd
+positive integers.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#nsearch">NSEARCH</A>=25 will increase the search <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> to 25 pixels.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#chi2">CHI2</A> will minimize differences between the computed
+points (CPTS) and the actual points (APTS) by correcting for
+translation errors in the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>.  Angles ANGLA and ANGLB of the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> orientation matrix (OM) are updated.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#chi3">CHI3</A> will correct for rotation and translation errors.
+Angles ANGLA, ANGLB, and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#angln">ANGLN</A> (the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#north">north</A> angle) of the OM
+matrix are updated.
+
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#dbug">DBUG</A> or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#nodbug">NODBUG</A> enables or disables diagnostic messages.
+
+
+GENERAL COMMENTS
+
+The general rules regarding TAE parameters apply:
+
+Commands may be abbreviated, as <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#long">long</A> as enough letters are typed
+to insure uniqueness.
+
+When a command is not followed by a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#value">value</A>, it must be preceded
+by an apostrophe, e.g. '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#trace">TRACE</A>.  The exception is that if the first
+keyword in a list is entered, the apostrophe may be ommitted,
+e.g:
+     &gt	Enter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">LIMB</A> or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">RING</A> L
+
+If you need <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#help">help</A> or want to get out of a routine, try typing
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#help">HELP</A> or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">EXIT</A>.  Sometimes it works, sometimes it doesn't....
+
+
+PROGRAM HISTORY
+
+NAV was developed as a cooperative effort between JPL, Cal-Tech,
+and the University of Arizona.  Software development at Cal-Tech was
+under the direction of Andy Ingersoll.  Software development at Arizona
+was under the direction of Carolyn Porco.
+
+The algorithms implemented in NAV are based on notes provided by Andy
+Ingersoll, 3-19-85 (basic algorithms), and 1-2-86 (eccentric <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> geometry),
+and by Carolyn Porco, 1-12-87 (stellar navigation and Neptune'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A> rings).
+The equations for the planet and planet-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> geometry have been generalized
+to accomodate the tri-axial ellipsoid <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#target">target</A>-body model.
+
+The major part of program development was undertaken at JPL.  The original
+planet <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> algorithm (LIMBPT) was written by Tom Brinck of Cal-Tech.  A major
+portion of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> and stellar geomtry algorithms were written by Vance
+Haemmerle of Arizona.
+
+Original Programmers: Gary Yagi and Vance Haemmerle, 30 September 1985
+<A NAME="CogProg">Current Cognizant Programmer: Gary Yagi</A>
+Revisions:
+ 1985-01-01  GMY  ...Add ringfit routines
+ 1985-02-17  GMY  ...Add eccentric <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> routines
+ 1987-09-11  GMY  ...Change planet model from oblate spheroid to ellipsoid
+ 1988-05-28  GMY  ...New VRDI and SEDR interfaces.
+ 1988-06-26  GMY  ...Add starfit routines
+                  ...Modify program to work on <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>-space images.
+ 1988-06-30  GMY  ...Modify program to work on 1024x1024 display.
+ 1988-07-15  GMY  ...Fix LIMBPT and RINGPT routines to skip over points
+                     not in picture. 
+ 1988-07-20  GMY  ...Modify program to work on halfword images.
+ 1988-07-26  GMY  ...Merge code from Vance Haemmerle'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A> version of NAV.
+		  ...New capabilities include computation of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#phase">phase</A> angle,
+		  ...orbital elements of Saturn'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A> rings, longitudinal
+		  ...<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> profiles, and graphics display of ring <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">profile</A>.
+ 1989-03-17  GMY  ...Read orbital elements from file
+                  ...Numerous bug fixes (FRs 38130,42711,42712)
+ 1989-05-31  VRH  ...<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rl">RL</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ls">LS</A> functions for rings added
+		  ...Chisq, Covarient matrix, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#phase">PHASE</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#lati">LATI</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ll">LL</A> fixed
+                  ...<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">PROFILE</A> for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#master">Master</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#system">system</A> 
+                  ...(* <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#system">System</A> directory dependences removed - UA version)
+ 1989-06-08  VRH  ...<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">RADIUS</A> in <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#master">Master</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#system">system</A> for drawing & fiting
+                  ...<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">PLANE</A> option in fiting (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#trace">TRACE</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">SCAN</A>) for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">RADIUS</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>
+                  ...Use <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> place holders for defining new rings
+                  ...available for every use except <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#srings">SRINGS</A>
+ 1989-07-29  VRH  ...Direct <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A>-Matrix corrections for ANGLA less than 10 degrees
+                  ...Epoch'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A> changed from ERT to Planet time
+                  ...Cursor routines report DN <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#value">value</A>
+                  ...Bug fixes: /C1/ common block, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">Scan</A> limits, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ra">RA</A> in LATLON,
+                  ...<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#getsedr">GETSEDR</A>,GETLAST... to end with planet navigation
+                  ...<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ering">ERING</A> changed: ALPHAp,DELTAp,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#theta">THETA</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#zetaz">ZETAZ</A> only changed
+                  ...using <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">RING</A>=P then all rings updated
+                  ...Labels added to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">profile</A> plots
+ 1989-08-16 VRH   ...Added <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#predict">PREDICT</A> parameter & subroutine
+ 1990-06-01 GMY   ...Galileo conversion.
+                  ...Minor bug fixes (FRs 48219,48452,48454,50799,48218,52848)
+ 1990-07-26 GMY   ...Change PLANET_NAME to TAREGET_NAME in call to SPICESUB.
+ 1991-02-22 GMY   ...Make it work when SEDR or SPICE kernels are not available.
+ 1995-11-01 LWK   ...ported program (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A>-fit only, and no halfword data or
+                     graphics under Unix)
+ 1996-04-04 ARV   ...Added capability to handle non-flight projects.
+                  ...VICAR retrieves <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sclat">SCLAT</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sclon">SCLON</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sunlat">SUNLAT</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sunlon">SUNLON</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#centline">CENTLINE</A>,
+                  ...<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#centsamp">CENTSAMP</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#range">RANGE</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#focal">FOCAL</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scale">SCALE</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#north">NORTH</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#oaline">OALINE</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#oasamp">OASAMP</A>
+                  ...from a MAP2 Perspective Projection label, the command
+                  ...line (these parameters added to command line), or
+                  ...prompts user.  Changes tagged by 'A. VASAVADA'.
+ 1996-04-07 LWK   ...enabled graphics on all platforms
+ 1996-06-24 BAM   ...modified program for new Reseau File Format
+ 1996-08-27 OAM   ...modified program to call getspice2 instead of getspice.
+                     Included provenance parameters. Modified to reference
+                     the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#oef">OEF</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sao">SAO</A> files only when they are needed.
+ 1996-11-06 BTC   ...Changes from 06-Nov-96 version have the marker "CBTC"
+ 1997-02    BTC   ...Fixed several problems with RINGFIT & STARFIT
+                  ...See also RINGORBS.COM to get correct ROEF.DAT(Jupiter/GLL)
+                  ...Fixed broken non-VGR logic around call to VGRCLEAR
+                  ...Fixed mistakes regarding INTEGER vs REAL vars (XDROTATE
+                     argument, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#himag">HIMAG</A> in SUBCMD STARFIT, SL,SS,EL,ES in 
+                     RINGPT2()), and dimensions of HIStogram vector.
+                  ...Fixed broken axis labels in PRDISPLAY (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">PROFILE</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">plot</A>)
+                  ...Fixed broken display code when ZOOM is not 1
+                  ...Improved speed of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> display via buffering in AVLINE()
+                  ...Added <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gcolor">GCOLOR</A> parameter to allow the user to define
+                     the graphics <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#overlay">overlay</A> color (default is CYAN).
+                  ...Added RPARAMS call to STARFIT()
+                  ...Fixed STARFIT et al. for J2000 Reference Frame (ISYSTEM=1)
+ 1998-07-23 RRP   ...Updated to obtain four digit year and use four digit year
+                  ...through out the program. The variable name is IDATE and it
+                  ...is used in calculating number of days since 1950 in T1950
+                  ...subroutine (Y2K-FRD&lt901&gt).
+ 1999-01-07 RRP   ...Updated to display four digit year (Y2K-FRD&lt901&gt).
+ 2000-04-01 GMY  Fixed display of halfword data (AR 9059)
+ 2000-05-12 GMY  Fixed <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">RADIUS</A> count in .PDF.
+ 2000-05-13 GMY  Removed compiler errors on SGI and Linux.
+ 2000-05-26 GMY  Fix display of halfword when going from <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#czoom">CZOOM</A>=2 back to '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#h">H</A>.
+ 2000-06-12 GMY  Replace PARMTST1 with XVIPTST, replace UPRCASE w library vers.
+ 2002-01-02 VRH   ...Increase max <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> size to accomodate Cassini images
+                  ...Make default FOV not Voyager specific
+                  ...Add Cassini as a recognized Project
+ 2002-10-16 VRH  Fixed some compile warnings in LIMBFIT
+                  ...Updated <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A> catalog and GETSTARS to work on all platforms
+                  ...New <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sao">SAO</A> catalog is sao_idl.str, no longer blocked
+                  ...<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">Star</A> catalogs now contain star name and spectral <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">type</A>
+                  ...For nearest <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A>: name and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type">type</A> printed when cursored
+                  ...Fixed time used for proper motion (T1950 call was gone)
+                  ...Fixed T1950 routine, was calculating days from 1955
+                  ...Upped maximum number of stars to 2000
+                  ...Merged in bug fixes done at LPL 1989-1995
+                  ...Added Diagonal and Smear plotting to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">PROFILE</A> (LPL 1992)
+                  ...Add more data to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#phase">PHASE</A> routine (LPL Mar 1, 94)
+                  ...Added printout of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">S</A>/<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A> to central body (LPL May 10, 95)
+                  ...Fixed bug in usage of CONVISOS in RINGFIT
+                  ...Fixed Orbital Elements file code
+                  ...ME for Rings now in ISYSTEM (B1950 or J2000) in MECALC
+                  ...Use GETCAMCON instead of VGRCAM in EDITNAV <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">CAMERA</A> select
+                  ...Fixed use of VGR BLEM files on unix (call VIC1LABX)
+                  ...Update documentation and PDF
+ 2006-05-29 LWK  Convert <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sclon">SCLON</A> read in from MP to East.  Fixed some minor bugs
+                 causing build problems or crashes.
+ 2010-02-12 LWK  Changed "west" to "east" in <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#help">Help</A> text for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sclon">SCLON</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sunlon">SUNLON</A>.
+                 Added line to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#help">Help</A> file reminding users that NAV can't be
+                 run in shell-vicar.
+ 2011-07-06 LWK  Added INIT_SPICE before call to PBDATA in routine SPICESUB, since
+                 the new PBDATA needs SPICE kernels and the call to GETSPICE2 clears
+                 the kernel pool on return.
+ 2016-02-18 WLB  Added enable/disable-log to tst*.pdf.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#inp"><H3>INP</H3></A>
+STRING -- REQUIRED
+Input <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> file name
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#spicemode"><H3>SPICEMODE</H3></A>
+Optional keyword
+Location of SPICE kernels
+(LOCAL or REMOTE)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ckname"><H3>CKNAME</H3></A>
+Optional 4-char string
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A>-kernel name
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ckid"><H3>CKID</H3></A>
+Optional 4-char string
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A>-kernel ID
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#institute"><H3>INSTITUTE</H3></A>
+Optional 4-char string
+Facility which created <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#purpose"><H3>PURPOSE</H3></A>
+Optional 4-char string
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#purpose">Purpose</A> for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#reqnum"><H3>REQNUM</H3></A>
+Optional 4-char string
+IPL request number for created <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#cdate"><H3>CDATE</H3></A>
+Optional 12-char string
+Date and time <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> pointing was created
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#groupid"><H3>GROUPID</H3></A>
+Optional 3-char string
+Group which created <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#frame"><H3>FRAME</H3></A>
+INTEGER - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">Image</A> frame number.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera"><H3>CAMERA</H3></A>
+INTEGER - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">Camera</A> serial number
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#target"><H3>TARGET</H3></A>
+STRING - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#target">Target</A> name (e.g. GANYMEDE).
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#res"><H3>RES</H3></A>
+STRING - Input reseau locations.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#blems"><H3>BLEMS</H3></A>
+STRING - Input blemish location.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sao"><H3>SAO</H3></A>
+STRING - Input <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sao">SAO</A> or other <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A> catalog
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gscpfx"><H3>GSCPFX</H3></A>
+STRING - Guide <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">Star</A> Catalog Prefix
+ 1: & 2: are appended (VMS)
+ 1/ & 2/ are appended (Eunuchs(tm)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#oef"><H3>OEF</H3></A>
+STRING - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">Ring</A> Orbital Elements File
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#nlw"><H3>NLW</H3></A>
+INTEGER - Length of correlation window in pixels.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#nsw"><H3>NSW</H3></A>
+INTEGER - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#width">Width</A> of correlation window in pixels.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#nsearch"><H3>NSEARCH</H3></A>
+INTEGER - Search <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> (pixels).
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb"><H3>LIMB</H3></A>
+Call Limbfit command processor
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan"><H3>SCAN</H3></A>
+KEYWORD - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">Scan</A> the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#trace"><H3>TRACE</H3></A>
+KEYWORD - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#trace">Trace</A> the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#limb">limb</A> or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scpts"><H3>SCPTS</H3></A>
+KEYWORD - Display computed points
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sapts"><H3>SAPTS</H3></A>
+KEYWORD - Display acquired high-contrast points
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sblems"><H3>SBLEMS</H3></A>
+KEYWORD - Display blemish locations
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sres"><H3>SRES</H3></A>
+KEYWORD - Display reseau locations
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#czoom"><H3>CZOOM</H3></A>
+INTEGER - Center display and zoom
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#h"><H3>H</H3></A>
+KEYWORD - Display entire <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c"><H3>C</H3></A>
+KEYWORD - Read cursor position
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#hist"><H3>HIST</H3></A>
+KEYWORD - Histogram of displayed <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A> area
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#spikes"><H3>SPIKES</H3></A>
+INTEGER - Number of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#spikes">spikes</A> in histogram.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#stretch"><H3>STRETCH</H3></A>
+INTEGER - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#stretch">Stretch</A> the displayed <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#astretch"><H3>ASTRETCH</H3></A>
+2 real values - Percentage saturation at
+low and high ends of the histogram.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gerase"><H3>GERASE</H3></A>
+Erase graphics <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A>
+!CBTC
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#gcolor"><H3>GCOLOR</H3></A>
+Change graphics color
+(W,R,G,BLUE,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A>,M,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#y">Y</A>,BLACK)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sblems"><H3>SBLEMS</H3></A>
+KEYWORD--OPTIONAL
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sblems">SBLEMS</A> will display the locations of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> blemishes
+(overlayed in graphics).  The blemishes are automatically retrieved from
+blemish files located in WMS_VGR:[VGR1.NA], WMS_VGR:[VGR1.WA], and
+WMS_VGR:[VGR2], or the equivalent directories /project/vgr/vgr1/wa,
+/project/vgr/vgr1/na, and /project/vgr/vgr2 under Unix.
+The user may optionally specify the location of the blemish file via the 
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#blems">BLEMS</A> parameter.  The program checks to ensure that the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> serial 
+number associated with the file (as extracted from the label) matches the 
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> serial number associated with the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sres"><H3>SRES</H3></A>
+KEYWORD--OPTIONAL
+Entering <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sres">SRES</A> will display the reseau locations (overlayed in graphics).
+If the reseau has not been removed, this display will give an indication
+of how accurately the reseau has been located (and consequently the
+accuracy of the geometric correction).
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#overlay"><H3>OVERLAY</H3></A>
+INTEGER - Draw latitude-longitude grid
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#lati"><H3>LATI</H3></A>
+REAL - Draw parallel at given latitude
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#long"><H3>LONG</H3></A>
+REAL - Draw meridian at given longitude
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rl"><H3>RL</H3></A>
+REAL - Convert from <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A>-lon to line-sample
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ll"><H3>LL</H3></A>
+REAL - Convert from lat-lon to line-sample
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ls"><H3>LS</H3></A>
+REAL - Convert from line-sample to lat-lon
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#edit"><H3>EDIT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#edit">Edit</A> navigation data
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#params"><H3>PARAMS</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#edit">Edit</A> processing parameters
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius"><H3>RADIUS</H3></A>
+REAL - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">Ring</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> (km)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring"><H3>RING</H3></A>
+STRING - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> name.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#srings"><H3>SRINGS</H3></A>
+KEYWORD - Show <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#system">system</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile"><H3>PROFILE</H3></A>
+KEYWORD - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">Plot</A> radial or longitudinal <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">profile</A> of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> sector.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#type"><H3>TYPE</H3></A>
+STRING - R for radial <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">profile</A> and L for longitudinal.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rlimits"><H3>RLIMITS</H3></A>
+REAL - Starting and ending radial limits for sector (km).
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#llimits"><H3>LLIMITS</H3></A>
+REAL - Starting and ending longitude limits for sector (degrees).
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#lwidth"><H3>LWIDTH</H3></A>
+REAL - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#width">Width</A> in longitude of diagonal radial <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scan">scan</A> (degrees).
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#cp"><H3>CP</H3></A>
+KEYWORD - Cursor up a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#value">value</A> on the displayed <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">plot</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#output"><H3>OUTPUT</H3></A>
+STRING - Specify file name for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#output">output</A> of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">profile</A> to disc.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#phase"><H3>PHASE</H3></A>
+KEYWORD - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#output">Output</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#phase">phase</A> angles also to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#profile">profile</A> file
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot"><H3>PLOT</H3></A>
+KEYWORD - Redisplay <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plot">plot</A> that was erased by redisplay of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#master"><H3>MASTER</H3></A>
+STRING - Specify <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#master">master</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#c">C</A>-matrix
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ering"><H3>ERING</H3></A>
+KEYWORD - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#edit">Edit</A> orbital parameters
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane"><H3>PLANE</H3></A>
+STRING - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A> name
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#inner"><H3>INNER</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#inner">Inner</A> edge of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#outer"><H3>OUTER</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#outer">Outer</A> edge of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#width"><H3>WIDTH</H3></A>
+REAL - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#width">Width</A> of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> (pixels)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star"><H3>STAR</H3></A>
+KEYWORD - Invokes STARFIT routine.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#himag"><H3>HIMAG</H3></A>
+INT - highest magnitude <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A> displayed.
+!CBTC REAL - highest magnitude <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#star">star</A> displayed.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sstars"><H3>SSTARS</H3></A>
+KEYWORD - Display starmap.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#mstars"><H3>MSTARS</H3></A>
+KEYWORD - Move (register) starmap.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rd"><H3>RD</H3></A>
+REAL - Right ascension and decilination.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#chi2"><H3>CHI2</H3></A>
+Solve for translation errors in <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> pointing.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#chi3"><H3>CHI3</H3></A>
+Solve for translation and rotation errors in <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A> pointing.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#dbug"><H3>DBUG</H3></A>
+Cause diagnostic messages to be printed.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#nodbug"><H3>NODBUG</H3></A>
+Suppress diagnostic messages (default).
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#geodet"><H3>GEODET</H3></A>
+Use planetographic latitudes
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#geocen"><H3>GEOCEN</H3></A>
+Use planetocentric latitudes
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rb"><H3>RB</H3></A>
+REAL - Minor equatorial <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> (km)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rc"><H3>RC</H3></A>
+REAL - Polar <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#radius">radius</A> (km)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#lora"><H3>LORA</H3></A>
+REAL - Longitude of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ra">RA</A> (deg)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#fl"><H3>FL</H3></A>
+REAL - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">Camera</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#focal">focal</A> length (mm)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#oaxis"><H3>OAXIS</H3></A>
+REAL - Optical axis intercept
+(line,sample) coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sc"><H3>SC</H3></A>
+REAL - Picture <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scale">scale</A> (pixels/mm)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ssp"><H3>SSP</H3></A>
+REAL - Spacecraft position (lat,lon)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sol"><H3>SOL</H3></A>
+REAL - Sun position (lat,lon)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#pc"><H3>PC</H3></A>
+REAL - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#object">Object</A>-space planet-center
+ (line,sample)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ispc"><H3>ISPC</H3></A>
+REAL - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">Image</A>-space planet-center
+ (line,sample)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#wapc"><H3>WAPC</H3></A>
+REAL - Wide-angle <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#object">object</A>-space
+ planet-center (line,sample)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#waispc"><H3>WAISPC</H3></A>
+REAL - Wide-angle <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#image">image</A>-space
+ planet-center (line,sample)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#angln"><H3>ANGLN</H3></A>
+REAL - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#north">North</A> angle
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#range"><H3>RANGE</H3></A>
+REAL - Spacecraft <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#range">range</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#rlim"><H3>RLIM</H3></A>
+REAL - Min and max <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> radii (km)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#target"><H3>TARGET</H3></A>
+STRING - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#target">Target</A> body name
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#save"><H3>SAVE</H3></A>
+KEYWORD - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#save">Save</A> navigation data
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#restore"><H3>RESTORE</H3></A>
+KEYWORD - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#restore">Restore</A> navigation data
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#getsedr"><H3>GETSEDR</H3></A>
+KEYWORD - Retrieve SEDR nav data
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#status"><H3>STATUS</H3></A>
+KEYWORD - Print navigation data or processing parameters
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#smaa"><H3>SMAA</H3></A>
+REAL - Semi-major axis of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ecc"><H3>ECC</H3></A>
+REAL - Eccentricity of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#incl"><H3>INCL</H3></A>
+REAL - inclination angle of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ring">ring</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#plane">plane</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#pizero"><H3>PIZERO</H3></A>
+REAL - Longitude of periapse
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#omegz"><H3>OMEGZ</H3></A>
+REAL - Longitude of ascending node
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#ra"><H3>RA</H3></A>
+REAL - Right ascension of planet'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A> pole
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#dec"><H3>DEC</H3></A>
+REAL - Declination of planet'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A> pole
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#theta"><H3>THETA</H3></A>
+REAL - Orientation of Earth'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A> pole, 1977
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#zetaz"><H3>ZETAZ</H3></A>
+REAL - Orientation of Earth'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#s">s</A> pole, 1977
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sclat"><H3>SCLAT</H3></A>
+ REAL - Sub spacecraft latitude
+in  degrees.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sclon"><H3>SCLON</H3></A>
+REAL - Sub spacecraft longitude
+in degrees east.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sunlat"><H3>SUNLAT</H3></A>
+REAL - Sub solar latitude in
+degrees.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sunlon"><H3>SUNLON</H3></A>
+REAL - Sub solar longitude in
+degrees east.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#centline"><H3>CENTLINE</H3></A>
+REAL - Line of planet center.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#centsamp"><H3>CENTSAMP</H3></A>
+REAL - Sample of planet center
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#range"><H3>RANGE</H3></A>
+REAL - Distance from spacecraft to planet center in km.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#focal"><H3>FOCAL</H3></A>
+REAL - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">Camera</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#focal">focal</A> length.
+In mm.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scale"><H3>SCALE</H3></A>
+REAL - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">Camera</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#scale">scale</A>. Pixels/mm.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#north"><H3>NORTH</H3></A>
+REAL - The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#north">north</A> angle in
+degrees clockwise from east.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#oaline"><H3>OALINE</H3></A>
+REAL - Line of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A>
+optical axis.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#oasamp"><H3>OASAMP</H3></A>
+REAL - Sample of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#camera">camera</A>
+optical axis.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#clean"><H3>CLEAN</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#clean">Clean</A> bad points
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#sef"><H3>SEF</H3></A>
+for program development only
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#help"><H3>HELP</H3></A>
+List available commands
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit"><H3>EXIT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav_level2.html#exit">Exit</A> from routine
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/nav.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

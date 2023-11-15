@@ -1,0 +1,100 @@
+<HTML>
+<HEAD><title>HTML Help for ZFILL</title></HEAD>
+<BODY>
+<H1>Help for ZFILL</H1>
+<pre>
+ PURPOSE:
+      ZFILL uses a window of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#nlw">NLW</A> lines by <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#nsw">NSW</A> samples to fill in void areas
+ of an image.  Void areas are assumed to be zero DN, but can be respecified
+ by parameter.  Voids are filled with the mean value of all 'non-void DN'
+ pixels in the window.  A mask showing filled pixels can be generated on 
+ request.
+      The user can select between two algorithms in ZFILL. The results of the
+ algorithms are identical, but computation times vary dramatically. The
+'sparse' algorithm is faster if the input image is mostly empty; the 'dense'
+algorithm is faster if the input image is mostly complete.
+ EXECUTION:
+
+ Examples
+
+	ZFILL A B 'DENSE
+
+	This command will use the default window (3 by 3) to scan
+	input image A for pixels with value 0.  For each such pixel,
+	the average of the surrounding pixels will be calculated, and 
+	substituted for the original value. The 'dense' algorithm has
+	been chosen, for the input has only a few 0 values to be replaced.
+
+	ZFILL A B REPL=10 EXCL=8
+
+	This command will use the default window (3 by 3) to scan
+	input image A for pixels with value 10.  For each such pixel,
+	the average of the surrounding pixels (excluding those valued 8)
+	will be calculated, and substituted for the original value.
+
+	ZFILL A (B,MSK)  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#nlw">NLW</A>=2  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#nsw">NSW</A>=5
+
+	This command will scan image A for occurrences of 0-valued pixels
+	(zero is the default value for replacement).  These will again
+	be replaced by the averages of the surrounding values.  Note
+	the window <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#size">size</A> which is specified to be 2 by 5.  Even dimensions
+	are automatically increased to the next odd integer, so the
+	window <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#size">size</A> which will be actually used is <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#nlw">NLW</A>=3, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#nsw">NSW</A>=5.
+	Note that the command above produces an mask showing which
+	pixels were changed; mask pixels have DN 0 if they were changed
+	in the output image, and 255 otherwise.
+
+
+ OPERATION:
+
+      ZFILL contains two algorithms. In the 'sparse' (default) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#mode">mode</A>, the 
+  data lines needed for the window of the first pixel are read in and averaged;
+  after this point, as the window moves across the image, the left (and top) 
+  values which move <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#out">out</A> of the window are subtracted from the accumulating
+  variables, and the new pixels appearing at the bottom and right of the window
+  are added in.  Any time a pixel needs to be replaced, the average may be 
+  easily calculated from these variables.
+      In the 'dense' <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#mode">mode</A>, pixels are checked for replacement first; the
+ replacement value is computed only if needed. The entire window must be 
+ examined to compute the replacement value each time a pixel is replaced.
+      As a rule of thumb, the default (sparse) algorithm is faster if the
+ fraction of pixels to be replaced is more than 2/<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#nsw">NSW</A>. The 'dense' algorithm
+ is faster otherwise.
+      When the filling window extends beyond the image (not image window)
+ boundaries, the outside pixels are treated as excluded values.
+
+ WRITTEN BY:  S. Z. Friedman, March 1983
+<A NAME="CogProg"> COGNIZANT PROGRAMMER:  Ron Alley</A>
+ REVISION:  1 20 May 1986
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#inp"><H3>INP</H3></A>
+Input image file
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#out"><H3>OUT</H3></A>
+Output image file(s)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#size"><H3>SIZE</H3></A>
+Standard VICAR <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#sl"><H3>SL</H3></A>
+Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#ss"><H3>SS</H3></A>
+Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#ns"><H3>NS</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#nl"><H3>NL</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#nlw"><H3>NLW</H3></A>
+Window length (lines)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#nsw"><H3>NSW</H3></A>
+Window width (samples)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#replace"><H3>REPLACE</H3></A>
+DN value to <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#replace">replace</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#exclude"><H3>EXCLUDE</H3></A>
+DN value to <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#exclude">exclude</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill_level2.html#mode"><H3>MODE</H3></A>
+Valid: SPARSE, DENSE
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/zfill.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

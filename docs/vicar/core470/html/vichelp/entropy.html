@@ -1,0 +1,148 @@
+<HTML>
+<HEAD><title>HTML Help for ENTROPY</title></HEAD>
+<BODY>
+<H1>Help for ENTROPY</H1>
+<pre>
+ENTROPY computes the entropy of an image providing a measure of the information
+content.   It also calculates the standard deviation of the adjacent 
+pixel-to-pixel DN differences.  The program can be run on any VICAR image 
+and has current application to Galileo SSI and Cassini ISS.  The results can be
+used as an aid in generating predictions for the effectiveness of the ICT,
+DCT, BARC and other compression algorithms.
+ 
+References:
+  1) Gonzalez and Wintz, "Digital Image Processing", Addison-Wesley, 1977.
+  2) JPL Publication 83-17, "Some Practical Universal Noiseless Coding
+     Techniques, Part II", Robert F. Rice and Jun-Ji Lee, March 1, 1983.
+
+EXECUTION:
+ 
+        ENTROPY  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#inp">INP</A>=PIC  [<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#area">AREA</A>=(SL,SS,NL,NS)] ...
+                 [<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#distfile">DISTFILE</A>=DISTRIBUTION_FILE] ['<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#phist">PHIST</A>] ['<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#zeroes">ZEROES</A>]
+                 ['LABEL] [<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#value">VALUE</A>=TCL_VAR]
+
+where
+        PIC is the input image.  PIC must be a byte image.  PIC may be
+        arbitrarily large.
+ 
+        (OPTIONAL) <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#area">AREA</A> specifies the area or region of the input image
+        which is to be used as the basis of the entropy calculation.  If
+        <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#area">AREA</A> is not specified, then the entropy of the entire image is
+        used.  The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#area">area</A> is specified as four integers:
+                <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#area">AREA</A>=(SL,SS,NL,NS)
+        where
+                SL = starting line of the image <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#area">area</A>
+                SS = starting sample of the image <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#area">area</A>
+                NL = number of lines in the image <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#area">area</A>
+                NS = number of samples in the image <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#area">area</A>
+ 
+        (OPTIONAL) DISTRIBUTION_FILE is the output file name for the
+        normalized difference histogram.
+ 
+        (OPTIONAL) '<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#phist">PHIST</A> controls whether or not a histogram of the
+        differences between adjacent pixels is printed to the screen.
+        Note: This requires a 132 column display.
+ 
+        (OPTIONAL) '<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#zeroes">ZEROES</A> will cause differences having zero frequencies to
+        be included in the printout (normally these are excluded).
+        Note:  This keyword does not affect the data written to
+        DISTRIBUTION_FILE.
+
+        (OPTIONAL) 'LABEL will update the VICAR label with the computed 
+         entropy <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#value">value</A>.  This keyword only works with CASSINI images.
+
+        (OPTIONAL) TCL_VAR stores the computed entropy <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#value">value</A> into a TCL 
+        variable, which can be passed to another VICAR program.
+ 
+ 
+RESTRICTIONS:
+ 
+        PIC must be a byte or halfword format.
+        Number of samples may not exceed 10000.
+        Input DN must be in the range 0 - 4095
+ 
+OPERATION:
+ 
+The entropy of an image is defined as follows (see ref. 2, pages 2-5).
+ 
+        ENTROPY = - SIGMA(p log p )
+                       j   j   2 j
+where
+        p  =  probability that two horizontally adjacent pixels have
+         j    a difference j, where  -4095&ltj<4095.
+and the summation is taken from j=-4095 to +4095.  Entropy is in units of
+bits/pixel.
+
+Specifying the optional output file, <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#distfile">DISTFILE</A>, will cause the program to
+create a file containing the normalized pixel-to-pixel difference
+distribution.  This file contains differences having zero frequencies,
+i.e., it is complete.
+ 
+If the keyword '<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#phist">PHIST</A> is specified, a histogram of the differences
+between adjacent pixels is printed.  Specifying '<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#zeroes">ZEROES</A> will cause differences
+having zero frequencies to be included in the printout (normally these are
+excluded).  '<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#zeroes">ZEROES</A> has no affect on the data written to the difference
+distribution file.
+ 
+Example:  ENTROPY  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#inp">INP</A>=input.dat <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#area">AREA</A>=(193,218,10,10)
+ 
+Example:  ENTROPY  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#inp">INP</A>=input.dat (193,218,10,10) <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#distfile">DISTFILE</A>=diffhist.dat
+ 
+Example:  ENTROPY  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#inp">INP</A>=input.dat <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#distfile">DISTFILE</A>=diffhist.dat  '<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#phist">PHIST</A>  '<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#zeroes">ZEROES</A>
+ 
+Example:  ENTROPY  input.dat diffhist.dat  '<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#phist">PHIST</A>  '<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#zeroes">ZEROES</A>
+ 
+ 
+WRITTEN BY:  Mike Malcom, 15 July 1989
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Gary Yagi</A>
+1994-04-03 - Added automatic capability to print out the name of the input
+             file.  This is useful for identifying results when ENTROPY is used in a
+             large PDF file
+1996-08-01 - Added <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#area">AREA</A> parameter to allow specifying part of image to process.
+1996-09-07 - Added calculation of SIGMA_DELTA_DN and optional capability to
+             write normalized difference histogram to a file.  Output also includes
+             number of points used in calculations.
+1997-07-10 TXH - ported from VAX/VMS to UNIX and ALPHA/VMS.
+                 Included changes made by CCA and combined 
+                 features that were added on the MIPS' version
+                 during software maintenance.  Now, the program will
+                 support images from Galileo and Cassini.
+2000-04-20 CCA - added halfword capability (to 4095),
+                 label add and output to TCL variable.
+                 made un-project-specific by putting results into
+                 history label instead of property label.  Extended
+                 field for reporting number of pixels used.  Fixed
+                 help and test files.
+2016-08-15 WLB - Removed non-ascii characters and VMS from entropy.pdf. Removed
+                 VMS/DCL calls from, and enabled session log in tstentropy.pdf.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#inp"><H3>INP</H3></A>
+The filename of the
+input image.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#area"><H3>AREA</H3></A>
+INTEGER-4 values specifying the
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#area">area</A> to calculate the entropy of.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#distfile"><H3>DISTFILE</H3></A>
+STRING-optional output file.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#phist"><H3>PHIST</H3></A>
+KEYWORD-print a histogram
+of the differences
+between adjacent pixels.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#zeroes"><H3>ZEROES</H3></A>
+KEYWORD-include zero frequencies
+in the printout
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#mode"><H3>MODE</H3></A>
+Indicates whether to put the
+entropy <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#value">value</A> into the
+frame's label. (LABEL,NOLABEL)
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#value"><H3>VALUE</H3></A>
+The name of the TCL
+variable to contain the
+entropy <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy_level2.html#value">value</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/entropy.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

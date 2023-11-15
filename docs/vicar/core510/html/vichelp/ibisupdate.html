@@ -1,0 +1,147 @@
+<HTML>
+<HEAD><title>HTML Help for IBISUPDATE</title></HEAD>
+<BODY>
+<H1>Help for IBISUPDATE</H1>
+<pre>
+IBISUPDATE is a VICAR program which copies corrected <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">camera</A> pointing data
+from an IBIS SEDR file to a SPICE C-kernel.  IBISUPDATE is one of a suite
+of programs used primarily for creating digital mosaics.  The program
+currently works for Galileo SSI only.
+
+EXECUTION:
+
+  IBISUPDATE <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#inp">INP</A>=ibisfile  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#target">TARGET</A>=targetname  user-parameters...
+where
+  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#inp">INP</A> is the input IBIS SEDR file, and
+  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#target">TARGET</A> is the name of the planet, satellite, or asteroid in the image.
+
+The IBIS SEDR file is originally created by IBISNAV, and later updated with
+corrected pointing via OMCOR2.
+
+OPERATION:
+
+The data for each image is read from the IBIS SEDR file.  If the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#scet">SCET</A> parameter
+is specified, the records matching the input SCETs are processed.  Otherwise,
+all records in the IBIS SEDR file are processed.  Processing consists extracting
+the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">camera</A> pointing and storing it in the MIPS C-kernel MIPS_NEAR.CK.
+
+To later access the updated navigation information with programs like
+MAP2, the user should use the CKNAME parameter with a value of NEAR.
+
+LOCAL AND REMOTE SPICE ACCESS:
+
+Corrected <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">camera</A> pointing may be stored in local or remote (e.g. at JPL) SPICE
+C-kernels.  Remote access is via a SPICE server.
+
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#spicemode">SPICEMODE</A> specifies whether local or remote SPICE access is to be used.
+If defaulted, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#spicemode">SPICEMODE</A> is set to the value of the logical name (or
+environmental variable) DEFAULTSPICE.
+
+PARAMETERS FOR STORING THE IMPROVED <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">CAMERA</A> POINTING:
+
+The following optional parameters are used to store provenance information along
+with the improved (C-Smithed) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">camera</A> pointing computed by the program.  This
+provenance information is stored in the (C kernel) segment identifier for the
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">camera</A> pointing data.  In cases where there are several versions of camera
+pointing for an image in a given C kernel, this provenance information can
+later be used to retrieve a specific instance of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">camera</A> pointing from the
+kernel.
+
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#purpose">PURPOSE</A> identifies the purpose for creating the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">camera</A> pointing.
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#reqnum">REQNUM</A> identifies the request number associated with the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">camera</A> pointing.
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#cdate">CDATE</A> specifies the date and time the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">camera</A> pointing was created.
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#groupid">GROUPID</A> identifies the group which created the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">camera</A> pointing.
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#institute">INSTITUTE</A> identifies the facility which created the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">camera</A> pointing.
+
+See the level 2 help (via the TAE tutor <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#mode">mode</A>) for further details.
+
+Example:  'REMOTE <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#institute">INSTITUTE</A>=DLR USERID=TYR stores the improved <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">camera</A> pointing
+          via the SPICE server.  Provenance data regarding the facility (DLR)
+          and user (Thomas Roatsch) who created the data is included.
+
+GALILEO'S FULL FRAME <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#mode">MODE</A> AND SUMMATION MODE
+
+In conformance to new convention, the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">CAMERA</A> s/n for GLL is now used to specify
+Full Frame <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#mode">Mode</A> (if s/n = 1) or Summation Mode (if s/n = 2).  If the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">CAMERA</A>
+is not specified the program defaults <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">CAMERA</A> to Full Frame <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#mode">Mode</A> (s/n = 1).
+
+<A NAME="examples">EXAMPLES:</A>
+
+             IBISNAV out=IB.SDR  user-parameters...
+
+                ( run OMCOR )
+
+             IBISUPDATE IB.SDR  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#target">TARGET</A>=JUPITER CAM=5 'UPDATE                       <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#project">PROJECT</A>=VGR-1
+     -or-    IBISUPDATE IB.SDR  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#target">TARGET</A>=JUPITER 'UPDATE                       <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#project">PROJECT</A>=GLL
+
+             MAP2 image  SEDRSRC=NEAR parameters
+
+PROGRAM HISTORY:
+
+Original programmer: Jean Lorre
+<A NAME="CogProg">Cognizant programmer: Jean Lorre</A>
+Revisions:
+  When         Who  What
+  -----------  ---  -----------------------------------------------------------
+  10 Jan 1997  SMC  Corrected .PDF documentation                      (FR89979)
+  14 Nov 1996  SMC  Fixed so that <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#spkid">SPKID</A> from the new IBISNAV file format is 
+                    recognized and passed to PUTSPICE95 to write to CK (FR89225)
+  28 Aug 1996  SMC  Implemented support for GLL Summation <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#mode">Mode</A> processing
+                    Obtain <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">Camera</A> S/N from IBIS file, use CAMERA as override 
+                    (DFR)
+   6 Jun 1996  GMY  Implemented GETSPICE95/PUTSPICE95 interface
+  20 Oct 1995  FFM  Ported to Unix
+  24 Aug 1998  RRP  Made it Y2K compliant. Put check for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#scet">scet</A> (Y2K FRD&lt901&gt).
+  04 Jan 1999  TXH  Corrected call to 'mvcl' from 'mvlc' in moving <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#spkid">SPKID</A>.
+                    (AR-101223).
+  14 Aug 2002  GMY  Linux compile changes:  cosd(angle) to cos(angle*dtr)
+  29 Jun 2006  LWK  enabled GETSPICE95 call to work for Cassini
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#inp"><H3>INP</H3></A>
+String
+input IBIS SEDR file
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#project"><H3>PROJECT</H3></A>
+The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#project">project</A> ID.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#object"><H3>OBJECT</H3></A>
+Specifies whether the 
+images are geometrically 
+corrected.
+IMAGE valid only 
+for GLL <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#project">project</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#scet"><H3>SCET</H3></A>
+The spacescraft event 
+time for each image.
+Required only for GLL <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#project">project</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#target"><H3>TARGET</H3></A>
+String 12 characters
+The name of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#target">target</A> body
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera"><H3>CAMERA</H3></A>
+Optional Array of Integers
+serial number of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">camera</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#spicemode"><H3>SPICEMODE</H3></A>
+Optional keyword
+Location of SPICE kernels
+(LOCAL or REMOTE)
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#institute"><H3>INSTITUTE</H3></A>
+Optional 4-char string
+Facility which created <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#purpose"><H3>PURPOSE</H3></A>
+Optional 4-char string
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#purpose">Purpose</A> for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#reqnum"><H3>REQNUM</H3></A>
+Optional 4-char string
+IPL request number for created <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#cdate"><H3>CDATE</H3></A>
+Optional 12-char string
+Date and time <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">camera</A> pointing was created
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#groupid"><H3>GROUPID</H3></A>
+Optional 3-char string
+Group which created <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate_level2.html#camera">camera</A> pointing
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/ibisupdate.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

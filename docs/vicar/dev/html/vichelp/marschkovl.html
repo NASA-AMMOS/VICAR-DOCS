@@ -1,0 +1,164 @@
+<HTML>
+<HEAD><title>HTML Help for MARSCHKOVL</title></HEAD>
+<BODY>
+<H1>Help for MARSCHKOVL</H1>
+<pre>
+PURPOSE:
+To determine if there is sufficient  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#overlap">overlap</A> between a list of putative left
+images and a list of putative right images. Matching pairs are saved to 2
+output files, 1 file for the left images (one line per image) and 
+1 file for the right images.
+
+This program is for use in 3 possible scenarios
+1) Long-baseline stereo, where a rover moves several meters to enable 
+ranging to distant objects.
+2) Arm-based camera stereo using a single, but moving, camera, 
+such as the MER MI, PHX RAC, or MSL MAHLI; 
+3) Images which are taken in stereo but were not sequenced as
+stereo images (which is fairly common for MER pancam, and likely others).
+
+This is a multimission program. 
+
+MARSCHKOVL supports any mission, instrument, and camera model supported by the
+Planetary Image Geometry (Pig) software suite.
+
+EXECUTION:
+There are two ways to present input images:
+
+marschkovl <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#inp">inp</A>=(ascii_listof_putative_left_files,ascii_listof_putative_right_files)
+or
+marschkovl <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#inp">inp</A>=ascii_listoffiles
+
+In both cases the  ascii lists are  text files.
+
+In the first case, the first (second) list contains the putative left (right) 
+fiilenmes. Each image of the first list is compared with every 
+image of the second list.
+ 
+In the second case every image in the list is treated as the left image 
+and is compared with every succeeding image, treated as the right image. For a 
+list of length n, this results in n*(n-1) comparisons. 
+
+USAGE:
+
+METHOD:
+
+For each left/right comparison
+
+1)  the left image camera model is used to project every pixel in the 
+left image to a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#surface">surface</A> location. This surface location is then 
+projected into the right image and tested to see if it lies within the image
+borders. 
+
+2) A percentage of pixels satisfying the above test is tested to see
+if it is greater than a user supplied threshold. 
+
+3) If a left/right image pair satisfies the test, the left/right image filename 
+is appended the first/second file spedified by the command line variable "<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#out">OUT</A>".
+ 
+
+
+HISTORY:
+3-01-08 Initial. This code is mostly ripped from the marstie program. 
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Mathew Yeates</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#inp"><H3>INP</H3></A>
+Input 1 or 2 file lists.
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#out"><H3>OUT</H3></A>
+Output. 2 Files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#overlap"><H3>OVERLAP</H3></A>
+Minimum acceptable <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#overlap">overlap</A> percentage
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#overlap">overlap</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#band"><H3>BAND</H3></A>
+The vicar image 
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#band">band</A> number. 
+Defaults to 1
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#border"><H3>BORDER</H3></A>
+Pixels to avoid
+on picture <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#border">border</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#spacing"><H3>SPACING</H3></A>
+The stride to the next sample in the reference image.
+Also, the stride to the next line in the reference image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#sep_angle"><H3>SEP_ANGLE</H3></A>
+Maximum separation angle
+for an image pair.
+
+
+
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#normal"><H3>NORMAL</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#normal">normal</A> vector.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#ground"><H3>GROUND</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#ground">ground</A> point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#surf_coord"><H3>SURF_COORD</H3></A>
+Coordinate system used to define
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#surface">surface</A> parameters.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#surface"><H3>SURFACE</H3></A>
+The type of mars
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#surface">surface</A> to use INFINITY, PLANE, 
+SPHERE1, SPHERE2, MESH.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#surf_mesh"><H3>SURF_MESH</H3></A>
+Mesh file for <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#surface">surface</A> model
+
+VARI <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#surf_csfile">SURF_CSFILE</A> 
+File containing CS for <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#surface">surface</A>
+model
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+Ignored by marschkovl.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#coord">COORD</A>/mission combos.
+Ignored by marschkovl.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marschkovl.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

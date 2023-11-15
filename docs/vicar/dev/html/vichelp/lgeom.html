@@ -1,0 +1,218 @@
+<HTML>
+<HEAD><title>HTML Help for LGEOM</title></HEAD>
+<BODY>
+<H1>Help for LGEOM</H1>
+<pre>
+PURPOSE:
+     LGEOM is a VICAR applications program which makes geometric
+     changes in pictures.  It can be used for correcting geometric
+     distortion, increasing picture <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#size">size</A>, and reducing picture
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#size">size</A>.  LGEOM should be used instead of MGEOM if any output
+     line is rotated more than 85 degrees from its input position.
+     It uses an intermediate data set which is created and deleted
+     automatically, unless the entire input picture fits in memory.
+     In this case, LGEOM operates in a one-pass mode.  Memory is 
+     dynamically allocated with STACKA.
+EXECUTION:
+
+     lgeom (INPUT,PDS) OUTPUT <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#size">SIZE</A> QUALIFIERS TIEPOINTS
+WHERE
+     INPUT          is the input data set.
+     PDS            is an optional parameter and tiepoints dataset 
+                      created by program MAP.  (Except for in MAP2,
+                      LGEOM is almost always run with the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#parms">PARMS</A> parameter
+                      as the means of entering the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#tiepoint">TIEPOINT</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#nah">NAH</A>, and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#nav">NAV</A>
+                      parameters.)
+     OUTPUT         is the output data set.
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#size">SIZE</A>           is a VICAR size field for the output set
+     QUALIFIERS     consist of any of the following parameters
+	  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#idsnam">IDSNAM</A>	indicates an alternative name for the
+			itermediate data set (IDS)
+	  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#idsns">IDSNS</A>		indicates an alternative line <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#size">size</A> for IDS
+          NOIN          indicates no interpolation is to be done
+	  NOIZ		indicates no interpolation with zero DN values.
+     TIEPOINTS      is a collection of parameters as follows:
+	  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#nah">NAH</A>		The number of (<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#tiepoint">tiepoint</A>) rectangles in the horizontal
+			direction (Number of areas horizontal)
+	  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#nav">NAV</A>		The number of rectangles vertically.
+	  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#tiepoint">TIEPOINT</A>	A set of points mapping the rectangles in the
+			output picture to quadrilaterals in the input
+			picture.  For details, see help under the
+			<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#tiepoint">TIEPOINT</A> parameter.
+           or
+                        PDS, but in the new VAX <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#format">format</A>).  
+                        LGEOM is almost always run with the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#parms">PARMS</A> parameter
+                        as the means of entering the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#tiepoint">TIEPOINT</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#nah">NAH</A>, and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#nav">NAV</A>
+                        parameters.
+
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#tiepoint">Tiepoint</A> rectangles need not be defined for the entire picture.
+If <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#an">an</A> area of the picture is not within a defined rectangle, it is geomed 
+using parameters from the nearest defined rectangle. Thus, in order to have 
+a portion of the input picture reproduced exactly in the output, it is 
+necessary to define a rectangle with zero displacement around the area.
+
+If the output picture does not fill the area reserved for it by the
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#size">SIZE</A> parameter, the pixels in the unfilled area are given the value zero. 
+If the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#size">size</A> field is defaulted, the output picture will be the same size as 
+the input picture.
+
+The default mode for LGEOM is four-point bi-linear interpolation;
+i.e. the output pixels will be a function of the DN values of the four
+points in the input picture closest to the fractional line and sample
+calculated by the specified transformation.
+
+The input image may either be byte or halfword data.  The data <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#format">format</A> is taken
+from the VICAR label of the input file.  The output image has the same data 
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#format">format</A> (byte or halfword) as the input image.  
+
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#size">size</A> field parameters refer to samples, 
+even for halfword data.  For example, the following
+will enlarge a 100 line by 100 sample (200 bytes) halfword data set A to 216 
+lines by 150 samples (300 bytes).
+	lgeom A B <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#size">SIZE</A>=(1,1,216,150) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#nah">NAH</A>=1 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#nav">NAV</A>=1  	 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#tiepoint">TIEPOINT</A>=(1,1,1,1, 1,100,1,150, 100,1,216,1, 100,100,216,150)
+
+The keyword NOIN can be used to specify no interpolation. In this
+case the DN value of the point closest to the fractional line and sample
+is used. This method (sometimes referred to as "nearest neighbor") is
+somewhat faster, but is not as accurate as the four point interpolation.
+
+The keyword NOIZ can be used to specify no interpolation with DN values of
+zero.  This is used when zero represents missing data and you do not want
+to interpolate at the boundary of good data and missing data.
+
+LGEOM may accept parameters from disk as a second input file. 
+This is the method used in the MAP2 procedure.  The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#format">format</A>
+of this disk data set is a single record consisting of NP+1 words, where
+NP is the number of words of actual parameters and the first word contains
+NP. This is <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#an">an</A> optional data set.
+
+The common usages of LGEOM are within procedures such as MAP2 and MAPTRANS,
+or following such programs as PICREG, RG, TIECONM, or TIEPARM.  TIEPARM, for
+example, could be used to convert tiepoints in <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#an">an</A> IBIS interface file into
+a VICAR <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#parms">PARMS</A> file that could be entered as the PARMS parameter in the
+LGEOM command line.
+<A NAME="examples">EXAMPLE</A>
+
+tieconm <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#out">OUT</A>=TIEPARMS 'LGEOM <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#nah">NAH</A>=40 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#nav">NAV</A>=40            MINL=1.,MINS=1.,MAXL=3000.,MAXS=3000.           TIEPOIN=(1,1,1,1, 1,3000,1,10, 3000,1,10,1, 3000.29,3000,10,10) 
+lgeom LGTEST LGENLARG <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#size">SIZE</A>=(1,1,3000,3000) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#parms">PARMS</A>=TIEPARMS
+
+     In this example,  the tiepoints are used to set up a 3000
+     x  3000 grid for use by LGEOM.   The tiepoints given to TIECONM
+     can  be scattered  over  the  image  in  any  fashion   whereas 
+     LGEOM requires a regular grid.
+LIMITATIONS:
+
+  A. When a second input dataset is used to enter the rectangles (MAP),
+     a maximum of 400 rectangles can be used.  When the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#tiepoint">TIEPOINT</A> or <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#parms">PARMS</A>
+     parameter is used, the number of rectangles is unlimited.  However,
+     the TAE maximum count of 32767 limits the number of rectangles to 8192.
+
+  B. The maximum number of samples per line in the output file is 32767.
+
+  C. Since STACKA is used to allocate memory, the maximum picture <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#size">size</A>
+     is unlimited.  When very large pictures are used, the page file quota
+     must be large enough to accomodate a buffer used to map the blocks
+     in the Intermediate Data Set.  The number of bytes in this buffer is
+     6 times the estimated number of blocks in the Intermediate Data Set.
+     (The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#ratio">RATIO</A> parameter can be used to change the estimated number of
+     blocks.)
+
+  D. The output <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#tiepoint">tiepoint</A> coordinates must be whole numbers.  Users rarely
+     need to know of this restriction since the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#tiepoint">TIEPOINT</A> parameter is
+     usually generated by another VICAR program.  Users only need to be
+     concerned about this if they are actually entering specific values
+     for the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#tiepoint">TIEPOINT</A> parameter for the LGEOM command line.
+
+RECORD <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#size">SIZE</A> OF INTERMEDIATE DATA SET FOR LGEOM (<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#idsns">IDSNS</A>):
+
+The optimum <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#size">size</A> of the intermediate data set (IDS) for LGEOM is a
+function of the number of rectangles, input and output sizes, and the
+available buffer space.
+
+In general, the IDS record length should decrease as the number of pixels
+in the output file increases.  The number of lines needed for IDS is 
+calculated inside the program.
+
+ TIMING: 
+  The following CPU times for LGEOM was obtained on a 
+VAX 8650 (MIPL2) in May 1993
+			                                                CPU Time
+gen LGA1 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#nl">NL</A>=1000 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#ns">NS</A>=1000 IVAL=0 
+!
+! Now do 1.2 times enlargement of a BYTE image IN 1 PASS
+lgeom LGA1 LGA2 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#size">SIZE</A>=(1,1,1200,1200) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#nah">NAH</A>=1 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#nav">NAV</A>=1 '<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#print">PRINT</A>    TIEPOIN=(1,1,1,1, 1,1200,1,1000, 1200,1,1000,1, 1200,1200,1000,1000) 
+!  				5-93  SP  CPU TIME ON MIPL2 (VAX8650)    28.53s
+
+For more information, see the file timelgeom.pdf in lgeom.com.
+WRITTEN BY: Howard J Frieden		22 December 1970
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER: Howard J Frieden	 9 November 1990</A>
+
+PORTED TO UNIX: Steve Pohorsky
+
+ REVISION HISTORY
+
+  93-5-26   SP   Made portable for UNIX.  Gave control over progress messages 
+                 to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#print">PRINT</A> parameter.  Added <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#pmem">PMEM</A> parameter for UNIX.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#inp"><H3>INP</H3></A>
+Input and optional
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#tiepoint">tiepoint</A> data set names
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#out"><H3>OUT</H3></A>
+Output file name
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#size"><H3>SIZE</H3></A>
+Standard VICAR <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#size">Size</A> Field
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#sl"><H3>SL</H3></A>
+Starting line for output
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#ss"><H3>SS</H3></A>
+Starting sample for output
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#nl"><H3>NL</H3></A>
+Number of lines for output
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#ns"><H3>NS</H3></A>
+Number of samples for output
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#idsnam"><H3>IDSNAM</H3></A>
+Name of Intermediate Data Set
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#idsns"><H3>IDSNS</H3></A>
+Bytes per line in Intermediate
+Data Set
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#wsa"><H3>WSA</H3></A>
+Working set adjustment 
+(bytes).  VMS only
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#pmem"><H3>PMEM</H3></A>
+Physical memory available
+(megabytes). non-VMS systems
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#ratio"><H3>RATIO</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#ratio">Ratio</A> for estimating number
+of blocks in IDS.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#interp"><H3>INTERP</H3></A>
+no interpolation.
+Valid: NOIN
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#intrpz"><H3>INTRPZ</H3></A>
+no interpolation with 
+zero DN values
+Valid: NOIZ
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#print"><H3>PRINT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#print">Print</A> TIEPOINTS and progress 
+messages
+Valid: <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#print">PRINT</A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#format"><H3>FORMAT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#format">FORMAT</A> is ignored.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#nah"><H3>NAH</H3></A>
+Number of areas horizontally.
+See explanation.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#nav"><H3>NAV</H3></A>
+Number of areas vertically.
+See explanation.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#tiepoint"><H3>TIEPOINT</H3></A>
+Specifies mapping of control
+points between output and
+input pictures.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom_level2.html#parms"><H3>PARMS</H3></A>
+Parameter data set name
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/lgeom.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

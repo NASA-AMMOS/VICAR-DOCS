@@ -1,0 +1,222 @@
+<HTML>
+<HEAD><title>HTML Help for MSLFILTER</title></HEAD>
+<BODY>
+<H1>Help for MSLFILTER</H1>
+<pre>
+PURPOSE:
+
+MSLFILTER looks at the kinematic state of the MSL rover (as described in image
+labels) and uses it to compute an XML filter file suitable for use with
+MARSFILTER.  This is used to create a rover mask, such that all bits of the
+rover are masked off.
+
+*** THIS IS AN MSL-SPECIFIC PROGRAM ***
+
+Bits of the Flight Software (FSW) are used to compute the kinematic state of
+articulating devices, apply that to a volume collision model, and convert that
+to a set of polygons.  These polygons are then bundled up in a manner usable
+by MARSFILTER.  The use of the FSW routines makes this an MSL-specific program.
+Note that the FSW contains the collision model as well as the code that uses it.
+
+The input for MSLFILTER is any MSL-labeled image (EDR or single-frame RDR).
+
+EXECUTION:
+
+mslfilter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#inp">inp</A>=image.img <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#out">out</A>=image.xml
+where:
+image.img is any MSL-labeled VICAR (or dual-label VICAR) image.  This can be
+an image EDR, or any of the single-frame RDR's.
+image.xml is the XML representation of the filter mask.
+
+OPERATION:
+
+The output file is an XML file in the format expected by MARSFILTER.  See
+the help for MARSFILTER for a detailed explanation of the XML.
+
+This program relies on the kinematic state of the rover.  In other words,
+where is the arm, where are the wheels, where is the high-gain antenna.
+Note that the small articulations (turret devices, inlet covers) are ignored
+here as not relevant, since they don't change the mask appreciably.  Also the
+RSM state itself is ignored, because the RSM head is not actually visible from
+any of the cameras mounted on it.  (it could matter for the arm-mounted MAHLI,
+but the RSM head nodes are currently excluded from the collision mask).  So
+in reality, only the Site, Drive, Pose, Arm, and HGA components of the RMC
+matter.  This means the same mask can be applied to any image with the same
+site, drive, pose, arm, and hga RMC indices.
+
+In order to accommodate this, those RMC indices are written <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#out">out</A> in the
+&ltcamera&gt tag to identify the kinematic state.  The mask can then be used with
+any image sharing that state, as identified by the RMC.  The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#rmc_index">RMC_INDEX</A> parameter
+lets you control which indices are written to the file, but changing it should
+not be necessary.
+
+If a list of images is given, by default it compares these RMC indices to the
+prior image.  If they're the same, the mask is not re-written.  This greatly
+reduces file size in a mosaic situation (say, if the mask is going to be used
+with marsautotie or the marsmap/marsbrt brightness correction) and increases
+performance.  The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#unique">UNIQUE</A> parameter controls this.
+
+The arm kinematic state is sometimes uninitialized, such as on rover boot.
+In that case, the joint angles are all 0, but that doesn't actually make
+physical sense.  Since the arm is generally stowed during such a boot, the
+default <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#stow_mode">STOW_MODE</A> replaces an all-0 joint angle set with the appropriate angles
+for the stowed arm.  You can turn this off, or force the arm to be stowed all
+the time (e.g. if you wanted to not mask the arm).
+
+An unknown value for a joint will cause it to use a "swept volume", i.e. assume
+all possible values for that joint.  Currently, the HGA ONLY implements swept
+volume; its articulation is not used.  (This may be fixed in the future).
+
+The arm kinematic state can be forced to a value other than the value
+described in the image labels via the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#arm_joints">ARM_JOINTS</A> parameter.  This can be used
+for example to create a predictive mask showing what the situation will be
+after a planned arm motion.  All 5 joints must be specified if any are given.
+A value of 1e30 will cause that joint to use a swept volume.
+
+The collision checking uses a tolerance value to set how close the mask comes
+to the rover.  Default is 1.5cm (.015).
+EXCLUSION LIST:
+
+The FSW maintains a list of "objects" in its collision model.  Some of these
+objects cause problems with the masks, for example they might be in front of
+one of the hazcams.  For this reason there is an "exclusion list" of objects
+that are excluded from the mast.
+
+This list is maintained in a file pointed to by the MARS_CONFIG_PATH mechanism.
+It looks for param_files/&lthost&gt_filter_exclude.txt (for example,
+param_files/MSLVSTB_filter_exclude.txt).  The format of the file is simple:
+comments start with '#' in the first character, blank lines are ignored, and
+otherwise the line is either a number (which excludes the object for all
+cameras), or "camera_name: number" which excludes it for just the given
+camera.  For example:
+
+# List of objects to exclude from the rover mask filter.
+146
+RHAZ_LEFT_A: 145
+RHAZ_RIGHT_A: 145
+RHAZ_LEFT_B: 145
+RHAZ_RIGHT_B: 145
+# Blocks sticking <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#out">out</A> in front of the FHAZ's.  Unfortunately it must be fhaz
+# only, because the area is visible to the right navcam.
+FHAZ_LEFT_A: 32
+FHAZ_RIGHT_A: 32
+FHAZ_LEFT_B: 32
+FHAZ_RIGHT_B: 32
+
+
+The object list is maintained in the FSW and can be viewed using:
+
+/teamtools/msleo/mech/tb_tools/ivview /home/cleger/col_check-1.wrl &
+
+from the MSL machines.
+
+PARAMETER FILES:
+
+The software relies on FSW parameters, which contain the actual collision
+model.  Defaults of these are built in to the program, so if the default is
+sufficient, nothing extra need be done.  However, if adjustments need to be
+made to the collision model, that can be accomplished via NPM parameter files.
+These are created by the FSW team (Chris Leger, primarily).
+
+NPM files go in the calibration directories searched by $MARS_CONFIG_PATH
+(or the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#config_path">CONFIG_PATH</A>) parameter.  The first one of the dirs in that path that
+contain a subdir named "arm_params/HOSTID/" where HOSTID is MSL, MSLVSTB, etc.,
+will be the directory used to load parameters from.  All NPM files (of the
+form section_*.dat) from that directory will be loaded.
+
+METHOD:
+
+The program gathers the kinematic state from the various articulation
+device angles in the label.  These are then packaged up and fed to the FSW.
+A request is made to articulate the collision model, then that model is
+extracted as a list of polygons, which are written to the output file in
+the proper format.  For multiple images, the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#unique">UNIQUE</A> check tests the RMC
+against the previous RMC (only for those elements specified by <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#rmc_index">RMC_INDEX</A>).
+If they are the same, the image is skipped.  Note that only the immediately
+prior image is checked, so if the file list is not sorted by RMC, there is
+the possibility of multiple entries for the same RMC state in the output file.
+This will not hurt anything other than file size and execution time.
+
+The portion of the FSW used by this program was written by Chris Leger of
+Section 347.
+
+
+HISTORY:
+2012-03-29 rgd	Initial mslfilter
+2012-04-27 rgd	Add RMC to output, and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#unique">unique</A> check
+2012-06-08 rgd	Added collision tolerance, and reading of NPM files
+2012-10-24 rgd	Added <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#arm_joints">ARM_JOINTS</A> parameter
+<A NAME="CogProg">COGNIZANT PROGRAMMER: B. Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#inp"><H3>INP</H3></A>
+Input image(s) or file lost.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#out"><H3>OUT</H3></A>
+Output XML file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#coll_tol"><H3>COLL_TOL</H3></A>
+Tolerance value for
+collision checking.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#fsw_coord"><H3>FSW_COORD</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#coord">Coord</A> sys to use with
+the FSW.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#stow_mode"><H3>STOW_MODE</H3></A>
+Whether or not to replace
+arm joints with stowed angles.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#rmc_index"><H3>RMC_INDEX</H3></A>
+RMC indices that are significant
+for output file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#unique"><H3>UNIQUE</H3></A>
+Whether to write all files
+or just <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#unique">unique</A> RMC's
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#arm_joints"><H3>ARM_JOINTS</H3></A>
+Override for arm joint angles
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mslfilter.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

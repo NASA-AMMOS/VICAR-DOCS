@@ -1,0 +1,82 @@
+<HTML>
+<HEAD><title>HTML Help for MASKMOS</title></HEAD>
+<BODY>
+<H1>Help for MASKMOS</H1>
+<pre>
+PURPOSE:
+Converts map projected images into masks for input to NEWMOS.
+
+EXECUTION:
+
+maskmos may be executed in the following manner:
+
+		maskmos <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/maskmos_level2.html#inp">INP</A>=(A1,A2,...An) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/maskmos_level2.html#out">OUT</A>=(B1,B2,...Bn)
+
+OPERATION:
+
+Maskmos creates masks from input projected images. Later they will be used
+by Newmos to mosaic images in the "smooth" option.
+Provide to Maskmos the same set of images that would be input to Newmos.
+Maskmos will create another set of images.  All these images, original
+ and mask images, will then be given to Newmos in the 'smooth mode.
+
+Maskmos converts an input image into a HALF format image with the 
+following properties:
+1. Zero dn input values will be zero dn on output.
+2. Points on the edge of the input projected data or on the edge of
+   the input frame if the projected data reaches the picture border
+   are set to one. These are Border points.
+3. All pixels which are not zero will be set to a dn value which is 
+   their distance from the Border points.
+
+ASSUMPTIONS:
+(1) That MAP3 has been run on the input images, generating
+    a zero border .
+(2) That the image can be fit into memory. Current buffer limits
+    permit up to 1500 by 1500 pixel inputs. This is easily changed.
+(3) Newmos uses the image labels to compute offfsets. Make sure that
+    Maskmos gets projected inputs so it can preserve the label.
+
+<A NAME="examples">EXAMPLE:</A>
+(1)
+         map3 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/maskmos_level2.html#inp">inp</A>=p1 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/maskmos_level2.html#out">out</A>=a1 ...
+         map3 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/maskmos_level2.html#inp">inp</A>=p2 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/maskmos_level2.html#out">out</A>=a2 ...
+         map3 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/maskmos_level2.html#inp">inp</A>=p3 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/maskmos_level2.html#out">out</A>=a3 ...
+         maskmos <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/maskmos_level2.html#inp">inp</A>=(a1,a2,a3) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/maskmos_level2.html#out">out</A>=(b1,b2,b3)
+         newmos <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/maskmos_level2.html#inp">inp</A>=(a1,a2,a3,b1,b2,b3) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/maskmos_level2.html#out">out</A>=m 'smooth
+(2)
+     An input image which looks like this:
+           0 0 0 0 0 0 0 0 0 0
+           0 0 0 9 9 9 9 9 0 0
+           0 0 0 9 9 9 9 9 0 0
+           0 0 0 9 9 9 9 9 0 0
+           0 0 0 9 9 9 9 9 0 0
+           0 0 0 9 9 9 9 9 0 0
+
+     would be converted to this:
+           0 0 0 0 0 0 0 0 0 0
+           0 0 0 1 1 1 1 1 0 0
+           0 0 0 1 2 2 2 1 0 0
+           0 0 0 1 2 3 2 1 0 0
+           0 0 0 1 2 2 2 1 0 0
+           0 0 0 1 1 1 1 1 0 0
+
+         
+HISTORY:
+
+ORIGINALLY WRITTEN BY: J Lorre 2/30/93
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Jean Lorre</A>
+
+05.06.98.....RRP....Changed calls to qprint to xvmessages.
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/maskmos_level2.html#inp"><H3>INP</H3></A>
+STRING-input datasets.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/maskmos_level2.html#out"><H3>OUT</H3></A>
+STRING-output datasets.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/maskmos.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/maskmos.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

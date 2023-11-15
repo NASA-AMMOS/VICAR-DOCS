@@ -1,0 +1,59 @@
+<HTML>
+<HEAD><title>HTML Help for SUPERRES</title></HEAD>
+<BODY>
+<H1>Help for SUPERRES</H1>
+<pre>
+PURPOSE:
+To combine many images into a larger image which can be processed to give
+super <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/superres_level2.html#resolution">resolution</A>.
+
+EXECUTION:
+register2 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/superres_level2.html#inp">inp</A>=listoffiles <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/superres_level2.html#out">out</A>=tiepoints
+superres <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/superres_level2.html#inp">inp</A>=(listoffiles,tiepoints) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/superres_level2.html#out">out</A>=superimage
+( & optionally ...)
+filter2 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/superres_level2.html#inp">inp</A>=superimage <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/superres_level2.html#out">out</A>=evenbettersuperimage nlw=15 nsw=15   mtf=(1.,0.,5.,.35,5.,.5)
+
+where:
+Listoffiles is an ascii list of filenames, one per record.
+Tiepoints is an ascii list of tiepoints created by vicar program REGISTER2.
+
+METHOD:
+1. Superres reads the image and tiepoints file.
+   It creates polynomials from the tiepoints mapping each input to the output. 
+2. An output is created <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/superres_level2.html#scale">SCALE</A> times the inputs in size.
+3. For each output pixel..
+4. All the nearest input pixels are identified (4 per input image).
+5. These pixel centers are mapped to the output sub pixel location.
+6. output_dn=sum(dn_in/r_in**2)/sum(1/r_in**2)
+     where r_in is the distance between the input pixels mapped to the output
+     and the output pixel location. 
+
+HISTORY:
+3-1-99  J Lorre. 
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Jean Lorre</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/superres_level2.html#inp"><H3>INP</H3></A>
+1. Filenames list.
+2. Tiepoints list.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/superres_level2.html#out"><H3>OUT</H3></A>
+Superesolution image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/superres_level2.html#scale"><H3>SCALE</H3></A>
+Image magnification
+factor.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/superres_level2.html#resolution"><H3>RESOLUTION</H3></A>
+Output pixel <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/superres_level2.html#resolution">resolution</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/superres_level2.html#mode"><H3>MODE</H3></A>
+1 = offset only
+2 = 1st order polynomial
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/superres.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/superres.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

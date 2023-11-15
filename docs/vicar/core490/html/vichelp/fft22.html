@@ -1,0 +1,197 @@
+<HTML>
+<HEAD><title>HTML Help for FFT22</title></HEAD>
+<BODY>
+<H1>Help for FFT22</H1>
+<pre>
+ "fft22" performs direct and inverse two dimensional fast fourier 
+ transforms.  The program performs the same function, without the 
+ array processor, as FFT2AP (which uses the array processor);  but
+ "fft22" is more flexible in that the  image dimensions need not be
+ powers of 2 (see RESTRICTIONS).  (Program FT2, with program FTPACK,
+ does the same thing as FFT2AP with some restrictions and may be
+ faster for large images.  See help for programs FFT2AP and FT2.) 
+EXECUTION
+
+"fft22" can be invoked by entering the command:
+
+	fft22 IN <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#out">OUT</A> [<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#size">SIZE</A>] PARAMS
+where 
+
+IN	is an input picture (forward <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#mode">mode</A>) or an FFT (transform mode)
+
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#out">OUT</A>	is an FFT (forward <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#mode">mode</A>) or an output picture 
+
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#size">SIZE</A>    specifies the area of the input dataset to use
+
+PARAMS  includes parameters allowing:
+
+	- <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#mode">mode</A> selection ('FORWARD, 'INVERSE)
+
+	- image <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#format">format</A> selection ('BYTE, 'HALF, 'FULL, 'REAL, 'COMP);
+	  this applies only to the input in forward <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#mode">mode</A> or to the output
+	  in inverse <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#mode">mode</A>.
+
+	- <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#scratch">scratch</A> file specification. (This is generally defaulted and
+          not always needed.)
+
+        - memory buffer <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#size">size</A> specification (not generally specified by
+          the user).
+
+	See Tutor for full description.
+OPERATION
+ The program performs the following operation:
+
+               M-1  N-1                   k*m   l*n
+ O(k,l) =  K * SUM( SUM( I(m,n) exp( P * [--- + --- ]) )),
+               m=0  n=0                    M     N
+
+   for k = 0,1,...,M-1  and  l = 0,1,...,N-1,
+
+ where:  I(m,n) is line m+1, sample n+1, of the input file,
+         O(k,l) is line l+1, sample k+1, of the output file,
+         K = 1 for a forward transform, and
+             1/(M*N) for an inverse transform,
+         P = 2*PI*i for a forward transform, and
+             -2*PI*i for an inverse transform.
+             [PI = 3.1416...,  i = SQRT(-1)]
+
+ "fft22" uses subroutine DFFT to compute the one-dimensionsal fourier
+ transform.  This is done twice, with a transposition step in between.
+ For further computational details, see Help (in DCL) for that routine. 
+ It uses an algorithm by Richard C. Singleton of Stanford Research
+ Institute.
+ 
+ As the above equation implies, the output of the program is stored
+ in transposed <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#format">format</A>, in the matrix sense, compared to the input
+ data.  This practice is responsible for faster program execution,
+ because it allows one transposition to suffice (after the first
+ 1-D FFT), and does not bother with the second which would bring
+ the output back into standard <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#format">format</A>.  When a forward and inverse
+ transform are performed in sequence, the two transpositions cancel
+ <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#out">out</A> and the original <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#format">format</A> is recovered.  However, the user must
+ be aware of the transposition when working with the transformed data. 
+ For example, when filtering by multiplication with a transfer
+ function, the user must first transpose the transfer function (unless
+ it is transpose-invariant).
+
+ The transposition step requires a buffer of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#size">size</A> 2*N*N real*4 words,
+ where N is the larger of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#nl">NL</A> and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#ns">NS</A>.  The default buffer <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#size">size</A> is 65536
+ real*4 words, so the maximum image dimension that can be accomodated
+ is 128. (32768 = 2*128*128); for a larger <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#nl">NL</A> or <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#ns">NS</A>, the transposition
+ cannot be performed in memory.  In this case, the operation is performed
+ in several passes, with intermediate results being saved on disk.
+
+ If disk storage of intermediate results is required, then the output
+ file is used if it is of sufficient <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#size">size</A>, which is the case if the
+ output <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#format">format</A> is complex (always true for forward <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#mode">mode</A>) and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#nl">NL</A> is equal
+ to <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#ns">NS</A>; otherwise, a <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#scratch">scratch</A> file is used.  This file has a default value
+ on a standard system <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#scratch">scratch</A> directory, but may be redefined using the
+ <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#scratch">SCRATCH</A> parameter.
+RESTRICTIONS:
+
+1. For an inverse transform, the input <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#format">format</A> must be complex.
+
+2. Either dimension of the FFT (i.e., the number of lines or samples of
+  the output in forward <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#mode">mode</A>) may be any number, subject to the following
+  constraints:
+
+  a. It may not contain a prime factor greater than 23.
+
+  b. The number of prime factors may not exceed 208.
+
+  c. The square-free portion may not exceed 210.  (A factor P of a number
+    N is square-free if it cannot be paired with another identical factor
+    of N; i.e., each prime occurring an odd number of times in N is a
+    square-free factor of N.  The square-free portion of N is the product
+    of its square-free factors.)
+
+  E.g., 221 (=13*17) fails because the square-free part exceeds 210, and
+  202 (=2*101) fails because a prime factor exceeds 23, but 210 (=2*3*5*7)
+  and 216 (= 2**3 * 3**3) are acceptable.  These restrictions are due to
+  subroutine DFFT and may be modified by changing array dimensions and
+  recompiling that subroutine.
+
+  The program checks if the dimensions of the input image meet these criteria
+  and abends if they do not.  You can check these criteria for a given 
+  number N by running this program on a test image with one line and N
+  samples and seeing if the program abends.
+
+3. The RMS file header does not support a record length exceeding 32767,
+  hence a complex (8-byte per sample) image may not have <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#ns">NS</A> equal to or
+  above 4096.  Since "fft22" requires a square intermediate or output file 
+  with a complex data <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#format">format</A> whose dimension is the power 
+  of 2 greater than or equal to the maximum of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#nl">NL</A>
+  and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#ns">NS</A>, this implies that the largest value of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#nl">NL</A> or NS allowed is 2048.
+  Thus, for the input file, neither <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#nl">NL</A> nor <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#ns">NS</A> may be greater than 2048.
+  (Program FT2 can handle input images up to 4096 square because it uses
+  a packed <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#format">format</A>.)
+TIMING
+
+ The following CPU times were measured for "fft22" on a lightly loaded
+ VAX-11/780:  (in seconds)
+
+            image <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#size">size</A>:      256x256     512x512    1024x1024
+
+       Forward transform:       26         104         422
+
+       Inverse transform:       28         114         451
+
+ Processing time for a 1-dimensional FFT on N samples scales roughly as
+ N * log(N).  However, the code of subroutine DFFT strongly favours values
+ of N that contain few and low prime factors: powers of 2 are particularly
+ efficient.
+
+ORIGINAL PROGRAMMERS:  T. C. Rindfleisch and J. B. Seidman,  30 Oct. 1978
+
+CONVERTED TO VAX BY:  J. H. Reimer and L. W. Kamp,  10 Feb. 1985
+
+<A NAME="CogProg">CURRENT COGNIZANT PROGRAMMER:  L. W. Kamp</A>
+
+HISTORY:
+
+   1jul94 -- Made portable for UNIX  A. Scop (CRI)
+  30aug90 -- changed COMPLEX to COMP in F.T. labels.
+
+ Programming note:  the original matrix transposition algorithm was keyed
+ to dimensions that were powers of 2.  When this requirement was relaxed
+ by use of subroutine DFFT, the transposition algorithm was not changed.
+ (The matrix is treated as if it were part of a larger square matrix whose
+ dimension is a power of 2.)  Hence the buffer and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#scratch">scratch</A> file requirements
+ can be quite wasteful, e.g., a 2*130 image requires the same <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#scratch">scratch</A> file
+ and buffer that a 256*256 image would, i.e. 0.5 MB.  If anyone would care
+ to rewrite the program to eliminate this feature, they are invited to do so.
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#mode"><H3>MODE</H3></A>
+Keyword: Transform <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#mode">mode</A>.
+Valid: FORWARD, INVERSE.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#format"><H3>FORMAT</H3></A>
+Ouput image data <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#format">format</A>.
+Valid: BYTE, HALF, FULL,
+REAL, COMP
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#inp"><H3>INP</H3></A>
+Input dataset.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#out"><H3>OUT</H3></A>
+Output dataset.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#size"><H3>SIZE</H3></A>
+VICAR <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#size">size</A> field.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#sl"><H3>SL</H3></A>
+Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#ss"><H3>SS</H3></A>
+Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#nl"><H3>NL</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#ns"><H3>NS</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#scratch"><H3>SCRATCH</H3></A>
+Intermediate dataset.
+(Temporary, not always
+needed.)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#bufpow"><H3>BUFPOW</H3></A>
+2**<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#bufpow">BUFPOW</A> = Memory buffer
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22_level2.html#size">size</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft22.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

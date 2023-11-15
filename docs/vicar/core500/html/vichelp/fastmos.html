@@ -1,0 +1,396 @@
+<HTML>
+<HEAD><title>HTML Help for FASTMOS</title></HEAD>
+<BODY>
+<H1>Help for FASTMOS</H1>
+<pre>
+ PURPOSE:
+
+Program FASTMOS takes input images and mosaics them to form an output image.
+FASTMOS performs mosaicking by reading all of the input image files and 
+combining them to form an output image according to the parameters for
+mosaicking mode, edging, and image placement.  In a typical application, the
+output image is a composite picture made from two or more input images each
+of which contains a portion of the overall picture.
+ EXECUTION:
+
+The <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#size">size</A> of the output image is determined by the number of lines and number 
+of samples in the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#size">SIZE</A> field if the SIZE field is entered by the user.  If the
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#size">SIZE</A> field is not entered, the output file is the same size as the first
+input file.
+
+FASTMOS can accept from one to 48 input images.  The input images are not
+required all to have the same <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#size">size</A>.  The data type of the input images may
+either be byte or halfword data, but all of the input images must have the
+same data type.  The data type is obtained from the VICAR label of the first 
+input image.
+
+For mosaicking, the program needs to know the locations in the output image 
+of each of the input images.  This is done by giving the location in the output
+image of each input image.  The locations are given in terms of line number and
+pixel number within a line.  The offset parameters (<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off1">OFF1</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off2">OFF2</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off3">OFF3</A>,...) are
+used to specify the locations for the respective input images.  The offset
+parameter can be omitted for images at the default location of line 1, pixel 1.
+An input image is not required to lie entirely within the boundaries of the
+output image.  If the upper left hand corner of an input image is not within 
+the boundaries of the output image, the location of the input image is given
+by extending the numbering of lines and pixels beyond the boundaries of the
+output image.  Thus negative numbers or zero would be used for the locations
+of input images beginning to the left or above the boundaries of the output
+image.  Input images are allowed to overlap.
+
+The mode by which FASTMOS determines the output data number values from the
+input data numbers is user selectable through the MODE parameter.  There
+are currently five modes to choose from.  All of the modes make use of the
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A> threshold parameter, which is usually greater than or equal to 0.
+In determining the output data number for a given pixel, FASTMOS finds
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#out">out</A> which of the input images containing that pixel have a data number for that
+pixel which is greater than the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A> value.  The data numbers
+for that pixel from those input images form a set of values that is then used
+in the selected mode to give the output data number.  For example, if 
+MODE=AVERAGE is selected, then the output data number for a pixel is the
+average of those values for the pixel that are greater than the
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A> value.  The following rules apply for each of the modes.  If none
+of the input images have a data number value for a given pixel that is
+greater than the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A> value, the output data number is the
+data number from the first input image if the pixel is contained in the
+first input image, and the output data number is L0 if the pixel is not
+contained in the first input image, where L0 is 0 if <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A> is greater than 0,
+L0 is 0 if <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A>=0 and the data format is byte, and L0 is equal to THRESH
+otherwise for integer data.  For real*4 data, L0 is -1.0E10.
+If exactly one of the input images has 
+a data number value for a given pixel that is greater than the 
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A> value, the output data number is the data number from the one input 
+image.  If more than one of the input images have a data number value for a 
+given pixel that is greater than the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A> value, the output 
+data number is determined by the mosaicking mode.  The five mosaicking modes 
+are discussed under the MODE parameter.
+
+FASTMOS has an option for edging the input images prior to applying the
+mosaicking mode.  Edging effectively removes the 'edges' of the input images
+so that pixels in the 'edges' are not considered to be contained in their
+images as far as the mosaicking process is concerned.  Several parameters
+determine the precise effect of edging in any situation, but basically if
+edging is selected, then each line of each input image is edged first on the
+left and then on the right.  Edging means scanning through a line from one
+end or another to the point at which the data numbers are greater than
+a threshold value and then removing the pixels from the end of
+the line up to a certain number of pixels beyond the point.  This is 
+referred to as finding the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#edge">edge</A> of the scene data and nibbling-in a 
+certain number of pixels beyond the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#edge">edge</A>.  Because of the line by 
+line processing performed by the program, edging is only available
+in the horizontal direction.  (Edging the top and bottom of images would
+normally require an intermediate data set.)  Edging is typically used
+to remove distortion around the edges of pictures that was caused by
+interpolation, filtering, or other things.
+
+FASTMOS uses dynamic memory allocation (using subroutine STACKA) to avoid
+imposing any restrictions on the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#size">size</A> of the images. 
+
+The output image has the same data format  (byte or halfword) as the input 
+images.  
+TAE COMMAND LINE FORMAT
+      The following command line formats show the major allowable forms:
+      fastmos <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#inp">INP</A>=(a...) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#out">OUT</A>=b <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#size">SIZE</A>=(<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#ns">ns</A>) optional parameters
+      fastmos <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#inp">INP</A>=(a...) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#out">OUT</A>=b  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#sl">SL</A>=sl <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#ss">SS</A>=ss <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#nl">NL</A>=nl <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#ns">NS</A>=ns optional parameters
+      fastmos (a...) b (<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#ns">ns</A>) optional parameters
+      fastmos (a...) b optional parameters
+
+       Here '(a...)' represents a list of one to 48 input image file names,
+       and 'b' represents the output image file name.
+<A NAME="examples">EXAMPLES</A>
+
+1.    fastmos <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#inp">INP</A>=(A,B,C) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#out">OUT</A>=D <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#size">SIZE</A>=(1,1,1000,1000)                          'AVERAGE  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off1">OFF1</A>=(100,100) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off2">OFF2</A>=(-100 -25 600 700) 
+
+      In this example the output file D is a 1000 line by 1000 pixel 
+      image produced by mosaicking three images using
+      the averaging mode. The default <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A> threshold value of 0 is used.
+      The position relative to the output image of each of the input 
+      images is as follows:
+
+      Image A,  the first input, is positioned with its upper-lefthand
+                corner (ULC) at line 100, pixel 100.  Since only two values
+                were specified for <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off1">OFF1</A>, the entire image is used.
+
+      Image B,  is positioned with its ULC outside the boundaries of
+                the output image at line -100, pixel -25.  The first 600
+                lines and the first 700 pixels per line are used from image B.
+                Of these, the first 101 lines and 26 samples are ignored
+                because they do not lie within the boundaries of the output
+                image.
+
+      Image C,  is positioned with its ULC at the default position of
+                line 1, pixel 1.  The entire image is used.
+2.    fastmos <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#inp">INP</A>=(A,B,C,D,E) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#out">OUT</A>=F
+
+      In this example the output file F has the same <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#size">size</A> as the input file
+      A.  The data format of the files defaults to the format given in the
+      label of file A.  The mosaicking is performed by using the default
+      overlay mode. The default <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A> value of 0 is used.  The five input
+      images have been pre-registered so that they begin in the same location.
+
+
+3.    fastmos <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#inp">INP</A>=(A,B,C,D,E) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#out">OUT</A>=F <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A>=10   '<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#edge">EDGE</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#nthresh">NTHRESH</A>=50
+
+      In this example the output file F has the same <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#size">size</A> as the input file
+      A.  The data format of the files defaults to the format given in the
+      label of file A.  The mosaicking is performed by using the default
+      overlay mode. The <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A> value of 10 is used.  Each of the input
+      images gets edged horizontally using a threshold value of 50.  
+      The edging nibbles away (the default) four pixels beyond the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#edge">edge</A> 
+      of the scene data.
+
+4.    fastmos <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#inp">INP</A>=(A,B,C,D,E) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#out">OUT</A>=F <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A>=10   'AVERAGE                    '<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#edge">EDGE</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#lthresh">LTHRESH</A>=5 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#lnibble">LNIBBLE</A>=3 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#rthresh">RTHRESH</A>=10 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#rnibble">RNIBBLE</A>=1
+
+      This is the same as example 3 except that the averaging mode is used
+      and the edging parameters are different.  The edging on the left 
+      uses a threshold of 5 and extends 3 pixels beyond the scene <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#edge">edge</A>.
+      The edging on the right uses a threshold of 10 and extends 1 pixel
+      beyond the scene <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#edge">edge</A>. 
+
+5.    GEN A 10 10
+      GEN B 10 10 IVAL=101
+      fastmos <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#inp">INP</A>=(A,B) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#out">OUT</A>=F <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#size">SIZE</A>=(1 1 16 16) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A>=0 'OVERLAY <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off1">OFF1</A>=(2,1) 
+
+      This is a mostly academic example in which all of the files have
+      byte data format.  In this example the output file F has the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#size">size</A> 
+      16 lines by 16 samples.  Program FASTMOS internally makes a copy of
+      files A and B padded with zeroes to a <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#size">size</A> of 16 by 16 with the offsets
+      specified for A and defaulted for B.  It then compares the copy of A
+      to the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A> value.  Since THRESH=0, everything in the copy of A
+      goes into the file F, and nothing in file B is utilized.
+      This illustrates that <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A>=0 is not normally used for mosaicking
+      byte data.  (It might be used for averaging images of the same <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#size">size</A> and 
+      offset.  fastmos was originally implemented with the requirement of 
+      <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A> &gt= 1 since it uses 0 for any padding around byte input images.)
+
+RESTRICTIONS
+The input images may be any format of 4 or fewer bytes per pixel, and must all
+be of the same format.  The output image will be the same format as the inputs.
+
+
+ OPERATION:
+
+FASTMOS performs mosaicking on a line by line basis.  The offsetting of
+input images is done at READ time.
+
+ TIMING: 
+
+  The following CPU times for FASTMOS was obtained on a 
+VAX 8650 (MIPL2) in April 1993
+			                                                CPU Time
+gen FASTA1 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#nl">NL</A>=1000 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#ns">NS</A>=1000 IVAL=0 
+gen FASTA2 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#nl">NL</A>=1000 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#ns">NS</A>=1000 IVAL=200
+fastmos <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#inp">INP</A>=(FASTA1,FASTA2) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#out">OUT</A>=FASTAO8 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#size">SIZE</A>=(1,1,2000,2000)  !  				4-93  SP  CPU TIME ON MIPL2 (VAX8650)    17.66s
+
+For more information, see the file timefastmos.pdf in fastmos.com.
+
+ The following timing data were measured on a Solaris Sun4 with two 1000x1000
+ byte input images, in seconds:
+
+                          User   System   Wall-clock
+ byte/halfword version:   0.17    0.17      0.73 
+ real*4 version:          0.26    0.17      0.89
+
+ ORIGINAL PROGRAMMER:    W. Benton
+ PORTED TO UNIX: Steve Pohorsky
+<A NAME="CogProg"> COGNIZANT PROGRAMMER:   Lucas Kamp</A>
+
+ REVISION HISTORY
+1993-04-07 SP  Made portable for UNIX.  Added <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#progress">PROGRESS</A> parameter to
+               print percentage DONE during execution.
+2003-08-14 NTT Enabled for 3D (multi-banded) images
+2012-09-18 lwk Enabled for real*4 data (converted all buffers to real*4).
+2012-10-02 lwk made <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A> parameters consistent with old (integer) FASTMOS;
+               because the default threshold is now 0.0 (used to be 1), the
+               tests are now for DN&gtTHRESH instead of DN>=<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A>.
+2018-12-18 WLB Fixed line buffer initialization bug.
+
+ CHANGED BEHAVIOUR DUE TO CONVERSION TO REAL*4 (OCT.2012):
+The output of FASTMOS is slightly different than it used to be, because of
+the requirement that the behaviour with respect to the default threshold
+value of zero be consistent between the two versions. The integer version
+(old fastmos) did this by setting the default <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A> parameter to 1 and
+keeping DN &gt= <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A>. However, for real*4 data, that would lead to the
+undesirable result of throwing away DNs between 0 and 1, so the default
+value of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A> was changed to 0 and the check was changed to keep DN&gtTHRESH.
+The logfile of the old version is retained in the .com file under the name
+tstfastmos_integer.log_solos, for comparison with the new one, named
+tstfastmos.log_solos. It can be seen that, when the default <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A> is used,
+the results are the same for the two versions, but when a non-zero value of
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh">THRESH</A> is specified, the results differ at the edges, typically by one pixel.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#inp"><H3>INP</H3></A>
+Input image file names
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#out"><H3>OUT</H3></A>
+Output image file name
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#size"><H3>SIZE</H3></A>
+Standard Vicar <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#size">size</A> field:
+  (<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#ns">NS</A>)
+You can enter <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#nl">NL</A>,
+and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#ns">NS</A> together as <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#size">SIZE</A>, OR
+enter the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#nl">NL</A>, and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#ns">NS</A>
+parameters separately.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#sl"><H3>SL</H3></A>
+Starting line number
+(This field is ignored.)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#ss"><H3>SS</H3></A>
+Starting sample number
+(This field is ignored.)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#sb"><H3>SB</H3></A>
+Starting band number
+(This field is ignored.)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#nl"><H3>NL</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#ns"><H3>NS</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#nb"><H3>NB</H3></A>
+Number of bands
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#mmode"><H3>MMODE</H3></A>
+Mosaicking mode -- OVERLAY,
+AVERAGE, MOD, MAX, or MIN.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#thresh"><H3>THRESH</H3></A>
+Threshold used for mosaicking.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#progress"><H3>PROGRESS</H3></A>
+Enter for <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#progress">progress</A> reporting.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#edge"><H3>EDGE</H3></A>
+Enter for edging.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#nthresh"><H3>NTHRESH</H3></A>
+Threshold for edging on both
+left and right.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#lthresh"><H3>LTHRESH</H3></A>
+Threshold for edging on left.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#rthresh"><H3>RTHRESH</H3></A>
+Threshold for edging on right.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#nseq"><H3>NSEQ</H3></A>
+Number of sequential pixels
+which must satisfying edging 
+threshold criteria at <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#edge">edge</A> of
+scene data.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#nibble"><H3>NIBBLE</H3></A>
+Number of pixels to remove
+beyond <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#edge">edge</A> of scene data for
+edging on both left and right.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#lnibble"><H3>LNIBBLE</H3></A>
+Number of pixels to remove
+beyond <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#edge">edge</A> of scene data for
+edging on left.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#rnibble"><H3>RNIBBLE</H3></A>
+Number of pixels to remove
+beyond <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#edge">edge</A> of scene data for
+edging on right.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#nincr"><H3>NINCR</H3></A>
+If <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#nincr">NINCR</A>=n, then scanning for
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#edge">edge</A> of scene data will check
+every nth pixel.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off1"><H3>OFF1</H3></A>
+Offset values for first input
+image.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off2"><H3>OFF2</H3></A>
+Offset values for second input
+image.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off3"><H3>OFF3</H3></A>
+Offset values for third input
+image.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off4"><H3>OFF4</H3></A>
+Offset values for fourth input
+image.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off5"><H3>OFF5</H3></A>
+Offset values for fifth input
+image.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off6"><H3>OFF6</H3></A>
+Offset values for sixth input
+image.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off7"><H3>OFF7</H3></A>
+Offset values for seventh input
+image.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off8"><H3>OFF8</H3></A>
+Offset values for eighth input
+image.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off9"><H3>OFF9</H3></A>
+Offset values for ninth input
+image.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off10"><H3>OFF10</H3></A>
+Offset values for input image 10
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off11"><H3>OFF11</H3></A>
+Offset values for input image 11
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off12"><H3>OFF12</H3></A>
+Offset values for input image 12
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off13"><H3>OFF13</H3></A>
+Offset values for input image 13
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off14"><H3>OFF14</H3></A>
+Offset values for input image 14
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off15"><H3>OFF15</H3></A>
+Offset values for input image 15
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off16"><H3>OFF16</H3></A>
+Offset values for input image 16
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off17"><H3>OFF17</H3></A>
+Offset values for input image 17
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off18"><H3>OFF18</H3></A>
+Offset values for input image 18
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off19"><H3>OFF19</H3></A>
+Offset values for input image 19
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off20"><H3>OFF20</H3></A>
+Offset values for input image 20
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off21"><H3>OFF21</H3></A>
+Offset values for input image 21
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off22"><H3>OFF22</H3></A>
+Offset values for input image 22
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off23"><H3>OFF23</H3></A>
+Offset values for input image 23
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off24"><H3>OFF24</H3></A>
+Offset values for input image 24
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off25"><H3>OFF25</H3></A>
+Offset values for input image 25
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off26"><H3>OFF26</H3></A>
+Offset values for input image 26
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off27"><H3>OFF27</H3></A>
+Offset values for input image 27
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off28"><H3>OFF28</H3></A>
+Offset values for input image 28
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off29"><H3>OFF29</H3></A>
+Offset values for input image 29
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off30"><H3>OFF30</H3></A>
+Offset values for input image 30
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off31"><H3>OFF31</H3></A>
+Offset values for input image 31
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off32"><H3>OFF32</H3></A>
+Offset values for input image 32
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off33"><H3>OFF33</H3></A>
+Offset values for input image 33
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off34"><H3>OFF34</H3></A>
+Offset values for input image 34
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off35"><H3>OFF35</H3></A>
+Offset values for input image 35
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off36"><H3>OFF36</H3></A>
+Offset values for input image 36
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off37"><H3>OFF37</H3></A>
+Offset values for input image 37
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off38"><H3>OFF38</H3></A>
+Offset values for input image 38
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off39"><H3>OFF39</H3></A>
+Offset values for input image 39
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off40"><H3>OFF40</H3></A>
+Offset values for input image 40
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off41"><H3>OFF41</H3></A>
+Offset values for input image 41
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off42"><H3>OFF42</H3></A>
+Offset values for input image 42
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off43"><H3>OFF43</H3></A>
+Offset values for input image 43
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off44"><H3>OFF44</H3></A>
+Offset values for input image 44
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off45"><H3>OFF45</H3></A>
+Offset values for input image 45
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off46"><H3>OFF46</H3></A>
+Offset values for input image 46
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off47"><H3>OFF47</H3></A>
+Offset values for input image 47
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos_level2.html#off48"><H3>OFF48</H3></A>
+Offset values for input image 48
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastmos.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

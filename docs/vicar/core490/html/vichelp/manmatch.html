@@ -1,0 +1,462 @@
+<HTML>
+<HEAD><title>HTML Help for MANMATCH</title></HEAD>
+<BODY>
+<H1>Help for MANMATCH</H1>
+<pre>
+PURPOSE
+
+MANMATCH or Manual Match, is a program which produces an IBIS format file
+containing tiepoint information for the purpose of producing mosaics.  The 
+program displays the a paired images with overlapping parts allowing the user 
+to manually match the tiepoints (or similar pixels).
+
+A more global view of the entire mosaicking process was documented in some
+procedures in r3lib called MANUAL2.COM for Voyager, and MANUAL3.COM for Galileo. 
+As of Aug.2005, these are no longer on the system.  However, extracts from them
+have been included in this <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#help">Help</A> file.
+
+EXECUTION
+
+To run without a <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">SEDR</A>:
+   MANMATCH  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#inp">inp</A>=(<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">sedr</A>.int,over.int)  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#out">out</A>=match.int '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#nosedr">nosedr</A>
+
+To run with a <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">sedr</A> on image space images:
+   MANMATCH  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#inp">inp</A>=(<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">sedr</A>.int,over.int,geoma.cor)  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#out">out</A>=match.int 
+  (note that Galileo does not have a geoma correction file,
+   you must instead specify <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#project">project</A>=gll).
+
+or to continue from a partially complete tiepoint set:
+   MANMATCH  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#inp">inp</A>=(<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">sedr</A>.int,over.int,match.int,geoma.cor)               <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#out">out</A>=newmatch.int
+
+<A NAME="examples">EXAMPLE: manmatch inp=(jupsedr.int,jupover.int) out=jupmatch.int           dir=ud4:[jjl059.mosaic]</A>
+         Note: the images are in the directory ud4:[jjl059.mosaic]
+
+The following procedure is a copy of MANUAL4.COM which shows how to
+build a mosaic using manmatch. Refer directly to manual3 or manual4
+rather than to this procedure because they may change.
+
+procedure <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#help">help</A>=*
+ REFGBL $ECHO
+BODY
+WRITE "This is a guide for masaicking GALILEO images "
+WRITE "using OMCOR2 rather than OMCOR."
+WRITE "To mosaic Voyager images refer to MANUAL2.COM."
+WRITE "MANUAL4 MOSAICKING PROCEDURE (Things to do first)"
+WRITE "(1)You must create a file with the editor containing"
+WRITE "the full names of all the frames to be contained in"
+WRITE "the mosaic, one <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#filename">filename</A> per record."
+WRITE "Ground control frame(s) must be at the END."
+WRITE "Here we call this file LISTOFFILES."
+WRITE "(2)YOU MUST ALLOCATE THE DISPLAY WITH  use  BEFORE STARTING"
+WRITE "(3)To use this proc you must edit the following:"
+WRITE "   -&gt The values assigned in the following LET commands."
+WRITE "All plots will go to the printronix printer."
+
+local (numpix,nlpix,nspix,camera,idfts) integer
+local (latcen,loncen) real
+local (planet,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#project">project</A>) string
+local return string initial=""
+
+WRITE "nlpix=the number of lines in each picture."
+WRITE "nspix=the number of samples in each picture."
+WRITE "numpix=the number of pictures in the mosaic."
+WRITE "planet=the target body."
+let nlpix=800
+let nspix=800
+let numpix=2
+let planet="venus"
+let <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#project">project</A>="GLL"
+
+plotting '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#print">print</A>
+
+WRITE " "
+WRITE "Create the ibis <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">sedr</A> file"
+WRITE "Place the ground control image <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#last">LAST</A>"
+WRITE "Replace the fds counts by those you are to use."
+WRITE "List them in the order of priority, highest first."
+ibisnav <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#out">out</A>=gasedr.int <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">sedr</A>=(fare,fare)           planet=&planet <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#project">project</A>=&project           <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#filename">filename</A>=listoffiles.
+WRITE " "
+WRITE "Make first footprint plot to get center of projection"
+WRITE "From the map select an approximate center of projection"
+WRITE "and enter it in the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#next">next</A> two prompts."
+mosplot <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#inp">inp</A>=gasedr.int nl=&nlpix ns=&nspix <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#project">project</A>=&project
+dcl <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#print">print</A>/nofeed printronx.plt
+
+WRITE " "
+WRITE "Provide the latitude at the center of projection:"
+getpar latcen
+WRITE "Provide the longitude at the center of projection:"
+getpar loncen
+
+WRITE " "
+WRITE "Make stereographic plot and create overlap file"
+mosplot <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#inp">inp</A>=gasedr.int <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#out">out</A>=gaover.int 'plot <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#project">project</A>=&project           nl=&nlpix ns=&nspix latlon=(&latcen,&loncen)
+dcl <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#print">print</A>/nofeed printronx.plt
+
+WRITE " "
+WRITE "<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#delete">Delete</A> unnecessary cross terms from the overlap file."
+WRITE "Consult the footprint plot. In general each picture"
+WRITE "should see the ones to left,right,top,& bottom but"
+WRITE "needn't see more than those."
+WRITE "You will be placed into program EDIBIS."
+WRITE "To continue hit RETURN"
+getpar return
+edibis <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#inp">inp</A>=gaover.int
+
+WRITE " "
+WRITE "Collect tiepoints MANUALLY using program MANMATCH."
+WRITE "This is a time consuming interactive step. Try to read"
+WRITE "the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#help">help</A> file for MANMATCH before proceeding"
+WRITE "To continue hit RETURN"
+getpar return
+manmatch <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#inp">inp</A>=(gasedr.int,gaover.int) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#out">out</A>=gamatch.int           <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#filename">filename</A>=listoffiles. <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#project">project</A>=&project '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">sedr</A> 
+
+WRITE "Plot tiepoints using old <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">sedr</A>."
+WRITE "This is to see what residuals look like before"
+WRITE "correction of the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">sedr</A>."
+mosplot <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#inp">inp</A>=(gasedr.int,gamatch.int) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#project">project</A>=&project           nl=&nlpix ns=&nspix exag=10. latlon=(&latcen,&loncen)
+dcl <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#print">print</A>/nofeed printronx.plt
+
+WRITE "Iteratively correct the ibis <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">sedr</A> file."
+omcor2 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#inp">inp</A>=(gasedr.int,gamatch.int) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#project">project</A>=GLL
+omcor2 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#inp">inp</A>=(gasedr.int,gamatch.int) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#project">project</A>=GLL
+
+WRITE "Plot the tiepoints using the corrected <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">sedr</A>."
+mosplot <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#inp">inp</A>=(gasedr.int,gamatch.int) 'new           <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#project">project</A>=&project           nl=&nlpix ns=&nspix exag=100. latlon=(&latcen,&loncen)
+dcl <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#print">print</A>/nofeed printronx.plt
+
+WRITE "Correct the archival <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">sedr</A> from the ibis sedr."
+ibisupdate <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#inp">inp</A>=gasedr.int 'update planet=&planet           <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#project">project</A>=&project  
+dcl del printronx.plt;*
+end-proc
+
+
+USAGE:
+MANMATCH is an interactive program which has in the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">SEDR</A>.INT file
+the FDS or SCET times of all of the frames to inspect along
+with all the navigation for these images.. 
+You must create this file using the program IBISNAV
+At the moment you must remember to use the single quote ' before all
+single keywords. Thus '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#help">HELP</A> and '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#exit">EXIT</A> is correct and HELP is incorrect.
+
+Manmatch can obtain the names (and thus the locations) of all the
+input files in one of two ways:
+
+1. By the user specifying the parameter <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#filename">FILENAME</A> which points to
+   a file created by a text editor and which contains the full
+   file names of each input picture in the order of priority, one
+   name per record. This is the same file used in IBISNAV.
+   So, if the first 2 pictures are called scx1:[jjl059]1234567.img
+   and mipldisk:[mipl.gll]venus.img the first two records of
+   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#filename">FILENAME</A> would contain:
+
+   scx1:[jjl059]1234567.img
+   mipldisk:[mipl.gll]venus.img
+
+   This is the preferred usage.
+
+2. By building each file name by appending to the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#dir">DIR</A> keyword
+   the integer contained in column 1 of the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">SEDR</A>.INT file followed
+   by .IMG. You must in this mode name the input pictures
+   accordingly. 
+   For Voyager, column 1 is the FDS times thus the frames must be
+   named the same as their FDS times; ie: 7654321.img is the file
+   name of the image with fds time 7654321. 
+   For Galileo the FDS times are just 1,2,3,4.. so the file names are
+   1.img   2.img etc.
+   So, if <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#dir">DIR</A>=scx1:[jjl059] and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">SEDR</A>.INT has fds time 1234567 in column
+   one then the built-up name would be:  scx1:[jjl059]1234567.img
+
+   This method is relatively obsolete.
+
+The second input file 
+contains the overlap frame pairs to present to the user.
+This file is created by program MOSPLOT.
+
+First input= <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">SEDR</A>.INT produced by program IBISNAV
+Second input= OVER.INT produced by program MOSPLOT
+
+When <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#project">project</A> is of Galileo, the camera s/n used to distinguish the mode of the
+SSI camera is obtained from the first entry of the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">SEDR</A>.INT file.  Thus, it is 
+expected that the image files being processes are all taken by the same camera.
+
+The program will attempt to present the user with each frame
+overlap <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#pair">pair</A>, one pair at a time. The user has control from 
+the keyboard and from the trackball using 3 buttons. 
+The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#object">object</A> of the game is for the user to cursor two tiepoints
+connecting each frame <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#pair">pair</A> for all the frame pairs presented.
+You can collect from none to 1000 points but two is sufficient.
+There can be up to 200 frames and 1000 points total.
+
+There are two modes:
+
+MODE1 is the parameter processor. When in this mode you will 
+have a prompt of the form: MANMATCH&gt . The program is waiting
+for keyword entry. A carriage return or most keywords will
+put you into MODE2. To get into MODE1 you can:
+1. Depress the leftmost trackball button before depressing
+   any of the others.  -or-
+2  Move the cursor into the box labelled: PARAMETER PROCESSOR.
+
+MODE2 is the tiepoint acquisition mode. To get into this mode depress the 
+carriage return. When in MODE2 the cursor is active. You can move a rectangular
+box the size of the correlation area over the image, called the correlation 
+box. At first the box will remain in the left image area. After you have placed
+the cursor over a likely region in the left image you can move to the right 
+image by depressing the right most track ball button. Toggling the middle or 
+right button switches attention between left & right image areas.  To enter a 
+tiepoint THEN depress the left button. If you depress the left button BEFORE 
+the middle or right button you are returned to the parameter processor. You can
+advance one frame <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#pair">pair</A> or revisit one frame pair by moving the cursor to within
+the boxes indicating: <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#next">NEXT</A> or <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#last">LAST</A> <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#pair">PAIR</A>.
+
+When the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#last">last</A> <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#pair">pair</A> has been reached you will return to
+the parameter processor. To <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#exit">exit</A> type: 'EXIT.
+Interactive parameters are listed with: '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#help">HELP</A>.
+
+The program performs correlations to assist in precision. The
+default size is: 64 by 64.
+
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">SEDR</A> PARAMETER
+
+If the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">SEDR</A>=SEDR is specified, then the program will read in the SEDR 
+information from the first file to <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#help">help</A> the user visually locate the
+overlapping coordinates of the paired image when in tiepoint acquisition mode.
+This assistance is done by synchronizing the movement of two tiepoint boxes
+on the left and right side of the image.  
+
+Occasionally the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">SEDR</A> is bad and the synchronization would result in nothing 
+but annoyance.  In such case, the user may initiate the program with 
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">SEDR</A>=<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#nosedr">NOSEDR</A> to disable the SEDR control for the whole interactive session.
+Another way is to temporarily disable <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">SEDR</A> control with the '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#nosedr">NOSEDR</A> in the
+parameter processor mode.
+
+FILE STRUCTURE:
+  The tiepoints file is an IBIS format tabular file. It consists
+of 512 byte records where each column of data is written as
+sequential records until exhausted. The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#next">next</A> column begins at the
+start of the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#next">next</A> record etc. Record #1 contains the number of points
+per column. All data is real*4 binary.
+
+Revision History:
+
+Who When       What
+--- ---------- ----------------------------------------------------------------
+SMC 09/27/1996 Updated CONVEV call to reflect (FR89818)
+SMC 09/27/1996 Make '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">SEDR</A> command reload the SEDR information.  (FR89849)
+SMC 08/05/1996 FR 89352
+               Disable '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">SEDR</A> in parameter processor initiated with '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#nosedr">NOSEDR</A>
+               Took <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#out">out</A> DEVICE parameter
+SMC 10/22/1996 * Updated VALID input list for 2 parameter CORRs to match
+               * Took <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#out">out</A> parameters D1, D2, U1, and U2              (FR89888)
+SMC 10/22/1996 Make <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">SEDR</A> information be reloaded when 'SEDR command  (FR89849)
+SMC 10/22/1996 Updated CONVEV calling sequence so that Summation Mode is
+                 supported.                           (FR89818)
+SMC 10/22/1996 Use MVCL to write 'GLL  ' to CONV instead of MVE    (FR89353)
+LWK 05aug2005  Fixed some errors in the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#help">Help</A> text.  Closed ARs 9037 and 9038
+               because they were not reproducible and predated above changes
+               by SMC.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#inp"><H3>INP</H3></A>
+Batch parameter !
+All inputs are IBIS tabular files.
+
+First input= <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">SEDR</A>.INT produced
+ by program IBISNAV
+Second input= OVER.INT produced
+ by program MOSPLOT
+Third or fourth input=
+An old tiepoints file 
+Third or fourth input=
+A GEOMA distortion file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#out"><H3>OUT</H3></A>
+Batch parameter !
+The output IBIS tabular file.
+nine columns output:
+col1=first frame number of a <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#pair">pair</A>
+col2=second frame number of a <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#pair">pair</A>
+col3=first frame tiepoint line
+col4=first frame tiepoint sample
+col5=second frame tiepoint line
+col6=second frame tiepoint sample
+col7=first tiepoint DN value
+col8=second tiepoint DN value
+col9=correlation value (1.0)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#help"><H3>HELP</H3></A>
+List the interactive parameters 
+available in a session.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#project"><H3>PROJECT</H3></A>
+Batch parameter !
+Specifies  the 
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#project">project</A>. 
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr"><H3>SEDR</H3></A>
+Batch parameter !
+Causes navigation assisted
+tiepoint acquisition.
+Requires IBISNAV
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">sedr</A> ibis file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#object"><H3>OBJECT</H3></A>
+Batch parameter !
+Causes images to be 
+considered geometrically
+corrected.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#pfilter"><H3>PFILTER</H3></A>
+Batch parameter !
+The power of the FFT high pass
+power law filter. Default 
+is no power filter.
+default is: <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#pfilter">pfilter</A>=0.0 real
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#phase"><H3>PHASE</H3></A>
+Batch parameter !
+Degree of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#phase">phase</A> correlation:
+0 for normal correlation. ( Default ).
+1 for <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#phase">phase</A> correlation
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#offmax"><H3>OFFMAX</H3></A>
+Batch parameter !
+How far off center, correlation
+peak is allowed (0 to 1). 
+If the peak is more than
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#offmax">OFFMAX</A>*window/2 pixels from 
+the center it is rejected.
+Default is 0.8
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#func"><H3>FUNC</H3></A>
+Batch parameter !
+Pixel function before 
+correlation is performed..
+The options are: LOG or EXP.
+DEfault is no funtion performed.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#redo"><H3>REDO</H3></A>
+Batch parameter !
+Keyword for redo mode. 
+Valid responses are:
+REDO or NOREDO. 
+The default is REDO.
+Redo specifies that if 
+the first correlation for
+an area has an offset of 
+less than the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#offmax">OFFMAX</A> limit
+but greater than zero 
+the correlation is rerun
+beginning at the new location.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#print"><H3>PRINT</H3></A>
+Batch parameter !
+'NOPRINT to turn off 
+terminal output
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#dir"><H3>DIR</H3></A>
+Batch parameter.
+Specifies the directory 
+name where all the 
+input files for the
+mosaic reside.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#filename"><H3>FILENAME</H3></A>
+Batch parameter.
+Specifies a file name 
+which contains the 
+names of all the
+images to be included 
+in the mosaic.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#fontht"><H3>FONTHT</H3></A>
+Batch parameter.
+Specifies Font height
+of text displayed in 
+image window. 
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#fontsc"><H3>FONTSC</H3></A>
+Batch parameter.
+Specifies Font scale
+of text displayed in 
+image window. This
+is the horizonal
+scaling factor (width/height)
+to be used when drawing text.
+ 
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#exit"><H3>EXIT</H3></A>
+Interactive parameter !
+To <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#exit">exit</A> from the program 
+in interactive mode.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#corr"><H3>CORR</H3></A>
+Interactive & batch parameter !
+The number of lines and samples
+in the correlation window. 
+Defaults to 
+64 lines and 64 samples.
+Valid values are: 16 32 64 128 256.
+Default is: <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#corr">corr</A>=(64,64)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#delete"><H3>DELETE</H3></A>
+Interactive parameter !
+To <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#delete">delete</A> tiepoint #n specify:
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#delete">delete</A>=n
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#redraw"><H3>REDRAW</H3></A>
+Interactive parameter !
+To <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#redraw">redraw</A> all the acquired 
+tiepoints.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#next"><H3>NEXT</H3></A>
+Interactive parameter
+To select the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#next">next</A> frame <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#pair">pair</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#last"><H3>LAST</H3></A>
+Interactive parameter
+To select the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#last">last</A> frame <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#pair">pair</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#percent"><H3>PERCENT</H3></A>
+Interactive parameter
+Specifies the percentage of the
+histogram to saturate at each
+end for autostretching of the
+displayed images.
+Default=2.0
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#pair"><H3>PAIR</H3></A>
+Interactive parameter !
+Forces the image <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#pair">pair</A> 
+specified to
+be displayed and to become
+ the current
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#pair">pair</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#nosedr"><H3>NOSEDR</H3></A>
+Interactive parameter !
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#nosedr">nosedr</A> causes the 
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">SEDR</A> navigation to
+be turned off 
+during interactive
+session. 
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr"><H3>SEDR</H3></A>
+Interactive parameter !
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#sedr">sedr</A> causes the SEDR 
+navigation to
+be turned back on 
+during interactive
+session. See '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#nosedr">NOSEDR</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#nocorr"><H3>NOCORR</H3></A>
+Interactive parameter
+Turns off correlation.
+To reactivate use <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch_level2.html#corr">CORR</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/manmatch.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

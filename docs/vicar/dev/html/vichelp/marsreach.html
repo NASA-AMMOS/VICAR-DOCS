@@ -1,0 +1,207 @@
+<HTML>
+<HEAD><title>HTML Help for MARSREACH</title></HEAD>
+<BODY>
+<H1>Help for MARSREACH</H1>
+<pre>
+PURPOSE:
+
+MARSREACH computes the "reachability" for the MER IDD (Instrument
+Deployment Device) at each pixel.  The result is a map show which pixels
+can be reached by each instrument in each of its various configuration modes.
+
+*** THIS IS A MER-SPECIFIC PROGRAM ***
+
+The inputs for MARSREACH are the XYZ image (created by MARSXYZ) and the
+surface normal (<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#uvw">UVW</A>) image (created by MARSUVW).
+
+The output is a single 16-band file in byte format.  The bands are described
+by the INSTRUMENT_BAND_ID and CONFIGURATION_BAND_ID, but use the following
+layout:
+
+Band  Instrument  Configuration
+----  ----------  -------------
+  1       MI      ELBOW_UP_WRIST_UP
+  2       MI      ELBOW_UP_WRIST_DOWN
+  3       MI      ELBOW_DOWN_WRIST_UP
+  4       MI      ELBOW_DOWN_WRIST_DOWN
+  5       RAT     ELBOW_UP_WRIST_UP
+  6       RAT     ELBOW_UP_WRIST_DOWN
+  7       RAT     ELBOW_DOWN_WRIST_UP
+  8       RAT     ELBOW_DOWN_WRIST_DOWN
+  9       MB      ELBOW_UP_WRIST_UP
+  10      MB      ELBOW_UP_WRIST_DOWN
+  11      MB      ELBOW_DOWN_WRIST_UP
+  12      MB      ELBOW_DOWN_WRIST_DOWN
+  13      APXS    ELBOW_UP_WRIST_UP
+  14      APXS    ELBOW_UP_WRIST_DOWN
+  15      APXS    ELBOW_DOWN_WRIST_UP
+  16      APXS    ELBOW_DOWN_WRIST_DOWN
+
+For the MI, MB, and APXS instruments, the value is either 0 (not reachable)
+or 255 (reachable).  For the RAT bands, the value is either 0 (not
+reachable), or a non-0 integer which represents the maximum "preload" in
+Newtons that the RAT can apply at that point.
+
+The geometry of the image matches that of the input XYZ file (and the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#uvw">UVW</A>
+file, which should match the XYZ).
+
+A <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#mask">mask</A> file may optionally be provided; the XYZ's are masked off using this
+file if present (0 means to let the pixel through; 255 means to remove it).
+This removes the rover from consideration for the arm collision detection
+algorithm (see <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#terrain">TERRAIN</A>).  See marsfilter for more on masking.
+
+EXECUTION:
+
+marsreach <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#inp">inp</A>=data.xyz <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#out">out</A>=data.reach <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#uvw">uvw</A>=data.uvw
+where:
+data.xyz is an input 3-band image of type REAL with the X, Y and Z values
+at that pixel in meters (the unit is actually irrelevant).
+data.<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#uvw">uvw</A> is an input 3-band image of type REAL with the U, V, and W components
+of the unit vector for each pixel.
+data.reach is an output 16-band image of type BYTE
+
+METHOD:
+
+Algorithm description TBD.  Kinematic models of the arm are used.
+
+Collision detection of the arm with the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#terrain">terrain</A> is normally enabled.
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#terrain">TERRAIN</A> parameter can turn this off, if desired.  The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#mask">MASK</A> parameter
+can specify a file to use as a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#mask">mask</A> to remove pixels from consideration
+by this collision detection.
+
+This version includes low-level filtering of the XYZ's in the rechability
+code itself.  This filtering is done in image space and removes any XYZ's
+on the stowed arm.  It only takes place on full-res (1024x1024) images;
+downsampled or subframed images do not have the arm filtered <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#out">out</A>.  This
+filtering is controlled by the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#filter">FILTER</A> parameter.  With FILTER on, it is
+performed when possible (full-res only).  With it off, this internal filtering
+is disabled.  With AUTOFILTER, it is disabled if a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#mask">MASK</A> is provided, or
+enabled otherwise (the idea being that the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#mask">mask</A> does the same, but
+presumably more extensive, filtering).
+
+The actual algorithm and core code was developed by Bob Bonitz and
+Chris Leger of Section 348.
+
+
+HISTORY:
+06-20-03  Initial marsreach by B. Deen, based on code from Bob Bonitz (348).
+<A NAME="CogProg">COGNIZANT PROGRAMMER: B. Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#inp"><H3>INP</H3></A>
+Input images.
+Must be 1 3-band file
+or (x,y,z) triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#out"><H3>OUT</H3></A>
+Output file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#uvw"><H3>UVW</H3></A>
+Input normal image.
+Must be 1 3-band file
+or (u,v,w) triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#mask"><H3>MASK</H3></A>
+Input <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#mask">mask</A> image (optional).
+Used to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#filter">filter</A> <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#out">out</A> the XYZs'.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#approach"><H3>APPROACH</H3></A>
+IDD parameter.
+Description TBD.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#overdrive"><H3>OVERDRIVE</H3></A>
+IDD parameter.
+Description TBD.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#terrain"><H3>TERRAIN</H3></A>
+Whether or not to do
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#terrain">terrain</A> collision
+checking.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#filter"><H3>FILTER</H3></A>
+Whether or not to use
+built-in filtering.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsreach.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

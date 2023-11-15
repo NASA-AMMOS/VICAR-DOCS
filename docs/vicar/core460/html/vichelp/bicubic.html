@@ -1,0 +1,144 @@
+<HTML>
+<HEAD><title>HTML Help for BICUBIC</title></HEAD>
+<BODY>
+<H1>Help for BICUBIC</H1>
+<pre>
+BICUBIC is a Vicar program that enlarges images by integer <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#zoom">zoom</A> factors using
+convolutional reconstruction techniques.  A piecewise cubic convolutional 
+filter is used.
+
+USAGE:
+	BICUBIC input output [<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#size">size</A>] <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#zoom">ZOOM</A>=zoom [parms]
+
+OPERATION:
+
+BICUBIC determines the output image <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#size">size</A> from the specified <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#zoom">zoom</A> factor(s) and
+the input image <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#size">size</A> or sub-area (i.e. NLO = <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#nl">NL</A>*<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#zoom">ZOOM</A>(1) and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#ns">NS</A> = NSO*ZOOM(2)).
+The output image is then written line by line, pixel by pixel.  The value of an
+output pixel is determined by convolving the input image with a piecewise cubic
+interpolation function.  For details on convolutional interpolation, the user
+is referred to [HOU78], [KEY81], [MIT88] and [PAR83].
+
+In order to perform the interpolation near the image (or sub-area) edges, the
+pixels need to be extrapolated in all directions.  This is done using a simple
+linear extrapolation of the two edge pixels in any column or row.
+The piecewise cubic interpolation filters are described in [MIT88].  The 
+piecewise cubic function is:
+
+	           / (12 - 9*<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#b">B</A> - 6*<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#c">C</A>)*|x|**3 +		for |x| &lt 1
+		  /	(-18 + 12*<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#b">B</A> + 6*<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#c">C</A>)*|x|**2  		 /	(6 - 2*B)
+	 	/
+	f(x) = &lt     (-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#b">B</A> - 6*<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#c">C</A>)*|x|**3 + 		for 1 <= |x| < 2
+	 	\	(6*<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#b">B</A> + 30*<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#c">C</A>)*|x|**2  	 	 \	(-12*C - 48*C)*|x| + (8*B + 24*C)
+		  \
+		   \ 0					otherwise
+
+where <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#b">B</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#c">C</A> are parameters that control the shape of the cubic curves
+and thus the appearance of the output image (see CONTROLLING THE CUBIC 
+FUNCTION below).
+CONTROLLING THE CUBIC FUNCTION:
+
+The piecewise cubic interpolation function can be controlled by two parameters
+(<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#b">B</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#c">C</A>) as shown in the above formulas.  The effects of changing these
+parameters is generalized in the graph of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#b">B</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#c">C</A> on the following page.  This
+graph is the result of a subjective test in which nine expert observers were
+shown images reconstructed with random values of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#b">B</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#c">C</A> [MIT88].  The
+observers were asked to classify the appearence of the images into one of
+these categories: blurring, ringing, anisotropy, and satisfactory.  The graph
+shows the results of the test over the range of 0.0 to 1.0.  Of course <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#b">B</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#c">C</A>
+may be outside this range, the effects will be more noticeable.
+		1.0 +-------------+--------------- 		    |             |               |
+		    |             |               |
+	     <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#b">B</A>	0.8 +           _~ \      II      |	Regions:
+	      	    |     I    /    \             |	-------
+	     P	    |         &lt      ~-_         _ 	     a	0.6 +          &gt        \     _-~ |	I   - Blurring
+	     r	    |      __-~         |~-_-~    |	II  - Anisotropy
+	     a	    +__--~~            /          |	III - Ringing
+	     m	0.4 + \               |           |	IV  - Anisotropy
+	     e	    |  \       V     /            |	V   - Satisfactory
+	     t	    |   \           /      III    |
+	     e	0.2 +    ~\         |             |
+	     r	    |  IV  \        \             |
+		    |       ~~~\     |            |
+		0.0 +-----+-----+----++-----+----- 		   0.0   0.2   0.4   0.6   0.8   1.0
+			      <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#c">C</A> Parameter 
+
+The default values for (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#b">B</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#c">C</A>) are (1/3, 1/3) which is recommended by [MIT88].
+Other interesting values are:
+
+	(1, 0)	 - Equivalent to the Cubic <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#b">B</A>-Spline,
+	(0, 0.5) - Equivalent to the Catmull-Rom Spline,
+	(0, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#c">C</A>)	 - The family of Cardinal Cubic Splines,
+	(<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#b">B</A>, 0)   - Duff's tensioned B-Splines [DUF86].
+
+<A NAME="examples">EXAMPLES:</A>
+
+	BICUBIC TEST.IMG TEST2.IMG <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#zoom">ZOOM</A>=3
+
+	BICUBIC TEST.IMG TEST3.IMG <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#zoom">ZOOM</A>=(5,4)
+
+	BICUBIC TEST.IMG TEST4.IMG <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#zoom">ZOOM</A>=7 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#b">B</A>=1 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#c">C</A>=0
+
+REFERENCES:
+
+[DUF86]	Duff, Tom, "Splines in Animation and Modeling", State of the Art in
+	Image Synthesis, SIGGRAPH 86 Course Notes.
+
+[HOU78]	Hou, Hsieh S. and Andrews, Harry <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#c">C</A>., "Cubic Splines for Image
+	Interpolation and Digital Filtering", IEEE Trans. Acoustics, Speech,
+	and Signal Processing, Vol. ASSP-26, No. 6, December 1978, pp.
+	508-517.
+
+[KEY81]	Keys, Robert G., "Cubic Convolution Interpolation for Digital Image
+	Processing", IEEE Trans. Acoustics, Speech, and Signal Processing,
+	Vol. ASSP-29, No. 6, December 1981, pp. 1153-1160.
+
+[MIT88]	Mitchell, Don P. and Netravali, Arun N., "Reconstruction Filters in
+	Computer Graphics", Computer Graphics, Vol. 22, No. 4, August 1988,
+	pp. 221-228.
+
+[PAR83]	Park, Stephen K. and Schowengerdt, Robert A., "Image Reconstruction by
+	Parametric Cubic Convolution", Computer Vision, Graphics and Image
+	Processing", Vol. 23, No. 3, September 1983, pp. 258-272.
+HISTORY:
+
+Written by:		R. Mortensen
+<A NAME="CogProg">Cognizant Programmer:	R. Mortensen</A>
+
+Revisions:
+	Initial Version		7-Oct-88
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#inp"><H3>INP</H3></A>
+Input Vicar image file.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#out"><H3>OUT</H3></A>
+Output Vicar image file.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#size"><H3>SIZE</H3></A>
+Sub-area of input image to
+be zoomed. (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#ns">NS</A>).
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#sl"><H3>SL</H3></A>
+Starting line of sub-area.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#ss"><H3>SS</H3></A>
+Starting sample of sub-area.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#nl"><H3>NL</H3></A>
+Number of lines in sub-area.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#ns"><H3>NS</H3></A>
+Number of samples in sub-area.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#zoom"><H3>ZOOM</H3></A>
+Integer <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#zoom">ZOOM</A> factor(s).
+(LZOOM,SZOOM) -- if SZOOM
+is omitted, LZOOM is used.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#b"><H3>B</H3></A>
+Parameter to control CUBIC
+spline function. 
+(See HELP *)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic_level2.html#c"><H3>C</H3></A>
+Parameter to control CUBIC
+spline function.
+(See HELP *)
+.END
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/bicubic.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

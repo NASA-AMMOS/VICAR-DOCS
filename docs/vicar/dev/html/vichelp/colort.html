@@ -1,0 +1,142 @@
+<HTML>
+<HEAD><title>HTML Help for COLORT</title></HEAD>
+<BODY>
+<H1>Help for COLORT</H1>
+<pre>
+PURPOSE:
+The purpose of COLORT is <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#to">to</A> convert color images <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#from">from</A> the
+blue-green-red color domain into one of several other color spaces, or
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#to">to</A> perform the inverse transformation back into the blue-green-red
+coordinate system.
+EXECUTION:
+
+colort (BL,GR,RD) (HUE,SAT,INT) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#to">TO</A>=HSI       This maps <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#from">from</A> blue, green,
+                                              red space into hue, saturation,
+                                              and intensity.
+colort (HUE,SAT,INT) (BL,GR,RD) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#from">FROM</A>=HSI      This performs the inverse
+                                              transformation of the previous
+                                              example. Hue, saturation, and
+                                              intensity are mapped into blue,
+                                              green, and red.
+OPERATION:
+     colort performs color coordinate space transformations between the
+standard blue-green-red Cartesian space any of seven other color spaces.
+The definitions of these eight color spaces are:
+
+BGR or DN   This is a Cartesian coordinate system, with the three axes
+            being the blue, green, and red vectors. Precisely, these should
+            be the reflectance <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#from">from</A> monochromatic illumination at 435.8 nm
+            for blue, 546.1 nm for green, and 700.0 nm for red.
+
+TRISTIMULUS This is a Cartesian coordinate system, with the three axes
+            being green, red, and intensity. Here, green and red refer <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#to">to</A>
+            the fraction of total radiance contributed by that color.
+            Intensity is the sum of all radiance. Scaling is such that
+            255 DN is the maximum possible value of the coordinate.
+CIE         This refers <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#to">to</A> the 1931 CIE-X, Y, Z system of chromaticity 
+            coordinates. CIE is the "Commission Internationale de l'Eclairage".
+            The system is Cartesian, with X, Y, and intensity axes.
+            It is related <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#to">to</A> BGR by the equations
+                            0.49000r + 0.31000g + 0.20000b
+                        x = ------------------------------
+                            0.66697r + 1.13240g + 1.20063b
+
+                            0.17697r + 0.81240g + 0.01063b
+                        y = ------------------------------
+                            0.66697r + 1.13240g + 1.20063b
+
+                intensity = 0.66697r + 1.13240g + 1.20063b
+             Scaling is such that 255 DN means x=1, y=1, and intensity
+             is at maximum value. 0 DN means x=0, y=0, intensity=0.
+UCS          UCS refers <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#to">to</A> the coordinate system used in the 1960 CIE-UCS
+             (Uniform Chromaticity-Scale) diagram, developed by D. L.
+             MacAdam. It is related <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#to">to</A> the CIE system by the equations
+
+                               4x
+                       u = ---------
+                           -2x+12y+3
+
+                               6y
+                       v = ---------
+                           -2x+12y+3
+
+               intensity = intensity
+
+             Scaling is such that u and v = 0 at 0 DN; u and v = 1 at 400 DN.
+SPHERICAL    This is the spherical coordinate system, with unit coordinates
+             of longitude, colatitude, and radiance. In this system, the polar
+             axis is defined as the achromatic line (blue=green=red). Radiance
+             is the vector sum of blue, green and red, scaled so that all
+             colors are at 0 DN for radiance = 0 DN, and all colors are at 
+             255 DN for radiance = 255 DN. Longitude is scaled so that blue
+             is at 43 DN, green is at 128 DN, red is at 213 DN. Colatitude
+             (the polar angle) is scaled so that arctan(sqrt(2)) is at 255 DN.
+HSR          This is similar <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#to">to</A> the spherical system, with unit coordinates
+             of hue, saturation, and radiance. Radiance has the same meaning
+             as before, and hue is synonymous with longitude. Saturation is
+             like colatitude, but scaled so that 255 DN is the maximum
+             permissible angle at that particular hue.
+
+HSI          This is the same as the hue-saturation-radiance space, except
+             that intensity is substituted for radiance. Intensity is scaled
+             so that 255 DN is the maximum radiance value that a pixel with
+             this hue and saturation could acquire in blue-green-red space.
+
+CUBEROOT     This is a Cartesian space that approximates the Munsell space.
+             The Munsell space is a space that is linear in perceived
+             differences in both color and brightness. Its coordinates are
+             L*, a*, and b*. The equations that define this transformation
+             are:
+
+                 L* = 25.29*cuberoot(green) - 18.38
+                 a* = Ka(cuberoot(red)-cuberoot(green))
+                 b* = Kb(cuberoot(green)-cuberoot(blue))
+                         Ka =105 for red&ltgreen, =125 otherwise
+                         Kb =30.5 for blue&ltgreen, =53.6 otherwise
+                         red is defined as 1.02*X of CIE space
+                         green is defined as Y of CIE space
+                         blue is defined as 0.847z of CIE space
+             L*, a*, and b* are scaled so that one unit in the above
+             equations corresponds <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#to">to</A> 4 DN; 0 DN implies L*=-18.36;
+             a* = 0 at 100 DN; b*=0 at 150 DN.
+Most of the equations used in this program were lifted <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#from">from</A> COLOR SCIENCE,
+by Wyszecki and Stiles. The reader is urged <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#to">to</A> consult this text for a more
+detailed explanation of the concepts involved.
+  
+WRITTEN BY:  Alan R. Gillespie, September, 1976
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Ron Alley</A>
+REVISION: 10  Dec 9, 1991; (Conversion <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#to">to</A> UNIX)
+REVISION:     Feb 3, 1986; (Conversion <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#to">to</A> VICAR2 I/O)
+REVISION:  8; May 1, 1984; (Conversion <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#to">to</A> VAX by S. Pohorsky)
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#inp"><H3>INP</H3></A>
+3 input image files
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#out"><H3>OUT</H3></A>
+3 output image files
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#size"><H3>SIZE</H3></A>
+Standard VICAR <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#sl"><H3>SL</H3></A>
+Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#ss"><H3>SS</H3></A>
+Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#nl"><H3>NL</H3></A>
+Number of lines 
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#ns"><H3>NS</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#from"><H3>FROM</H3></A>
+The coordinate system of the
+input datasets. BGR, TRI, CIE,
+UCS, HSI, SPH, HSR, CUB, and 
+DN are valid.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort_level2.html#to"><H3>TO</H3></A>
+The coordinate system of the
+output datasets. BGR, TRI,
+CIE, UCS, HSI, SPH, HSR, CUB,
+and DN are valid.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/colort.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

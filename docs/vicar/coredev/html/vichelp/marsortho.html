@@ -1,0 +1,374 @@
+<HTML>
+<HEAD><title>HTML Help for MARSORTHO</title></HEAD>
+<BODY>
+<H1>Help for MARSORTHO</H1>
+<pre>
+PURPOSE:
+To assemble multiple frames into a mosaic in orthographic projection. 
+It takes either skin data asscoiated with XYZ data to generate ortho output, 
+or it takes XYZ data to generate DEM. In order to generate ortho output, 
+one-to-one correspondence is expected between XYZ and skin data. 
+Moreover, every entry in skin list should be geometrically registered to 
+every entry in XYZ list.
+
+This is a multimission program. It supports and mission, instrument, 
+and camera model supported by the Planetary Image Geometry (Pig) software 
+suite.
+
+The program provides the options to generate both dem and ortho outputs
+in one execution. Dem and ortho outputs can also be generated individually.
+
+The program provides different options to handle <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#overlay">overlay</A> areas for 
+both ortho and DEM outputs. The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#overlay">overlay</A> options include: 
+    1. closest to camera (CLOSEST)
+    2. average (AVG)
+    3. minimum (MIN)
+    4. maximum (MAX)
+    5. first on top (FIRST)
+    6. bottom on top (LAST)
+For detailed information regarding <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#overlay">overlay</A> options, see parameter OVERLAY.
+
+Radiometric correction is performed by default on integer inputs, 
+and it may be turned off via the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#rad">RAD</A> keyword parameter. 
+Radiometric correction is turned off by default on float inputs, 
+and it cannot be turned on.
+
+EXECUTION:
+
+Note: For the usage examples below, if the command contains "...",
+it means that command is incomplete. 
+
+There are two ways to present <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#inp">INP</A> input:
+    1. marsortho <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#inp">inp</A>=(a.img, b.img, c.img, ...) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#out">out</A>=dem.img ...
+    2. marsortho <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#inp">inp</A>=ascii_listoffiles <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#out">out</A>=dem.img ...
+where ascii_listoffiles is a text file created by Sybase or an editor,
+containing the list of filenames to include in the mosaic, one per record.
+Up to 200 input images can be listed.
+
+There is only one way to present <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#in_xyz">IN_XYZ</A> input:
+    1. marsortho <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#inp">inp</A>=ascii_listoffiles1 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#in_xyz">in_xyz</A>=ascii_listoffiles2 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#out">out</A>=ortho.img ...
+where ascii_listoffiles1 and ascii_listoffiles2 are the same as above. 
+Every entry in ascii_listoffiles2 must be geometrically registered to 
+every entry in ascii_listoffiles1.
+
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#out_dem">OUT_DEM</A> can be optional, and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#out">OUT</A> can be optional, but at least one of 
+them must be defined. For example:
+    1. marsortho <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#in_xyz">in_xyz</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#out_dem">out_dem</A>=dem.img ... (correct)
+    2. marsortho <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#inp">inp</A>=img.lis <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#in_xyz">in_xyz</A>=xyz.lis <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#out">out</A>=ortho.img ... (correct)
+    3. marsortho <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#inp">inp</A>=img.lis <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#in_xyz">in_xyz</A>=xyz.lis ... (incorrect)
+
+The program provides the following ways to define geometry.
+    1. Define parameter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#nl">NL</A>. 
+       If the parameter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#nl">NL</A> is defined, then <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#scale">SCALE</A> (map resolution) will be 
+       computed based on <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#nl">NL</A>, and then NS will be computed based on <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#scale">SCALE</A> and 
+       <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#maxy">MAXY</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#miny">MINY</A> (MAXY and MINY will be computed in the program). 
+    2. Define parameter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#scale">SCALE</A>.
+       If the parameter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#scale">SCALE</A> is defined, then <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#nl">NL</A> and NS will be computed based
+       on <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#scale">SCALE</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#maxx">MAXX</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#minx">MINX</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#maxy">MAXY</A>, and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#miny">MINY</A> (MAXX, MINX, MAXY, MINY will be
+       computed in the program).
+    3. Define both parameters <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#nl">NL</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#scale">SCALE</A>
+       If both <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#nl">NL</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#scale">SCALE</A> are defined, then <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#maxx">MAXX</A> will be re-computed based on 
+       <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#nl">NL</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#scale">SCALE</A>. 
+
+The program has the capability of processing multi-bands <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#inp">INP</A> inputs. All the 
+bands can be processed at once, or each <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#band">band</A> can be processed individually. If 
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#band">BAND</A>=N, then only that band will be processed. If BAND is not defined, then all 
+bands will be processed. <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#band">BAND</A> is undefined by default to process all bands 
+unless user explicitly defines it.
+See the two usage examples below:
+    1. Given that images in skin.lis contain 5 bands, and we only want to 
+       process the second <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#band">band</A>.
+           marsortho <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#inp">inp</A>=img.lis <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#in_xyz">in_xyz</A>=xyz.lis <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#band">band</A>=2 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#out">out</A>=ortho_band2.img ...
+       By defining <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#band">BAND</A>=2, only band 2 will be processed, and the ortho output 
+       will be a 1-<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#band">band</A> image.
+    2. Given that images in skin.lis contain 5 bands, and we want to process 
+       them all.
+           marsortho <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#inp">inp</A>=img.lis <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#in_xyz">in_xyz</A>=xyz.lis <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#out">out</A>=ortho_all_5_bands.img ...
+       In order to have all the 5 bands get processed, all we need to do is left
+       <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#band">BAND</A> to be undefined. The ortho output in this case will be a 5-bands 
+       image.
+
+Below are examples of complete commands for specific use cases:
+    1. marsortho <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#in_xyz">in_xyz</A>=xyz.lis <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#out_dem">out_dem</A>=dem.img <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#dem_fill">dem_fill</A>=5 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#nl">nl</A>=1000 -min
+
+       The above command will use the images in xyz.lis to generate a DEM map 
+       dem.img that has 1000 total number of lines with fill factor to be 
+       (5 * 2 + 1) pixels. -min means when multiple points hit the same 
+       position, the smallest value will be picked.
+       For different options of handling <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#overlay">overlay</A> methods in DEM output, please 
+       see parameter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#overlay">OVERLAY</A>.
+
+    2. marsortho <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#inp">inp</A>=img.lis <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#in_xyz">in_xyz</A>=xyz.lis <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#out">out</A>=ortho.img <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#nl">NL</A>=1000 
+       <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#brtcorr">brtcorr</A>=example.brt -norad
+
+       The above command will use the images in xyz.lis as coordinates and use 
+       the images in img.lis as texture map to <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#overlay">overlay</A> on top of the 
+       coordinates. The program will use example.brt generated by marsmap and 
+       marsbrt to perform linear brightness correction. Parameter -norad will
+       turn off the radiometric correction.
+
+    3. marsortho <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#inp">inp</A>=img.lis <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#in_xyz">in_xyz</A>=xyz.lis <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#out_dem">out_dem</A>=dem.img <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#out">out</A>=ortho.img 
+       <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#nl">nl</A>=1000 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#dem_nodata">dem_nodata</A>=0 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#img_nodata">img_nodata</A>=0 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#fill_size">fill_size</A>=5 -local -min
+
+       The command above will use xyz.lis and img.lis to genereate DEM map 
+       dem.img and ortho map ortho.img. Parameter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#nl">nl</A> sets the number of lines 
+       for both dem.img and ortho.img. The number of samples will be calculated
+       based on parameter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#scale">scale</A> which by default is 0.01, and the actual min and
+       max values in xyz images. Parameters <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#dem_nodata">dem_nodata</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#img_nodata">img_nodata</A> will set 
+       the pixel values for the no data position for dem.img and ortho.img to be
+       0. Parameter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#fill_size">fill_size</A> will set the fill size for dem.img and ortho.img 
+       in pixels. Parameter -local will set the output frame to be local. -min 
+       means in dem.img and ortho.img when multiple points hit the same 
+       position, the smallest value will be picked. 
+
+Index Files
+-----------
+Optionally, index (IDX and ICM) files can be output.  These collectively
+identify what pixel from which input was used for each point in the mosaic.
+
+The index file (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#idx_out">IDX_OUT</A> parameter) contains, for each pixel, a halfword
+integer (16 bit signed) identifying which image the pixel came from.
+0 indicates no value (black in the mosaic).  Numbers from 1-n match the
+order of files in the input list file (or <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#inp">INP</A> parameter, if a list file
+isn't given).  For most mosaics, the file could be converted to byte using
+CFORM (half is used to support more than 255 input files).
+
+The ICM file (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#icm_out">ICM_OUT</A> parameter) is an Image Coregistration Map.  It is a
+two-<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#band">band</A> float file containing the line, sample coordinate of the input
+pixel used for the point.  This is the same basic format as correlation
+maps such as MARSCOR3 produces, except that multiple images are involved
+(thus the need for the index file).
+
+HISTORY:
+09-30-13  O. Pariser  Initial marsortho by O. Pariser, based on idl code from 
+                      Jeff R. Hall
+08-31-15  Steven Lu   Added SimpleImage support for better memory management. 
+                      (replacing IBUF, FBUF, ...)
+03-02-16  Steven Lu   Added support for radiometric and brightness correction.
+03-02-16  Steven Lu   Added options to handle overlap areas.
+03-02-16  Steven Lu   Added the capability of processing multiple bands.
+07-24-16  Steven Lu   Added pixel-based fill implementation.
+                      Added <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#input_range">INPUT_RANGE</A> capability.
+                      Added <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#morphologic">morphologic</A> erosion capability. 
+02-10-17  Steven Lu   Changed <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#range">RANGE</A> parameter definition.
+                      Added parameter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#cut">CUT</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#cut_type">CUT_TYPE</A>.
+09-06-17  Steven Lu   Added parameter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#z_coord">Z_COORD</A>
+                      Added parameter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#z_direction">Z_DIRECTION</A>
+                      Changed weighted fill to use camera resolution. 
+10-06-17  Steven Lu   Added parameter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#fill_factor">FILL_FACTOR</A>
+                      Changed <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#erode_factor">ERODE_FACTOR</A>
+11-21-17  Bob Deen    Added <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#write_coord">WRITE_COORD</A> parameter
+09-28-18  Steven Lu   Added <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#idx_out">IDX_OUT</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#icm_out">ICM_OUT</A> parameters.
+10-31-18  Steven Lu   Added <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#camera_center">CAMERA_CENTER</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#pixel_angle">PIXEL_ANGLE</A> parameters.
+12-10-18  Steven Lu   Fixed a bug for applying HSI brt corr when -NORAD is on.
+04-21-20  Bob Deen/   Added elongated fill and erosion methods; 
+          Steven Lu   OMP parallelization; Caching erosion kernel;
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER: Oleg Pariser/Steven Lu</A>
+
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#inp"><H3>INP</H3></A>
+Input images or ascii file list.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#in_xyz"><H3>IN_XYZ</H3></A>
+Input XYZs or ascii file list.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#out"><H3>OUT</H3></A>
+Ortho output image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#out_dem"><H3>OUT_DEM</H3></A>
+DEM output image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#img_nodata"><H3>IMG_NODATA</H3></A>
+Defines what values to set for ORTHO output image when there is no data 
+available. If this variable is not defined, the value for no data is 0.0.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#dem_nodata"><H3>DEM_NODATA</H3></A>
+Defines what values to set for DEM output image when there is no data available.
+If this variable is not defined, the value for no data is MAXFLOAT.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#fill_size"><H3>FILL_SIZE</H3></A>
+Defines fill size in pixel.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#fill_factor"><H3>FILL_FACTOR</H3></A>
+Defines the factor to enlarge or reduce filled squares.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#fill_method"><H3>FILL_METHOD</H3></A>
+Defines which method to use for fill function. 
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#max_angle"><H3>MAX_ANGLE</H3></A>
+Defines the maximum pixel angle.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#max_span"><H3>MAX_SPAN</H3></A>
+Defines the maximum span.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#pixel_angle"><H3>PIXEL_ANGLE</H3></A>
+Specifies or overrides
+pixel angle.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#dem_fill"><H3>DEM_FILL</H3></A>
+Override <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#fill_size">FILL_SIZE</A> for DEM output.
+ 
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#range"><H3>RANGE</H3></A>
+Maximum <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#range">range</A> in meters, measured from coordinate system origin.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#cut"><H3>CUT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#range">Range</A> to <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#cut">cut</A> a circle or sawtooth shape.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#cut_type"><H3>CUT_TYPE</H3></A>
+Specifies the shape to <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#cut">cut</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#band"><H3>BAND</H3></A>
+The BSQ input file <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#band">band</A> number.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#minx"><H3>MINX</H3></A>
+Minimum extent of mosaic in X direction, measured in meters.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#miny"><H3>MINY</H3></A>
+Minimum extent of mosaic in Y direction, measured in meters.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#maxx"><H3>MAXX</H3></A>
+Maximum extent of mosaic in X direction, measured in meters.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#maxy"><H3>MAXY</H3></A>
+Maximum extent of mosaic in Y direction, measured in meters.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#scale"><H3>SCALE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#scale">Scale</A> (map resolution) for both DEM and ORTHO outputs, measured in meters/pixel.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#scale_thresh"><H3>SCALE_THRESH</H3></A>
+If <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#scale">SCALE</A> is computed from Extent and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#nl">NL</A> params, and the computed value exceeds values
+specified by this parameter, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#scale">SCALE</A> will be set to the value of this parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#overlay"><H3>OVERLAY</H3></A>
+Keyword parameter that provides 6 different methods of handling <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#overlay">overlay</A> areas
+in DEM and ortho output mosaic. It defaults to method FIRST.
+1. CLOSEST = closest to camera. 
+2. AVG = average.
+3. MIN = minimum.
+4. MAX = maximum.
+5. FIRST = first on top.
+6. LAST = bottom on top.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#camera_center"><H3>CAMERA_CENTER</H3></A>
+Specifies or overrides
+camera position.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#rad"><H3>RAD</H3></A>
+Turns on and off radiometric correction.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#brtcorr"><H3>BRTCORR</H3></A>
+Input file containing brightness corrections.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#input_range"><H3>INPUT_RANGE</H3></A>
+The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#range">range</A> of inputs to actually mosaic.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#morphologic"><H3>MORPHOLOGIC</H3></A>
+Turns on and off erosion feature.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#erode_shape"><H3>ERODE_SHAPE</H3></A>
+Structuring element shape for erosion feature.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#erode_factor"><H3>ERODE_FACTOR</H3></A>
+Defines how much to erode borders and holes.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#z_direction"><H3>Z_DIRECTION</H3></A>
+Deinfes the direction of Z-axis.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#nl"><H3>NL</H3></A>
+Number of Lines for both DEM and ORTHO output mosaic.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#nl_thresh"><H3>NL_THRESH</H3></A>
+If <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#scale">SCALE</A> is computed from Extent and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#nl">NL</A> params, and the computed value exceeds values
+specified by this parameter, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#scale">SCALE</A> will be set to the value of this parameter and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#nl">NL</A>
+will be recomputed.  If recomputed <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#nl">NL</A> value exceeds the value of this parameter, it 
+will be set to <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#nl_thresh">NL_THRESH</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#idx_out"><H3>IDX_OUT</H3></A>
+Optional output
+index filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#icm_out"><H3>ICM_OUT</H3></A>
+Optional output
+coregistration coordinate
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find configuration/calibration files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-specific pointing method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#rsf">RSF</A> parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#z_coord"><H3>Z_COORD</H3></A>
+Coordinate system to use for Z values in DEM.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#write_coord"><H3>WRITE_COORD</H3></A>
+Extra <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#coord">coord</A> system to write to output label.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for some <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric identifier for a data set or data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier associated with the release to the
+public of all or part of a data set.
+The release number is associated with the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho_level2.html#omp_on"><H3>OMP_ON</H3></A>
+Turns on or off parallel
+processing (multiple threads,
+single machine). Default: on
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsortho.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

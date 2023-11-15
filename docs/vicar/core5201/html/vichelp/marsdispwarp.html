@@ -1,0 +1,399 @@
+<HTML>
+<HEAD><title>HTML Help for MARSDISPWARP</title></HEAD>
+<BODY>
+<H1>Help for MARSDISPWARP</H1>
+<pre>
+PURPOSE:
+
+This program is used to transform an image through a disparity map so the
+geometry matches that of the partner.  For example, transforming a right-eye
+image so it coregisteres with the left eye, using a left-to-right disparity
+map.
+
+This can be used to create a multiple-eye coregistered all-filter data set,
+to coregister across camera instruments, or as a quality check for correlation
+programs such as marsjplstereo and marscor3.  It can also be used for
+cross-instrument coregistration, for example to colorize a BW imager or to
+transfer XYZ data to a non-stereo camera.  Finally, it can also be used to
+"chain" together disparity maps, creating a single A-&gtC <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#out">out</A> of A->B and B->C.
+
+It uses the disparity map to transform the non-reference image (usually the
+right image) so it matches the reference (usually the left) image.  For
+simplicity, the reference image is called left here; the other is called right.
+In reality, the program will work either direction (e.g. mapping the left image
+to the right geometry, using an R-&gtL disparity map).
+
+When using this as a quality control, if the correlation succeeded, the
+resulting image (derived from the right) should exactly match the left image,
+modulo differences in intensity (or filters) between the images.  In practice
+of course, this is impossible; some differences remain.  The amount of these
+differences provides an indication as to the quality of the correlation and
+noise in the imagery.
+
+EXECUTION:
+
+marsjplstereo <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#inp">inp</A>=(left,right) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#out">out</A>=dispar.1d
+marscor3 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#inp">inp</A>=(left,right) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#out">out</A>=dispar.2d in_disp=dispar.1d
+
+marsdispwarp <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#inp">inp</A>=(right left) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#out">out</A>=right_warp_to_left.1d <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp">disp</A>=dispar.1d
+marsdispwarp <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#inp">inp</A>=(right left) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#out">out</A>=right_warp_to_left.2d <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp">disp</A>=dispar.2d
+
+Note that the inputs are given in (R L) order, which is backwards from how
+the disparity was run.  Note also that the disparity input to marsdispwarp
+must be a single two-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#band">band</A> file.  Separate one-band files (which are legal
+outputs of the correlators) are not accepted.
+
+The program can also handle pyramid (downsampled) disparity maps:
+
+marsjplstereo (left,right) dispar.1d pyramid=1
+marsdispwarp (right left) right_warp_to_left.2d dispar.1d disp_pyr=1
+
+as well as image pairs that have differential <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A> (see the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#ref_not_zoomed">REF_NOT_ZOOMED</A>
+parameter).
+
+The first input ("right") is the image being transformed; the pixel data
+comes from here.  The second input ("left") is optional but is used to set
+the label of the output.
+
+Finally, disparity maps (also called Inter-camera Coregistration Maps, or
+ICM's, on Mars 2020) can be "chained" together to create a single map that
+does a dual transform.  So given disparity maps or ICM's that go from A-&gtB
+and B-&gtC, the combined map A->C can be created:
+
+marsdispwarp <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#inp">inp</A>=b_to_c <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#out">out</A>=a_to_c <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp">disp</A>=a_to_b
+
+which creates an image in A's geometry that points to coordinates in C.
+
+OPERATION:
+
+The process works by looping over the disparity map.  For each pixel, the
+value of the disparity map is retrieved.  This represents the location of
+the corresponding pixel in the right image.  Optionally, bilinear interpolation
+is performed on the disparity map (i.e. on the *coordinates* of the pixel);
+this allows the output to be larger than the disparity map.  This uses the
+nonzero <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#interp">interp</A> method (see below).  Then the pixel itself is retrieved (again
+using bilinear interpolation, with optional nonzero <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#interp">interp</A>) from the right
+image and placed in the output image.  Interpolation can be turned off if it
+is not appropriate.
+
+Note that the left *image* is not used, but the label is used as the source
+of the camera model for the output image label.  The left image is thus
+optional, if a camera model is not required.  The results should match the
+geometry of the left image (ignoring the effects of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A>).
+
+See the documentation for the correlation programs for the format of the
+disparity map files.
+
+The output label will match the first ("right") input, except that the camera
+model has been replaced with the model from the second ("left") input.  This
+means the camera model correctly describes the geometry of the image (it is
+adjusted for all zooms).  However, because the image is still labeled as a
+"right" image, kinematics will no longer work (it would give you a right-eye
+model, when a left-eye model is needed here).  Relabeling it as "left" would
+lose the information that this was once a right-eye image, which can be
+important e.g. for filters.  Thus, future uses of the resulting image in the
+mars* program suite will need the point=cm=label parameter.
+
+If the second ("left") input is not given, the camera model will be copied
+from the disparity map.  This is okay as long as <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp_pyramid">disp_pyramid</A> is 0 (and
+disparity <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A> is 1) but will result in an incorrect model if it is not.  If
+the disparity map does not have a camera model either, no model is put in
+the output.
+
+As with other Mars programs, all bands of the input are processed for the
+defualt (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#band">band</A> not specified) case.  This means the output will have the same
+number of bands as the input.  If you specify <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#band">band</A>=n, only that one band will
+be processed, and the output will be a single <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#band">band</A>.
+
+Zooming and Line/Sample Coordinates
+-----------------------------------
+
+The program supports a number of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A> and pyramid modes.  Together these
+greatly increase the use cases for the program.
+
+There are actually five different line/sample coordinates involved here.
+
+1) Line/sample coordinates in the reference (left) image.
+2) Line/sample coordinates in the disparity file.  Normally these match #1
+but they can differ in some cases.
+3) Line/sample coordinates in the non-reference (right) image, where the
+pixels come from.
+4) Line/sample coordinates which are the *values* (DN's) in the disparity file.
+Normally the same as #3 but can differ in some cases.
+5) Line/sample coordinates in the output image.  Normally the same as #1 but
+can differ in some cases.
+
+In the most normal case, 1, 2, and 5 all match, and 3 matches 4.
+
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">ZOOM</A> parameter modifies the relationship between output coordinates (#5)
+and the input geometry (#1/2).  A given <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A> factor will cause the output
+size to be increased (or shrunk) by that amount.  So <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A>=2 will double the
+output size, while <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A>=0.5 will halve it.
+
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp_pyramid">DISP_PYRAMID</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp_zoom">DISP_ZOOM</A> parameters modify the relationship between
+disparity coordinates (#2 and #4) and their corresponding image files (#1 and
+#3, and by implication #5).  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp_pyramid">DISP_PYRAMID</A> works exactly the same as
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp_pyramid">DISP_PYRAMID</A> for marscor3 or other programs.  It says that the disparity file
+is a certain power of 2 smaller than it should "naturally" be.  So if the input
+images are 1024x1024, a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp_pyramid">DISP_PYRAMID</A> of 3 says the disparity map should be
+128x128 (2^3=8; 1024/8=128), and the values in the disparity map should
+likewise be in the range 1-128.  The output size will be 1024x1024 (in the
+absence of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">ZOOM</A>).
+
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp_zoom">DISP_ZOOM</A> has the same effect as <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp_pyramid">DISP_PYRAMID</A>, except it is not constrained
+to an integer power of two.  So a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp_zoom">DISP_ZOOM</A> of 3 or 0.5 are legal.  Note that
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp_zoom">DISP_ZOOM</A> is applied to the pyramid level, so DISP_PYR=3 DISP_ZOOM=1.5 means
+a final disparity <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A> of 12 (2^3 * 1.5).
+
+Finally, the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#ref_not_zoomed">REF_NOT_ZOOMED</A> parameter changes the relationship between
+the disparity line/sample coordinates (#2) and the reference image coordinates
+(#1).  It says that the reference image is *not* zoomed by the disparity <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A>.
+In other words, coordinates #2 match #1, even though the disparity <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A> says
+otherwise.  This allows the output of disparity (#4) to be zoomed differently
+from the input (#2).
+
+In all cases, the output image's camera model will be correct if a reference
+image is supplied as the second input.  If the second input is not given, the
+camera model will be correct only if there is no disparity <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A>.
+
+Finally, the output may be windowed.  The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#sl">SL</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#ss">SS</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#nl">NL</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#ns">NS</A> parameters specify the
+size of the desired output file.  The output will be a window into (or cutout
+from) the large virtual image.  For example, say you are warping a high-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A>
+Mastcam-Z onto Navcam (2020).  The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A> parameter, to get full-res zcam, is 9.7.
+That would normally be 1920 x 2560 * 9.7 = 24832 x 18624 pixels, an unwieldy
+size, especially because most of the image is black.  If the caller knows the
+bounding box of the navcam (via prior analysis of the ICM, CRISP provides this),
+then that bounding box can be supplied to the program to get a much smaller
+output.  Note that the bounding box is specified in final output coordinates, so
+in this example the caller would need to multiply their bounding box (in navcam
+coordinates) by 9.7 to get the box in output image coordinates.
+
+Nonzero Interpolation
+---------------------
+
+When interpolating in the disparity map (which happens when zooms or pyramids
+are in effect) or, more importantly, when the input image is an XYZ image or
+another disparity map (for chaining), then standard bilinear interpolation
+is modified slightly to avoid zeros.  Interpolating with 0's for an intensity
+image can be useful, as it aliases the edges.  However, interpolating
+disparities, XYZ's, or other coordinates with 0 creates incorrect results.
+
+The nonzero interpolation method works as follows.  First, if the coordinate
+is within .0001 of the integer, no interpolation is done.  This avoids extra
+holes for the very common case of no zooming of the disparity map.  (this
+check is not done for the pixel interpolation because exactly hitting
+integers is extremely rare).
+
+Then the four neighboring pixels are examined, as for normal bilinear
+interpolation.  If any of them are 0, we attempt to fill them.  This fill
+is accomplished by examining the neighbors of *that* pixel in one of several
+patterns.  If all pixels in the pattern are non-0, the pixels are averaged
+and the result is used in the bilinear interpolation.  If any of the four
+pixels can't be filled, the interpolation fails (resulting in a hole in the
+output).
+
+The patterns are all symmetric around the central pixel, to avoid biasing
+coordiantes.  The patterns (in order) are: four pixels in a "+", four pixels
+in a "X", then two pixels each in "I", "-", "\", and "/" configurations.
+
+Nonzero interpolation is always used for disparity values (unless disparity
+interpolation is off altogether).  It is optional for pixel values, but
+defaults to ON.  That's because it really must be used for disparity and XYZ
+values, but it generally doesn't apply for pixels because images rarely have
+missing pixels.  However, for standard intensity images, where there are 0's
+in the output, turning this off may be advantageous in order to alias the
+edges.
+
+Disparity <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">Zoom</A> Only
+-------------------
+
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp_zoom_only">DISP_ZOOM_ONLY</A> flag sets a special mode that simply zooms the given
+disparity file.  This takes advantage of the special non-zero interpolation
+normally done for disparities.  However, rather than looking up the result
+in the input file, the coordinate itself is used. The practical upshot is
+that the disparity file is zoomed in or <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#out">out</A> with interpolation, but the
+actual input file is not actually read, except to get labels.
+
+The fact that the input is used to get labels means that the disparity file
+should be given as <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#inp">INP</A>(1) as well as the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp">DISP</A> parmeter.  This means that
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#inp">INP</A>(1) is not actually in the right-image geometry, an exception to the
+general rule.
+
+Use Cases
+---------
+
+NOTE: point=cm=label should be added to all these command lines in this
+section; it has been omitted for simplicity.
+
+Some use cases may help clarify.  First the simple case, a stereo pair of
+Navcams.  Coregistering the data with the full-res disparity map is simple:
+
+$MARSLIB/marsdispwarp \( NR.vic <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#nl">NL</A>.vic \) NL_geom_NR_data.vic <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp">disp</A>=NL_to_NR.dsp
+
+If you want to use the first-stage correlator output instead, use <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp_pyramid">DISP_PYRAMID</A>
+to set the disparity <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A>:
+
+$MARSLIB/marsdispwarp \( NR.vic <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#nl">NL</A>.vic \) NL_geom_NR_data.vic
+    <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp">disp</A>=NL_to_NR_dff.vic disp_pyr=2
+
+Now for a more complex example.  Let's say you have three MSL images at
+very different image scales: Navcam, Mastcam-L, and Mastcam-R.  Each are
+a factor of 3 (approximately) higher resolution than the previous.  Disparity
+maps have been created by correlating N&lt-&gtML and ML<->MR.
+
+Creating an image of ML data coregistered to MR is simple:
+
+$MARSLIB/marsdispwarp \( ML.vic MR.vic \) MR_geom_ML_data.vic <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp">disp</A>=MR_to_ML.dsp
+
+The inverse (MR data coregistered to ML) is equally simple:
+
+$MARSLIB/marsdispwarp \( MR.vic ML.vic \) ML_geom_MR_data.vic <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp">disp</A>=ML_to_MR.dsp
+
+However, this data is at the ML resolution - the MR detail is lost.  To get
+data in the ML geometry but preserving the MR detail requires the output
+be zoomed (by a factor of 3 in this case):
+
+$MARSLIB/marsdispwarp \( MR.vic ML.vic \) ML_geom_MR_data_big.vic
+    <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp">disp</A>=ML_to_MR.dsp <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A>=3
+
+The same applies to making a ML at Nav resolution:
+
+$MARSLIB/marsdispwarp \( ML.vic NAV.vic \) NAV_geom_ML_data_big.vic
+    <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp">disp</A>=NAV_to_ML.dsp <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A>=3
+
+But now let's say we want to get the MR data coregistered to the Navcam.
+Because we don't have a Nav to MR correlation directly, we have to chain the
+results together.  We already have the MR at ML resolution, so that can be
+used as the input to marsdispwarp.  However, the ML_geom_MR_data_big.vic file
+is 3x the size of the ML itself.  That means the NAV_to_ML.dsp disparity file
+effectively has a disparity <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A> of 3 - the values (coordinate #4) are 3x
+smaller than the actual file (coordinate #3).  But, the NAV_to_ML.dsp file
+is properly coregistered to the Navcam input already - there is no difference
+between coordinates #2 and #1.  This is handled by using the -REF_NO_ZOOM
+parameter:
+
+$MARSLIB/marsdispwarp \( ML_geom_MR_data_big.vic NAV.vic \)
+    NAV_geom_MR_data_big.vic <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp">disp</A>=NAV_to_ML.dsp <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp_zoom">disp_zoom</A>=3 -ref <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A>=3
+
+The last <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A>=3 preserves the MR resolution in the output.  The final result
+(assuming 1024x1024 navcams) is 9x that size: 9216x9216, but it coregisters
+the MR with the NAV without sacrificing resolution.
+
+Note that in these cases, a simple <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A> of the reference image (using e.g.
+$R2LIB/size) is needed to make the reference as big as the output.  This is
+fine for imagery but loses the camera model.  Another option is to not <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A>
+the reference image but rather use the mosaic programs to create a common
+output image.  As long as the camera models are correct, the different zooms
+will be handled properly.
+
+The following will <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A> the given disparity by a factor of 2.  The disparity
+file will be 2x larger but will point at the same places in the right-side
+image.  Interpolation is used.  Note that this is not what is normally
+thought of by disparity zooming, because it's pointing to the same place
+in the right image.
+
+marsdispwarp <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#inp">inp</A>=NAV_to_ML.dsp <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#out">out</A>=big_NAV_to_ML.dsp <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp">disp</A>=NAV_to_ML.dsp
+	<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A>=2 -<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp_zoom_only">disp_zoom_only</A>
+
+The following will do a "normal" zooming of the disparity by a factor of 2.
+This is the way to simply undo a pyramid level in the correlators.  Note that
+we could say <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp_zoom">disp_zoom</A>=2 rather than disp_pyr=1 but pyr is clearer in this
+context.  Note that the camera model will be wrong but cmods are generally
+ignored in disparity maps anyway.
+
+marsdispwarp <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#inp">inp</A>=NAV_to_ML.dsp <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#out">out</A>=nopyr_NAV_to_ML.dsp <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp">disp</A>=NAV_to_L.dsp
+	disp_pyr=1 -<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp_zoom_only">disp_zoom_only</A>
+
+Finally, there's ICM chaining.  Let's say we have an MSL Mastcam pair and
+a Navcam, with bidirectional correlation maps between the ML-MR and ML-N.
+Maps going directly from MR to N can be created:
+
+n-&gtml->mr
+marsdispwarp <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#inp">inp</A>=ml_to_mr <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#out">out</A>=n_to_mr <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp">disp</A>=n_to_ml
+mr-&gtml->n
+marsdispwarp <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#inp">inp</A>=ml_to_n <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#out">out</A>=mr_to_n <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp">disp</A>=mr_to_ml
+
+
+HISTORY:
+2003-10	   rgd	Initial version by Bob Deen
+2013-08	   rgd	Fix labels, make it work with differently-sized inputs
+2016-05    rgd	Added zooms, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#band">band</A> parameter, disparity interpolation
+2018-02	   rgd	Multi-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#band">band</A> support, nonzero <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#interp">interp</A>, make cmod optional
+2019-08    rgd	Added <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#pixel_count">pixel_count</A>, fixed <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp_zoom_only">disp_zoom_only</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#inp"><H3>INP</H3></A>
+Input right image
+and (optional) left image
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#out"><H3>OUT</H3></A>
+Output warped image
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp"><H3>DISP</H3></A>
+Input disparity image
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#band"><H3>BAND</H3></A>
+The input file <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#band">band</A> number to use
+or empty for all bands
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp_pyramid"><H3>DISP_PYRAMID</H3></A>
+Pyramid level of disparity
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp_zoom"><H3>DISP_ZOOM</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">Zoom</A> factor for disparity
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#pixel_count"><H3>PIXEL_COUNT</H3></A>
+Will set # of non-zero pixels
+in label if set
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom"><H3>ZOOM</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#zoom">Zoom</A> factor for output file
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#interp"><H3>INTERP</H3></A>
+Turns on or off interpolation
+of the image.  On by default.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#disp_interp"><H3>DISP_INTERP</H3></A>
+Turns on or off interpolation
+of the disparity map.  On by default.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#nonzero_interp"><H3>NONZERO_INTERP</H3></A>
+Turns on or off non-zero <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#interp">interp</A>
+for pixels.  On by default.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#ref_not_zoomed"><H3>REF_NOT_ZOOMED</H3></A>
+Specifies the reference is not
+zoomed.  See the main help.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#sl"><H3>SL</H3></A>
+Starting line for output
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#ss"><H3>SS</H3></A>
+Starting sample for output
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#nl"><H3>NL</H3></A>
+Number of lines for output
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#ns"><H3>NS</H3></A>
+Number of samples for output
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation filename
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find configuration/
+calibration files
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-specific
+pointing method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsdispwarp.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

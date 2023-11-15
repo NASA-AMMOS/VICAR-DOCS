@@ -1,0 +1,79 @@
+<HTML>
+<HEAD><title>HTML Help for FIT3D</title></HEAD>
+<BODY>
+<H1>Help for FIT3D</H1>
+<pre>
+PURPOSE:
+        FIT3D is a procedure to rescale multiple bands of a 3-D image into
+byte format.  The input may be of half, real, integer, or byte format; and 
+BIL, BSQ, or BIP organization.  If the keyword 'ALL is used, all bands are 
+scaled to the same limits and the output is a single 3-D dataset.  Otherwise,
+individual scaling limits are computed for each band and the output bands are
+placed in separate datasets.
+        By default, the rescaling is done to map the minimum and maximum input
+values to 0 and 255, respectively.  Alternatively, the user may choose to make 
+the rescaling limits a set number of standard deviations from the mean by 
+setting the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fit3d_level2.html#stdev">STDEV</A> parameter to the desired value. 
+<A NAME="examples">EXAMPLES:</A>
+
+FIT3D IMG.HALF IMG.BYTE 'ALL 
+
+In this example, the minimum and maximum values in the dataset IMG.HALF are used
+to rescale the data output into IMG.BYTE.
+
+
+
+FIT3D IMG.HALF (B.1,B.2,B.3,B.4,B.5,B.6) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fit3d_level2.html#stdev">STDEV</A>=2.5 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fit3d_level2.html#inc">INC</A>=3
+
+In this case, the rescaling limits are computed to be 2.5 standard deviations
+from the mean value in each channel.  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fit3d_level2.html#inc">INC</A>=3 directs HIST to sample every third
+line and pixel to gather statistics.  Since there are 6 outputs, only the first
+6 bands will be rescaled, if there are more than 6 bands in the input.
+
+
+
+
+FIT3D IMG.HALF (B.101,B.102,B.103,B.104,B.105) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fit3d_level2.html#sb">SB</A>=101 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fit3d_level2.html#stdev">STDEV</A>=3.0
+
+In this example, 5 bands starting with Band 101 are rescaled individually to
+3.0 standard deviation limits.
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fit3d_level2.html#inp"><H3>INP</H3></A>
+Input data set
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fit3d_level2.html#out"><H3>OUT</H3></A>
+Output data set(s),
+One dataset if one set
+of scaling limits for all
+bands.
+One dataset for each band
+if different scaling limits
+for each band.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fit3d_level2.html#mode"><H3>MODE</H3></A>
+Rescaling <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fit3d_level2.html#mode">mode</A>
+ALL if all at once
+BYCHAN if by individual band
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fit3d_level2.html#stdev"><H3>STDEV</H3></A>
+Number of std devs to limits
+(The default is to not use
+std devs, but limit to
+minimum and maximum pixel values
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fit3d_level2.html#sb"><H3>SB</H3></A>
+Starting band
+(Not used with ALL keyword)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fit3d_level2.html#inc"><H3>INC</H3></A>
+Gather stats from every
+nth line and nth sample
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fit3d_level2.html#linc"><H3>LINC</H3></A>
+Gather stats from every
+nth line.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fit3d_level2.html#sinc"><H3>SINC</H3></A>
+Gather stats from every
+nth sample.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fit3d_level2.html#exclude"><H3>EXCLUDE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fit3d_level2.html#exclude">Exclude</A> 0 values from statistics
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fit3d.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fit3d.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

@@ -1,0 +1,303 @@
+<HTML>
+<HEAD><title>HTML Help for PICMTCH4</title></HEAD>
+<BODY>
+<H1>Help for PICMTCH4</H1>
+<pre>
+PURPOSE
+
+     "picmtch4"  is a batch oriented image correlation routine 
+     which incorporates the following features.
+
+     1. Correlation  of  image  to image.
+
+     2. Sampling  of one image to match the geometry of  the 
+        other  image (e.g.  one image could be at  different 
+        scale or rotation).
+
+     3. Regular or phase correlation in the FFT domain.
+     4. Specification of a magnification factor to correlate 
+        a larger area without increasing computation.
+
+     5. Use  of  a geometric model to estimate the  matching 
+        locations  and  feedback of matches  to  refine  the 
+        geometric model.
+
+     6. Matching of images along a polygonal contour.
+
+     7. Use  of  standard  data formats for  all  input  and 
+        output data sets.
+
+     8. Apodization is used for elimination of false peaks due
+        to strong edge effects and for enhancement of subpixel
+        matching.
+
+     TAE COMMAND LINE FORMAT
+
+     picmtch4 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#inp">INP</A>=(A,B,C) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#out">OUT</A>=D      PARAMS
+
+     where
+
+     A                   is the first image to be correlated.
+
+     B                   is   the   second   image   to   be 
+                         correlated.
+
+     C                   is  an ibis file containing the points
+                         to match in columns (1,2) and 9 more
+                         empty columns.
+
+     D                   is an output image containing visuals
+                         of the matching areas.  
+
+
+OPERATION
+
+     First,  "picmtch4" sets up a geometric model relating the 
+     two images using the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#itie">ITIE</A>-<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#otie">OTIE</A> parameters.   The points 
+     originally  given  are supplemented  by  matches  in the
+     second image.   The  geometric  model is used to estimate  a 
+     <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#search">search</A>  location  and to specify a  resampling  of  the 
+     first  image to match the raster gridding of the second 
+     image.   The model is a linear least squares fit to the 
+     control  points.   For normal image to image  matching, 
+     only  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#itie">ITIE</A>-<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#otie">OTIE</A>  points  are  needed.   Their  accuracy 
+     should be sufficient to yield a match within the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#search">search</A> 
+     area  specified  by parameters <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#search">SEARCH</A> and  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#minsrch">MINSRCH</A>  taking 
+     into account nonlinearities in the data.
+     
+     If no <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#itie">ITIE</A>-<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#otie">OTIE</A> points are given, the program  will try
+     to find GeoTIFF labels,  and will use them  to generate
+     a  set of  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#itie">ITIE</A>-<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#otie">OTIE</A> points  using the  labels and  the
+     corners of the first image.
+     
+     For each point from the IBIS file taken in the first data
+     set, the iteration over the correlation  point  set now 
+     proceeds.   At the predicted point in the second input, 
+     a FFTSIZxFFTSIZ sub-image is extracted. If the point is  a 
+     fractional pixel location,  the center of extraction is 
+     moved   to   align   with  pixel   spacing   to   avoid 
+     interpolation.   In fact, interpolation will occur only 
+     if  the keyword <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#magnify">MAGNIFY</A> is used with a nonintegral  value.  
+     The  geometric  model  is used to  calculate  a  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#search">search</A> 
+     location in the first input.   If this is a  fractional 
+     pixel  location,  then  it is also aligned  with  pixel 
+     spacing  to minimize interpolation near the center.   A 
+     sub-image is extracted of size WxW where W is somewhere 
+     between  the values given by the parameters <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#search">SEARCH</A>  and 
+     <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#minsrch">MINSRCH</A>.  This  sub-image  is  extracted  by   bilinear 
+     interpolation at a rotation and pixel size to match the 
+     second  input  geometry as specified by  the  geometric 
+     model discussed earlier.
+
+     The FFTSIZxFFTSIZ pieces of the two inputs
+     are each subjected to a complex valued DFT via the  FFT 
+     algorithm.  One of the DFT arrays has its low frequency 
+     terms  set  to  zero by zeroing the first row  and  the 
+     first  column unless the parameter <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#nohpf">NOHPF</A> is  specified.  
+     Then  the DFT's are multiplied element by element  (one 
+     DFT is  conjugated).  An  inverse  FFT  is  applied  to
+     this  result and  the  peak  and  its  eight  neighbors 
+     are saved.     The  subwindow is moved over  the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#search">search</A>  
+     area  with  an increment of at most  12  pixels.   When  
+     the  entire <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#search">search</A> area is covered, the largest peak is 
+     taken to be the correlation point. A final FFT correla-
+     tion is performed at the correlation peak to get a refined 
+     correlation.   Unless <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#nosubpix">NOSUBPIX</A> is specified a subpixel 
+     match is  obtained by  fitting a quadratic  to the peak  
+     and  its  eight neighbors. The match point is transformed 
+     back to  the original image location  via  the  inverse  
+     of   the geometric  model  and  incorporating  alignment  
+     shifts performed in both images.  
+
+     The results are written to the IBIS interface (tabular)
+     file with one row for each tiepoint.  The following 
+     column format is used:
+
+     Column       Description			   Format
+
+        1     First input line or East             real*4
+        2     First input sample or North          real*4
+        3     First input line                     real*4
+        4     First input sample                   real*4
+        5     First input z-value                  real*4
+        6     Second input line                    real*4
+        7     Second input sample                  real*4
+	8     Second input z-value                 real*4
+        9     Correlation value                    real*4
+       10     line-residual                        real*4
+       11     sample-residual                      real*4
+       optional (must use <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#elvcor">ELVCOR</A> keyword)
+       12     line-elevation offset                real*4
+       13     sample-elevation offset              real*4
+
+    Information about each matching point is printed <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#out">out</A> unless 
+    the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#noprint">NOPRINT</A> keyword is specified.   The printed information
+    is as follows:
+
+        1   SEQ			Sequence number
+	2   SECOND LOCATION	Tiepoint location in second image
+	3   ESTIMATED LOCATION	Estimated location in first image
+	4   FIRST LOCATION	Matching location in first image
+				    (from correlation <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#search">search</A>)
+	5   CORREL		Correlation value (between 0 and 1)
+	6   WIN			Current <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#search">search</A> window size
+	7   RESID		Residual distance (between estimated 
+				    location and correlation location)
+	8   FN			Failure number
+
+     If correlation  fails,  nulls are written into the ibis 
+     file  and  a failure number is given  in  the  printout 
+     under the column heading FN.  The failure numbers are:
+
+              1             point on edge of second image 
+				(more than <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#zerolim">zerolim</A> percent of chip off image)
+              2             failure of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#retry">RETRY</A> option to exceed threshold
+              4             correlation peak unreliable
+              5             subpixel correlation failure
+
+
+     Points  completely outside of either image are ???.
+
+
+
+
+PRECISION
+
+Due to the iterative nature of the subroutine llsq, the programs results will
+vary from machine to machine.  When prnt in llsq's test program was temporarily
+changed to a write statement, it was observed that the resulting output varied
+from machine to machine.  The following table will provide some idea of the
+differential between machines.
+
+                PORTED VMS  ALPHA &     SUN        SGI        SOLARIS
+                            UNPORT VAX
+FINAL FIT: LINE -81.20914   -81.20914   -81.20908  -81.20908  -81.20908
+FINAL FIT: SAMP  15.19182    15.19181    15.19191   15.19190   15.19191
+
+
+
+RESTRICTIONS
+
+     The ground control chip file option (use of IBIS graphics-2 
+     files)  is not currently supported.
+
+
+REFERENCES
+
+     C.  D.  Kuglin and D.  C. Hines, "The phase correlation 
+     image alignment method," Proc.  IEEE 1975 International 
+     Conference on Cybernetics and Society, September, 1975, 
+     pp. 163-165.
+
+
+Original Programmer:  A. L. Zobrist    12 October 1981
+
+REVISIONS:
+  1981-10-12 ALZ - Original version.
+  1995-05    CRI - Made portable for UNIX
+  2000-09-09 ALZ - Rewritten in C including the FFT subroutines.
+  2002-08-27 ALZ - lsq routine uses normalization for keystone, quad, cubic, but
+             not in the fit yet.
+  2002-11-03 ALZ - quad added to fit, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#redo">redo</A> param added.
+  2007-12-29 WLB - Switched to USES_ANSI_C AND LIB_CARTO; misc cleanup.
+  2016-03-07 WLB - Migrated to MIPL.
+  2017-08-11 WLB - Removed DEBUG from imake.
+  2019-09-06 WLB - IDS-7922 - Initialized some variables; cleaned up -Wall warnings.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#inp"><H3>INP</H3></A>
+Input images(2) and ibis file,
+all required
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#out"><H3>OUT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#out">Out</A> file (image of matches)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#geocord1"><H3>GEOCORD1</H3></A>
+when present, the first image
+coordinates and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#itie">ITIE</A> are in
+GeoTIFF coordinates, otherwise
+they are (line,sample)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#geocord2"><H3>GEOCORD2</H3></A>
+when present, the second image
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#otie">OTIE</A> are in GeoTIFF coord,
+else they are (line,sample)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#fftsize"><H3>FFTSIZE</H3></A>
+fft array size, best values 
+power of 2; at least 32
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#ffthalf"><H3>FFTHALF</H3></A>
+will do retries at half size if
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#zerolim">ZEROLIM</A> exceeded (near edge)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#gcpf"><H3>GCPF</H3></A>
+not implemented yet
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#itie"><H3>ITIE</H3></A>
+Control points in first image
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#otie"><H3>OTIE</H3></A>
+Control points in second image
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#magnify"><H3>MAGNIFY</H3></A>
+Magnification of sampling
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#magshrk"><H3>MAGSHRK</H3></A>
+Shrink <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#magnify">MAGNIFY</A> value to <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#magmin">MAGMIN</A>
+when good fit is obtained
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#magmin"><H3>MAGMIN</H3></A>
+The smallest value of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#magnify">MAGNIFY</A>
+when <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#magshrk">MAGSHRK</A> is specified
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#search"><H3>SEARCH</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#search">Search</A> area size (s X s)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#minsrch"><H3>MINSRCH</H3></A>
+Minimum of the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#search">search</A> area
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#zwind"><H3>ZWIND</H3></A>
+Window for brightness calc
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#zreject"><H3>ZREJECT</H3></A>
+Rejection threshold for Z value
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#zerolim"><H3>ZEROLIM</H3></A>
+Do not allow correlation if 
+either image area exceeds this
+percentage of zeros (see help 2)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#zerolim2"><H3>ZEROLIM2</H3></A>
+Allows separate <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#zerolim">ZEROLIM</A> to be
+set for second image; default
+(-1) sets it to same as first
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#zerothr"><H3>ZEROTHR</H3></A>
+Allows default 0. to be set to a
+higher number for water, etc
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#retry"><H3>RETRY</H3></A>
+Parameters for retrying of corr
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#redo"><H3>REDO</H3></A>
+At the end of processing, this 
+number of points will be redone
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#noprint"><H3>NOPRINT</H3></A>
+To suppress messages
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#nosubpix"><H3>NOSUBPIX</H3></A>
+For no subpixel determination
+of matching point
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#nohpf"><H3>NOHPF</H3></A>
+To turn off high pass filter
+in correlations
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#fitmin"><H3>FITMIN</H3></A>
+Prevents weak correlations from
+entering into the model fit of
+image 1 to image 2
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#thr_res"><H3>THR_RES</H3></A>
+Prevents offset correlations
+(further than this value from
+the predicted location) from
+entering into the model fit of
+image 1 to image 2
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#autofit"><H3>AUTOFIT</H3></A>
+Sets the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#fitmin">FITMIN</A> threshold auto-
+matically using the first n
+correlations (see help 2)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#pred"><H3>PRED</H3></A>
+type of function used to
+predict matching location
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#elvcor"><H3>ELVCOR</H3></A>
+columns 11 and 12 will be
+used to adjust predictor
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4_level2.html#angoff"><H3>ANGOFF</H3></A>
+tilts initial match predictor
+by this angle in degrees (see
+help 2)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/picmtch4.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

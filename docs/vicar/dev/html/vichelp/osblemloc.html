@@ -1,0 +1,100 @@
+<HTML>
+<HEAD><title>HTML Help for OSBLEMLOC</title></HEAD>
+<BODY>
+<H1>Help for OSBLEMLOC</H1>
+<pre>
+PURPOSE:
+
+Given the image-space blemish locations for a Voyager camera, OSBLEMLOC
+computes the object-space blemish locations for the camera.
+
+EXECUTION STATEMENT:
+
+      OSBLEMLOC  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/osblemloc_level2.html#inp">INP</A>=ISBLEM  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/osblemloc_level2.html#out">OUT</A>=OSBLEM  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/osblemloc_level2.html#res">RES</A>=RESEAU user-parameters...
+
+where ISBLEM is an input blemish location file containing the image-space
+blemish locations, OSBLEM is an output blemish location file which will
+contain the corresponding object-space blemish locations, and RESEAU is the
+input RESEAU file.  Normally, the RESEAU file to be used will be 
+wms_vgr:[000000]cresj.fil.
+OPERATION:
+
+OSBLEMLOC requires the following inputs:
+
+	1) The image-space blemish locations for a given camera.
+
+	2) A Voyager Reseau Location File (for any of the planets).
+
+The image-space blemish locations are input via a blemish location file
+(ISBLEM).
+
+The Reseau Location File must be specified via the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/osblemloc_level2.html#res">RES</A> parameter.  
+
+OSBLEMLOC performs the following:
+
+    1) The camera serial number is extracted from the label of the
+       input blemish location file.
+
+    2) The nominal image-space reseau locations for the camera are retrieved
+       from the Reseau Location File.
+
+    3) The object-space reseau locations for the camera are retrieved from
+       tables internal to the program.
+
+    4) The geometric correction parameters for converting from image-space
+       to object space are computed (via a call to GEOMAV).
+
+    5) The offsets from the blemish location file, the image-space
+       coordinates for each blemish is computed.
+
+    6) Using the geometric correction parameters, the corresponding object-space
+       coordinates are computed (via calls to TRITRA).
+
+    7) The blemish offsets in object-space are computed.
+
+BLEMISH LOCATION FILE FORMAT
+
+The format of the input and output blemish files are identical.  They contain
+a single data record.  Each blemish is defined in this record via four (conti-
+guous) values:
+
+	1) number of nearest reseau (REAL*4)
+	2) line-offset from the reseau (REAL*4)
+	3) sample-offset from the reseau (REAL*4)
+	4) blemish radius in pixels (REAL*4)
+
+PROGRAM HISTORY:
+
+WRITTEN BY: Gary Yagi 			Feb 22, 1988
+<A NAME="CogProg">COGNIZANT PROGRAMMER: Gary Yagi</A>
+REVISIONS:
+ Jul 2  96  BAM  ...Ported; replaced old reseau file calls;
+		    deleted PCA from tstpdf; pointed to new
+		    default reseau file.
+ Nov 27 91  FFM  ...Replace UD2 & UD4 with VGR (FR 64506).
+                    Add PCA.
+ Sep 12 89  GMY  ...Handle new BLEMFIX format labels.
+ Jun 28 88  GMY  ...Correct conversion from IS-to-OS.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/osblemloc_level2.html#inp"><H3>INP</H3></A>
+STRING--REQUIRED
+The input blemish
+location file
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/osblemloc_level2.html#out"><H3>OUT</H3></A>
+STRING--REQUIRED
+The output blemish
+location file
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/osblemloc_level2.html#size"><H3>SIZE</H3></A>
+4 INTEGERS--OPTIONAL
+VICAR <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/osblemloc_level2.html#size">size</A> field
+(ignored)
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/osblemloc_level2.html#res"><H3>RES</H3></A>
+STRING--OPTIONAL
+Reseau Location File.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/osblemloc.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/osblemloc.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

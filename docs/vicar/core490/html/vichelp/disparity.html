@@ -1,0 +1,62 @@
+<HTML>
+<HEAD><title>HTML Help for DISPARITY</title></HEAD>
+<BODY>
+<H1>Help for DISPARITY</H1>
+<pre>
+Disparity combines two disparity images (line and sample disparity images)
+into a single image representing radial disparity. The input images come 
+from a pair of microscope images which are at the same camera location but
+at different focus positions.
+Restriction: The disparity must be radially outward, not inward.
+
+<A NAME="examples">EXAMPLE:</A>
+
+I used marscor3.  It wants an input disparity map.  Easiest thing to do is
+to give it an identity map at really reduced resolution.
+
+I used a 64x64 map.  That equates to a pyramid level of 4 (128,256,512,1024
+is 4 steps).  Use gen to make it.  From memory (not tried):
+
+$R2LIB/gen fake.line 64 64 linc=1 sinc=0 ival=1 -real
+$R2LIB/gen fake.samp 64 64 linc=0 sinc=1 ival=1 -real
+$R2LIB/viccub \(fake.line fake.samp\) fake.disp
+
+$MARSLIB/marscor3 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/disparity_level2.html#inp">inp</A>=\( img1 img2 \) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/disparity_level2.html#out">out</A>=out.disp in_disp=fake.disp
+  templ=\(13,13\) search=29 q=.25 -gore gore_q=.25 gore_pass=4
+  disp_pyramid=4 -amoeba8 ftol=.002 -multipass
+
+copy <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/disparity_level2.html#inp">inp</A>=<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/disparity_level2.html#out">out</A>.disp out=linedisp sb=1 nb=1
+copy <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/disparity_level2.html#inp">inp</A>=<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/disparity_level2.html#out">out</A>.disp out=sampdisp sb=2 nb=1
+disparity <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/disparity_level2.html#inp">inp</A>=(linedisp,sampdisp) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/disparity_level2.html#out">out</A>=dtm <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/disparity_level2.html#bounds">bounds</A>=(-2.,2.)
+
+dtm is a REAL format file.
+
+METHOD:
+Two images obtained at different focus locations display radial disparity.
+This program converts line & sample disparity into radial disparity.
+It also removes the overall average radial motion in order to reveal the
+differential radial disparity which betrays topography.
+Any differential disparity which exceeds <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/disparity_level2.html#bounds">BOUNDS</A> is interpolated over. This
+includes non correlated points and bad correlations.
+
+HISTORY:
+3-2004  J Lorre. 
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Jean Lorre</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/disparity_level2.html#inp"><H3>INP</H3></A>
+2 input images
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/disparity_level2.html#out"><H3>OUT</H3></A>
+Radial disparity
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/disparity_level2.html#bounds"><H3>BOUNDS</H3></A>
+1. Low threshold
+2. High threshold
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/disparity.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/disparity.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

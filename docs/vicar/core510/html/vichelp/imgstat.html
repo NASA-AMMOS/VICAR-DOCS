@@ -1,0 +1,136 @@
+<HTML>
+<HEAD><title>HTML Help for IMGSTAT</title></HEAD>
+<BODY>
+<H1>Help for IMGSTAT</H1>
+<pre>
+PURPOSE
+
+	IMGSTAT is a VICAR applications program for calculating statistical
+	quantities in local areas surrounding each pixel in an input image.
+    It is a sizing down operation producing images zoomed down by the
+    <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#window">window</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#size">size</A>.  
+	The local <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#mean">mean</A>, minimum, maximum, standard deviations, and optionally
+        the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#mean">mean</A> slope devided by the standard deviation are quantities that 
+        are obtained.
+
+EXECUTION FORMAT
+
+	TAE&gtIMGSTAT IN,<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#out">OUT</A>, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#window">WINDOW</A>
+
+	where
+
+	IN	is the input data set (VICAR labeled image).
+
+	<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#out">OUT</A>	is the output image of the selected statistic.
+                Three output files are required; optionally,
+                if four output files are requested, a standard
+                deviations output file is created.
+
+	<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#window">WINDOW</A>	is the number of lines in the local area window.
+OPERATION
+
+	IMGSTAT performs a sliding <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#window">window</A> statistical analysis on an input
+	image. An output pixel's position represents the center position of
+	the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#window">window</A> for the input image and its value represents statistics
+	based on data within the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#window">window</A> only. The window moves along one sample
+	at a time and one line at a time until each pixel in the input has
+	been at the center of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#window">window</A>. In other words statistics are 
+	compiled for the local area around each and every pixel in the input
+	image.
+
+	The edge conditions are handled as follows. Any <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#window">window</A> positions that
+	extend beyond the edge of the image are handled by using data from the
+	nearest pixel on the image. This is not a reflection scheme like some
+	sliding <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#window">window</A> algorithms have.
+
+
+    Byte, half, full and real formats are supported. The output
+    format is the same as whatever is input. The internal calculations
+    are performed in real format. The vicar xv routines handles the
+    output conversion.
+	Input images must have less than 14001 samples. There is no limit 
+    to the number of lines in the input.
+EQUATIONS
+
+	<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#min">MIN</A>
+		The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#min">min</A> is a smallest value of all DN values in the 
+		<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#window">window</A>.
+
+	<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#max">MAX</A>
+		The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#max">max</A> is a largest value of all DN values in the 
+		<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#window">window</A>.
+
+	<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#mean">MEAN</A>
+		The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#mean">mean</A> is a result of the sum of all DN values in the 
+		<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#window">window</A> divided by the number of pixels in the window.
+		(the average of the DNs)
+			WINDOWSUM / NPIXWNDO
+
+    STANDARD DEVIAION
+        The standard deviation is the square root of the sum 
+        of all observations minus the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#mean">mean</A> devided by the 
+        number of observations.     
+
+
+     <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#mean">MEAN</A> SLOPE / STANDARD DEVIAION
+        The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#mean">mean</A> slope is computed and is then devided by the 
+        standard deviaion for all observations.
+  
+
+Original Programmer:	Barbara McGuffie    February 1995
+<A NAME="CogProg">Cognizant Programmer:	Ray Bambery     </A>
+
+History:
+        2/95  - B. McGuffie  
+        3/96  - B. McGuffie     Increased samples to 14000
+        10/96 - B. McGuffie
+        1/97  - N. Ritter       Added Slope deviation output options.
+        13-Apr-2001 - R Bambery - Converted to real*4 internals.
+                                Now allow BYTE, HALF, FULL and REAL formats
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#inp"><H3>INP</H3></A>
+Vicar labeled image file (input)
+Byte, Half, Full or Real
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#out"><H3>OUT</H3></A>
+Vicar labeled image file/s
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#window"><H3>WINDOW</H3></A>
+Number of lines/samples
+in the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#window">window</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#nl"><H3>NL</H3></A>
+Number of input lines
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#ns"><H3>NS</H3></A>
+Number of input samples (Maximum 14000)
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#sl"><H3>SL</H3></A>
+Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#ss"><H3>SS</H3></A>
+Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#size"><H3>SIZE</H3></A>
+Standard VICAR <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#mean"><H3>MEAN</H3></A>
+If indicated, specifies that the 
+first output data set will 
+contain <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#mean">mean</A> values
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#min"><H3>MIN</H3></A>
+If indicated, specifies that 
+the next output data set will 
+contain minimum values
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#max"><H3>MAX</H3></A>
+If indicated, specifies that 
+the next output data set will 
+contain maximum values
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#sd"><H3>SD</H3></A>
+If indicated, specifies that 
+the next output data set will 
+contain standard deviations
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#mssd"><H3>MSSD</H3></A>
+If indicated, specifies that
+the next output data set will 
+contain <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat_level2.html#mean">mean</A> slope devided by 
+the standard deviations
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/imgstat.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

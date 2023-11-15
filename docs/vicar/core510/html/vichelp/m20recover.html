@@ -1,0 +1,161 @@
+<HTML>
+<HEAD><title>HTML Help for M20RECOVER</title></HEAD>
+<BODY>
+<H1>Help for M20RECOVER</H1>
+<pre>
+PURPOSE:
+
+Usually, the process of taking an image generates a thumbnail (ECM/T) product
+and a “full-size” (ECM/N) product with some kind of JPEG compression.  These two 
+products are stored on-board for transmission.  These products contain an IDPH 
+and other ancillary information associated with the image and the first 64 bytes 
+of the image stream forms the mini-header.  A raw, uncompressed product is also 
+saved in the instrument Data Electronics Assembly (DEA).  The only instrument 
+information saved with the raw product is what is in the mini-header.  Sometime 
+later (days to months) the same raw image may get transmitted to the Earth, but 
+at a better compression.  This later transmitted image is the recovered product
+(ECR).
+
+The initially transmitted thumbnail and "full-size" products have a complete set
+of labels describing the image. However, the recovered product has a smaller set
+of labels.  The purpose of M20RECOVER (this) code is to construct a new image 
+file (EDR) from the image of the recovered product, where the output file has
+a complete set of labels.  Some labels are copied from the recovered product
+to the output file.  The rest of the labels could be copied from either the 
+thumbnail product or the initial "full-size" product.  However, the thumbnail
+product is chosen to be the source for the remaining labels because it is more
+likely to be available.
+
+If the recovered product is a video product
+(VIDEO_PARMS.GROUP_APPLICABILITY_FLAG=TRUE) then several additional time-related
+labels are transferred from the recovered product (as well as the video parms
+group itself), because there is only one thumb for each "Group Of Pictures"
+(GOP) in the zcam/sherloc camera videos.  A GOP contains up to 16 individual
+frames.
+
+The image in the output product should be identical to the image in the input
+recovered product.
+
+EXECUTION:
+
+m20recover <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#inp">inp</A>=data.thumbnail <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#inp_recover">inp_recover</A>=data.recovered <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#out">out</A>=output-file
+where:
+data.thumbnail is the input thumbnail file used for its labels.
+data.recovered is the input recovered product used for its image data and
+   some of the labels it contains.
+output-file is the image file, where its image data is identical to the one
+   in the recovered product, and it has a complete set of labels.
+
+METHOD:
+
+First, the program copies 
+    all the labels form the input thumbnail file and
+    the image data from the recovered product
+to the output file.  Then it selectively overwrites some of the labels copied 
+from the thumbnail file with those from the recovered product file.
+
+OUTPUT FORMAT:
+
+The geometry of the image in the output file is identical to the geometry of
+the image in the input recovered product file.  They have the same number of
+bands, the same number of lines, and the same number of samples per line.
+
+
+HISTORY:
+2020-09-08 Initial version by E. Sarkissian
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#inp"><H3>INP</H3></A>
+Input thumbnail file.
+Must be 1 filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#out"><H3>OUT</H3></A>
+Output file.
+Must be 1 filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#inp_recover"><H3>INP_RECOVER</H3></A>
+Input recovered product.
+Must be 1 filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/m20recover.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

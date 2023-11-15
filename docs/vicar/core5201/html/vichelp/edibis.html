@@ -1,0 +1,329 @@
+<HTML>
+<HEAD><title>HTML Help for EDIBIS</title></HEAD>
+<BODY>
+<H1>Help for EDIBIS</H1>
+<pre>
+PURPOSE
+
+    EDIBIS is an interactive screen editor for editing IBIS 
+tabular or graphics files on a VT100 compatible terminal.  The command 
+entry is similar to keypad <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#mode">mode</A> in the EDT editor. Support also
+exists for performing <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">commands</A> in batch-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#mode">mode</A>, without a terminal.
+Note: If your terminal does not generate vt100 keypad codes, you can
+use the batch-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#mode">mode</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">commands</A> on the EDIBIS command-line instead.
+
+
+    
+EXECUTION
+
+   EDIBIS  INPUT.INT OUTPUT.INT  &ltPARAMS&gt
+
+<A NAME="examples">EXAMPLES</A>
+
+   EDIBIS  IBIS.INT
+This example shows how to edit an existing IBIS tabular file.
+
+   EDIBIS  IBIS.GR   <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#gr1dim">GR1DIM</A>=3
+This example shows how to edit an existing 3D IBIS graphics-1 file.
+
+   EDIBIS  INPUT.INT OUTPUT.INT  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#cols">COLS</A>=(1,3,4) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#lcol">LCOL</A>=200
+This copies the desired columns in the input file to the output, increases
+the output column length to 200, and edits the output.
+
+EXECUTION
+
+   EDIBIS  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#out">OUT</A>=NEWFILE.INT  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#ncol">NCOL</A>=10 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#lcol">LCOL</A>=100
+This creates a tabular file with 10 columns of 100 rows each.
+
+   EDIBIS IBIS.INT  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#scrnsize">SCRNSIZE</A>=132
+To edit in 132 column <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#mode">mode</A> on the terminal, first put the terminal in
+132 column <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#mode">mode</A> with a SET TERM/WIDTH=132, and then specify the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#scrnsize">SCRNSIZE</A>
+parameter.
+
+   EDIBIS IBIS.INT  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#format">FORMAT</A>="(F10.4)"
+This sets the initial <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#format">format</A> for all of the columns to F10.4 .
+(This will only work for IBIS-1 files. IBIS-2 files are formatted).
+<A NAME="examples">EXAMPLES</A>
+
+   EDIBIS a b <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#cols">cols</A>=(1,2,4) command=("(1,3) search 4.567","delete",exit)
+    top,paste,exit)
+
+This puts EDIBIS into batch <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#mode">mode</A>, first doing a search through
+column 3 for 4.567, and deleting the found column.
+
+   EDIBIS  old command=("(1,2) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#format">format</A> (a4)","search not",     cut,"(3,0) paste",exit)
+
+This set of batch <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">commands</A> first changes the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#format">format</A> of 
+column 2 to "(A4)", and then searched for the string "not",
+and if found, clears the cell and pastes the value into row 3.
+OPERATION
+
+Interactive <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#mode">Mode</A>:
+
+    The EDIBIS tabular file editor allows one to roam through <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#out">out</A> the
+file looking at and changing any of the data values.  The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#format">format</A> for
+each column may be specified so that real numbers, integers, and character
+data may be displayed and entered.  The numeric keypad is used for the
+command entry, which is patterned after the EDT keypad <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#mode">mode</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">commands</A>.
+The screen serves as a window into the tabular file.  Eighteen rows
+and as many columns as fit are displayed.  The current cell is
+highlighted and header information is display at all times.  The header
+information consists of the file name and size, the current row and column,
+and the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#format">format</A> of all of the columns being displayed.  Data and command 
+information is entered at the lower left corner of the screen.
+OPERATION
+
+Batch <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#mode">Mode</A>:
+
+Batch <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#mode">Mode</A> is invoked when the "<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">COMMANDS</A>" parameter is used.
+In this case interactive <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#mode">mode</A> is turned off and the file is manipulated
+using the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">commands</A> specified by the parameter. See the COMMANDS
+parameter for more information. A description of each command is
+given below.
+
+The batch <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">commands</A> may also be used interactively by placing the
+command on the EDIBIS command-line, prefaced by a "/" character, e.g.
+
+    ]  /(1,2) set 5.1
+
+
+FAILURE <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#mode">MODE</A> IN BATCH OPERATIONS
+
+NOTE: In older versions no ABEND calls were made upon detecting errors
+The basic assumption was that you were at an interactive terminal
+and you could reenter bad <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">commands</A>. This created problems in Batch
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#mode">mode</A> in long scripts if a bad command was entered.
+
+This particularly could be a problem  when _onfail was set to
+STOP. The abend signal was never sent so the script continued. If
+the proc continued for minutes to hours you may never notice that
+the command had failed.
+
+After 14-Aug-2011 this <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#version">version</A> will issue an abend for BATCH <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#mode">mode</A>
+operations, i.e., when <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">COMMANDS</A>=("some command") parameter is provided.
+ 
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">COMMANDS</A>
+
+SETTING CELL VALUES:
+
+Batch command: "(row,col) SET &ltvalue&gt", where the (row,col) is optional.
+
+    The value of the current cell is changed by typing the desired new value
+and pressing the Return key.  If the entered value is illegal then the
+cell value will not be changed.  There are a few cases where this is
+the *only* way to set a value. For example, if column 2 is ASCII, 
+and you want to set the value of cell (1,2) to "quit", you can't just type
+"quit", because that is the command to quit EDIBIS without saving the
+file. So, to set the cell value, give the command:
+
+    ] /(1,2) set quit
+
+To set a string value containing spaces, put it in quotes "like this".
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">COMMANDS</A>
+
+MOVING AROUND
+
+Batch <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">Commands</A>: "TOP" "BOTTOM", "LEFT","RIGHT".
+
+    The arrow keys move the current cell one place in the appropriate 
+direction.  If the cell is at the edge of the screen, scrolling is performed.
+As with the EDT editor there is a forward <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#mode">mode</A> and a backward mode which 
+are selected by (keypad 4) and (keypad 5), respectively. Using the GOLD KEY
+(PF1 key) with these keys advances the file to the bottom row or top row,
+respectively.
+
+    Page up and page down (keypad 8) and page left and page right (keypad 2)
+move the screen one window size unless the edges of the file are encountered.
+The direction forward/backward <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#mode">mode</A> is determined by the previously mentioned
+keypad <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">commands</A>.
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">COMMANDS</A>
+
+MOVING AROUND (cont'd)
+
+Batch command: "Row N", "Column M" and/or "(N,M) JUMP"
+
+    The current row may be set to a particular row by typing an integer and
+touching the (keypad enter) key. The current column may be set by typing
+an integer and using GOLD KEY and (kepad enter). 
+
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">COMMANDS</A>
+
+DELETING/INSERTING ROWS:
+
+ Batch <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">Commands</A>: "(row,col) DELETE N" 
+             and "(row,col) INSERT N". The (row,col) is optional.
+
+    Any number of rows may be deleted or inserted at the current position
+by typing the number of rows and pressing (keypad PF4) or (keypad PF1,
+keypad PF4) respectively.  If no number is specified then one row is 
+deleted or inserted.  The inserted rows are inserted after the current 
+line and are filled with zeros.
+
+Warning: the whole file must be rewritten for these two <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">commands</A> so 
+they can take a while, especially if the file is large.
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">COMMANDS</A>
+
+CUT/PASTING Values:
+
+Batch <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">commands</A>: "(row,col) Cut" and "(row,col) PASTE".
+
+    The (keypad -) key zeros (or blanks, if character <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#format">format</A>) the current
+cell.  The (keypad PF1, keypad -) combination changes the current cell by 
+recalling the value of the last zeroed cell.
+
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">COMMANDS</A>
+
+COLUMN FORMATTING (IBIS-1 only)
+
+Batch command: "(row,col) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#format">FORMAT</A> (formt)" where the (row,col) is optional.
+
+    The display <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#format">format</A> of the current column is automatically determined
+for IBIS-2 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#format">format</A> files, and is set to floating point for IBIS-1 and
+GRAPHICS-1 files. The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#format">format</A> may be changed by typing the
+new <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#format">format</A> and then typing ^F.  The format string must be a legal
+Fortran <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#format">format</A> statement beginning and ending with parentheses.  If
+blank spacing is specified (e.g. 2X) it must precede the data part or
+it will be ignored.  The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#format">format</A> string itself must be less than or equal 
+to 16 characters, and the length of the display it specifies must be less 
+than or equal to 32 characters. 
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">COMMANDS</A>
+
+SCREEN-REFRESH/HELP
+
+    The screen can be refreshed (i.e. redisplayed) with the ^R key.
+
+    The (keypad PF2) key will display a brief command summary.  Hit 
+&ltreturn&gt for batch-command help, and any other key (e.g. spacebar) to
+go back to editing.
+
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">COMMANDS</A>
+
+SEARCHING FOR VALUES
+
+Batch Command: "(row,col) SEARCH &ltstring&gt", where (row,col) is optional.
+
+   The PF1 PF3 combination will initialize the EDIBIS search <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#mode">mode</A>.  It will
+prompt you with:
+
+	ENTER RANGE]
+
+and will take the command string to be a range of values to search for
+within the current column marked by the cursor.
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">COMMANDS</A>
+
+SEARCHING (ctd')
+
+Batch Command: "FWD" and "BACKWARD"
+
+ The direction of the search is determined by the keypad FWD/BACK <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#mode">mode</A>,
+and valid syntax for search strings is as follows:
+
+	ENTER RANGE] VALUE	Find first exact match to VALUE
+	ENTER RANGE] MIN:MAX	Find first value not outside interval
+	ENTER RANGE] MIN:	Find first value not smaller than MIN
+	ENTER RANGE] :MAX	Find first value not larger than MAX
+
+If the column is in CHARACTER <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#format">format</A>, a string match is performed.
+ENDING AN EDITING SESSION
+
+Batch Command:  "EXIT" will save the file and quit.
+
+In interactive <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#mode">mode</A> "EXIT" will save and quit, and "QUIT"
+will exit without saving the file. If the file was opened
+read-only no saving is done at all.
+
+VMS SHORT-CUTS:
+
+    The editing session is ended, the file saved, and the program ended
+with the ^Z key.    Hitting ^C will abort and leave a temp file called 
+'EDIBIS.TMP' -- the scroll will be disabled ,though.  The session may be
+gracefully aborted with the ^D key or by typing "quit"; no changes or
+temp files.
+
+RESTRICTIONS
+
+The maximum number of columns allowed for IBIS-1 tabular files
+and GRAPHICS-1 files is 40, and for IBIS-2 files the limit is 1024.
+There is no limit on the column length.
+The each cell may occupy no more than 64 characters on the display.
+
+Original Programmer:   Frank Evans	January 1987
+
+<A NAME="CogProg">Cognizant Programmer:  Ray Bambery </A>
+
+REVISION HISTORY
+            
+1987-10-07 NDR - ADDED SEARCH AND QUIT <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">COMMANDS</A>
+1991-02-04 NDR - FIXED BUG CAUSING LOCKOUT WHEN "NEXT SCRN"
+                 KEYS HIT ON WYSE TERMINALS (FAILED IN INPUTKEY).
+                 Ref:   FR #66574 by C. Avis
+1994-11-17 NDR - Changed code to use direct IBIS2 routines
+                 for forward compatibility. Converted all
+                 FORTRAN I/O to C for portable coding.
+                 Added scripting and command-line features.
+                 and portable "curses" library windowing.
+2011-08-14 RJB - Fixes for gcc 4.4.4 under Linux
+                 In SUBROUTINE CONVERT_STRING_TO_COMMAND
+                 had to add new call CALL FIND_ROWCOL
+                 THISROW and THISCOL are found from list directed read
+                 in gcc 4.4.4:
+                 READ (CMDLINE(CMDPOS:),*,ERR=332) THISCOL i
+                 does not detect properly the trailing ")" as a terminator
+                 It gives an error, where the older compilers evidently 
+                 recognized ")" as a proper terminator
+2012-12-08 RJB - Fixes edibis_windows.c and dibis_terminal.c
+                 For POSIX compliance with RedHat Linus 6.2 and 
+                 MacOSX 10.7.4
+2013-08-30 RJB - Changed a variable that failed in AFIDS
+                 autotools make environment (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#version">VERSION</A> to VERS) 
+2013-09-02 RJB - Changed mabend call to xvmessage + abend. Had
+                 some kind of buffer overrun on output with mabend
+2019-06-13 WLB - IDS-7924: Switched to constant string <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#format">format</A> descriptor.
+                 Added logging to test script.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#inp"><H3>INP</H3></A>
+The input IBIS tabular file.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#out"><H3>OUT</H3></A>
+The output IBIS tabular file.
+(optional).
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#ncol"><H3>NCOL</H3></A>
+The number of columns.
+Only if output file.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#lcol"><H3>LCOL</H3></A>
+The column length.
+Only if output file.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#cols"><H3>COLS</H3></A>
+The columns in the input file
+to copy to output file.
+Default is all columns.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#format"><H3>FORMAT</H3></A>
+The initial column <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#format">format</A>.
+Fortran <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#format">format</A> statement.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#scrnsize"><H3>SCRNSIZE</H3></A>
+The number of columns on
+the screen to use.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#version"><H3>VERSION</H3></A>
+Create IBIS-1 or IBIS-2 file?
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#org"><H3>ORG</H3></A>
+File organized by ROW/COLUMN?
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#host"><H3>HOST</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#host">Host</A> Data <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#format">format</A>(IBIS-2 only)
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#cformat"><H3>CFORMAT</H3></A>
+Column Formats (IBIS-2 only)
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#gr1dim"><H3>GR1DIM</H3></A>
+GRAPHICS-1 file dimension
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#deffmt"><H3>DEFFMT</H3></A>
+Default column data <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#format">format</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands"><H3>COMMANDS</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#commands">Commands</A> for Batch-processing
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#scratch"><H3>SCRATCH</H3></A>
+Name of working <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#scratch">scratch</A> file
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis_level2.html#mode"><H3>MODE</H3></A>
+Open file read-only?
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/edibis.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

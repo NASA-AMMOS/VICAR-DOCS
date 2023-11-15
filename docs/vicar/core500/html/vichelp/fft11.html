@@ -1,0 +1,113 @@
+<HTML>
+<HEAD><title>HTML Help for FFT11</title></HEAD>
+<BODY>
+<H1>Help for FFT11</H1>
+<pre>
+PURPOSE
+
+FFT11 is a VICAR applications program which computes the forward 
+or <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#inverse">inverse</A> complex Fourier Transform on a line-by-line basis.
+It is analogous to the program FFT1AP except that it does not use
+the array processor and is more flexible in its input format
+requirements:  it will allow any data format and most FFT sizes.
+EXECUTION:
+
+The following is the execution statement format for FFT11:
+
+	FFT11 IN <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#out">OUT</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#size">SIZE</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#inverse">INVERSE</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#oform">OFORM</A>
+
+where:	<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#inp">INP</A>	is the input file,
+	<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#out">OUT</A>	is the output file,
+	<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#size">SIZE</A>	is the standard Vicar2 size parameter,
+	<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#inverse">INVERSE</A> specifies whether or not the transform is inverse,
+	<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#oform">OFORM</A>   specifies the output data format for <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#inverse">inverse</A>
+		 transforms.
+OPERATION:
+
+FFT11 uses subroutine DFFT (formerly module RCSFFT) to compute the fast 
+fourier transform (FFT) of an input image, line by line.  For computational 
+details, see Help (in DCL) for that routine.  It uses an algorithm by 
+Richard C. Singleton of Stanford Research Institute.
+
+The FFT output by the program (or input in <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#inverse">inverse</A> mode) is in the same
+format as that of program FFT1AP.  The output of the transformation performed
+by DFFT is not scaled in forward mode, and is scaled by 1/N in the
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#inverse">inverse</A> mode.
+
+If <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#ss">SS</A>-1+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#ns">NS</A> exceeds the number of samples of the input image, then the input
+data will be extrapolated using a cosine function.  The extrapolation
+algorithm is identical to that used in FFT1AP, but results may differ slightly
+as the extrapolation is performed on REAL*4 data in FFT11, but is rounded
+to the input data type in FFT1AP.  This extrapolation uses a buffer of
+1024 elements, which is the maximum number of samples by which the input
+line can be increased.
+RESTRICTIONS:
+
+1. For an <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#inverse">inverse</A> transform, the input format must be complex.
+
+2. The dimension of the FFT (i.e., the number of samples of the output in
+  forward mode) may be any number, subject to the following constraints:
+
+  a. It may not contain a prime factor greater than 23.
+
+  b. The number of prime factors may not exceed 208.
+
+  c. The square-free portion may not exceed 210.  (A factor P of a number
+    N is square-free if it cannot be paired with another identical factor
+    of N; i.e., each prime occurring an odd number of times in N is a
+    square-free factor of N.  The square-free portion of N is the product
+    of its square-free factors.)
+
+E.g., 221 (=13*17) fails because the square-free part exceeds 210, and
+202 (=2*101) fails because a prime factor exceeds 23, but 210 (=2*3*5*7)
+and 216 (= 2**3 * 3**3) are acceptable.
+TIMING:
+
+The time required for the DFFT algorithm depends strongly on whether the
+dimension of the FFT, N, is composite.  This dependance goes approximately
+as N * SUMF, where SUMF is the sum of the prime factors of N.  Factors of
+5 or less are favoured by special coding in the subroutine.
+
+The following times were measured for RCSFFT on the IBM:
+	0.842 sec. for N = 2048 (2**10)
+	0.933 sec. for N = 2000 (2**4 * 5**3)
+	1.343 sec. for N = 2187 (3**7)
+	2.042 sec. for N = 2197 (13**3)
+
+As a simple rule of thumb, choosing a power of 2 will be the most efficient.
+WRITTEN BY:  L.W.Kamp,  4 Apr.1985
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  L.W.Kamp</A>
+
+HISTORY:
+
+  30aug90 -- changed 'COMPLEX' to 'COMP' in F.T. label.
+  03may93 -- made portable
+  24Oct96 -- Fixed printing of the INPUT FORMAT field (DFR)
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#inp"><H3>INP</H3></A>
+The input VICAR image file.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#out"><H3>OUT</H3></A>
+The output VICAR image file.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#size"><H3>SIZE</H3></A>
+The VICAR <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#size">size</A> field.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#sl"><H3>SL</H3></A>
+Integer - <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#size">size</A> field starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#ss"><H3>SS</H3></A>
+Integer - <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#size">Size</A> field starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#nl"><H3>NL</H3></A>
+Integer - <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#size">Size</A> field number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#ns"><H3>NS</H3></A>
+Integer - <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#size">Size</A> field number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#inverse"><H3>INVERSE</H3></A>
+Keyword - Indicates the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#inverse">inverse</A> mode.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#oform"><H3>OFORM</H3></A>
+Keyword - Output data format
+(for <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11_level2.html#inverse">Inverse</A> mode only).
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fft11.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

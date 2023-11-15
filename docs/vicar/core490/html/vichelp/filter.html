@@ -1,0 +1,128 @@
+<HTML>
+<HEAD><title>HTML Help for FILTER</title></HEAD>
+<BODY>
+<H1>Help for FILTER</H1>
+<pre>
+PURPOSE:
+
+FILTER is a VICAR applications program which performs two-dimensional
+convolution filtering.  For each output sample, the program computes
+a weighted average of a rectangular set of input pixels followed by
+a linear transformation.  FILTER may be used to perform high-pass or 
+low-pass filtering.
+
+EXECUTION:
+
+   The following is the execution statement format for FILTER:
+
+             FILTER <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#inp">INP</A>=PIX <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#out">OUT</A>=OPIX PARAMS
+
+   where <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#inp">INP</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#out">OUT</A>, and PARAMS are parameters discussed in their res-
+pective parameter sections. 
+OPERATION:
+
+FILTER accepts as input a rectangular set of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#weights">weights</A> and calculates each
+output point <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#out">OUT</A>(l,s) as follows:
+             _                                                       _
+            |  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#nlw">nlw</A> <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#nsw">nsw</A>                                                |   /
+ XXX(l,s) = | SUM SUM  IN[l-(<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#nlw">nlw</A>+1)/2 + i , s-(<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#nsw">nsw</A>+1)/2 + j] * W(i,j) |  / DIV
+            |_ i=1 j=1                                               _| /
+and
+   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#out">OUT</A>(l,s) = (GAIN * XXX(l,s)) + OFF
+where
+	IN       is the input file
+	W        is the weight matrix
+	<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#nlw">nlw</A>      is the number of lines in the weight matrix
+	<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#nsw">nsw</A>      is the number of samples in the weight matrix
+	OFF,GAIN are the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#scale">SCALE</A> parameters
+	DIV      is the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#divide">DIVIDE</A> parameter
+<A NAME="examples">EXAMPLES:</A>
+
+1) FILTER IN <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#out">OUT</A> <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#nlw">NLW</A>=3 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#nsw">NSW</A>=5 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#weights">WEIGHTS</A>=(0,-1,-2,-1,-2,10)
+   The file will be filtered with the weight table shown below:
+         0   -1   -2   -1   0
+	-1   -2   10   -2   -1
+	 0   -1   -2   -1   0
+   The final linear transformation is
+		FP(L,S) = IN(L,S) / 6
+   where 6 is the default for the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#divide">DIVIDE</A> parameter, (i.e., the sum of the
+   entries in the weight table).
+2) FILTER IN <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#out">OUT</A> <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#nlw">NLW</A>=3 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#nsw">NSW</A>=5 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#scale">SCALE</A>=(-30,1) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#divide">DIVIDE</A>=3 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#weights">WEIGHTS</A>=(0,-1,-2,-1,-2,10)
+   This is the same as the example above except the final transformation is 
+   given by:
+		FP(L,S) = 1.0*(IN(L,S)/3.0) -30.0
+
+3) FILTER IN <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#out">OUT</A> <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#nlw">NLW</A>=3 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#nsw">NSW</A>=5 'UPPER <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#dnmin">DNMIN</A>=15 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#weights">WEIGHTS</A>=(-2,5,4,3,-1,-5,20,3,1,1)
+   These parameters generate the horizontally nonsymmetric <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#weights">weights</A> shown
+   below:
+   	 -2   5   4   3   -1
+	 -5  20   3   1    1
+	 -2   5   4   3   -1
+   and output will be computed as follows:  If the output is less
+   than or equal to 15 DN, it is set to 15 DN.  
+4) FILTER IN <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#out">OUT</A> <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#nlw">NLW</A>=3 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#nsw">NSW</A>=3 'ALL <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#weights">WEIGHTS</A>=(-1,0,0,0,0,0,0,0,1)
+   These parmeters will produce a diagonal gradient picture using this weight
+   matrix:  
+  	-1   0   0
+	 0   0   0
+	 0   0   1
+
+5) FILTER (IN,KERNAL) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#out">OUT</A>
+   In this case, the filter <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#weights">weights</A> are provided in the second input file.
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Ron Alley </A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#inp"><H3>INP</H3></A>
+1. Input image file
+2. (Optional) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#weights">Weights</A> as a
+   VICAR image file
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#out"><H3>OUT</H3></A>
+Filtered image file
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#size"><H3>SIZE</H3></A>
+Vicar <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#sl"><H3>SL</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#size">Size</A> field starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#ss"><H3>SS</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#size">Size</A> field starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#nl"><H3>NL</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#size">Size</A> field number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#ns"><H3>NS</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#size">Size</A> field number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#nlw"><H3>NLW</H3></A>
+Number of lines of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#weights">weights</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#nsw"><H3>NSW</H3></A>
+Number of samples of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#weights">weights</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#symm"><H3>SYMM</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#weights">WEIGHTS</A> are what part of the
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#weights">weights</A> matrix?  Valid:
+UL    - for upper left quadrant
+UPPER - for upper half
+LEFT  - for left side
+ALL   - for entire matrix
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#weights"><H3>WEIGHTS</H3></A>
+Defines the weight matrix
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#divide"><H3>DIVIDE</H3></A>
+Scaling paramater upon output
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#scale"><H3>SCALE</H3></A>
+Linear output scaling:
+(offset,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#scale">scale</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#dnmax"><H3>DNMAX</H3></A>
+Defines maximum output dn
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#dnmin"><H3>DNMIN</H3></A>
+Defines minimum output dn
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#range"><H3>RANGE</H3></A>
+DN interval to which output
+will be clipped.
+(Synonym for <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#dnmax">DNMAX</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#dnmin">DNMIN</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#edge"><H3>EDGE</H3></A>
+Method of handling edges 
+REFLECT, CYCLE, LCYCLE, SCYCLE
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter_level2.html#parms"><H3>PARMS</H3></A>
+ Parameter data set name 
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/filter.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

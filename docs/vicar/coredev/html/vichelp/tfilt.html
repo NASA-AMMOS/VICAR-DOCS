@@ -1,0 +1,381 @@
+<HTML>
+<HEAD><title>HTML Help for TFILT</title></HEAD>
+<BODY>
+<H1>Help for TFILT</H1>
+<pre>
+PURPOSE:
+
+tfilt is a VICAR program which performs various boxfilter type convolutional
+filters.  It is a commonly used, especially in planetary image processing. 
+tfilt is often used to bring <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">out</A> detail that is not noticeable in the original
+image.  tfilt is able to ignore DN's below a threshold when computing the low
+pass average and is thus free of ringing in certain cases.  (See the threshold
+effects section below.)   Scaling allows the dynamic range of high pass filters
+to be improved before integer truncation. 
+EXECUTION:
+
+tfilt is executed as a standard VICAR program.  The following 
+VICAR command line formats show the most common usages:
+
+      tfilt <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=a <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=(b,x) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#size">SIZE</A>=(<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#ns">ns</A>) optional parameters
+      tfilt <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=a <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=(b,x) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#sl">SL</A>=sl <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#ss">SS</A>=ss <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nl">NL</A>=nl <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#ns">NS</A>=ns optional parameters
+      tfilt a (b,x) (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#ns">ns</A>) optional parameters
+      tfilt a (b,x) optional parameters
+
+       Here 'a' represents the input image file name, 
+       'x' represents a scratch file name, and
+       'b' represents the output image file name.
+
+If the primary input is a multi-band image, then three output files
+are required, of which the last two are scratch files, e.g.:
+
+      tfilt a (b,x,y) optional parameters
+
+USER INFORMATION:
+
+The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#size">size</A> of the output image is determined by the the SIZE field if the SIZE
+field is entered by the user.  If the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#size">SIZE</A> field is not entered, the output
+file is the same <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#size">size</A> as the input file. 
+
+The data type of the input image may be any valid format of 4 or fewer bytes
+per pixel.  The data type is obtained from the VICAR label of the input image.
+The output image has the same data format as the input image. 
+
+Available <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">Filter</A> Types:
+
+tfilt can be used to apply a high pass, a low pass, a scene dependent, or
+a divide filer to an image.  Each type of <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> can be thought of as 
+emphasizing one aspect of the image and de-emphasizing another aspect of
+the image.  tfilt has a variety of uses in image restoration and
+image enhancement.  The major charactistics of each of these filters are
+described below.
+
+1)  The high pass <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> emphasizes high frequency information and
+    de-emphasizes low frequency information.  (High frequency means
+    brightness changing rapidly as a function of distance.  Low frequency
+    means brightness changing slowly as a function of distance.)  The high
+    pass <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> can be used to compensate for variations in illumination
+    between different areas of the image due to sun angle differences.  It
+    can also be used to make the picture sharper, to emphasize edges of
+    features, and to enhance fine detail.  Often the high pass <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> will
+    bring <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">out</A> small <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#scale">scale</A> structure that is not noticeable in the original
+    image.  The high pass <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> tends to remove variations due to color
+    differences (albedo variations). The high pass <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> can emphasize
+    noise if present, so it is best to remove noise before performing a
+    high pass <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A>.  If there are reseau marks in the image, they should
+    be removed with program RESSAR77 or a similar program before a high
+    pass <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> is performed. 
+    
+2)  The low pass <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> emphasizes low frequency information and
+    de-emphasizes high frequency information.  The low pass <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> is used
+    mainly for smoothing the brightness variations in the image.  It can be
+    used to smooth noise in a noisy or grainy image to make it less
+    noticeable.  The low pass <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> makes edges and features blurred or
+    smoother. 
+    
+3)  The scene dependent <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> is a variant of the high pass filter that
+    can be useful in dealing with images having nonhomogeneous illumination
+    or images with mixtures of areas with little high frequency detail and
+    areas with a lot of high frequency detail.  It is called a scene
+    dependent <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> because it compensates for dark areas by dividing the
+    high frequency information by the average brightness of the surrounding
+    area.  Thus it emphasizes high frequency information especially in
+    darker areas of the image, and de-emphasizes low frequency information
+    especially in brighter areas of the image. The scene dependent <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A>
+    has similar properties to the high pass <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> (enhancing detail), but
+    compensates more for the darker areas of the image. The MIPL facility
+    at JPL has a display showing the use of the scene dependent <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> on
+    an image of Mercury with only part of the planet illumined by the sun. 
+    The scene dependent <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> improves feasture discriminability near the
+    edge of the illumined portion of the planet. 
+    
+4)  The divide <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> amplifies darker parts of the image and scales down
+    brighter parts of the image, preserving the contrast and evening <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">out</A>
+    the overall intensity across the image.  It is useful for bringing <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">out</A>
+    subtle detail, especially in darker parts of the image. The divide
+    <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> can be used to compensate for variations in illumination between
+    different areas of the image due to sun angle differences.  The divide
+    <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> tends to remove variations due to color differences (albedo
+    variations). The divide <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> tends to pass random noise without
+    adding emphasis. 
+Selection of <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">Filter</A> Type:
+
+The most commonly used of the four <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> types is the high pass filter. This is
+partly because people like to see a lot of detail and imaging systems often
+attenuate higher frequency information.  (See reference 2.) The high pass
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> also compensates for variations in illumination in the image. The divide
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> is also commonly used.  It compensates for variations in illumination in
+the image without emphasizing high frequency information.  It can bring <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">out</A>
+detail in the image and in some cases produces a result quite similar to the
+high pass <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A>.  The scene dependent filter is less commonly used.  It is
+recommended when the results of the high pass <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> are not satisfactory
+because of inhomogeneity in the image.  The low pass <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> has a very
+different purpose from the other three <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> types, namely smoothing the data.
+VICAR program BOXFLT2 is also used for low pass filtering
+and has some different methods for handling the edges of the image.
+Advantages and Disadvantages:
+
+tfilt has both good and bad features.  It is fast for a <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> program, 
+If the threshold is chosen well, tfilt can do a good filtering job without 
+causing noticeable ringing near edges.  It is not an optimal <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A>, though, 
+and sometimes it can generate ringing problems.  This is because it uses a 
+uniform set of <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> weights.(See reference 1.)  The VICAR program FILTER is 
+recommended for users wishing to do more optimal filtering.  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">FILTER</A> can be 
+much slower than tfilt, though. <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">FILTER</A> requires the user specify the filter 
+weights.  There is, however, a default set of weights in <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">FILTER</A>.  VICAR 
+procedure FILTER2 can be used to generate the weights alternatively.
+ 
+Threshold Effects:
+
+Linear filtering with a uniform set of weights can often cause ringing
+in the output image, especially around a sharp edge.  The threshold (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#thresh">THRESH</A>)
+parameter allows tfilt to <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> without causing noticeable ringing in many
+cases.  In planetary image processing, the most distinct edge in a picture
+is often the boundary (limb) between a planet or moon (satelite) and the
+black of outer space.  For such an image the threshold should be set 
+slightly below the brightness of the planet so that basically all of the
+planet is brighter than the threshold and the black of outer space is
+darker than the threshold. Unfortunately, finding a threshold that minimizes
+ringing can be a matter of trial and error.  A histogram may be of value in
+picking an initial value. 
+Effects of Box <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#size">Size</A>:
+
+For all <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> types the box <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#size">size</A> (parameters <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nlw">NLW</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nsw">NSW</A>) affects the
+output.  For a low pass <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> a small box (3 by 3 to 11 by 11) is usually used.
+For the other <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> types a large box is generally used since this
+produces a less grainy image and less noise enhancement than a smaller box.
+A large box can cause greater ringing than a small box, though, especially
+if the threshold parameter is not set optimally.  For an 800 by 800 
+Voyager image a box <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#size">size</A> in the range 15 by 15 to 75 by 75 is common.
+The exact <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#size">size</A> is not too important.  A square is commonly used for
+symmetry.  Because of the algorithm used by tfilt, the box <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#size">size</A> does not affect
+the execution time significantly.  (A 75 by 75 box took five percent more time
+than a 5 by 5 box.) 
+Effects of the DC Transmission Factor (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A>):
+
+The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A> parameter is used to soften the effect of the selected <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> by
+making the output image a combination of the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> output and the input
+image.  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A> can be used with all of the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> types except low pass.
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A> is commonly set to make the output image about 70 percent from
+the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> and 30 percent from the input image.  (For the high pass filter
+you can try <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A> = 0.1 to 0.2.)  The DC in DCTRAN stands for direct
+current.  This stems from the connection of filtering with signal processing
+theory.  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A> reflects the amount of the original signal that is
+transmitted by the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A>.  When <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A> is used with the high pass filter or 
+scene dependent <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A>, the output image will retain some low 
+frequency information, and albedo and illumination variations will still be
+present to some degree. 
+Control of Dynamic Range:
+
+Each of the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> types uses some parameters to control the dynamic
+range of DNs in the output image.  The default values for these
+parameters can sometimes produce a narrow dynamic range, especially
+with byte data, resulting in image degradation when integer truncation
+takes place.  Some recommendations on these parameters are given below
+for byte data, but a lot depends on the input image, and some trial
+and error may be appropriate until satisfactory results are produced.
+(For trial and error, try tfilt on a small portion of the 
+image and run VICAR program HIST with BINS=20 to check the dynamic
+range of the output image.)
+
+For the high pass <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A>, try <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#boost">BOOST</A>=4, and default <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dclevel">DCLEVEL</A>.  Default <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A> if a
+straight high pass <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> is desired or try <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A> = .1 to .2 to soften 
+the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A>.
+
+For the scene dependent <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A>, try <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#scale">SCALE</A> in the range 100 to 300 and default
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dclevel">DCLEVEL</A>. Default <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A> if a straight scene dependent <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> is desired or try
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A> = .1 to .2 to soften the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A>. 
+
+For the low pass <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> the defaults for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#boost">BOOST</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#offset">OFFSET</A> should be
+satisfactory.
+
+For the divide <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A>, try <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#offset">OFFSET</A> in the range 0 to 50, and default <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dclevel">DCLEVEL</A>.  
+Default <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A> if a straight divide <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> is desired or try 
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A> = .1 to .2 to soften the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A>.
+<A NAME="examples">EXAMPLES:</A>
+
+1.     tfilt (A,X) HIGH.IMG  'HIGH <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#boost">BOOST</A>=4 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#thresh">THRESH</A>=25  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nlw">NLW</A>=21 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nsw">NSW</A>=21 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A>=.1
+
+In this example tfilt is used to apply a high pass <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> to image A, 
+producing image HIGH.IMG.  A 21 by 21 box is used.
+
+2.     tfilt (MIRANDA.IMG,X) DIV.IMG   'DIV <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#scale">SCALE</A>=150 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#thresh">THRESH</A>=25  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nlw">NLW</A>=21 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nsw">NSW</A>=21
+
+In this example tfilt is used to apply a divide <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> to image MIRANDA.IMG, 
+producing image DIV.IMG.  A 21 by 21 box is used.
+3.     tfilt (MIRANDA.IMG,X) SCENE.IMG 'SCENE <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#scale">SCALE</A>=250 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#thresh">THRESH</A>=25 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nlw">NLW</A>=21 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nsw">NSW</A>=21
+
+In this example tfilt is used to apply a scene dependent <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> to image 
+MIRANDA.IMG, producing image SCENE.IMG.  A 21 by 21 box is used.
+
+4.     tfilt (MIRANDA.IMG,X) LOW.IMG   'LOW <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#thresh">THRESH</A>=25  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nlw">NLW</A>=3 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nsw">NSW</A>=3
+
+In this example tfilt is used to apply a low pass <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> to image MIRANDA.IMG, 
+producing image LOW.IMG.  A 3 by 3 box is used.
+
+5.  The last example is the test procedure for tfilt.  This is
+    a complete example that could be run by the user and that 
+    demonstrates uses of the possible parameters.
+
+    GEN <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=GEN <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nl">NL</A>=20 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#ns">NS</A>=17 ! generate a picture with byte format
+    GEN <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=HST <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nl">NL</A>=20 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#ns">NS</A>=22 'HALF ! generate a scratch file with halfword format
+    LIST <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=GEN 'ZEROES ! check input data
+    tfilt <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=GEN <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=(TEST1,IST)   !run tfilt - default all optional params.
+    LIST <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=TEST1 'ZEROES
+    tfilt <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=GEN <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=(TEST2,IST)  ! run tfilt with byte
+    LIST <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=TEST2 'ZEROES
+    ! run tfilt with byte and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nlw">nlw</A>
+    tfilt <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=GEN <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=(TEST4,IST) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nlw">NLW</A>=3
+    LIST <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=TEST4  'ZEROES
+    ! run tfilt with byte, nls and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nsw">nsw</A>
+    tfilt <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=GEN <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=(TEST6,IST) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nlw">NLW</A>=2 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nsw">NSW</A>=3
+    LIST <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=TEST6 'ZEROES
+    ! run tfilt with byte, nls, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nsw">nsw</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#thresh">thresh</A>
+    tfilt <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=GEN <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=(TEST7,IST) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nlw">NLW</A>=2 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nsw">NSW</A>=3 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#thresh">THRESH</A>=3
+    LIST <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=TEST7 'ZEROES
+    ! run tfilt with <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nlw">nlw</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nsw">nsw</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#thresh">thresh</A> and high
+    tfilt <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=GEN <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=(TEST8,IST) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nlw">NLW</A>=3 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nsw">NSW</A>=3 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#thresh">THRESH</A>=3 'HIGH
+    LIST <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=TEST8 'ZEROES
+    ! run tfilt with <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#thresh">thresh</A>, scene
+    tfilt <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=GEN <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=(TEST9,IST) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#thresh">THRESH</A>=2 'SCENE
+    LIST <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=TEST9 'ZEROES
+    tfilt <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=GEN <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=(TEST10,IST) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nlw">NLW</A>=4 'LOW !run tfilt with nlw and low
+    LIST <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=TEST10 'ZEROES
+    tfilt <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=GEN <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=(TEST11,IST) 'DIVIDE ! run tfilt with divide
+    LIST <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=TEST11 'ZEROES
+    ! run tfilt with <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nlw">nlw</A> and high - define <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#boost">boost</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">dctran</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dclevel">dclevel</A>
+    tfilt <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=GEN <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=(TEST12,IST) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nlw">NLW</A>=2 'HIGH <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#boost">BOOST</A>=2 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A>=0.1 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dclevel">DCLEVEL</A>=50.0
+    LIST <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=TEST12 'ZEROES
+    !run tfilt with <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nlw">nlw</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nsw">nsw</A>, and low - define <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#boost">boost</A>  and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#offset">offset</A>
+    tfilt <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=GEN <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=(TEST14,IST) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nlw">NLW</A>=2 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nsw">NSW</A>=4 'LOW <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#boost">BOOST</A>=2.00 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#offset">OFFSET</A>=20.
+    LIST <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=TEST14 'ZEROES
+    ! run tfilt with halfword and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nsw">nsw</A>
+    GEN <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=HGEN <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nl">NL</A>=20 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#ns">NS</A>=22 'HALF !generate a picture with halfword format
+    LIST <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=HGEN 'ZEROES
+    tfilt <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=(HGEN,HST) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=(TEST3,IST)  ! run tfilt with halfword
+    LIST <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=TEST3 'ZEROES
+    tfilt <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=(HGEN,HST) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=(TEST5,IST) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nsw">NSW</A>=2
+    LIST <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=TEST5 'ZEROES
+    !run tfilt with halfword,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nlw">nlw</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nsw">nsw</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#thresh">thresh</A>,scene,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#scale">scale</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">dctran</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dclevel">dclevel</A>
+    tfilt <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=(HGEN,HST) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=(TEST13,IST) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nlw">NLW</A>=2 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nsw">NSW</A>=2 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#thresh">THRESH</A>=3 'SCENE      <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#scale">SCALE</A>=200.0 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A>=0.3 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dclevel">DCLEVEL</A>=10
+    LIST <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp">INP</A>=TEST13 'ZEROES
+ OPERATION
+    
+tfilt operates as a convolutional <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A>.  At each pixel it computes the
+average of all DN's greater than the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#thresh">THRESH</A> parameter within an area of
+dimensions <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nlw">NLW</A> by <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nsw">NSW</A> centered on that pixel and performs the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> using this
+value.  Values of pixels outside the image are obtained by reflection about the
+image edges. 
+
+If the local average is ADN, the pixel at the center of the averaged area is
+DN, and the output pixel DN is <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>, then the four filters are: 
+ 
+ HIGH     <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=(DN-ADN)*<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#boost">BOOST</A>+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A>*DN+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dclevel">DCLEVEL</A>
+ SCENE    <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=((DN-ADN)/ADN)*<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#scale">SCALE</A>+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A>*DN+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dclevel">DCLEVEL</A>
+ LOW      <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=ADN*<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#boost">BOOST</A>+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#offset">OFFSET</A>
+ DIVIDE   <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out">OUT</A>=(DN/ADN)*<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#scale">SCALE</A>+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A>*DN+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#offset">OFFSET</A>
+
+Default values for the constants are:
+ 
+ <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#scale">SCALE</A> = 100.0,  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A> = 0.0,  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#boost">BOOST</A> = 1.0,
+ <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dclevel">DCLEVEL</A>= 128.0,  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#offset">OFFSET</A> = 0.5
+
+The calculations are performed in floating-point arithmetic and then truncated
+to the output format if necessary.  For SCENE and DIVIDE,
+1.0 is used in the denominator if ADN is 0.  The results of the calculations
+are checked for being in the valid range of DNs for the data type
+of the image and are adjusted if invalid.  For byte data, DNs less
+than 0 are set to 0, and DNs greater than 255 are set to 255.  For halfword
+data, DNs less than -32768 are set to -32768, and DNs greater than 32767 are
+set to 32767.  For fullword integer and real*4 data, the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#limits">limits</A> are set by
+default to (-1.0E10, +1.0E10), but may be changed using the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#limits">LIMITS</A> parameter.
+TIMING: 
+
+tfilt takes about 23 CPU seconds on the VAX 8600 for a high pass <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> 
+on an 800 by 800 byte image.  Because of the algorithm used by tfilt,
+the box <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#size">size</A> does not affect the execution time significantly.  (A 75 by
+75 box took five percent more time than a 5 by 5 box.)
+
+  REFERENCES:
+
+   1.   K. R. Castleman, "Digital Image Processing",
+        Prentice Hall, Inc., 1979, p. 199.
+
+   2.   J. G. Moik, "Digital Processing of Remotely Sensed Images",
+        NASA Publication SP-431, 1980, p. 130.
+
+
+ WRITTEN BY: J. J. Lorre,                   Sept. 22, 1980
+<A NAME="CogProg"> COGNIZANT PROGRAMMER:  L W.Kamp</A>
+ REVISIONS:
+  19Dec12 ...LWK...  Revised to support FULL and REAL data types;  parameter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#thresh">THRESH</A>
+                     behaves slight differently than before:  the default is 0 instead
+                     of -1 and DNs &lt <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#thresh">THRESH</A> are excluded, not <= THRESH;  parameter
+                     <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#limits">LIMITS</A> added.
+  05MAR00 ...LWK...  Revised to allow multispectral files
+  Feb 21 96 ...FFM...  Renamed FILTER0 as <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">FILTER</A>. Obsolete programs FILTERAP &
+                       FILTER0.(There is no need to have procedure <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">FILTER</A>
+                       because there is no AP on any platform).
+                       Modified HELP & TEST slightly, retested on alpha, andes,
+                       solaris, & sunos.
+  AUG 06 89 ...GMY...  Fix bug in SDFILT (given <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#size">SIZE</A> field specification)
+  MAY-85   ...LWK... RENAMED tfilt FOR PROC TFILT
+  OCT. 84  ...LWK... BUG FIXES & SPEED UP I/O BY OMITTING OPTIONALS
+  OCT. 84  ...BXG... CONVERTED TO VICAR2
+  JAN. 84  ...DFS... CONVERTED TO VAX
+  NOV 24 82 ...JAM... THIS IS TFILT REWRITTEN IN FORTRAN. THE ORIGINAL 
+		     TFILT WAS WRITTEN IN PL/I BY J.J.LORRE
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#inp"><H3>INP</H3></A>
+input file
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#out"><H3>OUT</H3></A>
+output file and one or two 
+(if multi-band) scratch files
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#size"><H3>SIZE</H3></A>
+ FOUR INTEGERS -
+ VICAR <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#sl"><H3>SL</H3></A>
+ INTEGER - starting line in
+ input picture
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#ss"><H3>SS</H3></A>
+ INTEGER - starting sample in
+ input picture
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nl"><H3>NL</H3></A>
+ INTEGER - number of lines in
+ input picture to process
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#ns"><H3>NS</H3></A>
+ INTEGER - number of samples per
+ line in input picture 
+ to process
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nlw"><H3>NLW</H3></A>
+ INTEGER - number of lines 
+ in <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#nsw"><H3>NSW</H3></A>
+ INTEGER - number of pixels 
+ per line in <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#thresh"><H3>THRESH</H3></A>
+ INTEGER - pixel threshold level
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter"><H3>FILTER</H3></A>
+ KEYWORD - <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#filter">filter</A> type
+ Valid: HIGH,LOW,SCENE,
+ DIVIDE
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#scale"><H3>SCALE</H3></A>
+ REAL - DN <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#scale">scale</A> factor
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dctran"><H3>DCTRAN</H3></A>
+ REAL - DC transmission factor
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#boost"><H3>BOOST</H3></A>
+ REAL - amplitude <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#boost">boost</A> factor
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#dclevel"><H3>DCLEVEL</H3></A>
+ REAL - additive constant
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#offset"><H3>OFFSET</H3></A>
+ REAL - additive constant
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#limits"><H3>LIMITS</H3></A>
+Allows setting of upper and
+lower <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt_level2.html#limits">limits</A> for FULL and 
+REAL data.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tfilt.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

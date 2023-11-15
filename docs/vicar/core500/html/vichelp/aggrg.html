@@ -1,0 +1,89 @@
+<HTML>
+<HEAD><title>HTML Help for AGGRG</title></HEAD>
+<BODY>
+<H1>Help for AGGRG</H1>
+<pre>
+PURPOSE
+
+    "aggrg" aggregates columns in an IBIS tabular file using any designated 
+column in the file as a control column.  A column is aggregated by adding 
+together items which have the same number contiguously in the control column.
+The columns of aggregated data either replaces the original column or is 
+placed in a columns specified by the user.  Optionally an index column may
+be specified to receive the row index for each group.  The input file is 
+modified instead of having an output file; the file retains its original 
+length (unlike "aggrg2").
+
+A simple example of this process is shown using four columns:
+
+CONTROL COLUMN	 AGGREGATION COLUMN   RESULTS COLUMN   INDEX COLUMN
+	1	   10	(10+10)		20		1
+	1	   10	(10+10)		20		2
+	2	   11	(11+13+14)	38		1
+	2	   13	(11+13+14)	38		2
+	2	   14	(11+13+14)	38		3
+	3	   17	(17)		17		1
+	9	   10	(10+11)		21		1
+	9	   11	(10+11)		21		2
+	8	   11	(11+12)		23		1
+	8	   12	(11+12)		23		2
+	1	   15	(15)		15		1
+
+TAE COMMAND LINE FORMAT
+
+	aggrg <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#inp">INP</A>=FILE <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#agcol">AGCOL</A>=N <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#sumcol">SUMCOL</A>=(X,Y,Z) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#tocol">TOCOL</A>=(A,B,C)
+	aggrg <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#inp">INP</A>=FILE <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#agcol">AGCOL</A>=N <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#sumcol">SUMCOL</A>=(X,Y,Z)
+	aggrg <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#inp">INP</A>=FILE <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#agcol">AGCOL</A>=N <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#sumcol">SUMCOL</A>=(X,Y,Z) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#tocol">TOCOL</A>=(A,B,C) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#indexcol">INDEXCOL</A>=K
+
+	FILE is the IBIS interface file, N is the control column, 
+X,Y,and Z are the columns to be aggregated, A,B, and C are the columns where 
+the results are stored, and K is the column where the index numbers are stored.
+
+<A NAME="examples">EXAMPLE</A>
+
+	aggrg <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#agcol">AGCOL</A>=1 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#sumcol">SUMCOL</A>=(5,6,7) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#tocol">TOCOL</A>=(8,9,10)
+
+	This execution indexes on column 1, summing columns 5, 6 and 7; and
+replacing columns 8, 9, and 10 with the output.
+
+
+RESTRICTIONS
+
+    There may be at most 40 columns specified in <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#sumcol">SUMCOL</A>.
+    The maximum column length is 250,000.
+
+
+WRITTEN BY		A. L. Zobrist		15 Dec 1976
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER	B. McGuffie</A>
+
+REVISIONS:
+
+    1995-01    AS (CRI) - Made portable for UNIX
+    2000-06-08 A. L. Zobrist - Converted to C  
+    2007-12-29 W. Bunch - switched to USES_ANSI_C AND LIB_CARTO; misc cleanup
+    2014-12-05 W. Bunch - fiddled includes to build in mipl
+    2019-08-07 W. Bunch - IDS-7922 - initialized some variables
+	
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#inp"><H3>INP</H3></A>
+Standard IBIS interface file
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#agcol"><H3>AGCOL</H3></A>
+Indexing column; usually numeric
+but can be alphabetic
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#sumcol"><H3>SUMCOL</H3></A>
+Columns to aggregate(S1,S2,..Sk)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#tocol"><H3>TOCOL</H3></A>
+Columns for output  (T1,T2,..Tk)
+Default output columns equal the
+input aggregate columns.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg_level2.html#indexcol"><H3>INDEXCOL</H3></A>
+Optional column to hold the
+index numbers for each group.
+.END
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/aggrg.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

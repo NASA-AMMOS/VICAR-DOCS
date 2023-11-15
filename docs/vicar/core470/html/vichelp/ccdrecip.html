@@ -1,0 +1,380 @@
+<HTML>
+<HEAD><title>HTML Help for CCDRECIP</title></HEAD>
+<BODY>
+<H1>Help for CCDRECIP</H1>
+<pre>
+PURPOSE:
+
+CCDRECIP determines the shutter offset (in msec) and sensitivity
+(in DN per foot-lambert-milliseconds (<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#units">UNITS</A> = LUMINANC) or
+in DN per picoamp-milliseconds (<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#units">UNITS</A> = RADIANCE)) for a
+camera system.  The program is one of a series of programs originally
+developed to support radiometric calibration of the Galileo SSI camera system.
+(<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#units">UNITS</A> should be LUMINANCE for Galileo and RADIANCE for Cassini).
+
+Reference:
+    D-4264  MIPL Software Structural Design for the Instrument
+            Calibration of GLL SSI Science Processing.
+    D-tbd   Software Design Document for Instrument Calibration -
+            Cassini ISS
+
+EXECUTION:
+                CCDRECIP <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#inp">INP</A>=RCP.DAT <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#out">OUT</A>=MARK.DAT PARAMS
+
+The input is a Reciprocity File (RCP) containing statistical data for
+specified areas in the image for each exposure of a reciprocity sequence.
+The RCP must have been previously initialized via LTGEN and loaded with
+data via MOMGEN.
+
+The output is an optional MARK-format tiepoint data set containing the
+centers of all areas rejected for producing values for SENSITIVITY or
+SHUTTER OFFSET or either which differ by more than 2 sigma from the mean
+values for all the areas.
+
+MATHEMATICAL BACKGROUND:
+
+The output camera signal is proportional to exposure as follows:
+
+      DN-DC = A*L*(T-To)
+where
+      DN-DC is the output signal minus the dark current,
+      A is the camera sensitivity (DN/foot-lambert-milliseconds (LUMINANC)) or
+                                   DN/picoamp-milliseconds (RADIANCE))
+      L is the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#light">light</A> cannon setting (foot-lamberts (LUMINANC)) or
+        is the spectral radiance of the source (picoamp (RADIANCE)),
+      T is the commanded exposure time (milliseconds), and
+      To is the shutter-offset (milliseconds).
+
+CCDRECIP solves for the sensitivity A and shutter-offset To, given data
+points DN acquired by varying the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#light">light</A> cannon setting (or spectral radiance of
+the source) and exposure time:
+         i
+                DN - DC = A*L *(T -To)
+                  i          i   i
+
+OPERATION:
+
+CCDRECIP performs the following steps:
+
+  1) Read data from the Reciprocity File.
+  2) Compute the sensitivity and shutter offset for each area.
+  3) Compute mean values for sensitivity and shutter-offset (by averaging
+     the values extracted from each area) and flag all areas deviating
+     by more than 1 or 2 sigma from the mean.
+  4) Re-compute the mean value for sensitivity and shutter-offset,
+     ignoring all flagged values as specified by the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#reject">REJECT</A> parameter.
+
+If the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#reject">REJECT</A> parameter is specified (default=2), areas may be rejected
+because of a bad value for sensitivity (<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#reject">REJECT</A>=1), shutter-offset (REJECT=2),
+or either (<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#reject">REJECT</A>=3).  If REJECT=0, no area rejection is performed.
+
+CCDRECIP prints <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#out">out</A> the following:
+
+  1) Sensitivity and shutter-offset for each area.
+  2) Summary of all areas with bad values for sensitivity or shutter-offset.
+  3) Mean sensitivity as a function of exposure time.
+  4) Global value for sensitivity and shutter-offset, obtained by combining
+     data from all good areas.
+  5) Shutter-offset as a function of image line or sample number.
+
+Note that the sensitivity and offset are listed as AO and TOS in the printout.
+
+If the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">PLOT</A> keyword is specified, CCDRECIP produces the following plots:
+
+  1) (DN-DC)/L vs SHUTTER TIME
+  2) (DN-DC)/(L*T) vs SHUTTER TIME
+  3) (DN-DC)/[L*(T-To)] vs SHUTTER TIME
+  4) To vs image line or sample number.  The raw points are plotted with
+     "+" and the average shutter offset at a given line or sample number
+     is plotted as a solid line.
+
+Four types of tabular output data are also available.  The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#areatbl">AREATBL</A>
+parameter produces a tab-delimitted ASCII text file containing:
+if <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#units">UNITS</A> = LUMINANC, MEAN_DN(D), LUM(L), EXP(T), L*T, ACTUAL(T-To), D/L,
+D/L*T, and D/L*(T-To), and if <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#units">UNITS</A> = RADIANCE, MEAN_DN(D), RAD(L), EXP(T),
+L*T, ACTUAL(T-To), D/L, D/L*T, and D/L*(T-To), for each exposure level.
+
+The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#offtbl">OFFTBL</A> parameter produces a tab-delimitted ASCII text file containing:
+LINE or SAMPLE and calculated SHUTTER_OFFSET for all good areas.
+
+The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#avofftbl">AVOFFTBL</A> parameter produces a tab-delimitted ASCII text file containing:
+LINE or SAMPLE and mean SHUTTER_OFFSET for each row or column of grid areas.
+
+The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#corrtbl">CORRTBL</A> parameters produces two files tabulating the correction
+achieved as a result of using the derived shutter-offset.  The first
+of the two files holds the uncorrected sensitivity values averaged over
+each column or row (see <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#directio">DIRECTIO</A> parameter) of grid points.  The second
+file holds the corrected values.  If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#directio">DIRECTIO</A> is LINE, then the values
+of the grid rows are averaged.  If SAMP, then the values of the grid
+columns are averaged.
+
+If an output file is specified, the centers of all flagged areas (as
+specified by the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#reject">REJECT</A> parameter) are stored in a MARK-format tiepoint
+data set.  These areas can be subsequently displayed (see example below)
+to indicate the spatial distribution of regions which give rise to bad
+sensitivity or shutter-offset constants.
+
+If an output shutter-offset file is specified via the OFFSET parameter,
+then a file containing shutter <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#offsets">offsets</A> for each image line or sample is
+generated.  These <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#offsets">offsets</A> are calculated by using the average shutter-offsets
+as found above and then performing a piece-wise linear interpolation for the
+lines or samples that fall between data points.  A linear extrapolation is
+done at each end using the first and last two points.  These shutter-<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#offsets">offsets</A>
+can later be used as inputs to GALGEN, see GALGEN's TUTOR and HELP files.
+
+Instead of entering the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#light">light</A> values of the exposure levels as a
+multivalued parameter, they can be contained in an ASCII file.  This file
+merely contains one <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#light">light</A> value per record (see procedure MOMGEN2 for
+the format details).  The file is specified to CCDRECIP using the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#ltfile">LTFILE</A>
+parameter.
+
+NOTE:  The first value in the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#light">LIGHT</A> parameter set or the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#ltfile">LTFILE</A>
+       file should be 0.0 to correspond with EXPO=0.0 for the dark
+       current frames.
+
+The parameter <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#directio">DIRECTIO</A> is used to tell CCDRECIP to derive a Line- or a
+Sample-dependent shutter-offset.
+
+Because CCDRECIP is dealing with the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#light">Light</A> Transfer File and not the raw
+images, it doesn't know how big they are.  Therefore, the user must tell
+CCDRECIP how many elements the shutter-offset should contain.  This is
+done with the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#arraysiz">ARRAYSIZ</A> parameter.
+
+NOTE:  CCDRECIP CANNOT be used with reciprocity sequences that contain
+       extended dark current or extended exposure frames.
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">PLOT</A> OUTPUTS
+
+    The other type of output come from the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">PLOT</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plotfmt">PLOTFMT</A> parameters.
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">PLOT</A> allows the user to display offset data in 4 formats on an x,y
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A> using the gnuplot package after exiting the program. PLOT produces
+a file of gnuplot commands contained in a file having a .gpi file extension.
+Another file with an .asc extension is create containing columns of data
+that are displayed by the gpi file.
+
+   The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plotfmt">PLOTFMT</A> parameter allows the user to generate a postscript file of
+the output for use in documentation by choosing <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plotfmt">PLOTFMT</A>=EPS. The default
+is to generate a gnuplot interactive display.
+
+
+  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">PLOT</A> NAMING CONVENTIONS
+
+  The user should enter only the parent file name without an extension
+  for the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">PLOT</A> parameter.  The program will supply the extensions.
+
+  For example, if the user has an input file of indata.dat and  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">PLOT</A>=outplot
+  then for the interactive <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A> the following files are produced:
+
+     outplot.gpi
+     indata.dat.asc
+
+  The first file is the gnuplot instruction file and the second is the
+  data file used by gnuplot.      
+
+  If the user wanted an encapsulate postscript file with <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plotfmt">PLOTFMT</A>=eps
+  then the following files are produced:
+
+     outplot.eps.gpi
+     indata.dat.asc
+
+  Remember entering the following command gives the eps file, outplot.eps
+
+  ush gnuplot outplot.eps.gpi
+
+  If you move the gpi file to another directory, you must also move the
+  input data file, indata.dat.asc to the same directory.
+
+  Note that the gpi file produced by this program has the name of the
+  input file embedded in the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A> command inside the gpi file, e.g..
+
+  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A>  'indata.dat.asc' u  1: 9 t .......
+
+
+USING GNUPLOT
+
+
+  INTERACTIVE:
+
+    This program uses the gnuplot package for its plots. Gnuplot is a
+  separate package from Vicar and is not actually invoked inside this
+  program.  Instead this program creates a template of gnuplot commands
+  which are written <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#out">out</A> as a separate file. The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A> is then viewed after
+  exiting this program. The file has the extension .gpi. You view
+  the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A> by issuing the following command in the vicar shell.
+
+  ush gnuplot output.gpi
+
+  or external to vicar as
+
+  gnuplot output.gpi
+
+    After viewing the data, you close the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A> by clicking the mouse anywhere
+  except on the top bar of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A>. Clicking on the top bar allows you
+  to move the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A> to any convenient place on the terminal screen.  (While
+  the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A> is displayed you cannot enter any commands to the vicar shell).
+
+  The data to be plotted by gnuplot is read from a separate file, created
+  by this program, which contains columns of data in ascii text.
+  File naming conventions are discussed in the OUTPUT section, but in this
+  case that file extension will be .asc.
+
+  It is possible to keep the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A> alive for comparison purposes by issuing
+  the following command.
+
+  ush gnuplot --persist output.gpi
+
+  (You will be able to enter commamds to the vicar shell after clicking on
+  the mouse on the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A>).
+
+  Note: This program creates 7 output plots per run. You bring up each <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A>
+  panel sequentially. You close each <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A> by clicking the mouse on any
+  portion of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A>.
+
+
+  HARDCOPY:
+
+  This program also allows you to create a hardcopy encapsulated postscript
+  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A> suitable for publications. This file can be viewed with ghostscript
+  or gimp. The encapsulated postscript file is not created by this program
+  by by the gnuplot program from a gpi file made especially for this purpose.
+  this file has the extension, eps.gpi. You create the hardcopy <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A> via
+  the following command
+
+  ush gnuplot output.eps.gpi
+
+  This creates the eps file output.eps. You can view this file by
+
+  ush gimp output.eps
+    DEVELOPER Note:
+
+    This program used to link to the XRT <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A> library -lxrt. Calls to
+  that library were mitigated through a Calcomp conversion library,
+  xrtps located in the p2 subroutine library. With the conversion to
+  gnuplot, neither of these packages are used.
+
+
+<A NAME="examples">EXAMPLE:</A>
+
+    CCDRECIP RCP.DAT MRK.DAT <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">PLOT</A>=RCP.PLT <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#offsets">OFFSETS</A>=OFFSETS.DAT
+    MARK (PIC,MRK.DAT) <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#out">OUT</A>              !Scribe boxes around bad centers
+.
+
+ORIGINAL PROGRAMMER: Mike Morrill, Oct 84
+<A NAME="CogProg">COGNIZANT PROGRAMMER: Ray Bambery</A>
+
+REVISION HISTORY:
+ 13 Jul 2013  R. J. Bambery  Fix yrang1 and yrang2 values when their
+                            diffs le 0.001.  Adjusted eps format to more 
+                            readable fonts. Remove vestiges of debug
+                            statements.
+ 08 Jul 2013  R. J. Bambery  Rename ascii output files
+ 06 Jul 2013  R. J. Bambery  Fix ymax, ymin ranges for plots
+ 13 Feb 2013  R. J. Bambery  Update documentation, tests
+ 25 Nov 2012  R. J. Bambery..Linux 64-bit changes, incorporate gnuplot
+ 27 Apr 99  gmy  Declared P as integer to avoid compiler error on SGI
+ 25 Mar 97...T.Huang........Ported from VAX to UNIX to support both
+                            Cassini and Galileo data.
+  1 Jan 97...c.c.avis.......allow rectangular grids
+ 16 Jul 96...c.c.avis.......added correction tables by row or column
+ 29 APR 96...c.c.avis.......changed decimal places in output table
+ 24 APR 96...c.c.avis.......change f12.5 to g20.12 in reading <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#ltfile">LTFILE</A>
+ 22 AUG 95...c.c.avis.......Added tests involving noise
+ 02 JAN 95...J.R.YOSHIMIZU..Changed LUMINANC to <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#light">LIGHT</A> and LUMFILE to <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#ltfile">LTFILE</A>.
+                            Added <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#units">UNITS</A>
+ 21 DEC 94...C.C.Avis.......Clarified Help on <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#reject">Reject</A> parameter.
+ 20 JUN 94...C.C.Avis.......Fixed xladd to SO file not mark file (bug),
+                            added table outputs, added use of LUMFILE,
+                            added sample-dependent shutter-offset
+ 26 APR 88...G.M.Yagi.......Added more documentation to help file.
+ 04 Nov 87...G.M.Yagi.......Shutter offset file changed to Image format.
+ 01 Nov 87...G.M.Yagi.......Convert to new CPLT plotting routines.
+ 14 JAN 87...G.M.Yagi.......Fix so <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A> is optional.
+  1 AUG 86...G.M.Yagi.......Code and documentation clean-up.
+ 29 OCT 85...R.A.MORTENSEN..Added output of all 800 shutter <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#offsets">offsets</A>.
+ 26 FEB 85...M.E.MORRILL....ADD <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">PLOT</A> OF GLOBAL SHUTTER OFFSET.
+ 15 FEB 85...M.E.MORRILL....ADD SIGMA TOLERANCE PARAMETER.
+ 26 JAN 85...M.E.MORRILL....VERSION 1*A RELEASED FOR USE.
+ 14 JAN 85...M.E.MORRILL....ENLARGED BUFFERS FOR 400 AREAS.
+  7 JAN 85...M.E.MORRILL....MARK OUTPUT FOR REJECTED AREAS.
+ 21 DEC 84...M.E.MORRILL....PLOTING PACKAGES ADDED.
+ 13 DEC 84...M.E.MORRILL....USES GOOD AREAS TO TABULATE RESULTS.
+  2 NOV 84...M.E.MORRILL....TRACKS REJECTED AREAS WITH
+                              3 CLASSES: AO,TOS, BOTH.
+  8 OCT 84...M.E.MORRILL....INITIAL RELEASE.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#inp"><H3>INP</H3></A>
+The Reciprocity File
+created by LTGEN/MOMGEN
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#out"><H3>OUT</H3></A>
+A MARK-format file
+contining centers of
+rejected areas.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot"><H3>PLOT</H3></A>
+Output <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A> file
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plotfmt"><H3>PLOTFMT</H3></A>
+ Output <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A> format
+ GNUPLOT or EPS
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#sigtol"><H3>SIGTOL</H3></A>
+Specifies 1 or 2 Sigma
+rejection from mean values.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plotfmt"><H3>PLOTFMT</H3></A>
+ Output <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#plot">plot</A> format
+ GNUPLOT or EPS
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#reject"><H3>REJECT</H3></A>
+Specifies whether to
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#reject">reject</A> areas based on
+bad sensitivity,
+bad shutter-offset, or
+either, or no rejection.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#units"><H3>UNITS</H3></A>
+Specifies whether the
+illumination values are
+RADIANCE or LUMINANC
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#light"><H3>LIGHT</H3></A>
+Illumination values in
+Relative Foot-Lamberts
+or picoamp)
+First value=0.0 for DC.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#ltfile"><H3>LTFILE</H3></A>
+Name of file containing
+list of illumination
+values in Relative
+Foot-Lamberts or picoamp).
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#directio"><H3>DIRECTIO</H3></A>
+Direction of shutter
+movement.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#arraysiz"><H3>ARRAYSIZ</H3></A>
+Number of pixels in
+the direction of
+shutter movement.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#areatbl"><H3>AREATBL</H3></A>
+File to receive table
+of stats for each
+area.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#offtbl"><H3>OFFTBL</H3></A>
+File to receive table
+of pixel number vs.
+calculated offset.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#avofftbl"><H3>AVOFFTBL</H3></A>
+File to receive table
+of pixel number vs.
+calculated offset
+averaged by row or
+column.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#corrtbl"><H3>CORRTBL</H3></A>
+Files to receive the
+uncorrected and corrected
+sensitivity values by
+grid row or column.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#offsets"><H3>OFFSETS</H3></A>
+Specifies the name
+of an output file to
+receive the shutter
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip_level2.html#offsets">offsets</A> for each image
+line or sample.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ccdrecip.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

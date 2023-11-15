@@ -1,0 +1,297 @@
+<HTML>
+<HEAD><title>HTML Help for MARSUVWROT</title></HEAD>
+<BODY>
+<H1>Help for MARSUVWROT</H1>
+<pre>
+PURPOSE:
+
+MARSUVWROT rotates the vectors in a surface normal (or xyz) file, generating
+a new surface normal (or xyz) file.  It can also be used to change coordinate
+systems for a surface normal (or xyz) file without rotating it.
+
+The original intent of this program was to assist with effort to find a
+winter haven for Spirit in Jan. 2010.  The rotation simulated the effect
+of having some of the wheels under the nominal ground surface (as the rover
+dug itself in).  Having wheels dug in creates a rotational offset between
+the true solar panel orientation and the nominal orientation assuming the
+rover is on the surface.  It is assumed that as the rover makes progress,
+the wheels stay submerged.
+
+However, the program is more general purpose than that.  The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#use_current">USE_CURRENT</A>
+and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#nominal_uvw">NOMINAL_UVW</A> parameters are somewhat tailored for this scenario, but
+the other parameters are general-purpose.
+
+The input for MARSUVWROT is a UVW image such as that created by the MARSUVW
+program (typically with the -slope option, for the Sprit usage), and a set
+of parameters to specify the rotation (see below).  The UVW file can be a
+single 3-band file or three 1-band files; see MARSUVW for details.
+
+The output of MARSUVWROT is a single 3-band file of type REAL (a surface
+normal, like the input).  It should support outputting 3 1-band files as
+well, but this has not been implemented.
+
+Note, with the -XYZ option this program will work with XYZ inputs instead
+of UVW.  The only difference is in how coordinate system transforms are done
+(if needed), the use of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#rot_origin">ROT_ORIGIN</A>, and in the output label.  Thus an XYZ
+image can be rotated as well.  The rotation happens around the origin unless
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#rot_origin">ROT_ORIGIN</A> is specified.
+
+EXECUTION:
+
+marsuvwrot <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#inp">inp</A>=data.uvw <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#out">out</A>=rot.uvw <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#axis">axis</A>=\(0, 0, -1\) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#angle">angle</A>=20.0
+where:
+data.uvw is an input 3-band image of type REAL with the U, V, and W components
+of the unit vector for each pixel.
+
+METHOD:
+
+The algorithm to compute the projection is as follows:
+
+* Convert UVW (or XYZ) to the frame specified by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#coord">COORD</A> et al, if necessary.
+This should be the site frame for the Spirit case.
+
+* Compute a composite quaternion combining all three rotation options (see
+below).
+
+* Rotate the UVW vectors by the rotation quaternion.  For XYZ, the origin is
+subtracted off before the rotation and added again afterwards.
+
+* Normalize the result to make sure it's still a unit vector.
+
+SPECIFYING ROTATIONS:
+
+There are five methods by which rotations can be specified: Current,
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#axis">Axis</A>-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#angle">angle</A>, Euler angles, Vector Difference, and Quaternion.  These are
+applied in order, so the Current rotation is first, followed by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#axis">Axis</A>-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#angle">angle</A>,
+then Euler, then Vector Difference, and finally Quaternion.  Any number of
+these may be specified (including none); they are composited to get the final
+rotation.
+
+Be careful which coordinate system you specify things in!  The Current
+method is hard-coded to use Site and Rover.  All the others are specified
+using the frame named in <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#rot_coord">ROT_COORD</A>.
+
+Current
+
+This method is tailored to the Spirit case.  Turn this on via -<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#use_current">USE_CURRENT</A>.
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#nominal_uvw">NOMINAL_UVW</A> parameter must also be specified.
+
+The nominal uvw (in Site frame) is compared to the current rover orientation
+(derived from the Rover frame of the label).  The difference between the two
+represents the off-nominal tilt, i.e. how far under ground the rover is.  This
+difference is the rotation to be used.  The theory is, if the current sinkage
+is maintained, this represents the appropriate rotation.
+
+The nominal uvw ideally is derived from a slope UVW file taken before the
+rover got to its current spot.  Where the rover now is in that image, is the
+appropriate surface normal to use.  Be careful of coordinate systems:  it must
+be Site frame (slope normals are generated in Site).
+
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#axis">Axis</A>-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#angle">Angle</A>
+
+This allows you to specify an arbitrary rotation.  Provide an <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#axis">axis</A> (a unit
+vector) around which the rotation is to happen, and an amount of rotation
+(the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#angle">angle</A>, in degrees).  These are all specified using the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#rot_coord">ROT_COORD</A> frame
+(typically Rover).
+
+Euler Angles
+
+This allows you to specify <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#roll">roll</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#pitch">pitch</A>, and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#yaw">yaw</A> values (in degrees).  The
+values are expressed in the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#rot_coord">ROT_COORD</A> frame.  This should normally be Rover.
+Using Site frame to specify these will result in <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#yaw">yaw</A> becoming azimuth and
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#pitch">pitch</A> becoming elevation (potentially useful), but <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#roll">roll</A> is simply defined
+as a rotation around +X, which points north (not so useful).
+
+Vector Difference
+
+This allows you to specify two vectors, with the rotation computed as necessary
+to transform the first into the second.  This rotation is computed as an
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#axis">axis</A>-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#angle">angle</A> where the axis is defined by the cross product between the vectors
+and the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#angle">angle</A> is defined by the dot product between them.
+
+Quaternion
+
+This allows you to directly specify a rotation quaternion.  The quaternion
+should be expressed in the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#rot_coord">ROT_COORD</A> frame.  Note that the quaternion is
+specified in Ground order (scalar first).
+
+USING MULTIPLE COORDINATE FRAMES
+
+It is important to realize that the Rover coordinate frame, if in use, is
+the Rover frame associated with the input image.  There is no way to specify
+a rover frame at a different RMC (perhaps an item for future enhancement).
+Similarly, the current position for -<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#use_current">USE_CURRENT</A> is derived using the given
+input image.
+
+It is possible though to use a different location.  Take for example the
+Spirit case.  You may want to use the rover's current position as of tosol,
+but apply that to images taken by the navcam before the rover got stuck.
+Doing this is a two-step process.
+
+1) Use an image from the current location, and specify the rotation as you
+wish.  Make sure to specify -site so the output will be in Site frame.  It
+will report the final quaternion, including the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#axis">axis</A>-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#angle">angle</A> breakdown, to the
+terminal output.  Discard the output file.
+
+2) Run the program a second time.  Use the earlier image (the one you want
+to make a map from) as the input image.  For the rotation, use the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#axis">axis</A>-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#angle">angle</A>
+or quaternion methods and provide the values obtained from step 1.  Make sure
+to say <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#rot_coord">ROT_COORD</A>=SITE.  The output will then contain the desired result.
+
+A future enhancement would obviously be to support multiple frames, or
+multiple input images (one for current and one for the actual surface normal).
+That may be considered if this program sees a lot of use.  For now, this seems
+actually less confusing.
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER: B. Deen</A>
+HISTORY:
+  2010-01-08 B. Deen - Initial version.
+  2013-01-10 B. Deen - Added XYZ and support for vector-diff and quaternion input.
+  2020-05-26 W. Bunch - Replaced sprintf calls. Added unit test. Removed unused variables.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#inp"><H3>INP</H3></A>
+Input UVW (or XYZ) images.
+Must be 1 3-band file
+or (u,v,w) or (x,y,z)
+triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#out"><H3>OUT</H3></A>
+Output file.
+Mast be 1 filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#use_current"><H3>USE_CURRENT</H3></A>
+Turn on "current" rotation.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#nominal_uvw"><H3>NOMINAL_UVW</H3></A>
+Nominal surface normal for
+"current" rotation.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#axis"><H3>AXIS</H3></A>
+Unit vector specifying <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#axis">axis</A>
+for rotation (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#rot_coord">ROT_COORD</A> frame)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#angle"><H3>ANGLE</H3></A>
+Amount of rotation around <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#axis">AXIS</A>
+(degress)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#roll"><H3>ROLL</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#roll">Roll</A> rotation in degrees
+(<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#rot_coord">ROT_COORD</A> frame)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#pitch"><H3>PITCH</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#pitch">Pitch</A> rotation in degrees
+(<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#rot_coord">ROT_COORD</A> frame)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#yaw"><H3>YAW</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#yaw">Yaw</A> rotation in degrees
+(<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#rot_coord">ROT_COORD</A> frame)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#vector1"><H3>VECTOR1</H3></A>
+Initial vector for
+vector-difference rotation
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#vector2"><H3>VECTOR2</H3></A>
+Final vector for
+vector-difference rotation
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#quat"><H3>QUAT</H3></A>
+Quaternion rotation
+(<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#rot_coord">ROT_COORD</A> frame)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#rot_coord"><H3>ROT_COORD</H3></A>
+Frame to use for rotations
+(except for "current")
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#kind"><H3>KIND</H3></A>
+Rotate UVW (default)
+or XYZ files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#rot_origin"><H3>ROT_ORIGIN</H3></A>
+For XYZ only, the
+center of rotation.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use
+for output.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvwrot.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

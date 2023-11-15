@@ -1,0 +1,654 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for MARSCOR2</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2.html">MARSCOR2</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+First left eye image, then right eye image.
+
+There is nothing actually requiring left/right order, other than convention.
+If left/right is unclear (e.g. the images are not from a stereo camera) then
+either order is acceptable.  If the output is used with MARSXYZ, the same
+order must be used.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+The line and sample disparity files.  If one filename is given, a two-banded
+file is created with line disparity as <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#band">band</A> 1 and sample disparity as band 2.
+If two filenames are given, two single-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#band">band</A> files are created.  Line disparity
+is in file 1, and sample disparity is in file 2.
+
+See the main program help for output file contents and formatting.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mask"><H3>MASK</H3></A><pre>
+Optional output file showing the coverage of tiepoints (correlated pixels),
+in BYTE format.
+ 0 dn means the pixel could not be reached in order to be correlated.
+   (i.e. there were no neighbors to supply an initial value, or <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#tptlimit">TPTLIMIT</A>
+   was reached).
+ 128 dn means a correlation was successfully performed at this location.
+ 255 dn means a correlation was attempted at this location but it failed,
+   usually because of low correlation <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#quality">quality</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out_quality"><H3>OUT_QUALITY</H3></A><pre>
+Output <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#quality">quality</A> file (optional): A REAL image containing the correlation
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#quality">quality</A> of each pixel attempted, from 0 to 1.  0 indicates either a
+correlation failure unrelated to the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#quality">QUALITY</A> setting, or a pixel that was
+not reached (the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#mask">MASK</A> output can distinguish).  Note that the file will
+contain just a thin border of poor-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#quality">quality</A> pixels around each area,
+because poor-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#quality">quality</A> pixels prevent the correlator from searching farther
+in that direction.
+
+This file could be used in conjunction with a very low <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#quality">quality</A> setting
+to allow correlation in low-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#quality">quality</A> areas, with the result filtered
+afterwards using a higher <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#quality">quality</A> (i.e. use the output quality file as
+a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#mask">mask</A>).  However, this is somewhat dangerous, especially if there is
+any kind of repeating pattern in the image - the correlator could get
+"stuck" on the wrong match for the pattern.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="band"><H3>BAND</H3></A><pre>
+The vicar image <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#band">band</A> number for the input images.  Defaults to 1
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="template"><H3>TEMPLATE</H3></A><pre>
+Correlation size.  Must be an odd number.  Defaults to 15 square.
+
+If only one value is given, a square <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#template">template</A> is used.  If two values are
+given, the first is the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#template">template</A> height (line direction) and the second is
+the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#template">template</A> width (sample direction).  Rectangular templates that are
+wider than they are tall should be useful for lander images.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="search"><H3>SEARCH</H3></A><pre>
+Correlation <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#search">search</A> area.  Must be an odd number.  Defaults to 35 square.
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#search">SEARCH</A> must be &gt <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#template">TEMPLATE</A>.  If SEARCH is only a bit larger than TEMPLATE
+then many correlations will abort because they will be prohibited from
+searching in promising directions. 
+
+If only one value is given, a square <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#search">search</A> area is used.  If two values are
+given, the first is the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#search">search</A> height (line direction) and the second is
+the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#search">search</A> width (sample direction).  Rectangular search areas that are
+wider than they are tall should be useful for lander images.
+
+Note that <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#search">SEARCH</A> is not used for seed points, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#amax">AMAX</A>(2) is.  However, the
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#template">TEMPLATE</A> parameter *is* used for seed points.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="quality"><H3>QUALITY</H3></A><pre>
+Minimum acceptable correlation <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#quality">quality</A>.  Correlations with qualities below
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#quality">QUALITY</A> will be rejected. Qualities range from 0 (poor) to 1 (excellent).
+Defaults to 0.6  
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="tptlimit"><H3>TPTLIMIT</H3></A><pre>
+Limit number of tiepoints to the first <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#tptlimit">TPTLIMIT</A> values.  Defaults to -1 which 
+indicates that all points are to be acquired.  This limits the growth of
+the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#search">search</A> window around the seed point.  However, the gore-filling pass is
+not constrained by <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#tptlimit">TPTLIMIT</A>.
+
+If there are multiple seed points, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#tptlimit">TPTLIMIT</A> represents an aggregate of all
+correlated points, not ones derived from each seed point.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="amax"><H3>AMAX</H3></A><pre>
+Specifies the maximum <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#template">template</A> and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#search">search</A> areas.  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#amax">AMAX</A>(1) is not very useful,
+but <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#amax">AMAX</A>(2) is used for seed point correlations as the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#search">search</A> area (which is
+always square).  An error is generated if <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#template">TEMPLATE</A> or <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#search">SEARCH</A> exceed the
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#amax">AMAX</A> limits.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mode"><H3>MODE</H3></A><pre>
+Specifies which <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#mode">mode</A> of the gruen correlator to use.
+
+All correlations are performed using the gruen correlation routine.  See
+the gruen documentation for details of the algorithm.  Seed points are
+always correlated using <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#mode">mode</A> 3 (linear followed by amoeba) to handle large
+offsets.  The rest of the points may be correlated using any gruen <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#mode">mode</A>
+via the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#mode">MODE</A> parameter:
+
+linear:            gruen <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#mode">mode</A> 0
+annealing:         gruen <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#mode">mode</A> 1
+amoeba:            gruen <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#mode">mode</A> 2
+linear_amoeba:     gruen <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#mode">mode</A> 3
+annealing_amoeba:  gruen <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#mode">mode</A> 4
+amoeba2:           gruen <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#mode">mode</A> 5
+linear_amoeba2:    gruen <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#mode">mode</A> 6
+
+Of the above, only amoeba and amoeba2 (modes 2 and 5) are recommended.  The
+others are provided only for experimentation, and may significantly increase
+the execution time of the program.  The annealing modes are not fully
+implemented in the code at this time, but it would be trivial to do so if
+desired.
+
+The amoeba <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#mode">mode</A> uses a full 6 degree of freedom <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#search">search</A> from the starting point
+(derived from the best neighbor).  The starting point must be within 2 pixels.
+The amoeba2 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#mode">mode</A> uses only 2 degrees of freedom (x/y offsets only) so it will
+be faster, at the possible expense of accuracy.  The starting point must also
+be within 2 pixels.  amoeba2 is not recommended for images that are not derived
+from a stereo camera, e.g. using different instruments or involving motion
+between the two frames.  The other modes generally do not have a 2 pixels
+starting point limitation, so they might be useful for scenes with wildly
+varying disparity values.  However, they are so slow that it will usually be
+better to supply multiple seed points in each area using MARSTIE.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_trials"><H3>MAX_TRIALS</H3></A><pre>
+As described under METHOD, the program starts with a seed point, expands as
+much as possible from there, and then fills in gores.  If not enough tiepoints
+have been gathered, it then repeats the entire process with a different
+(random) seed.  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#max_trials">MAX_TRIALS</A> specifies the maximum number of seed points (and
+thus iterations) that can be performed by each CPU.
+
+Note that this parameter also applies to the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#second_pass">SECOND_PASS</A> done by the master
+processor.
+
+Default: 5
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="fill_fraction"><H3>FILL_FRACTION</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#fill_fraction">FILL_FRACTION</A> specifies how much of the image should be filled up with
+tiepoints.  Each CPU will continue to pick new seed points and re-do the
+correlation until either <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#fill_fraction">FILL_FRACTION</A> is satisfied or <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#max_trials">MAX_TRIALS</A> is
+exhausted.
+
+Note that this parameter also applies to the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#second_pass">SECOND_PASS</A> done by the master
+processor.
+
+Default: .9
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="second_pass"><H3>SECOND_PASS</H3></A><pre>
+After the parallel nodes have done their work, the results are collected
+on the master node.  Sometimes there may be gaps between the tiles processed
+by individual nodes (especially if <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#segment_border">SEGMENT_BORDER</A> is used).  Activating
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#second_pass">SECOND_PASS</A> will cause the entire correlation algorithm to be run again on
+the full image, which will tend to fill in gaps between the tiles.
+
+Defaults to off.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="segment_border"><H3>SEGMENT_BORDER</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#segment_border">SEGMENT_BORDER</A> specifies the number of pixels that should be omitted from
+consideration along the border of each node's tile.  A non-zero number here
+will result in gaps between tiles, in which case the use of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#second_pass">SECOND_PASS</A> is
+recommended.  Note that this affects the first, or reference, image only;
+correlation matches can go anywhere in the second image.  This parameter
+is rarely needed.
+
+Default: 0
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="outside_border"><H3>OUTSIDE_BORDER</H3></A><pre>
+Specifies the number of pixels that are omitted around the outside edges
+of the (first, or reference) image.  There is little point in attempting to
+compute pixels which won't correlate because they're closer to the edge of
+the image than the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#template">template</A> window size.  This parameter can be used to trim
+those <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#out">out</A>, resulting in some execution speedup.  Note that this affects the
+first, or reference, image only; correlation matches can go anywhere in the
+second image.
+
+Default: 5
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rand_seed"><H3>RAND_SEED</H3></A><pre>
+Seed points are derived using a random number generator (rand()).  In
+order to generate repeatable results, the seed for the random number
+generator may be provided via <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#rand_seed">RAND_SEED</A>.  If the parameter is not given,
+the seed is not set, and defaults to whatever the system sets.
+
+If the parameter is given, srand() is called to set the seed.  If the
+value is 0, time() is called to get a seed (this is the best "true" random
+value).  Any other value will set the seed to that value.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="navtable"><H3>NAVTABLE</H3></A><pre>
+Corrected navigation filename.
+If marsnav was run on the input images it created a table of corrected
+pointing parameters. If you refer to this table using <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#navtable">NAVTABLE</A> it
+will override the pointing parameters (e.g. azimuth and elevation) in the
+picture labels, giving you more accurate pointing.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="normal"><H3>NORMAL</H3></A><pre>
+The local mars <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surface">surface</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#normal">normal</A> vector coordinate system specified by <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surf_coord">SURF_COORD</A> 
+parameter (defaults to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surface">surface</A> fixed).
+For most pan/tilt cameras, if the lander is not tilted this vector
+would be: <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#normal">normal</A>=(0,0,-1).  ie: x_component=0, y_component=0, z_component=-1.
+This need not be a unit vector.  This vector is used to define the
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surface">surface</A> plane to which image points are projected in order to minimize
+parallax.
+For SPHERE1/2 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surface">surface</A> models, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#normal">normal</A>'s first parameter is used to
+denote sphere's radius.  Thus to describe sphere of radius R, user
+would specify <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#normal">normal</A>=(R, 0, 0).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ground"><H3>GROUND</H3></A><pre>
+Any point on the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surface">surface</A>, in coordinate system specified by <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surf_coord">SURF_COORD</A> parameter
+(defaults to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surface">surface</A> fixed).  This defines where the tilted plane is in space.  
+Although any point may be used, normally the point just "under" the origin is selected.
+Defaults:
+Mars Pathfinder:  (0.0, 0.0, 0.0)       (lander zero point is on the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#ground">ground</A>)
+Mars 98 Lander:   (0.0, 0.0, 1.64)      (lander zero point is on top of deck)
+MER           :   (0.0, 0.0, 0.294)
+For MER images taken on top of the lander, the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#ground">ground</A> is roughly at (0.0, 0.0, 0.7)
+For SPHERE1/2 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surface">surface</A> models, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#ground">GROUND</A> parameter is used to denote sphere's
+center.  
+    
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="surf_coord"><H3>SURF_COORD</H3></A><pre>
+The coordinate system that <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surface">surface</A> parameters like <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#ground">GROUND</A> and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#normal">NORMAL</A> are defined in.
+For valid values refer to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#coord">COORD</A> parameter description.  The interpretation of the 
+values is dependent on the mission. Defaults to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surface">surface</A> fixed coordinate system.
+Note that no validation is done for input strings because <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#coord">COORD</A> is using the same
+values.  So user needs to be extra careful in specifying <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surf_coord">SURF_COORD</A> value.  For 
+example <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#coord">COORD</A>=local would be correctly interpreted to mean LOCAL_LEVEL because of
+validation process.  On the other hand specifying <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surf_coord">SURF_COORD</A>=local would lead
+to underlying code treating the input value as invalid and reverting to default
+which is FIXED frame.  So the values for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surf_coord">SURF_COORD</A> should be spelled exactly as
+found in the list of valid values for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#coord">COORD</A> parameter.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="surface"><H3>SURFACE</H3></A><pre>
+The type of mars <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surface">surface</A> to use. The surface is used to intercept view rays
+emanating from the cameras in order to model <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#out">out</A> parallax between the
+stereo cameras. The two options are <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surface">surface</A>=INFINITY which means no surface
+is used or <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surface">surface</A>=PLANE (the default case). If surface=PLANE then the plane
+is defined by the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#normal">NORMAL</A> and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#ground">GROUND</A> parameters. For the cases when PLANE
+doesn't match local topography sufficiently well, here are two sphere <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surface">surface</A>
+models: <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surface">surface</A>=SPHERE1 and surface=SPHERE2.  SPHERE1 is useful to model
+convex surfaces like hills, it returns closest(first) ray-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surface">surface</A> intersection
+point.  SPHERE2 is useful to model concave surfaces, like crater when the
+camera point is outside looking in, it returns farthest(second) ray-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surface">surface</A>
+intersection point.  For the case when camera is inside the sphere <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surface">surface</A>,
+like rover sitting in the crater, there is only a single intersection point
+and SPHERE1 and SPHERE2 behave exactly the same.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="config_path"><H3>CONFIG_PATH</H3></A><pre>
+A colon-separated list of directories in which to look for configuration
+and calibration files.  Environment variables are allowed in the list
+(and may themselves contain colon-separated lists).  The directories are
+searched in order for each config/cal file when it is loaded.  This allows
+multiple projects to be supported simultaneously, and allows the user to
+override any given config/cal file.  Note that the directory structure below
+the directories specified in this path must match what the project expects.
+For example, Mars 98 expects flat fields to be in a subdirectory named
+"flat_fields" while Mars Pathfinder expects them to be directly in the
+directory specified by the path (i.e. no intermediate subdirectories).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="match_method"><H3>MATCH_METHOD</H3></A><pre>
+Specifies a method for pointing corrections.
+
+Loose method matchs with pointing parameters of the image.
+Tight method matchs with unique id of the image.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="match_tol"><H3>MATCH_TOL</H3></A><pre>
+Tolerance value for matching pointing parameters in the pointing corrections file.
+Used if <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#match_method">MATCH_METHOD</A>=LOOSE
+Default value is pretty arbitrary, though seems to work well so far....
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="point_method"><H3>POINT_METHOD</H3></A><pre>
+Specifies a mission-specific pointing method to use.  Normally this
+parameter is not used, in which case the "default" pointing methods
+are used.  Some missions may have special, or alternate, pointing
+methods available, which are indicated by this string (for example,
+backlash models, using arm joint angles instead of x/y/z/az/el, etc).
+A substring <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#search">search</A> is used, so multiple methods (where that makes sense)
+can be specified by separating the keywords with commas.
+
+Note that nav files created using one pointing method will most likely
+not be compatible with a program run using a different pointing method.
+
+The methods available vary per mission, but some methods available at
+the time of this writing are:
+
+BACKLASH : Mars 98 SSI only.  Selects a backlash pointing model,
+which adjusts the telemetered azimuth and elevation values based on
+knowledge of the camera's mechanical backlash and the direction the
+motor was travelling when the image was taken.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nosite"><H3>NOSITE</H3></A><pre>
+Disables all label-derived parameters to the Site mechanism which underlies
+coordinate systems.  This forces all sites to be identical, with all rotations
+and offsets set the same.  In the case of MPF or Mars 98, this disables
+the lander quaternion and offset (sets them to identity and 0, respectively).
+This option should not be used with images taken from different vantage
+points (e.g. the spacecraft moved, or mixing a lander and a rover) or
+invalid results will be obtained.  The use of this option invalidates the
+Fixed coordinate frame; any values reported in the Fixed frame will not
+correctly reflect the orientation of the lander/rover.
+
+Obviously, this option should be rarely used; it is intended for when the
+image labels defining the site are invalid or inconsistent.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="data_set_name"><H3>DATA_SET_NAME</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#data_set_name">DATA_SET_NAME</A> typically identifies the instrument that acquired the
+data, the target of that instrument, and the processing level of the data.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#data_set_name">DATA_SET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="data_set_id"><H3>DATA_SET_ID</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#data_set_id">DATA_SET_ID</A> value for a given data set or product is constructed
+according to flight project naming conventions.  In most cases the
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#data_set_id">DATA_SET_ID</A> is an abbreviation of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#data_set_name">DATA_SET_NAME</A>.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#data_set_id">DATA_SET_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="release_id"><H3>RELEASE_ID</H3></A><pre>
+When a data set is released incrementally, such as every three months during
+a mission, the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#release_id">RELEASE_ID</A> is updated each time part of the data set is released.
+For each mission(or host id if multiple spacecrafts), the first release of a data
+set should have a value of "0001".
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#release_id">RELEASE_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="product_id"><H3>PRODUCT_ID</H3></A><pre>
+Specifies a permanent, unique identifier assigned to a data product by
+its producer. Most commonly, it is the filename minus the extension.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#product_id">PRODUCT_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="producer_id"><H3>PRODUCER_ID</H3></A><pre>
+Specifies the unique identifier of an entity associated with the
+production of a data set. This value is copied to the output label,
+property IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#producer_id">PRODUCER_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="producer_inst"><H3>PRODUCER_INST</H3></A><pre>
+Specifies the identity of a university, research center, NASA center or other
+institution associated with the production of a data set.
+This value is copied to the output label, property IDENTIFICATION, keyword
+PRODUCER_INSTITUTION_NAME.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="target_name"><H3>TARGET_NAME</H3></A><pre>
+Specifies a target.  The target may be a planet, satelite, ring, region, feature,
+asteroid or comet.  This value is copied to the output label, property
+IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#target_name">TARGET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="target_type"><H3>TARGET_TYPE</H3></A><pre>
+Specifies the type of a named target. This value is copied to the output
+label, property IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#target_name">TARGET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rsf"><H3>RSF</H3></A><pre>
+Rover State File.  This is a list of filenames to load containing
+Rover State information.  These files contain position and orientation
+information for a rover (or other mobile spacecraft) at various sites.
+They are in XML format.  See the "Rover Motion Counter (RMC) Master File SIS"
+for details on these files.
+
+Rover State Files have a priority order.  The files listed first have
+the highest priority.
+
+Environment variables may be used in the list.
+
+For MER, if a directory is specified, then that directory is searched for
+RMC Master files and any found are loaded.  The directory structure and
+filename convention is covered in the RMC SIS.  The directory specified
+is the one containing "master", so if &ltdir&gt is the name specified in the
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#rsf">RSF</A> parameter, the following files will be searched for:
+
+&ltdir&gt/master/<mission>_Master.svf
+&ltdir&gt/master/<mission>_Site_<n>_Master.rvf
+
+The name of each file loaded is printed to the stdout log for reference.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="debug_rsf"><H3>DEBUG_RSF</H3></A><pre>
+If enabled, this causes the internal database of RMC locations to be
+printed <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#out">out</A> to the stdout log.  This is after the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#rsf">RSF</A> files have been
+loaded and the coordinate systems read from the input label(s).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord"><H3>COORD</H3></A><pre>
+The coordinate system to use for all input parameters and output values,
+and the mosaic itself.  The interpretation of the values is dependent on
+the mission.  Some representative missions are listed here:
+
+Fixed - The Fixed frame (default).  This is the ultimate reference frame
+    (see also <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#fixed_site">FIXED_SITE</A> for rover missions).
+Instrument - The "natural" frame for the instrument (of the first input
+    image).  MPF: Lander or Rover; M98: MVACS; MER: Rover.
+Site - A major Site frame.  For rover missions, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#coord_index">COORD_INDEX</A> specifies which
+    Site frame to use.  Non-rover missions treat this as Fixed.
+Rover - An instance of the Rover frame.  For rover missions, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#coord_index">COORD_INDEX</A>
+    specifies which instance of the rover frame to use.  Non-rover mission
+    use the spacecraft frame (e.g. Lander for M98).
+Local_Level - An instance of a Local Level frame.  This is typically
+    coincident with the Rover frame (in XYZ) but oriented toward North
+    like the Site and Fixed frames.  For MER, this is an instance of a
+    Drive index move.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord_index"><H3>COORD_INDEX</H3></A><pre>
+The index specifies which instance of a coordinate system to use.  It is
+currently applicable only to rover-based missions, but could have other
+uses.  The index is equivalent to the Rover Motion Counter (RMC) for MER
+and FIDO.
+
+For MER/FIDO, there are many Site frames.  Each is numbered with a single
+index.  For Site Frames, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#coord_index">coord_index</A> specifies which to use.  Likewise,
+there are many Local_Level and Rover frames, corresponding to values of
+the RMC.  The multiple instances of this frame are selected by <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#coord_index">COORD_INDEX</A>.
+
+Generally <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#coord_index">COORD_INDEX</A> defaults sensibly so you don't usually need to
+specify it.  It will default to the instance used by the first input.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="fixed_site"><H3>FIXED_SITE</H3></A><pre>
+Specifies which major Site is the "Fixed" Site for this run.
+
+Historically, MPF and M98 had a single "<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#surface">Surface</A> Fixed" frame which never
+moved, and which all other coordinate system frames were referenced to.
+With the advent of long-range rovers (such as MER and FIDO), that became
+insufficient.  The rover traverses far enough that errors in knowledge of
+coordinate system offset and orientation become unacceptable.
+
+For this reason, a system of major Sites was introduced.  Periodically
+during the mission, a Site frame is declared.  This then becomes the
+reference frame for all activities until the next Site is declared.
+References are kept local, and errors don't propogate across Sites.
+
+However, if images from more than one Site are combined together, the
+Site's must be placed relative to each other.  Therefore a single reference
+frame is still needed to combine different sites.
+
+The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#fixed_site">FIXED_SITE</A> parameter controls which of the major Site frames is
+the reference ("fixed") site for this program run.  This fixed frame
+can vary in different program runs, but is constant throughout one
+execution.
+
+If not specified, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#fixed_site">FIXED_SITE</A> defaults to the minimum Site number (i.e.
+lowest numbered, or earliest chronologically) used in all input images.
+Normally this default is sufficient; rarely must <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#fixed_site">FIXED_SITE</A> be specified.
+
+One or more Rover State Files must usually be specified in order to combine
+image from more than one Site.  These describe the relationship between
+sites.  See the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marscor2_level2.html#rsf">RSF</A> parameter.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="solution_id"><H3>SOLUTION_ID</H3></A><pre>
+Specifies which solution ID to use for pointng corrections.
+
+There are potentially many different definitions for the same coordinate
+system.  These are identified via a unique Solution ID.  If this parameter
+is given, only the specified solution's definition is searched for.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

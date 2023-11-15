@@ -1,0 +1,441 @@
+<HTML>
+<HEAD><title>HTML Help for POSEGRAPH</title></HEAD>
+<BODY>
+<H1>Help for POSEGRAPH</H1>
+<pre>
+
+The posegraph program performs pose graph optimization, which estimates the 
+trajectory (collection of poses) from relative pose measurements. Input relative
+poses are first computed given a list of images or an initial set of pointing parameters and saved in g2o <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#format">format</A>, then optimized, and finally the output 
+corrected camera pointing is output as an XML file. The inputs and outputs are 
+very similar to those of marsnav2 bundle adjustment. The goal of this is that 
+the two programs can be used interchangeably for parameter optimization.
+
+Typically, pairs of frames with very short baselines tend to have very
+good feature tracking but the resulting XYZ points can have a large uncertainty.
+Inaccurate XYZ points can drive bundle adjustment towards a local minimum, and 
+fail in correctly optimizing the input camera pointings. On the other hand, very
+large baselines tend to have poorer feature tracking due to perspective 
+distortions and lighting changes, but tend to be better suited for triangulation
+of XYZ points. Having an alternative to bundle adjustment for cases where it 
+does not produce good results is important, since it optimizes parameters in a
+fundamentally different way. 
+ 
+
+PURPOSE:
+
+The general idea of graph optimization is to express the pose estimation problem 
+in structure-from-motion and SLAM in terms of a graph. Such a graph contains 
+both nodes (vertices) and constraints (edges). In this case, a pose is denoted 
+as a node, while observations between nodes, in this case relative orientation between cameras, are denoted as edges. The set of overlapping images are related 
+to each other by tiepoints (input). 
+
+The parameters and overall usage of POSEGRAPH is related to the MARSNAV2 and
+also KEYFRAME_SELECTION programs, and is expected to used in conjunction with 
+these. The overall goal of keyframe selection is to provide a set of frames 
+to marsnav2 which provide better results than the original list. 
+
+POSEGRAPH supports any mission, instrument, and camera model supported 
+by the Planetary Image Geometry (PIG) software suite.
+
+
+EXECUTION:
+
+posegraph <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#inp">inp</A>=ascii_listoffiles <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#out">out</A>=updated_pointing.nav out_g20=relposes.g2o 		       <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#in_tpt">in_tpt</A>=images.tpt
+
+where ascii_listoffiles is a text file of image names and locations, one per 
+line, containing the list of filenames to select keyframes from.
+
+An input tiepoint list must be provided.
+
+Note: there are two tiepoint file formats; "old" is the text-based list,
+while "xml" is an XML-based <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#format">format</A>.  The format is auto-detected on read.
+Over time "old" should be phased <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#out">out</A>. Output tiepoint file (see OUT_TPT)
+is always in the new XML <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#format">format</A>. This can be converted back to the old 
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#format">format</A> if necessary using marstie.
+
+USAGE:
+It is important that all images be connected to at least one other via 
+tiepoints, and also strongly recommended that images be connected by 
+"tracks". A track is an extension of a traditional tiepoint. A tiepoint is an association of 2 observations from 2 images, a track is an association of N observations from N images. A tiepoint is therefore a 2-elements track. 
+All the observations of a given track "look" at the same ground location. 
+A track is therefore associated to one XYZ ground coordinates. 
+
+While posegraph does not currently deal with tracks directly, just tiepoints 
+between pairwise images, conceptually having long tracks spanning multiple 
+images manifests as a greater number of edges in the pose graph (more 
+constraints). The greater the number of constraints, the more likely the 
+optimization is to converge to an optimal solution, and not drift into local
+minima, much like traditional bundle adjustment, and the effect of individual 
+outliers is less likely to affect the outcome.  
+
+
+METHOD:
+
+Pose graph optimization problem is one example of a "simultaneous localization
+and mapping" (SLAM) problem. 
+
+Assume a rover has a state where a 3D vector represents the position and the orientation is represented as an Eigen quaternion, similarly to the pointings
+available from telemetry readings. The measurement of the 
+relative transform between the state at two timestamps is also assumed known or
+can be estimated from the epipolar geometry (fundamental and essential matrices)
+between pairs of views. Then, the residual implemented in the Ceres cost 
+function computes the error between the measurement and the predicted 
+measurement. Finally, the cost function needs to weight the residual by the uncertainty of the measurement. Hence, we pre-multiply the residual by the 
+inverse square root of the covariance matrix for the measurement.
+
+Eigen‘s geometry module is used with Ceres’ automatic differentiation 
+functionality. To represent the orientation, Eigen‘s quaternion uses the 
+Hamiltonian convention but has different element ordering as compared with 
+Ceres’ rotation representation. Specifically they differ by whether the scalar component q_w is first or last; the element order for Ceres‘s quaternion is 
+[q_w, q_x, q_y, q_z] where as Eigen’s quaternion is [q_x, q_y, q_z, q_w].
+ 
+This is the general set of steps:
+ 
+1) The tiepoint list is analyzed and a connectivity matrix is created such that
+every (i, j) entry provides the number of tiepoints for that specific pair.
+
+2) Given the above connectivity matrix and the tiepoints between frames,  fundamental matrices 'F' and essential matrices 'E' are computed between all available pairs if <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#use_essential">USE_ESSENTIAL</A> is set; otherwise relative poses are computed directly between telemetry values for pairs of cameras and noise is added to 
+avoid getting stuck in the current solution. 
+
+The condition number of the data matrix for the fundamental matrix solve tends 
+to be very high for short baselines, which is undesirable, so this is also taken into account.
+
+Note that steps (3) and (4) below only apply if <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#use_essential">USE_ESSENTIAL</A> is set.
+
+3) In case of "good" fundamental matrices, the corresponding essential matrix is
+computed from:
+
+	E = K^T*F*K
+
+where K is the 3x3 intrinsic parameter (calibration) matrix for the pinhole
+camera model. The K matrix has the following form, where fx and fy are the focal
+lenghts in the horizontal and vertical directions respectively, and similarly
+for the principal point (px, py):
+
+	K = [fx 0 px]
+		[0 fy py]
+		[0  0  1]
+
+It must be noted that many of the images used within VICAR are acquired by 
+fisheye lenses, where the mathematics for the fundamental matrix fall apart, as 
+the standard epipolar geometry between pairs of views is defined for pinhole cameras. However, the approximation is for the most part correct if we focus on tiepoints obtained near the centers of the images. Therefore, the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#edge_dist">EDGE_DIST</A> parameter is used to "crop <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#out">out</A>" tiepoints that lie near the edges of images, and 
+the ones remaining are used in the computation of F and the epipolar geometry.   
+ 
+4) The Essential matrix for each pair is decomposed into a relative orientation 
+'R' and a relative translation 't' via its Singular Value Decomposition (SVD). A
+total of four valid answers are obtained, spanning R, -R, t, and -t. A 
+"cheirality" test is performed to figure <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#out">out</A> which option yields XYZ points in 
+front of the cameras. Once the correct (R, t) pair is obtained, the rotation R
+is converted to a Hamiltonian quaternion 'q', with coordinates [x, y, z, w]. The
+result is compared with the relative pose obtained from telemetry readings, and
+if it has very large errors, it is not taken into account as an edge in the 
+graph. 
+
+5) The quaternion, translation, and information matrix per pair (more on this 
+later) are placed on each line of the final g2o file. Pairwise relationships
+make up the nodes of the pose graph, while the vertices are the absolute 
+quaternion 'Q' and position 'p' of each camera, as determined from the pointing parameters. 
+
+Note that both a "poses_original.txt" and "poses_optimized.g2o" file are saved 
+in the current directory, as intermediate files, if the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#before_after">BEFORE_AFTER</A> flag is 
+set.
+
+6) Once the updated pointing is obtained, it is saved to an XML file, similarly 
+to marsnav2.
+
+NOTES:
+
+Study the output log file, since it provides valuable information about
+the process, such as tiepoints connectivity, pairwise keyframe scores, 
+etc. 
+
+Any tiepoints containing an image listed in the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#ignore">IGNORE</A> list will be removed from consideration.  This allows you to concentrate on certain images without being influenced by others. IGNORE accepts ranges of images.
+
+A note on the number of pointing parameters: posegraph EXPECTS seven pointing parameters, and won’t work if there is any other number since then a g2o file
+cannot be created unless there is a relative quaternion and 3D position 
+difference vector between two images. 
+
+A note on computing the information matrix: this matrix must be provided per 
+pairwise constraint, and is the inverse of the covariance matrix for the 
+relative pose measurement. Since there is no straightforward way to compute said
+covariance currently, this matrix is set to identity. 
+
+
+PARALLEL EXECUTION
+
+Part of this program has been parallelized using Open MP (OMP), which is built 
+into the g++ compiler.
+
+By default the number of threads used equals the number of cores on the machine
+where the program is being run. Parallel processing can be disabled via the 
+-OMP_OFF keyword.  The number of threads can be controlled by setting the 
+OMP_NUM_THREADS environment variable before running the program.  There are 
+numerous other OMP variables that can be set; see the OMP documentation.  
+However, the number of threads is the only one that is likely to be useful in 
+most cases.
+
+
+TIEPOINT TYPES
+
+Not all formats are supported in posegraph. Only the Traditional (0), 
+fiducial (1), Z surface (8), Dynamic (9), and Miss (10) formats are currently 
+supported. Other types may be added later on. 
+
+IMPORTANT: Note that posegraph is only interested in the pixel 
+association, i.e., left line/sample and right line/sample. It does not use 
+other information (projected line/sample, z, for instance). In essence, 
+all tiepoints are seen as traditional tiepoints by posegraph. Because 
+of the nature of fundamental and homography matrix estimation, 
+posegraph cannot (currently) use FIDUCIAL tiepoints, though it can read 
+them in. The following specifies formats for each type of input tiepoint (xml). 
+
+0) Traditional
+
+    &lttie type="0" left_key="1" right_key="2"&gt
+      &ltleft line="53.43125" samp="356.2353"/&gt
+      &ltprojected line="634.3415" samp="43.43512"/&gt
+      &ltright line="634.4556" samp="44.43252"/&gt
+      &ltflags quality="0.85635" interactive="0"/&gt
+    &lt/tie&gt
+
+1) Fiducial
+
+    &lttie type="1" left_key="1"&gt
+      &ltleft line="326.32523" samp="21.43516"/&gt
+      &ltxyz x="0.43156" y="1.3455" z="-0.65425"/&gt
+      &ltflags quality="0.764626" interactive="1"/&gt
+    &lt/tie&gt
+
+8) Z Surface
+
+    &lttie type="8" left_key="1" right_key="2"&gt
+      &ltleft line="53.43125" samp="356.2353"/&gt
+      &ltprojected line="634.3415" samp="43.43512"/&gt
+      &ltright line="634.4556" samp="44.43252"/&gt
+      &ltz z="-0.387"/&gt
+      &ltflags quality="0.85635" interactive="0"/&gt
+    &lt/tie&gt
+
+
+9) Dynamic XYZ
+
+    &lttie type="9" left_key="1" right_key="2"&gt
+      &ltleft line="53.43125" samp="356.2353"/&gt
+      &ltprojected line="634.3415" samp="43.43512"/&gt
+      &ltright line="634.4556" samp="44.43252"/&gt
+      &ltflags quality="0.85635" interactive="0"/&gt
+    &lt/tie&gt
+
+10) Miss Distance
+
+    &lttie type="10" left_key="1" right_key="2"&gt
+      &ltleft line="53.43125" samp="356.2353"/&gt
+      &ltprojected line="634.3415" samp="43.43512"/&gt
+      &ltright line="634.4556" samp="44.43252"/&gt
+      &ltflags quality="0.85635" interactive="0"/&gt
+    &lt/tie&gt
+
+
+G2O <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#format">FORMAT</A>
+
+The g2o <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#format">format</A> is as follows:
+VERTEX_SE3:QUAT i x y z q_x q_y q_z q_w 
+EDGE_SE3:QUAT i j x y z q_x q_y q_z q_w info(x,y,z,phi_x,phi_y,phi_z)
+
+where 'info' is the information matrix that represents the confidence in 
+the measurement and it is the inverse of the covariance matrix. Hence, 
+it is symmetric and positive semi-definite. We typically only store the 
+upper-triangular block of the matrix in row-major order.
+
+The following is a portion of an example g2o file, where vertices and 
+edges can be distinguished:
+
+VERTEX_SE3:QUAT 1653 6.899 -3.660 -0.407 -0.0047 -0.0008 0.9995 0.0307 
+VERTEX_SE3:QUAT 1654 3.037 -2.465 -0.424 0.0074 -0.0044 0.9594 0.2819 
+VERTEX_SE3:QUAT 1655 0.241 0.770 -0.368 0.0021 0.0031 0.8534 0.5213 
+VERTEX_SE3:QUAT 1656 -0.926 4.586 -0.371 -0.0015 0.0010 0.7659 0.6429 
+VERTEX_SE3:QUAT 1657 -1.162 8.683 -0.387 0.0016 0.0031 0.7043 0.7099 
+VERTEX_SE3:QUAT 1658 -0.888 12.879 -0.360 0.0011 0.0069 0.6858 0.7278 
+VERTEX_SE3:QUAT 1659 -0.574 17.110 -0.377 0.0054 0.0107 0.6818 0.7314 
+VERTEX_SE3:QUAT 1660 -0.094 21.306 -0.408 0.0075 0.0146 0.7126 0.7014 
+EDGE_SE3:QUAT 0 1 4.154 -0.0665 0.0003 -0.0108 0.0087 -0.0019 0.9999
+1 0 0 0 0 0 1 0 0 0 0 1 0 0 0 8 0 0 8 0 8 
+EDGE_SE3:QUAT 1 2 4.1597 -0.0912 0.0567 0.0027 -0.0008 0.0036 0.1000
+1 0 0 0 0 0 1 0 0 0 0 1 0 0 0 18 0 0 18 0 18
+
+
+HISTORY:
+  2022-10-07 Mauricio Hess-Flores - Initial posegraph
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Mauricio Hess-Flores</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#inp"><H3>INP</H3></A>
+Input image(s) or
+file list.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#out"><H3>OUT</H3></A>
+Output nav file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#out_g2o"><H3>OUT_G2O</H3></A>
+Output g2o file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#in_tpt"><H3>IN_TPT</H3></A>
+Input tiepoint file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Input navigation table.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#format"><H3>FORMAT</H3></A>
+Output <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#format">format</A> of nav file.
+if <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#format">format</A>=xml, 
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#out_solution_id">OUT_SOLUTION_ID</A> is required.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#out_solution_id"><H3>OUT_SOLUTION_ID</H3></A>
+Solution ID for OUTPUT
+nav file (required if
+XML <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#format">format</A>).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID for INPUT
+nav file, if needed.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#solver"><H3>SOLVER</H3></A>
+Which <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#solver">solver</A> to use 
+during the optimization.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#summary"><H3>SUMMARY</H3></A>
+Which verbosity of 
+optimization report to
+display in stdout
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#cm_ori"><H3>CM_ORI</H3></A>
+Save original camera model
+to nav file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#refimage"><H3>REFIMAGE</H3></A>
+Reference image override.
+Can be a list of images.
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#refimage">refimage</A>=-1 means no reference
+image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#until"><H3>UNTIL</H3></A>
+All images up to
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#refimage">REFIMAGE</A>(1) are reference
+images.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#ignore"><H3>IGNORE</H3></A>
+List of images to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#ignore">ignore</A>
+in the tiepoint list.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#ignore_intra"><H3>IGNORE_INTRA</H3></A>
+Causes intra-set overlaps
+(within the non-reference
+set) to be ignored.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#start_key"><H3>START_KEY</H3></A>
+Starting key number for
+tiepoint file (XML <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#format">format</A>
+only).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#omp_on"><H3>OMP_ON</H3></A>
+Turns on or off parallel
+processing (multiple threads,
+single machine).  Default: on
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use.
+Ignored by posegraph,
+for now.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+Ignored by posegraph,
+for now.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#rsf">RSF</A>
+parameter.
+Ignored by posegraph,
+for now.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+Ignored by posegraph,
+for now.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#coord">COORD</A>/mission combos.
+Ignored by posegraph,
+for now.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+Ignored by posegraph,
+for now.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#save_connect"><H3>SAVE_CONNECT</H3></A>
+Save or not to .txt file
+the images connectivity matrix.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#before_after"><H3>BEFORE_AFTER</H3></A>
+Save or not to .txt files
+the pointings before and 
+after applying pose graph 
+optimization.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#edge_dist"><H3>EDGE_DIST</H3></A>
+Percentage from all edges of 
+the image to discard matches
+from, to account for fisheye
+adverse effects on homography
+and fundamental matrix 
+computation. A value of 0.05
+corresponds to 5%, for 
+example.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#use_essential"><H3>USE_ESSENTIAL</H3></A>
+Use or not the essential
+matrix decomposition to 
+compute relative poses.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#max_rand_noise"><H3>MAX_RAND_NOISE</H3></A>
+Percentage of random noise
+to add to relative telemetry
+values. A value of 0.01 
+corresponds to 1%, for 
+example.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#max_quat_error"><H3>MAX_QUAT_ERROR</H3></A>
+Maximum allowed error in 
+the quaternion components
+of the essential matrix 
+decomposition versus 
+relative telemetry 
+readings.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph_level2.html#max_pos_error"><H3>MAX_POS_ERROR</H3></A>
+Maximum allowed error in 
+the distance of the 
+essential matrix 
+decomposition versus 
+relative telemetry 
+readings.
+ 
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/posegraph.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

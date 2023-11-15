@@ -1,0 +1,761 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for IBIS</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibis.html">IBIS</A></H1>
+<A NAME="gr1dim"><H3>GR1DIM</H3></A>
+<pre>
+GRAPHICS-1 Files do not contain any NC (dimension) information. This
+parameter allows the specification of the GRAPHICS-1 dimension of the
+file.
+
+.SUBCMD GEN
+IBIS-GEN: Creates a new IBIS-2, IBIS-1 or GRAPHICS file.
+
+CALLING SEQUENCE:
+
+  IBIS-GEN OUT=OUT.IBIS PARAMS
+OPERATION:
+
+  IBIS-GEN will create an IBIS interface or graphics file with
+NC columns and NR rows. If this is an IBIS-2 format file (default),
+then the format of each column may be specified with the FORMAT
+parameter. 
+
+  IBIS-2 files may be organized by contiguous rows or columns; this
+may be specified using the 'ROW or 'COLUMN keyword value.
+
+  To create an old IBIS-1 format tabular file, use the 'IBIS-1 keyword;
+to make the file a GRAPHICS-1 format file use both the 'IBIS-1 keyword
+and the 'ROW organization keyword. Note however, that the old IBIS-1
+format is not a very robust format for platform-independent operation,
+and so its use in future applications is discouraged.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+Output file name
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="org"><H3>ORG</H3></A><pre>
+Org. by ROW or COLUMN?
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="format"><H3>FORMAT</H3></A><pre>
+By default all columns have the format specified by the DEFFMT
+parameter; To override this formatting on a column-by-column
+basis use the FORMAT parameter. If the FMTCOLS parameter is
+not specified this will result in the formats of columns
+(1,2,3...) being overridden.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="version"><H3>VERSION</H3></A><pre>
+IBIS-1 or IBIS-2?
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nr"><H3>NR</H3></A><pre>
+Number of Rows
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nc"><H3>NC</H3></A><pre>
+Number of Columns
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="type"><H3>TYPE</H3></A><pre>
+IBIS-2 Subtype (e.g. LUT, STATISTICS, etc).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="fmtcols"><H3>FMTCOLS</H3></A><pre>
+By default all columns have the format specified by the DEFFMT
+parameter; To override this formatting on a column-by-column
+basis use the FORMAT parameter. If the FMTCOLS parameter is
+specified, the formats listed in FORMAT(1),FORMAT(2)... will
+be assigned to columns FMTCOLS(1), FMTCOLS(2), and so on.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="deffmt"><H3>DEFFMT</H3></A><pre>
+Default Column Format. This is the format all columns in the
+file will be assigned, unless overridden by the FORMAT parameter.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="data"><H3>DATA</H3></A><pre>
+Numerical Data for cols
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="datacols"><H3>DATACOLS</H3></A><pre>
+Columns to put data in
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="string"><H3>STRING</H3></A><pre>
+String Data for cols
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="strcols"><H3>STRCOLS</H3></A><pre>
+Columns to put strings in
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="indexcol"><H3>INDEXCOL</H3></A><pre>
+Place Index #'s in Column
+
+.SUBCMD LIST
+IBIS-LIST lists out the values of an IBIS tabular or GRAPHICS file
+
+CALLING SEQUENCE:
+
+  IBIS-LIST INP=INP.IBIS PARAMS
+OPERATION:
+
+  IBIS-LIST will list the column values of an IBIS tabular or
+GRAPHICS file. For IBIS-1 format graphics files the NC (dimension)
+of the file is not stored in the file, but must be specified using
+the GR1DIM parameter.  A window of the IBIS file may be displayed
+using the SR,SC,NR,NC parameters (for Starting Row/column, Number
+of Rows/columns).  The COLS parameter allows the specification of
+only specific columns.
+
+  IBIS-2 files, in addition to having column values, also have
+column group-names and units of measurement. These may be listed
+above each column by specifying the 'GROUP and 'UNIT keywords.
+The format of each column may be displayed using the 'FORMAT keyword.
+
+FORMATTING
+
+  There are several ways of adjusting the manner in which the
+IBIS column data is diplayed. The 'NOHEAD key removes the information
+header at the beginning, while the 'NOCOL key causes the column
+header to be omitted. In its place the user may place their own
+header using the PREAMBLE string parameter, which permits up to
+5 lines of text to be displayed before the file is printed.
+The overall column-size in characters may be modified by the CSIZE
+parameter. If a single value is specified this will apply to all
+of the columns, or each column-size may be specified separately. 
+The SCREEN parameter specifies the width of a display-line, which
+may be changed from 80 to 132 if a longer format is desired.
+
+  By default IBIS-LIST displays the column-values using specific
+floating-point and integer options, and right-justifies everything.
+These formatting features may be overridden with the CFORMAT paramter,
+which takes as input a "C" style data formatting string.
+FORMATTING
+
+For example, the command
+
+  ibis-list temp cform="c1=%03d %-7d %6.3f '%6.6s'" 'nohead 'nocol
+
+Results in an output like this:
+
+  c1=001 0        0.000 '   one'
+  c1=002 0        0.000 '   two'
+  ...
+
+For those unfamiliar with C-formatting, each "%" refers, roughly,
+to the corresponding output value, and is followed by formatting
+parameters. For example, "%6.3f" is analogous to "F6.3" in FORTRAN.
+All other characters in the string are interpreted literally.
+Here is a guide to common formatting parameters:
+FORMATTING
+
+         C-FORMAT    FORTRAN     Interpretation
+        ----------  ----------   ------------------------
+          %7d          I7        7 decimal integer
+          %07d         I7.7      7 decimal integer,zero-padded
+          %-7d         ----      7 decimal integer,left-justified
+          %7x          Z7        7 decimal integer,in hexadecimal
+          %7o          O7        7 decimal integer,in octal
+          %7.2f        F7.2      7 floating pt, 2 decimal pts
+          %7.2e        E7.2      7 scientific notation, 2 dec. pts
+          %7.7s        A7        7 ASCII character string
+          %8.7s        A8        7 char. string, padded to 8
+          %-8.7s       ----      7 char. string, padded & l-justified.
+FORMATTING
+
+  Notice: do not try to use the CFORMAT parameter alone to coerce
+an IBIS-1 column to an ASCII or integer value. On non-vax platforms
+the values are translated to native floating point first, unless
+the A4COL or INTCOL parameters are specified. In that case, all
+columns in the A4COL list must be passed to a "%s" format and
+all INTCOL columns must be passed to a "%d","%x" or "%o" format.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="inp"><H3>INP</H3></A><pre>
+Input file
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sr"><H3>SR</H3></A><pre>
+Starting Row
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sc"><H3>SC</H3></A><pre>
+Starting Column
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nr"><H3>NR</H3></A><pre>
+Number of Rows
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nc"><H3>NC</H3></A><pre>
+Number of Columns
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="cols"><H3>COLS</H3></A><pre>
+Specific Columns to list
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="screen"><H3>SCREEN</H3></A><pre>
+Screen Size
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="space"><H3>SPACE</H3></A><pre>
+Blank line interval
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="csize"><H3>CSIZE</H3></A><pre>
+Physical column size
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="units"><H3>UNITS</H3></A><pre>
+List UNITS ?
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="groups"><H3>GROUPS</H3></A><pre>
+List GROUPS ?
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="formats"><H3>FORMATS</H3></A><pre>
+List FORMATS ?
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="header"><H3>HEADER</H3></A><pre>
+List Header Info?
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="colhead"><H3>COLHEAD</H3></A><pre>
+List Column Header?
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="intcols"><H3>INTCOLS</H3></A><pre>
+IBIS-1 Files do not contain any formatting information. This
+parameter allows the specification of which columns were written
+using VAX/VMS INTEGER*4 Columns.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="a4cols"><H3>A4COLS</H3></A><pre>
+IBIS-1 Files do not contain any formatting information. This
+parameter allows the specification of which columns were written
+using VAX/VMS CHARACTER*4 Columns.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="cformat"><H3>CFORMAT</H3></A><pre>
+C-formatting string. Overrides standard formatting.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="preamble"><H3>PREAMBLE</H3></A><pre>
+The PREAMBLE parameter allows the user to specify up to 5 lines of
+header to be displayed before any other information is put out.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="outfile"><H3>OUTFILE</H3></A><pre>
+By default the listing goes to the standard output file. This
+allows you to redirect the output to a text file (the "Beginning
+VICAR task" message will not appear in the file).
+.SUBCMD COPY
+IBIS-COPY copies the column values from one IBIS file to another.
+
+CALLING SEQUENCE:
+
+  IBIS-COPY INP=INP.IBIS OUT=OUT.IBIS PARAMS
+OPERATION:
+
+  IBIS-COPY will list the specified column values of an IBIS tabular or
+GRAPHICS file to another IBIS file, converting file formats, and file
+organization in the process. A window of the IBIS file may be copied
+using the SR,SC,NR,NC parameters (for Starting Row/column, Number
+of Rows/columns).  The COLS parameter allows the copying of only specific
+columns.
+
+  This program has the capability to copy to and from old IBIS-1 format
+tabular and GRAPHICS files, allowing for backward compatibility with old
+programs and procedures. NOTE: the NC (dimension) parameter is not stored
+in GRAPHICS-1 files, but must be explicitly supplied by the user with the
+GR1DIM parameter.
+
+  The format of the output columns is determined by the format of the
+input columns in most cases. For IBIS-1 input files, since column format
+information is not stored, the INTCOLS and A4COLS parameters may be used
+to impose a non-REAL format on a column. If the output is also IBIS-1, then
+the correct formatting is done there, as well. If the input is IBIS-2,
+and the output is IBIS-1, then you must again use the INTCOLS and A4COLS
+parameters to set up the desired column format of the output.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="inp"><H3>INP</H3></A><pre>
+Input IBIS file
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+Output IBIS file
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sr"><H3>SR</H3></A><pre>
+Starting Row
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sc"><H3>SC</H3></A><pre>
+Starting Column
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nr"><H3>NR</H3></A><pre>
+Number of Rows
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nc"><H3>NC</H3></A><pre>
+Number of Columns
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="cols"><H3>COLS</H3></A><pre>
+Specific Columns to copy
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="outcols"><H3>OUTCOLS</H3></A><pre>
+Destination Columns 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="org"><H3>ORG</H3></A><pre>
+Org. by ROW or COLUMN?
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="version"><H3>VERSION</H3></A><pre>
+IBIS-1 or IBIS-2?
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="type"><H3>TYPE</H3></A><pre>
+IBIS-2 Subtype (e.g. LUT, STATISTICS, etc).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="groups"><H3>GROUPS</H3></A><pre>
+This keyword controls whether the column groups of the new
+file are inherited from the old file. 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="units"><H3>UNITS</H3></A><pre>
+This keyword controls whether the column units of the new
+file are inherited from the old file. 
+
+.SUBCMD CATENATE
+IBIS-CATENATE catenates columns of several IBIS files into
+a new IBIS file. The concatenation may be by ROWS or COLUMNS.
+
+CALLING SEQUENCE:
+
+  IBIS-CATENATE INP=(IN1,IN2...IN10) OUT=OUT.IBIS PARAMS
+OPERATION:
+
+  IBIS-CATENATE will merge all of the rows and columns of
+  the input files into the output file. In the default
+  'BYROW mode the concatenation is by ROWS, so that successive
+  rows of each file are place below the preceding. The number
+  of columns does not change in this case. In 'BYCOLUMN mode
+  the successive columns of each file are placed to the
+  right of the columns of the preceding files. In this
+  case the number of columns is the sum of the columns
+  in each input file.
+
+OPERATION:
+
+  In 'BYCOLUMN mode the total number of columns may not exceed
+  1024, but there are no other restrictions. In 'BYROW mode the
+  number of columns is determined by the primary input, and all
+  other files are required to be compatible with the column
+  formats of the primary input; that is, numerical columns may
+  not be concatenated with ASCII columns and vis versa.
+
+  IBIS-1 files may be included in the input, but they will be
+  assumed to be REAL format. If this is not the desired effect,
+  the IBIS-1 file must be converted to IBIS-2 using IBIS-COPY
+  to establish the column formatting. All files output by
+  IBIS-CATENATE are IBIS-2 format.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="inp"><H3>INP</H3></A><pre>
+Input IBIS file
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+Output IBIS file
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="org"><H3>ORG</H3></A><pre>
+Org. by ROW or COLUMN?
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="type"><H3>TYPE</H3></A><pre>
+IBIS-2 Subtype
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="groups"><H3>GROUPS</H3></A><pre>
+Copy Column Groups?
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="units"><H3>UNITS</H3></A><pre>
+Copy Column Units?
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mode"><H3>MODE</H3></A><pre>
+Catenate by ROWS or COLUMNS?
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="version"><H3>VERSION</H3></A><pre>
+Create IBIS-1 or IBIS-2 formatted file?
+
+.SUBCMD GROUP
+IBIS-GROUP defines and installs a GROUP definition into an IBIS tabular
+or GRAPHICS file.
+
+CALLING SEQUENCE:
+
+  IBIS-GROUP INP=INP.IBIS NAME=Name TYPE=&ltUNIT,GROUP&gt COLUMNS=(C1,C2...)
+  IBIS-GROUP INP=INP.IBIS NAME=Name TYPE=&ltUNIT,GROUP&gt EXPRESSION=<Expr.>
+
+OPERATION:
+
+  IBIS-GROUP will define a named group of columns using either an explicit
+  list of columns or a group-expression using pre-existing groups, units,
+  or formats. The columns may be explictly specified using the COLUMNS
+  parameter, or implicitly defined using the currently defined groups
+  in the file (at the very least, FORMATS are always defined in each file).
+  An example of a group expression is:
+  
+  	line | group:sample - [unit:(kg*m)/sec^2]	
+
+  which means: take all columns in group "line" or "sample", but then
+  take away all columns which use "(kg*m)/sec^2" as a unit.
+
+  A group may also be deleted using the 'DELETE keyword.
+  
+  Note that 'format' types may not be created or destroyed.
+
+ 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="inp"><H3>INP</H3></A><pre>
+Input IBIS-2 file
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="type"><H3>TYPE</H3></A><pre>
+Type of Group
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="name"><H3>NAME</H3></A><pre>
+The name given to a group or a unit must begin with an alphanumeric character,
+but otherwise the characters following the first character may be ANY printable
+character except colons, up to 32 characters total. The complete list of characters
+that may be used are:
+
+  [a-z][A-Z][0-9] ~!@ # $ % ^ & * _ + - = (){}[]&lt&gt | ? ; , . " ' ` \/ 
+
+Here are some valid examples:
+
+	kg*m/sec^2   
+	2  
+	a_long_Long_LOng_LONg_LONG_name! 
+	has_[brackets]_and_{braces}(etc)!@#$%^&*}\/?=
+	A   name    with  spaces
+
+Here are some invalid examples:
+
+	%starts_with_NON_alphanumeric
+	has:colons:in:its:name
+	a_long_Long_LOng_LONg_LONG_Whoops!_TOO_long_name!
+	
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="cols"><H3>COLS</H3></A><pre>
+Columns defining group
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="expr"><H3>EXPR</H3></A><pre>
+Expression defining group
+
+  An example of a group expression is:
+
+        line | group:sample - [unit:(kg*m)/sec^2]
+
+  which means: take all columns in group "line" or "sample", but then
+  take away all columns which use "(kg*m)/sec^2" as a unit.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="action"><H3>ACTION</H3></A><pre>
+Create or Delete this group?
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="inp"><H3>INP</H3></A><pre>
+Input IBIS-2 file for installing/deleting groups.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="type"><H3>TYPE</H3></A><pre>
+Type of Group to create/delete. 
+Note that 'format' types may not be created or destroyed.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="name"><H3>NAME</H3></A><pre>
+Name of group
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="cols"><H3>COLS</H3></A><pre>
+Columns defining group
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="expr"><H3>EXPR</H3></A><pre>
+Expression defining group.
+
+The expression string EXPR consists of a simple series of relative or 
+"full-pathname" group names, separated by operators. If a given groupname
+appearing in an expression contains any characters other than alphanumeric,
+dollar$signs and under_score (and the colon for full-pathnames), then they
+must be quoted.  To quote a name you may nest it between (parentheses),
+[brackets], {curly brackets}, 'single quotes' or "double quotes". The choice
+of quotation marks is only driven by the condition that the matching end-quote
+character not occur within the name being quoted. Here are some examples of
+group names as used within an expression:
+	
+	This_name_doesnt_need_quotes
+	(This   one  has   spaces  so  it  does)
+	[This one has (parens) in its name]
+	"$%^*(){} in double quotes"
+
+The currently supported operators for group expressions are (&, |, and -)  for
+ordered intersection, concatenization, and set-differencing (A but not B)
+respectively. The ( *  and + ) characters may be used as an aliases for
+( &  and | ), respectively.
+
+The expressions are evaluated immediately, from left to right, and no
+expression-grouping is (currently) permitted. If the group name is not in
+full-pathname format, the group will be searched for in the standard order.
+
+Some examples of group-expressions:
+
+	format:BYTE & group:Image1
+
+resulting group: All BYTE format columns belonging to group named "Image1"
+
+	line | group:sample - [unit:(kg*m)/sec^2]	
+
+resulting group: take all of the columns from local group "line", and all of group 
+"sample", but then subtracting away any column which uses "(kg*m)/sec^2" as a
+unit of measurement. Note that the unit name was placed between brackets, as
+it contains the characters "*/^()".
+
+Although both upper and lower case letters may be used in a group name, recognition
+of names during searches is case-insensitive.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="action"><H3>ACTION</H3></A><pre>
+Create or Delete this group?
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

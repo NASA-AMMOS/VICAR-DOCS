@@ -1,0 +1,96 @@
+<HTML>
+<HEAD><title>HTML Help for MASTERTIR</title></HEAD>
+<BODY>
+<H1>Help for MASTERTIR</H1>
+<pre>
+PURPOSE:
+
+   MASTERTIR is a program that accepts as input MASTER TIR radiance at sensor 
+image data and outputs upwelling radiance at surface for the thermal infrared
+channels (Channels 41-50).  Also required as input are a valid MODTRAN input
+file, to define the atmospheric model, and a MASTER TIR spectral response
+file.
+
+
+OPERATION:
+
+   MASTERTIR takes as input the 10 Channels of MASTER TIR radiance at sensor
+data in units of Watts per square meter per steradian per micrometer, and a
+file containing the the MASTER TIR spectral response functions. This second
+file must be a VICAR labelled file consisting of ten lines (one for each TIR
+channel) and 800 samples (one for the spectral response at each wavelength
+from 7.00 to 14.99 micrometers, in 0.01 micrometer increments). The spectral 
+response functions must be normalized, i.e., the sum of all values on each 
+line must be 1.0.
+   The atmospheric model used is defined by a user supplied MODTRAN input
+file.  MASTERTIR uses these parameters to run MODTRAN twice; once with a
+nadir looking geometry, and once for the case of viewing at maximum deflection
+from nadir.  From these two runs, the atmospheric transmittance, path
+radiance, and downwelling sky radiance at surface are calculated for the ten
+MASTER TIR bandpasses.  The downwelling sky radiance values are placed in
+the VICAR label of the output dataset.
+   Values of transmittance and path radiance are calculated for each pixel
+location in the scene by interpolation, where it is assumed that each
+quantity varies linearly with path length.
+   The upwelling radiance at surface is then computed by the following 
+formula:
+
+        Rad(at sensor) = RAD(upwelling)*transmittance + Rad(path)
+
+It should be noted that the output quantity (upwelling radiance) of MASTERTIR
+differs from the output quantity of TIMSCAL2 (surface emitted radiance). It
+it includes both the surface emitted component plus the surface reflected
+component.
+   The output dataset consists of 10 channels of real (32 bit floating
+point) pixels, in units of Watts per square meter per steradian per
+micrometer.  These units are the same as the input units, but different than
+the units produced by this program prior to November, 2004.  The downwelling
+sky irradiance values that are placed in the VICAR label are in units of 
+milliWatts per square meter per micrometer.  To convert to radiance in units 
+consistent with the output images, one must divide by 1000.0*pi.
+
+
+WRITTEN BY:  Ron Alley         August 12, 1998
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Ron Alley</A>
+
+REVISION: 1.4 Nov 12, 2004
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mastertir_level2.html#inp"><H3>INP</H3></A>
+(1) MASTER TIR radiance at
+    sensor image
+(2) MASTER TIR spectral
+    response file
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mastertir_level2.html#out"><H3>OUT</H3></A>
+Output data set of the 10 MASTER
+TIR bands, for upwelling
+radiance at surface.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mastertir_level2.html#size"><H3>SIZE</H3></A>
+The standard  VICAR2 output size
+field.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mastertir_level2.html#sl"><H3>SL</H3></A>
+Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mastertir_level2.html#ss"><H3>SS</H3></A>
+Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mastertir_level2.html#nl"><H3>NL</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mastertir_level2.html#ns"><H3>NS</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mastertir_level2.html#modinp"><H3>MODINP</H3></A>
+Dataset name for the MODTRAN
+input file, containing the
+atmospheric data relevant to
+this image.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mastertir_level2.html#modout"><H3>MODOUT</H3></A>
+Dataset name for MODTRAN
+output report file.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mastertir_level2.html#modtab"><H3>MODTAB</H3></A>
+Dataset name for MODTRAN
+output tabular file.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mastertir.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mastertir.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

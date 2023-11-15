@@ -1,0 +1,121 @@
+<HTML>
+<HEAD><title>HTML Help for HSTRETCH</title></HEAD>
+<BODY>
+<H1>Help for HSTRETCH</H1>
+<pre>
+PURPOSE
+
+     "hstretch"  is a VICAR applications program used for  the 
+     production  of binary masks and for modifying  specific 
+     DN  values  of  images.   Operation of the  program  is 
+     similar to the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#table">table</A> stretch option of STRETCH, however 
+     the parameter structure is often simplified.  The major 
+     feature of "hstretch" is that only those DN values  which 
+     are to be modified need to be listed as parameters.
+TAE COMMAND LINE <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#format">FORMAT</A>
+
+     hstretch <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#out">OUT</A>=B <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#size">SIZE</A> PARAMS
+
+     where
+
+
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#inp">INP</A>                 is an input file.
+
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#out">OUT</A>                 is an output file.
+
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#size">SIZE</A>                is a standard VICAR size field.
+
+     PARAMS              is a standard VICAR parameter field.
+OPERATION          
+
+     A  stretch  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#table">table</A>  is  set  up  based  upon  parameters 
+     specified  via  the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#qtable">QTABLE</A> or <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#table">TABLE</A>  keyword.   All  DN 
+     values  not  specified either remain  unchanged  (<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#table">TABLE</A> 
+     option)  or are stretched to the background DN  (<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#qtable">QTABLE</A> 
+     option).
+
+<A NAME="examples">EXAMPLES</A>
+
+     hstretch <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#out">OUT</A>=B HALF <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#value">VALUE</A>=100 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#bvalue">BVALUE</A>=0
+              <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#qtable">QTABLE</A>=(32      1      2067,                       96      4        39)
+
+     In this example, a halfword dataset is input to yield a 
+     halfword <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#format">format</A> binary mask.   The primary <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#value">value</A> of the 
+     mask  will be 100 DN while the background <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#value">value</A> will be 
+     0   DN.    Only   the  values   listed   after   <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#qtable">QTABLE</A> 
+     (32,1,2067,96,4,39)  will be stretched to 100 DN.   All 
+     other DN values of the input image will be stretched to 
+     0 DN.
+
+     hstretch <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#inp">INP</A>=A INP=B
+          <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#table">TABLE</A>=(24   1    38    0    117    1     25     3    
+                 36   2    50    3     51    4     52     5)
+
+     In this example both input and output datasets are byte 
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#format">format</A>  and the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#table">table</A> transfer mode has been specified.  
+     Only the following values will be stretched,  all other 
+     will remain unchanged.
+
+            OLD DN          NEW DN
+
+               24              1
+               38              0
+              117              1
+                .              .
+                .              .
+                .              .
+               51              4
+               52              5
+
+     When using the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#table">table</A> mode all values to be changed must 
+     be specified.  Consequently,  if the primary purpose of 
+     the  stretch is to enhannce the contrast of  an  image, 
+     VICAR  program "stretch" will be easier to use,  as  only 
+     the "posts" of the stretch must be specified.  However, 
+     when  the  purpose  of  the stretch is  to  compress  a 
+     dataset such as a land cover classification, or if only 
+     a  few DN values are to be changed while others are  to 
+     be unchanged, "hstretch" may be more useful.
+
+RESTRICTIONS:
+     Both the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#qtable">QTABLE</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#table">TABLE</A> parameters 
+     may  not appear in  the  same  parameter 
+     dataset.
+
+WRITTEN BY:            A. L. Zobrist            1 May 1978
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  N. D. Ritter</A>
+REVISION:              4                       22 Jun 1994
+
+REVISION SUMMARY:
+     Made portable for UNIX  AMS (CRI)  5 Sep 1994
+     Added Test Proc         NDR       22 Jun 1994
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#inp"><H3>INP</H3></A>
+Input image
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#out"><H3>OUT</H3></A>
+Output image
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#size"><H3>SIZE</H3></A>
+Image <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#size">Size</A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#sl"><H3>SL</H3></A>
+Starting Line
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#ss"><H3>SS</H3></A>
+Starting Sample
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#nl"><H3>NL</H3></A>
+Number of Lines
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#ns"><H3>NS</H3></A>
+Number of Samples
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#value"><H3>VALUE</H3></A>
+Primary DN of binary mask
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#bvalue"><H3>BVALUE</H3></A>
+Background DN of binary mask
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#qtable"><H3>QTABLE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#table">Table</A> to be stretched to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#value">VALUE</A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#table"><H3>TABLE</H3></A>
+Conventional stretch <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch_level2.html#table">table</A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hstretch.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

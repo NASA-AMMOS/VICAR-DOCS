@@ -1,0 +1,80 @@
+<HTML>
+<HEAD><title>HTML Help for STRIPPER</title></HEAD>
+<BODY>
+<H1>Help for STRIPPER</H1>
+<pre>
+PURPOSE:
+ 
+   STRIPPER is a TAE procedure which takes an image and puts it into strips
+of STRIPLEN lines with a spacing of GAPWIDTH number of samples between the
+strips.  It was written to facilitate the formatting of long and skinny
+flight lines for playback.
+ 
+EXECUTION:
+ 
+   The following is the execution statement format for STRIPPIT:
+ 
+		STRIPPIT INP OUT PARAMS
+ 
+   where INP, OUT, and PARAMS are parameters discussed in their respective
+parameter sections. 
+OPERATION:
+ 
+   STRIPPER does the seemingly simple task of cutting and pasting long slender
+flight line images into parallel strips in order to format the images for
+playback.  It uses a slightly more complex algorithm than would seem necessary
+because of the inefficiency of non-sequential I/O (especially XVREADing) which
+would slow down the operation considerably.  Instead, a maximum size buffer is
+allocated for the output, and the reading and writing is done on a block by
+block basis, one block being the maximum number of lines by the number of
+strips necessary in the output.
+
+   The two unique parameters (other than SIZE) are STRIPLEN and GAPWIDTH.
+STRIPLEN lets the user select the number of lines of the strips, and GAPWIDTH
+sets the number of samples spacing between the image strips.  The defaults
+are set up for standard TIMS processing.
+
+   This program was written to facilitate the processing of TIMS data, which
+has come in lengths of over 22,000 lines in a single flight line.  It can just
+as well be used by anyone working with long flight lines of AIS, NS001 or other
+airborne sensors, however.
+ 
+ 
+RESTRICTIONS:
+ 
+   As it is currently designed, the output can be in no wider than 10,000
+samples, and must be byte format.
+
+<A NAME="examples">EXAMPLES:</A>
+ 
+1) STRIPPIT INP OUT
+ 
+2) STRIPPIT INP OUT STRIPLEN=2000 GAPWIDTH=20
+ 
+ 
+TIMING:
+ 
+WRITTEN BY:  R. E. Walker     16DEC85
+ 
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  same</A>
+ 
+REVISION: NEW
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stripper_level2.html#inp"><H3>INP</H3></A>
+input dataset name
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stripper_level2.html#out"><H3>OUT</H3></A>
+output dataset name
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stripper_level2.html#sl"><H3>SL</H3></A>
+first line of input to be used
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stripper_level2.html#nl"><H3>NL</H3></A>
+number of lines of input to be used
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stripper_level2.html#striplen"><H3>STRIPLEN</H3></A>
+number of lines in output image
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stripper_level2.html#gapwidth"><H3>GAPWIDTH</H3></A>
+number of pixels separating each strip
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stripper.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stripper.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

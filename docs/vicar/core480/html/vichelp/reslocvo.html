@@ -1,0 +1,154 @@
+<HTML>
+<HEAD><title>HTML Help for RESLOCVO</title></HEAD>
+<BODY>
+<H1>Help for RESLOCVO</H1>
+<pre>
+PURPOSE:
+
+"reslocvo" will locate the reseau on Viking Orbiter images.  The (line,sample)
+coordinates of each reseau mark are output as a reseau location record in a
+MARK format.  The reseau location record may be input to the program RESSAR75
+to cosmetically remove the reseau from the image.  "reslocvo" will optionally 
+generate GEOMA parameters for removing the geometric distortions.
+
+TAE COMMAND LINE FORMAT
+
+	reslocvo <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#inp">INP</A>=(IMG,NOM) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#out">OUT</A>=LOC optional parameters
+where
+	IMG is the input Viking Orbiter image,
+	NOM is an optional input reseau location record containing the
+	  nominal reseau location,
+	and LOC is the output reseau location record.
+
+OPERATION:
+
+The Viking Orbiter cameras include a reseau pattern consisting of 103 reseau
+marks embedded on the face-plate of the vidicon.  The position of these
+marks will vary from image-to-image due to time, temperature, and scene
+dependent geometric <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#camera">camera</A> distortions.
+
+The location of the reseau requires a set of nominal locations to be
+used as starting values. The nominal locations may be optionally input
+as the second input file.  If the nominals are not input in this way, they
+are retrieved from tables built into the program. 
+
+"reslocvo" will search for each reseau mark in an <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nhor">NHOR</A> x <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nver">NVER</A> area
+centered about its nominal location.  Each mark is found by using an
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nlw">NLW</A> x <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nsw">NSW</A> correlation window. As this window scans over the search area,
+the underlying area is compared with a reseau shape function
+(constant for all the marks) of the form: 
+   	f(x,y) = 255(1 - exp(-(x**2 + y**2)/2s**2)
+For a 9 x 9 window, the shape function is:
+
+	254 254 254 254 254 254 254 254 254 254
+	254 254 254 253 252 253 254 254 254 254
+	254 254 250 234 220 234 250 254 254 254
+	254 253 234 161 100 161 234 253 254 254
+	254 252 220 100   0 100 220 252 254 254
+	254 253 234 161 100 161 234 253 254 254
+	254 254 250 234 220 234 250 254 254 254
+	254 254 254 253 252 253 254 254 254 254
+	254 254 254 254 254 254 254 254 254 254
+
+Let A(i,j) represent the shape function, and B(i,j) be the area of the
+picture being compared. Let uA, uB, tA, tB be the corresponding means and
+standard deviations. The correlation function is a normalized variance of
+the form: 
+     p = (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#sigma">SIGMA</A>(Aij-uA)(Bij-uB))/(N*tA*tB)
+where N = <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nlw">NLW</A>*<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nsw">NSW</A> and the summation is performed over an NLW by NSW
+window. 
+
+Note: Marks near the boundaries of the picture are not located. Coordinates
+for these marks are calculated by interpolating over its nearest neighbors.
+
+If an output parameter file is specified via the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#geopar">GEOPAR</A> parameter, then
+GEOMA parameters are output to this file.  The GEOMA parameters can then
+be input the program GEOMA to remove the geometric distortions.
+
+<A NAME="examples">EXAMPLE</A>
+
+	reslocvo <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#out">OUT</A>=RES <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#geopar">GEOPAR</A>=GEOM.PAR
+	ressar75 (A,RES) B
+	geoma B C PARMS=GEOM.PAR
+
+"reslocvo" is used to locate the reseau in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#frame">frame</A> stored in data set A. 
+The resulting reseau locations (RES) are input to program RESSAR75 which
+removes the reseau.  GEOMA parameters are also generated (GEOM.PAR) and
+are input to program GEOMA to remove the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#camera">camera</A> distortions.
+
+RESTRICTIONS:
+
+The constants <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nlw">NLW</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nsw">NSW</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nhor">NHOR</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nver">NVER</A> must satisfy the following: 
+     1. Each must be odd;
+     2. 6(<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nsw">NSW</A>*<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nlw">NLW</A>+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nhor">NHOR</A>+NSW) + 4*NHOR*<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nver">NVER</A> + 2408(NLW+NVER) &lt= 82414
+        If <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nlw">NLW</A> = <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nsw">NSW</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nhor">NHOR</A> = <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nver">NVER</A>, then the following
+        simplified approximate formula may be used:
+                <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nlw">NLW</A> + <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nver">NVER</A> &lt= 32
+TIMING:
+
+The execution time of "reslocvo" is directly proportional to the window and
+search dimensions <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nlw">NLW</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nsw">NSW</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nhor">NHOR</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nver">NVER</A>. 
+
+WRITTEN BY:                Steve Pohorsky		17 Jan 1985
+<A NAME="CogProg">COGNIZANT PROGRAMMER:      Gary Yagi</A>
+REVISIONS:
+ 26 May 94  Meredith Cox (CRI) -- Made portable for UNIX 
+ 20 Oct 87  Gary Yagi   -- Added GEOMA parameter output
+ 10 Oct 87  Gary Yagi	-- Parameter processing converted to Vicar2
+ 25 Jun 86  Joel Mosher -- I/O converted to Vicar2
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#inp"><H3>INP</H3></A>
+ 1 image file optionally
+ followed by a
+ nominal reseau
+ location record.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#out"><H3>OUT</H3></A>
+ Reseau location record.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#geopar"><H3>GEOPAR</H3></A>
+ STRING--OPTIONAL
+ Output file to contain
+ GEOMA parameters.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#camera"><H3>CAMERA</H3></A>
+ integer - <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#camera">camera</A> serial number
+ override
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#dbug"><H3>DBUG</H3></A>
+ Keyword - Valid value = <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#dbug">DBUG</A>.
+ Causes diagnostics to be
+ printed.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#print"><H3>PRINT</H3></A>
+ Keyword - Valid value = <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#print">PRINT</A>
+ Generates listing of reseaus.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#noin"><H3>NOIN</H3></A>
+ Keyword - Valid value =<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#noin">NOIN</A>
+ Suppresses the interpolation
+ of correlation maximum.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nver"><H3>NVER</H3></A>
+ integer - height of the search
+ area
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nhor"><H3>NHOR</H3></A>
+ integer - width of the search
+ area
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nlw"><H3>NLW</H3></A>
+ integer - height of correlation
+ area
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#nsw"><H3>NSW</H3></A>
+ integer - width of the
+ correlation area
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#sigma"><H3>SIGMA</H3></A>
+ real - standard deviation
+ constant for reseau shape
+ function.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#frame"><H3>FRAME</H3></A>
+ integer - <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#frame">frame</A> number override
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#cthresh"><H3>CTHRESH</H3></A>
+ REAL - Optional -CORRELATION THRESHOLD
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#fit"><H3>FIT</H3></A>
+ INTEGER - Optional-SELECT <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#fit">FIT</A> TYPE
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo_level2.html#toler"><H3>TOLER</H3></A>
+ REAL - Optional - MAX LOCATION ERROR
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/reslocvo.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

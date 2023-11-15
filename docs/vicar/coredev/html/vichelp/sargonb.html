@@ -1,0 +1,284 @@
+<HTML>
+<HEAD><title>HTML Help for SARGONB</title></HEAD>
+<BODY>
+<H1>Help for SARGONB</H1>
+<pre>
+ PURPOSE:
+
+ SARGONB is a VICAR applications program which performs operations on user
+ specified polygons. SARGONB operates on byte or halfword data, and is a
+ batch version of SARGON.  The maximum image line length supported is
+ 10,000 samples.  SARGONB will interpolate over arbitrary polygons.
+ It can handle up to 25 polygons of up to 25 vertices each.
+
+ SARGONB stores all operations (parameters FUNCi and CONSTi) and areas (VERTi)
+ specified, then operates on each area in order. Only one operation can be 
+ performed for each VERT specified.  Each operation is specified by the
+ associated FUNC parameter (specifies type of operation) and CONST parameter,
+ which specifies 0-4 numerical constants needed.  (Most operations require
+ only one CONST;  operation ZERO does not require any, and operation INTERP
+ requires 4, which may be defaulted.)
+
+ INTERPOLATION:
+
+ For interpolation (FUNCi = INTERP), the associated values of CONSTi are:
+   RADI, PERC,   MIN,   MAX.
+   (200,   30, -9999, 32767) are the respective defaults.
+
+ Those pixels pixels exterior to the polygon with MIN &lt DN < MAX will be saved
+ for use. If PERC &lt 100, these exterior points will be randomly weeded <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#out">out</A>
+ until the proper percent remains.  These final points will be fed to subroutine
+ EXTRAP, which interpolates.  For each point being interpolated, only exterior 
+ points within a radius of RADI will be used in the formula. The use of RADI
+ and PERC, can greatly enhance the speed of the algorithm for large areas. 
+ However, a small PERC can give unrepresentative results for small areas. 
+ MIN and MAX are important for painless interpolation. For example, if a large
+ dark gore is to be removed, one can set MIN above the gore's DN. Now if one
+ side of the polygon accidently crosses into the gore, the interpolation
+ formula will ignore the border points collected from within the gore.
+
+ EXECUTION:
+
+ The following is the execution statement for SARGONB:
+
+   SARGONB  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#inp">INP</A>  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#out">OUT</A>  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A> [<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func2">FUNC2</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const2">CONST2</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert2">VERT2</A> ...]
+
+ where <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#inp">INP</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#out">OUT</A>, FUNCi, CONSTi, and VERTi are parameters discussed in their
+ respective parameter section in TUTOR mode.  
+
+ Note that SARGONB does not use a SIZE parameter!  This is because the
+ parameters were designed to allow all to be specified postitionally, with
+ up to 25 groups of (FUNC, CONST, and VERT).  See EXAMPLES (below) for
+ details.
+<A NAME="examples"> EXAMPLES:</A>
+
+    SARGONB A B INTERP <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>=(72,1,86,121,118,298)
+
+ This example interpolates over a large area.  Note that INTERP
+ has been specified positionally;  it is a string-valued parameter,
+ not a keyword, so that 'INTERP would not be valid!  (After all,
+ there are 25 parameters with INTERP as valid values, so 'INTERP
+ would not be unique!)
+
+    SARGONB A B INTERP -- (72,1,86,121,118,298)
+
+ This is identical to the preceding operation, with all parameters
+ specified positionally.  The "--" (null value) for the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>
+ parameter indicates that the default values are to be used.
+    SARGONB A B ZERO 0 (100,100,200,200,100,200)
+
+ This example zeroes <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#out">out</A> a triangular area.  Again, all parameters
+ are specified positionally; the "0" was not necessary, since the
+ ZERO value for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A> does not need a value.  However, if that "0"
+ was omitted, then the next parameter would have to be preceded by
+ the parameter-name "<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>=", since it would no longer be specified
+ positionally (because the parameter following <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A> is <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>).
+
+    SARGONB A B SETTO 50 (20,20,20,200,40,200,40,20)
+
+ This example sets a rectangular area to DN=50.  All parameters
+ are specified postionally.
+    SARGONB A B ADD 10 (2,2,2,10,10,10,10,2)       mult 2 (81,12,81,20,90,20,90,12)       divide 3 (21,21,21,25,30,25,30,21)       setto 250 (31,42,31,47,41,47,41,42)       zero 0 (51,51,51,55,55,55,55,51)
+
+ This example operates on 5 polygons, with all parameters specified
+ postionally.  
+ RESTRICTIONS:
+
+	1. Maximum number of vertices for a given area is 25.
+
+	2. Sides of any given polygon should not cross.
+	
+ 	3. Maximum line length of input image is 10000 bytes.
+
+        4. Maximum number of areas is 25.
+
+ TIMING: None available for the VAX
+
+ WRITTEN BY: 	CHARLES C. AVIS		20 OCTOBER 1982
+
+<A NAME="CogProg"> COGNIZANT PROGRAMMER: FLORANCE MOSS</A>
+
+ MADE PORTABLE FOR UNIX: CRI            01 JULY 1994
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#inp"><H3>INP</H3></A>
+ An input data set
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#out"><H3>OUT</H3></A>
+ An output data set
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1"><H3>FUNC1</H3></A>
+ Operation to be performed
+ on the 1st polygon.
+ Valid strings are: ADD,
+ SUBTRACT,MULT,DIVIDE,
+ SETTO,ZERO,INTERP.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1"><H3>CONST1</H3></A>
+ Constant(s) required by
+ <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1"><H3>VERT1</H3></A>
+ 1st polygon to be operated on.
+ 3:25 pairs of real numbers.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func2"><H3>FUNC2</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const2"><H3>CONST2</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert2"><H3>VERT2</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func3"><H3>FUNC3</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const3"><H3>CONST3</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert3"><H3>VERT3</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func4"><H3>FUNC4</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const4"><H3>CONST4</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert4"><H3>VERT4</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func5"><H3>FUNC5</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const5"><H3>CONST5</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert5"><H3>VERT5</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func6"><H3>FUNC6</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const6"><H3>CONST6</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert6"><H3>VERT6</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func7"><H3>FUNC7</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const7"><H3>CONST7</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert7"><H3>VERT7</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func8"><H3>FUNC8</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const8"><H3>CONST8</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert8"><H3>VERT8</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func9"><H3>FUNC9</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const9"><H3>CONST9</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert9"><H3>VERT9</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func10"><H3>FUNC10</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const10"><H3>CONST10</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert10"><H3>VERT10</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func11"><H3>FUNC11</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const11"><H3>CONST11</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert11"><H3>VERT11</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func12"><H3>FUNC12</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const12"><H3>CONST12</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert12"><H3>VERT12</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func13"><H3>FUNC13</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const13"><H3>CONST13</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert13"><H3>VERT13</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func14"><H3>FUNC14</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const14"><H3>CONST14</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert14"><H3>VERT14</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func15"><H3>FUNC15</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const15"><H3>CONST15</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert15"><H3>VERT15</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func16"><H3>FUNC16</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const16"><H3>CONST16</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert16"><H3>VERT16</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func17"><H3>FUNC17</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const17"><H3>CONST17</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert17"><H3>VERT17</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func18"><H3>FUNC18</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const18"><H3>CONST18</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert18"><H3>VERT18</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func19"><H3>FUNC19</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const19"><H3>CONST19</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert19"><H3>VERT19</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func20"><H3>FUNC20</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const20"><H3>CONST20</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert20"><H3>VERT20</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func21"><H3>FUNC21</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const21"><H3>CONST21</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert21"><H3>VERT21</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func22"><H3>FUNC22</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const22"><H3>CONST22</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert22"><H3>VERT22</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func23"><H3>FUNC23</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const23"><H3>CONST23</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert23"><H3>VERT23</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func24"><H3>FUNC24</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const24"><H3>CONST24</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert24"><H3>VERT24</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func25"><H3>FUNC25</H3></A>
+ Next operation, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#func1">FUNC1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const25"><H3>CONST25</H3></A>
+ Next constant, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#const1">CONST1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert25"><H3>VERT25</H3></A>
+ Next polygon, see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#vert1">VERT1</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#min"><H3>MIN</H3></A>
+ REAL/INTEGER - OPTIONAL
+ - Minimum DN
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#max"><H3>MAX</H3></A>
+ REAL/INTEGER - OPTIONAL
+ - Maximum DN
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#radius"><H3>RADIUS</H3></A>
+ REAL/INTEGER - OPTIONAL
+ - Interpolation radius
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#perc"><H3>PERC</H3></A>
+ REAL/INTEGER - OPTIONAL
+ - % of border used
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb_level2.html#dbug"><H3>DBUG</H3></A>
+ KEYWORD - OPTIONAL
+ - produce debug print
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/sargonb.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

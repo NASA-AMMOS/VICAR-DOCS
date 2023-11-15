@@ -1,0 +1,180 @@
+<HTML>
+<HEAD><title>HTML Help for FFTFIT</title></HEAD>
+<BODY>
+<H1>Help for FFTFIT</H1>
+<pre>
+PURPOSE:
+"fftfit" will modify a complex Fourier transform created by "fft2" or "fft22"
+in one of two ways:
+
+1. The complex Fourier transform will be multiplied by an input picture.
+2. The amplitude of the complex Fourier transform will be made proportional
+   to an input picture.  Phase will not be altered.
+
+"fftfit" can be used to force pictures to have identical power spectra and
+can provide for the execution of detailed filters.
+
+ 
+EXECUTION:
+
+Example - Basic Parameters MULT and HALF
+
+fftfit  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#inp">INP</A>=(FT,PIX)  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#out">OUT</A>=FTOUT  'MULT  'HALF
+
+Complex Fourier transform FT, which must have been created by "fft2" or "fft22",
+is input to "fftfit" along with the input picture PIX which is used to modify
+the transform.  The modified Fourier transform will be sent to FTOUT.  This
+command demonstrates only MULT and HALF; all other options default to various
+values as described in the examples below.  'MULT specifies that the
+transform is to be multiplied by the input picture; this is the first <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#mode">mode</A>
+listed above.  Otherwise, and by default, the transform is made proportional
+to the input picture.  'HALF specifies that PIX is a halfword picture;
+the default is to read the input image as byte data. 
+
+
+Examples - Controlling FFTOUT phase by specifying the correspondence between
+	   (<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#line">line</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#sample">sample</A>) in PIX and (line,sample) in FT.
+
+fftfit  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#inp">INP</A>=(FT,PIX)  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#out">OUT</A>=FTOUT  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#line">LINE</A>=10  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#sample">SAMPLE</A>=15
+
+This example shows one way in which to specify the correspondence between PIX
+and FT.  The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#line">LINE</A> keyword indicates that line 10 in PIX corresponds with line
+one (the DC <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#line">line</A>) in FT.  The default is for LINE to equal NL/2 + 1 where NL
+is the number of lines in FT.  The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#sample">SAMPLE</A> keyword specifies the sample number
+in PIX which corresponds with column one (the DC column) in FT.  The default
+is NPIX/2 + 1 where NPIX is one eighth the number of samples in FT.  All
+other parameters default as described in the relevant examples.
+
+fftfit  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#inp">INP</A>=(FT,PIX)  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#out">OUT</A>=FTOUT  '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#find">FIND</A>
+
+The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#find">FIND</A> keyword indicates that <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#line">LINE</A> and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#sample">SAMPLE</A> described above are to be
+determined from PIX by locating the position of the largest DN value in PIX.
+If more than one pixel has the maximum DN value, the centroid of all maximum
+DN values is selected.  The default is not to perform this operation.
+
+
+Examples - Controlling scaling of PIX before application to transform FT.
+
+fftfit  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#inp">INP</A>=(FT,PIX)  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#out">OUT</A>=FTOUT  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#scale">SCALE</A>=2.0
+
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#scale">SCALE</A> specifies the scaling factor applied to the input image before
+processing. 
+    In the multiplicative <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#mode">mode</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#scale">SCALE</A> (by default) equals one divided by the
+mean DN value measured within the sampling area specified by the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#set">SET</A> keyword or
+its defaults; in the matching <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#mode">mode</A>, where FTOUT is made proportional to the
+input picture, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#scale">SCALE</A> equals A-bar divided by the mean DN value, where A-bar is
+a similarly-determined reference amplitude in FT. 
+    The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#scale">SCALE</A> keyword allows the user to bypass all of these calculations and
+explicitly specify the scaling factor to be used.  All other parameters in this
+example are allowed to default. 
+
+fftfit  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#inp">INP</A>=(FT,PIX)  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#out">OUT</A>=FTOUT  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#set">SET</A>=(3,5)
+
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#set">SET</A> directs the program to calculate the scaling value <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#scale">SCALE</A> from an area
+defined by the integer values, 3 and 5 in this example, in both PIX and FT.
+A-bar is obtained from the mean amplitude in the shaded area bounded by 
+N3 and N4 in the upper left quadrant to FT (see figure).
+
+		N3	N4		NPIX=NS/8
+	+-------+-------+----------------------- 	|DC	|///////|			|DC
+	|	|///////|			|
+      N3+-------+///////|			|
+	|///////////////|			|	matrix of 
+	|///////////////|			|	complex FFT values
+      N4+---------------+			|
+	|					|
+	|					|
+	|					|
+	|					|
+	|					|
+      NL+---------------------------------------          DC					 DC
+
+The mean DC value is computed from the corresponding area in PIX starting at 
+(<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#line">LINE</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#sample">SAMPLE</A>) rather than at (1,1) as in FT.  Default is <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#set">SET</A>=(2,3).
+
+
+Restrictions:
+1. PIX should have the same number of lines and samples as FT. This assures
+   a one to one correspondence between PIX pixels and complex FT pixels.
+
+
+OPERATION:
+
+"fftfit" allows two modes:
+
+1. Force the amplitude of the Fourier transform (FT) to be a scaled replica
+   of the picture (PIX).
+
+|FTOUT(i,j)| is proportional to DN(i,j).
+
+FTOUT(i,j) = FT(i,j) * <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#scale">SCALE</A> * DN(i,j) / |FT(i,j)|
+
+                       DN(i,j)     A-bar
+	   = FT(i,j) * ------- * ---------
+		       mean DN   |FT(i,j)|
+
+where <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#scale">SCALE</A> equals A-bar divided by the mean DN value and |FT| represents
+the amplitude SQRT( a**2 + b**2) = |a + bi|.
+
+2.  Multiply the FT by PIX.
+						   DN(i,j)
+FTOUT(i,j) = FT(i,j) * <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#scale">SCALE</A> * DN(i,j) = FT(i,j) * -------
+						   mean-DN
+
+
+In both cases the DC term of FT is <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#set">set</A> apart from the transformation and is
+never altered.  Whatever the result, the mean of the inverse transform of
+FTOUT will always be the same as that of the original picture whose transform
+is FT.
+
+It is important to note the significance of the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#line">LINE</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#sample">SAMPLE</A> keywords.  These
+values point to the pixel in PIX which will be centered on the DC term (1,1)
+in the FT picture.  In the majority of cases PIX will be a symmetrical 
+function such as a gaussian, etc.  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#line">LINE</A> and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#sample">SAMPLE</A> will usually refer to the
+center of the symmetry of this function.  When this is the case "fftfit" will be
+able to divide up PIX into symmetrical quadrants and match them to the
+complex format of FT (with DC in the corners).  If <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#line">LINE</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#sample">SAMPLE</A> do not refer to
+to a symmetry point FTOUT will be asymmetrical and the inverse transformation
+will produce the real part of a complex picture (if PIX is asymmetrical) or a
+displaced image (if PIX is symmetrical but just off center).
+
+FT can be created with either "fft2" or "fft22". DC remains the same for both 
+complex formats but the latter has been transposed relative to the former
+(rows become columns).  "fftfit" assumes the user has organized PIX such that
+it is compatible with the appropriate FT format.  Symmetrical cases are 
+invariant.  One can convert PIX from one format to the other with two 
+executions of "flot".
+
+It is suggested that when the inverse transform is made (particularly in the
+amplitude matching <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#mode">mode</A>) the output picture be halfword.  Most operations
+will cause some DN's to lie outside the byte range and halfword formatting
+will allow access to these pixels.
+
+
+WRITTEN BY:  J. J. Lorre, 31 October 1977
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  A. S. Mazer</A>
+REVISION 1:  A. Scop, 31 October 1994   Made portable for UNIX
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#inp"><H3>INP</H3></A>
+STRING - Image and transform files
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#out"><H3>OUT</H3></A>
+STRING - Output transform file
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#mode"><H3>MODE</H3></A>
+KEYWORD - MULTiplication <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#mode">mode</A> flag (AMPMATCH, MULT)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#line"><H3>LINE</H3></A>
+INTEGER - Image <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#line">line</A> corr to FT line 1
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#sample"><H3>SAMPLE</H3></A>
+INTEGER - Image samp corr to FT <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#sample">sample</A> 1
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#find"><H3>FIND</H3></A>
+KEYWORD - Computed-correspondence flag (<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#find">FIND</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#scale"><H3>SCALE</H3></A>
+REAL - Scaling factor
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#set"><H3>SET</H3></A>
+INTEGER - Area for auto <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit_level2.html#scale">SCALE</A> computation 
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftfit.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

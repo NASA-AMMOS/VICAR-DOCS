@@ -1,0 +1,336 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for MARSTIEXYZ</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz.html">MARSTIEXYZ</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+Input stereo pair.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="navtable"><H3>NAVTABLE</H3></A><pre>
+Corrected navigation filename.
+If marsnav was run on the input images it created a table of corrected
+pointing parameters. If you refer to this table using <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#navtable">NAVTABLE</A> it
+will override the pointing parameters (e.g. azimuth and elevation) in the
+picture labels, giving different (and presumably better) output coordinates.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="config_path"><H3>CONFIG_PATH</H3></A><pre>
+A colon-separated list of directories in which to look for configuration
+and calibration files.  Environment variables are allowed in the list
+(and may themselves contain colon-separated lists).  The directories are
+searched in order for each config/cal file when it is loaded.  This allows
+multiple projectes to be supported simultaneously, and allows the user to
+override any given config/cal file.  Note that the directory structure below
+the directories specified in this path must match what the project expects.
+For example, Mars 98 expects flat fields to be in a subdirectory named
+"flat_fields" while Mars Pathfinder expects them to be directly in the
+directory specified by the path (i.e. no intermediate subdirectories).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rsf"><H3>RSF</H3></A><pre>
+Rover State File.  This is a list of filenames to load containing
+Rover State information.  These files contain position and orientation
+information for a rover (or other mobile spacecraft) at various sites.
+They are in XML format.  See the "Rover Motion Counter (RMC) Master File SIS"
+for details on these files.
+
+Rover State Files have a priority order.  The files listed first have
+the highest priority.
+
+Environment variables may be used in the list.
+
+For MER, if a directory is specified, then that directory is searched for
+RMC Master files and any found are loaded.  The directory structure and
+filename convention is covered in the RMC SIS.  The directory specified
+is the one containing "master", so if &ltdir&gt is the name specified in the
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#rsf">RSF</A> parameter, the following files will be searched for:
+
+&ltdir&gt/master/<mission>_Master.svf
+&ltdir&gt/master/<mission>_Site_<n>_Master.rvf
+
+The name of each file loaded is printed to the stdout log for reference.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="debug_rsf"><H3>DEBUG_RSF</H3></A><pre>
+If enabled, this causes the internal database of RMC locations to be
+printed out to the stdout log.  This is after the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#rsf">RSF</A> files have been
+loaded and the coordinate systems read from the input label(s).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord"><H3>COORD</H3></A><pre>
+This parameter is ignored by marstiexyz.  The parameter exists for
+compatibility with subroutines used by other programs (see e.g. marsmap).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord_index"><H3>COORD_INDEX</H3></A><pre>
+This parameter is ignored by marstiexyz.  The parameter exists for
+compatibility with subroutines used by other programs (see e.g. marsmap).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="fixed_site"><H3>FIXED_SITE</H3></A><pre>
+This parameter is ignored by marstiexyz.  The parameter exists for
+compatibility with subroutines used by other programs (see e.g. marsmap).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="solution_id"><H3>SOLUTION_ID</H3></A><pre>
+Specifies which solution ID to use for pointng corrections.
+
+There are potentially many different definitions for the same coordinate
+system. These are identified via a unique Solution ID.  If this parameter
+is given, only the specified solution's definition is searched for.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="point_method"><H3>POINT_METHOD</H3></A><pre>
+Specifies a mission-specific pointing method to use.  Normally this
+parameter is not used, in which case the "default" pointing methods
+are used.  Some missions may have special, or alternate, pointing
+methods available, which are indicated by this string (for example,
+backlash models, using arm joint angles instead of x/y/z/az/el, etc).
+A substring search is used, so multiple methods (where that makes sense)
+can be specified by separating the keywords with commas.
+
+Note that nav files created using one pointing method will most likely
+not be compatible with a mosaic created using a different pointing method.
+
+The methods available vary per mission, but some methods available at
+the time of this writing are:
+
+BACKLASH : Mars 98 SSI only.  Selects a backlash pointing model,
+which adjusts the telemetered azimuth and elevation values based on
+knowledge of the camera's mechanical backlash and the direction the
+motor was travelling when the image was taken.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="match_method"><H3>MATCH_METHOD</H3></A><pre>
+Specifies a method for pointing corrections.
+
+Loose method matches with pointing parameters of the image.
+Tight method matches with unique id of the image.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="match_tol"><H3>MATCH_TOL</H3></A><pre>
+Tolerance value for matching pointing parameters in the pointing corrections
+file.  Used if <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#match_method">MATCH_METHOD</A>=LOOSE
+Default value is pretty arbitrary, though seems to work well so far....
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nosite"><H3>NOSITE</H3></A><pre>
+Disables all label-derived parameters to the Site mechanism which underlies
+coordinate systems.  This forces all sites to be identical, with all rotations
+and offsets set the same.  In the case of MPF or Mars 98, this disables
+the lander quaternion and offset (sets them to identity and 0, respectively).
+This option should not be used with images taken from different vantage
+points (e.g. the spacecraft moved, or mixing a lander and a rover) or
+invalid results will be obtained.  The use of this option invalidates the
+Fixed coordinate frame; any values reported in the Fixed frame will not
+correctly reflect the orientation of the lander/rover.
+
+Obviously, this option should be rarely used; it is intended for when the
+image labels defining the site are invalid or inconsistent.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="normal"><H3>NORMAL</H3></A><pre>
+The local mars <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">surface</A> <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#normal">normal</A> vector coordinate system specified by <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surf_coord">SURF_COORD</A> 
+parameter (defaults to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">surface</A> fixed).
+For most pan/tilt cameras, if the lander is not tilted this vector
+would be: <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#normal">normal</A>=(0,0,-1).  ie: x_component=0, y_component=0, z_component=-1.
+This need not be a unit vector.  This vector is used to define the
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">surface</A> plane to which image points are projected in order to minimize
+parallax.
+For SPHERE1/2 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">surface</A> models, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#normal">normal</A>'s first parameter is used to
+denote sphere's radius.  Thus to describe sphere of radius R, user
+would specify <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#normal">normal</A>=(R, 0, 0).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ground"><H3>GROUND</H3></A><pre>
+Any point on the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">surface</A>, in coordinate system specified by <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surf_coord">SURF_COORD</A> parameter
+(defaults to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">surface</A> fixed).  This defines where the tilted plane is in space.  
+Although any point may be used, normally the point just "under" the origin is selected.
+Defaults:
+Mars Pathfinder:  (0.0, 0.0, 0.0)       (lander zero point is on the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#ground">ground</A>)
+Mars 98 Lander:   (0.0, 0.0, 1.64)      (lander zero point is on top of deck)
+MER           :   (0.0, 0.0, 0.294)
+For MER images taken on top of the lander, the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#ground">ground</A> is roughly at (0.0, 0.0, 0.7)
+For SPHERE1/2 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">surface</A> models, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#ground">GROUND</A> parameter is used to denote sphere's
+center.  
+    
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="surf_coord"><H3>SURF_COORD</H3></A><pre>
+The coordinate system that <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">surface</A> parameters like <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#ground">GROUND</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#normal">NORMAL</A> are defined in.
+For valid values refer to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#coord">COORD</A> parameter description.  The interpretation of the 
+values is dependent on the mission. Defaults to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">surface</A> fixed coordinate system.
+Note that no validation is done for input strings because <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#coord">COORD</A> is using the same
+values.  So user needs to be extra careful in specifying <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surf_coord">SURF_COORD</A> value.  For 
+example <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#coord">COORD</A>=local would be correctly interpreted to mean LOCAL_LEVEL because of
+validation process.  On the other hand specifying <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surf_coord">SURF_COORD</A>=local would lead
+to underlying code treating the input value as invalid and reverting to default
+which is FIXED frame.  So the values for <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surf_coord">SURF_COORD</A> should be spelled exactly as
+found in the list of valid values for <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#coord">COORD</A> parameter.    
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="surface"><H3>SURFACE</H3></A><pre>
+The type of mars <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">surface</A> to use. The surface is used to intercept view rays
+emanating from the cameras in order to model out parallax between the
+stereo cameras. The options are <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">surface</A>=INFINITY which means no surface
+is used, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">surface</A>=PLANE (the default case). If surface = PLANE then the plane
+is defined by the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#normal">NORMAL</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#ground">GROUND</A> parameters.  For the cases when PLANE 
+doesn't match local topography sufficiently well, here are two sphere <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">surface</A>
+models: <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">surface</A>=SPHERE1 and surface=SPHERE2.  SPHERE1 is useful to model
+convex surfaces like hills, it returns closest(first) ray-<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">surface</A> intersection 
+point.  SPHERE2 is useful to model concave surfaces, like crater when the
+camera point is outside looking in, it returns farthest(second) ray-<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">surface</A> 
+intersection point.  For the case when camera is inside the sphere <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">surface</A>, 
+like rover sitting in the crater, there is only a single intersection point
+and SPHERE1 and SPHERE2 behave exactly the same. Last, MESH is a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">surface</A>
+model defined by a mesh file (.obj) which path is given with <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surf_mesh">SURF_MESH</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="surf_mesh"><H3>SURF_MESH</H3></A><pre>
+Mesh OBJ file to use as the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">surface</A> model. For the mesh to be used,
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">SURFACE</A> must be set to MESH. The coordinates of the mesh vertices can be 
+expressed in any CS. However the mesh CS must be supplied via <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surf_csfile">SURF_CSFILE</A>.
+If <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surf_csfile">SURF_CSFILE</A> is not used, then the mesh is assumed to be to the CS that
+results from <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#coord">COORD</A> or <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surf_coord">SURF_COORD</A>
+
+VARI <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surf_csfile">SURF_CSFILE</A> 
+File name of a vicar file whose CS (contained in the labels) will be read and
+assigned to the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">SURFACE</A> model. The type of image and its content are of no
+interest, we are just reading the CS. That CS will supersede any other <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">surface</A> 
+CS definition (<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#coord">COORD</A> or <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surf_coord">SURF_COORD</A>). Its typical use is to supply a CS to a
+given mesh file (expectedly the XYZ from which the mesh is computed from, but
+doesn't have to). But <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surf_csfile">SURF_CSFILE</A> could be use to define a CS in which <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#normal">NORMAL</A> 
+and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#ground">GROUND</A> for a PLANE <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#surface">surface</A> are expressed in.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="tiepoints"><H3>TIEPOINTS</H3></A><pre>
+Input tiepoint file for tiepoint visualization.  Only used if <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#tie_type">TIE_TYPE</A>
+is turned on.  Both the old (text) and new (XML) tiepoint file formats
+are supported, and the format is auto-detected.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="tie_type"><H3>TIE_TYPE</H3></A><pre>
+Allows <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#tiepoints">tiepoints</A> to be visualized by plotting them on top of a mosaic.
+Should never be used for production mosaics; this is intended to help
+determine if <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#tiepoints">tiepoints</A> (such as from MARSAUTOTIE) are any good.
+
+The default value, NO_TIES, turns off tiepoint visualization completely.
+
+POINTS turns on point mode.  The left side of the tiepoint is indicated
+by a dot (single pixel) on the image at the location that point projects to.
+The value of the pixel is <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#tie_dn">TIE_DN</A> plus 10 times the difference (in mosaic
+space) between the left and right parts of the tiepoint.  This gives some
+indication of how well the tiepoint was corrected.  Thus if <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#tie_dn">TIE_DN</A> is 7000,
+a value of 7032 indicates that the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#tiepoints">tiepoints</A> were 3.2 pixels apart.  Of
+course, a difference of 0 (dn=7000 for this example) means that the tiepoint
+was corrected perfectly.
+
+FLAG does what POINTS does, but then draws an additional vector on the
+image (at half the intensity of the point).  This vector starts at the point
+and continues for 10 pixels parallel to a line between the centers of the
+"left" and "right" images for that tiepoint.  Thus it provides some indication
+of which pair of images was involved in the tiepoint, when there are multiple
+overlapping images.  Note that the edge of the mosaic is not considered; if
+the image centers are on opposite ends of the mosaic (as in, the edge of the
+mosaic splits the centers), the vector will use the actual centers, without
+being adjusted for wrapping.
+
+VECTOR does what POINTS does, but then draws an additional vector on the
+image (at half the intensity of the point).  This vector starts at the point
+and continues in the direction of the right-side tiepoint.  The length of the
+vector is 10 times the difference between the left and right (same as the
+intensity of the point itself).  This makes it easy to visualize tiepoint
+outliers.
+
+Tiepoint visualization is especially effective when combined with -NUMBER and
+-OVER (overlapping footprints).  The -FLAG or -VECTOR modes should almost
+always be used; POINT alone has not proved to be useful.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="tie_dn"><H3>TIE_DN</H3></A><pre>
+DN value to use for tiepoint visualization.  See <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marstiexyz_level2.html#tie_type">TIE_TYPE</A>.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

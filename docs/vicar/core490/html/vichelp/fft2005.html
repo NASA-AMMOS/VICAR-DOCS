@@ -1,0 +1,120 @@
+<HTML>
+<HEAD><title>HTML Help for FFT2005</title></HEAD>
+<BODY>
+<H1>Help for FFT2005</H1>
+<pre>
+PURPOSE:
+Works similar to fft22, except as noted below.
+
+The fftw package updates the old rcsfft package, removing
+restrictions on the numeric factors of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#nl">nl</A> and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#ns">ns</A>:
+
+1.  There can be a prime factor greater than 23
+2.  The product of square-free factors can be larger
+    than 210.
+3.  In other words, the image can be any <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#size">size</A>, including
+    odd numbers.
+    
+The whole image is read into memory (which is virtual
+memory for most machines).  This should handle just about
+anything that one would normally want.
+
+Also, the ordering of the terms in the Fourier domain is different
+for the new package.  But the ordering is more logical and is
+self-consistent (applying the forward and then the inverse gives
+the same image back).
+
+The keyword <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#quadswap">QUADSWAP</A> has been added so the inverse
+transform after application of WIENER can have the four quadrants
+moved back to picture position (including odd <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#nl">nl</A> and/or <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#ns">ns</A> cases).
+
+The keyword <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#insect">INSECT</A> has been added to allow a small point
+spread function to be added into the center of a larger
+image.  The parameter gives the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#size">size</A> of the larger image
+which will be zero filled except for the point spread function.
+The center of the point spread function is aligned with the center
+of the generated image input.  The definition of "center" for an
+even sized image or point spread image is the n/2+1 pixel (i.e. the
+lower right of the center four pixels.
+
+The Keyword <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#preqswap">PREQSWAP</A> performs a quadrant swap After the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#insect">INSECT</A> 
+step but Before the FFTW processing step.
+
+The Keyword <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#norm">NORM</A> normalizes the psf Before the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#insect">INSECT</A> step.
+Each pixel is divided by the sum of all pixels.
+
+EXECUTION:
+
+Example
+
+fft2005 a b
+fft2005 a b <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#size">size</A>=(2,1,4,4)
+fft2005 b c 'inverse
+
+see tstfft2005.pdf for examples of wiener filtering applications
+
+OPERATION:
+fft2005 reads in the whole image and applies fftw.
+TIMING: 
+
+O(line*samp*log(line*samp))
+
+ ORIGINAL PROGRAMMER:    A. Zobrist          21 Sep 2005
+<A NAME="CogProg"> COGNIZANT PROGRAMMER:   A. Zobrist          21 Sep 2005</A>
+<A NAME="CogProg"> CURRENT COGNIZANT PROGRAMMER: P. Kim        15 Nov 2007</A>
+ 
+ REVISION HISTORY
+  2005-09-21 AZ - Initial version
+  2007-11-29 PK - Added '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#preqswap">PREQSWAP</A> option
+  2007-12-29 WLB - Switched to USES_ANSI_C AND LIB_CARTO; misc cleanup
+  2012-12-18 RJB - Fixes for 64-bit  
+  2015-11-24 WLB - Migrated to MIPL
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#inp"><H3>INP</H3></A>
+STRING - Input image file
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#out"><H3>OUT</H3></A>
+STRING - Output image file
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#size"><H3>SIZE</H3></A>
+INTEGER - Region of input files
+to be tansformed
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#sl"><H3>SL</H3></A>
+INTEGER - Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#ss"><H3>SS</H3></A>
+INTEGER - Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#nl"><H3>NL</H3></A>
+INTEGER - Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#ns"><H3>NS</H3></A>
+INTEGER - Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#mode"><H3>MODE</H3></A>
+Keyword: Transform <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#mode">mode</A>.
+Valid: FORWARD, INVERSE.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#format"><H3>FORMAT</H3></A>
+Ouput image data <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#format">format</A>.
+Valid: BYTE, HALF, FULL,
+REAL, COMP
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#quadswap"><H3>QUADSWAP</H3></A>
+Keyword: Swap 4 quadrants
+when finished (for example
+after Wiener filter)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#insect"><H3>INSECT</H3></A>
+insert the input image
+the center of a larger
+image where (<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#ns">ns</A>) is
+given by this parameter
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#preqswap"><H3>PREQSWAP</H3></A>
+Performs a quadrant swap
+After the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#insect">INSECT</A> step, but
+Before the FFTW processing step.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#norm"><H3>NORM</H3></A>
+Normalizes the psf Before
+the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005_level2.html#insect">INSECT</A> step. Each pixel
+is divided by the sum of
+all pixels
+.END
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fft2005.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

@@ -1,0 +1,530 @@
+<HTML>
+<HEAD><title>HTML Help for MARSMCAULEY</title></HEAD>
+<BODY>
+<H1>Help for MARSMCAULEY</H1>
+<pre>
+PURPOSE:
+To generate a Mcauley projection.
+This is a hybrid cylindrical-perspective projection made by pointing the
+output camera at the center of each vertical column of pixels, and projecting
+that column only.  Each output pixel column thus represents the center column
+(only) of a camera pointed in exactly that direction.  This has the advantage
+of allowing stereo viewing (epipolar lines are preserved) in a panoramic
+format, without the extreme distortion seen on the edges of a perspective
+mosaic.  Stereo separation is maintained because the output cameras describe
+a ring in space, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#which">which</A> mimics the input camera <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#baseline">baseline</A> and preserves the
+stereo disparity.
+
+The purpose of this program is to make stereo panoramas.  In order to do this
+without vertical disparity or distortion, spacecraft tilt must be maintained,
+meaning that the horizon will not be level if the spacecraft is not level.
+Basically the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#baseline">baseline</A> between the eyes is horizontal in the output, meaning
+that the horizon is tilted.
+
+It is also possible to flatten the horizon via the "<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#untilt">untilt</A>" keyword.  This
+works by rotating the ring of output cameras so they are parallel to the
+horizon.  This has the effect of removing tilt without introducing vertical
+disparity.   However, it is not perfect; to the extent the terrain does not
+match the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#surface">surface</A> model, parallax effects will cause some distortions while
+untilting.  But it works well in many cases.
+
+Unlike previous versions of marsmcauley, only the natural instrument frame
+("ROVER" for MER/MSL) can be used as a projection frame.  However, the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#untilt">untilt</A>
+option (or direct control via the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#ring_axis">ring_axis</A> parameter) provides similar
+functionality to the old "site frame" mosaics, while also reducing vertical
+disparity.
+
+As a result, all parameters are interpreted in the instrument ("rover") frame
+except for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#start_az">START_AZ</A>.  START_AZ is interpreted in the frame specfied by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#coord">COORD</A>
+(defaults to SITE).  This allows the mosaic to be easily oriented in the
+most common cases (e.g.  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#start_az">start_az</A>=0 means North is on the edge of the image).
+This is the only use of the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#coord">COORD</A> frame in this program.
+
+The old <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#untilt">untilt</A> method (via <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#point_method">point_method</A>=untilt) is no longer supported and
+should not be used.
+
+Complete control over the ring described by the output cameras is now available
+via the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#baseline">BASELINE</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#ring_axis">RING_AXIS</A>, and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#ring_center">RING_CENTER</A> parameters.  Of these, only
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#baseline">BASELINE</A> is particularly useful.  It allows the baseline between the output
+cameras to be changed, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#which">which</A> effectively changes the overall disparity.
+This allows the apparent depth of the foreground to be changed without
+affecting the background (contrast with <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#disp_pix">DISP_PIX</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#which">which</A> changes the
+disparity a constant amount everywhere, moving everything in or <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#out">out</A> -
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#baseline">BASELINE</A> changes apparent depths via a ratio, with close-in things changing
+a lot and distant things very little)).  This can be used for example
+to tone down the 30cm disparty of the MER pancam, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#which">which</A> is too large for
+comfortable viewing close-up.  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#baseline">Baseline</A> adjustment is not perfect and can
+introduce parallax distorions a la the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#untilt">untilt</A> mode if the actual <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#surface">surface</A> does
+not match the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#surface">surface</A> model.
+
+The others should rarely be used.  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#ring_axis">RING_AXIS</A> is what the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#untilt">UNTILT</A> parameter
+actually changes, setting it appropriately based on the spacecraft tilt.  It
+could be used to change the tilt in other ways.  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#ring_center">RING_CENTER</A> changes the
+center of the ring (and also the center of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#ring_axis">RING_AXIS</A> rotation); changes in
+this are unlikely to be useful.
+
+Note that the projection elevation and projection line apply *before* any
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#untilt">untilt</A> (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#ring_axis">ring_axis</A>) rotation.  After rotation, they are sinusoids across the
+mosaic.
+
+Marsmcauley supports any mission, instrument, and camera model supported by
+the Planetary Image Geometry (Pig) software suite.
+
+Best results are obtained if the images are all taken from the same camera
+at approximately the same position.  The extent to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#which">which</A> images from different
+points of view work together depends in large part on how close the actual
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#surface">surface</A> is to the surface model.  Variations will introduce parallax errors,
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#which">which</A> become extreme at very different points of view.  A perfect match of
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#surface">surface</A> to surface model (not achievable in reality) should allow combination
+of images from any location.
+
+The program will optionally place an image <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#number">number</A> at the center of each
+image in the output, to aid in identification of the images.  See <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#number">NUMBER</A>,
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#number_dn">NUMBER_DN</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#number_zoom">NUMBER_ZOOM</A>, and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#number_start">NUMBER_START</A>.  It will also optionally draw a
+"footprint" <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#border">border</A> around each image.  See <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#footprt">FOOTPRT</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#foot_dn">FOOT_DN</A>.
+
+The program can accept a navigation file written by marsnav, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#which">which</A> will
+improve the accuracy of the mosaic.
+
+Radiometric correction is performed on the inputs by default; this may be
+turned off via the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#rad">RAD</A> keyword parameter.
+
+Marsmcauley will handle color images automatically if the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#band">BAND</A> parameter is not
+specified. For mixed color and black-and-white inputs, the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#number">number</A> of output
+bands will equal the maximum <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#number">number</A> of bands across all inputs. Images with
+less than that <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#number">number</A> of bands will simply repeat the last available <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#band">band</A> i.e.,
+black-and-white images can be mixed with color images. If <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#band">BAND</A> is specified,
+only that single <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#band">band</A> (in the multi-banded images) is processed, and black-and-
+white images remain unaffected.
+
+EXECUTION:
+There are two ways to present input images:
+ 
+marsmcauley <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#inp">inp</A>=(a.img,b.img,c.img,...) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#out">out</A>=mos.img
+or
+marsmcauley  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#inp">inp</A>=ascii_listoffiles <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#out">out</A>=mos.img
+
+where ascii_listoffiles is a text file containing the list of filenames to
+include in the mosaic, one per record.  Up to 1000 input images can be listed.
+
+Additionally, marsnav may be used:
+
+marsnav <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#inp">inp</A>=ascii_listoffiles <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#out">out</A>=navtab ...
+marsmcauley <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#inp">inp</A>=ascii_listoffiles <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#out">out</A>=mos.img <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#navtable">navtable</A>=navtab
+
+A new mode allows both left and right list files (or individual images) to be
+provided at runtime, with a flag to select <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#which">which</A> to use.  See below for
+details.
+
+marsmcauley <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#inp">inp</A>=left.lis <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#out">out</A>=left.out <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#rinp">rinp</A>=right.lis -left
+marsmcauley <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#inp">inp</A>=left.lis <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#out">out</A>=right.out <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#rinp">rinp</A>=right.lis -right
+
+USAGE:
+
+Labels will be written to the output image specifying all parameters
+needed in order to reproject the image, and to convert pixel coordinates
+into XYZ view rays in the output coordinate system.  See the MSL SIS for
+details on what the label items mean.
+
+OPERATION:
+The program uses the appropriate camera model for each input image and
+outputs a mosaic using camera models derived from the first input (aligned
+for stereo viewing).  Each pixel in the output is transformed from output
+to input camera models in the following steps:
+1. Each output column causes the output camera model to be recomputed,
+   pointing to this azimuth.
+2. Each output pixel defines a unit vector.
+3. We compute the intersection of this vector with a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#surface">surface</A> model.  This is
+   normally a tilted plane, possibly with an offset from the origin of the
+   spacecraft coordinate system (so the "<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#ground">ground</A>" can be above or below the
+   origin).
+4. Then this <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#ground">ground</A> point is ray traced back into the input camera images.
+   We take the input images in order of input.
+5. The first image is selected <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#which">which</A> can see the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#ground">ground</A> point.
+6. The DN value in the selected input image is bilinearly interpolated
+   and placed into the output location
+Input images are loaded into memory 20 at a time.
+
+See the MSL SIS for a full writeup of how to interpret the images.
+
+LEFT AND RIGHT IMAGE LISTS:
+
+Historically, left and right images (to make stereo) had to be run
+independently.  This required the user to obtain the geometry parameters
+from the first (usually, left) run and supply them to the right run, so the
+geometries would match for stereo viewing.  Needless to say, this was
+difficult... and broke down entirely when dealing with disparate inputs (see
+next section).
+
+Although it can still be used in this mode, the preferred method is to supply
+both left and right list files when the program is run, with a -left or -right
+option saying <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#which">which</A> will actually be mosaicked.  This way, the program has
+access to the entire set of files and can thus more accurately set the geometry
+(this also fixes problems where the mosaic image would be shifted, often to
+the right, in the output).
+
+It is important to note that "left" and "right" here are completely arbitrary.
+The -LEFT flag simply says to mosaic what's in <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#inp">INP</A>, while the -RIGHT flag
+says to mosaic what's in <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#rinp">RINP</A>.  You can in fact supply the right eye to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#inp">INP</A>
+and the left eye to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#rinp">RINP</A>.  There's rarely a need to do this, but it is
+possible.
+
+There's one way in <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#which">which</A> the "left" image list is special - the first item
+from the left list is used to define the natural size of the output pixels.
+If you wish to use the first item from the right list instead, use
+-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#master_right">MASTER_RIGHT</A>.  For example, when doing MSL Mastcam mosaics, the left camera
+is about 1/3 the resolution of the right.  By default (with no zooming), the
+output mosaic will be rendered at the left Mastcam resolution.  If you use
+-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#master_right">MASTER_RIGHT</A>, it will be rendered at the right Mastcam resolution.  Note that
+in order to use -<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#master_right">MASTER_RIGHT</A>, you have to supply both lists.
+
+DISPARATE INPUTS:
+
+The traditional (single-list) mode of marsmcauley implicitly assumes that
+the left and right eye cameras are stereo pairs - it uses the PIG library
+to create the alternate-eye camera model, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#which">which</A> is necessary for epipolar
+alignment of the mosaic.  This is similar to "nominal" linearization (marscahv)
+in <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#which">which</A> the stereo partner is predicted from the input.
+
+However, that does not work if the cameras are dissimilar.  Importantly, it
+also does not work for the MSL Mastcam case with focus-adjusted camera models.
+This is because it is impossible to predict what the "partner"s focus will be,
+so the partner model cannot be created.  (this is the same reason ACTUAL
+linearization is required with focus-interpolated camera models).
+
+This was the motivation behind adding the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#rinp">RINP</A> mechanism.  With both actual
+lists of input images, the output camera model can be constructed the same
+way for both the left and right mosaics.  Furthermore, the entire extent of
+*both* eyes is considered when laying <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#out">out</A> the geometry of the mosaic - meaning
+the mosaic should no longer be cropped in nominal use.
+
+It should be noted that the first image of each list is special; those are
+the ones used to create the output camera model.  The rest of the images are
+ignored for this purpose.
+
+Even with the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#rinp">RINP</A> parameter, however, there is an assumption that the
+cameras share a calibration geometry.  Normally, the program throws away
+pointing information for these prototype cameras, going back to the calibration
+camera model, for simplicity.  But, this only works if the calibration models
+share the same pointing - for example, both cameras are mast-mounted cameras.
+If one is an arm camera and the other a mast camera, this assumption is
+violated, and you may get strange results.  In this case, the -<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#use_pointing">USE_POINTING</A>
+option can be tried.  This option causes it to use the actual pointed camera
+models, rather than the calibration ones.  Note that this has not been well
+tested, and may or may not work - and in any case, trying to make a stereo
+mosaic from an arm and mast camera is dicey at best.  But, at least the option
+is there.
+
+
+HISTORY:
+  1994-04-30  jjl	Initial mcauley, based on inspiration from Myche McAuley. 
+  1998-09     rgd	Multimission conversion
+  2011-02     rgd	Major revision for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#untilt">untilt</A>, ring control, remove site frame
+  2017-04     jryan	Revised to process color imagery with a single call
+  2019-09-06  rgd	Added <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#rinp">RINP</A> et al, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#zoom">zoom</A>, fixed centering
+  2020-04-30  wlb       Replaced sprintf calls
+  2020-05-04  youlu     Added -zenith_scaled_rad capabilities
+                        Added <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#dnscale_in">DNSCALE_IN</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#dnscale_out">DNSCALE_OUT</A>, and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#tau">TAU</A> parameters
+  2020-11-17  esarkiss  Added <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#icm_out">ICM_OUT</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#idx_out">IDX_OUT</A> parameters
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Bob Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#inp"><H3>INP</H3></A>
+input image(s).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#out"><H3>OUT</H3></A>
+Output image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#idx_out"><H3>IDX_OUT</H3></A>
+Optional output
+index filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#icm_out"><H3>ICM_OUT</H3></A>
+Optional output
+coregistration coordinate
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#rinp"><H3>RINP</H3></A>
+Optional right-side
+image(s)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#band"><H3>BAND</H3></A>
+The BSQ <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#band">band</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#number">number</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#which"><H3>WHICH</H3></A>
+Specifies making left
+or right mosaic
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#use_pointing"><H3>USE_POINTING</H3></A>
+Use pointed instead of
+calibration models
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#master_right"><H3>MASTER_RIGHT</H3></A>
+Use right side to set
+output geometry
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#input_range"><H3>INPUT_RANGE</H3></A>
+The range of inputs to
+actually mosaic.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#normal"><H3>NORMAL</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#normal">normal</A> vector.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#ground"><H3>GROUND</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#ground">ground</A> point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#surf_coord"><H3>SURF_COORD</H3></A>
+Coordinate system used to define
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#surface">surface</A> parameters.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#surface"><H3>SURFACE</H3></A>
+The type of mars
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#surface">surface</A> to use INFINITY, PLANE, 
+SPHERE1, SPHERE2, MESH.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#surf_mesh"><H3>SURF_MESH</H3></A>
+Mesh file for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#surface">surface</A> model
+
+VARI <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#surf_csfile">SURF_CSFILE</A> 
+File containing CS for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#surface">surface</A>
+model
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#bias"><H3>BIAS</H3></A>
+Set of values to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#bias">bias</A>
+each tile in the mosiac.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#brtcorr"><H3>BRTCORR</H3></A>
+Input file containing
+brightness corrections.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#border"><H3>BORDER</H3></A>
+Additional <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#border">border</A> to
+add to output image height.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#full_frm"><H3>FULL_FRM</H3></A>
+Selects full panorama
+(FULL_FRAME) or output
+sized to input
+(PARTIAL_FRAME).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#start_az"><H3>START_AZ</H3></A>
+Azimuth of left edge
+of output, expressed in
+the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#coord">COORD</A> coordinate frame.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#proj_el"><H3>PROJ_EL</H3></A>
+Center of projection
+vertically, in instrument
+coords, before rotation.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#proj_line"><H3>PROJ_LINE</H3></A>
+Line in image <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#which">which</A>
+matches <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#proj_el">PROJ_EL</A>, before
+rotation.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#outsize"><H3>OUTSIZE</H3></A>
+Overrides size of
+output image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#zoom"><H3>ZOOM</H3></A>
+Sets the mosaic <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#zoom">zoom</A> factor.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#minsamp"><H3>MINSAMP</H3></A>
+Minimum sample # (azimuth
+column) to be projected.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#maxsamp"><H3>MAXSAMP</H3></A>
+Maximum sample # (azimuth
+column) to be projected.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#limit_topel"><H3>LIMIT_TOPEL</H3></A>
+Limit to top elevation.
+Not to exceed value.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#limit_bottomel"><H3>LIMIT_BOTTOMEL</H3></A>
+Limit to bottom elevation.
+Not to exceed value.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#baseline"><H3>BASELINE</H3></A>
+Override for output
+camera <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#baseline">baseline</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#ring_axis"><H3>RING_AXIS</H3></A>
+Override for output
+camera ring axis (see
+also <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#untilt">UNTILT</A>).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#ring_center"><H3>RING_CENTER</H3></A>
+Override for output
+camera ring center.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#untilt"><H3>UNTILT</H3></A>
+Sets <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#ring_axis">RING_AXIS</A> to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#untilt">untilt</A>
+the spacecraft and produce
+a flat horizon.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#disp_pix"><H3>DISP_PIX</H3></A>
+Shifts the overall image
+left or right (by changing
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#start_az">START_AZ</A>) to control overall
+disparity.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#wrap_az"><H3>WRAP_AZ</H3></A>
+Azimuth to wrap a complete
+mosaic.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#wrap_el"><H3>WRAP_EL</H3></A>
+Elevation to wrap a complete
+mosaic.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#wrap_coord"><H3>WRAP_COORD</H3></A>
+Coordinate system of the
+associated <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#wrap_az">WRAP_AZ</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#wrap_el">WRAP_EL</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#number"><H3>NUMBER</H3></A>
+Numbers the center of
+each input.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#number_dn"><H3>NUMBER_DN</H3></A>
+DN to use for the
+input numbers.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#number_zoom"><H3>NUMBER_ZOOM</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#zoom">Zoom</A> factor for the
+input numbers.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#number_start"><H3>NUMBER_START</H3></A>
+Where to start counting
+the input numbers.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#footprt"><H3>FOOTPRT</H3></A>
+Draws footprints around
+each image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#foot_dn"><H3>FOOT_DN</H3></A>
+DN to use for the
+footprint numbers.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#rad"><H3>RAD</H3></A>
+Turns on or off
+radiometric correction.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#tau"><H3>TAU</H3></A>
+atmospheric opacity
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#dnscale"><H3>DNSCALE</H3></A>
+DN scaling factor.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#dnscale_in"><H3>DNSCALE_IN</H3></A>
+Selects the mode for
+applying scaling parameters
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#dnscale_out"><H3>DNSCALE_OUT</H3></A>
+Selects the mode for
+scaling outputs
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#dnscale"><H3>DNSCALE</H3></A>
+DN scaling factor.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#match_method"><H3>MATCH_METHOD</H3></A>
+Specifies a method
+for pointing corrections.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#match_tol"><H3>MATCH_TOL</H3></A>
+Tolerance value for
+matching pointing params
+in pointing corrections file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#fov_limit"><H3>FOV_LIMIT</H3></A>
+Overrides limits on
+input image FOV
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#interp"><H3>INTERP</H3></A>
+Turns on or off
+the interpolation.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#number">number</A> is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use
+(for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#start_az">START_AZ</A> only).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#which">Which</A> site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+pointing correction.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmcauley.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

@@ -1,0 +1,110 @@
+<HTML>
+<HEAD><title>HTML Help for MOORESC</title></HEAD>
+<BODY>
+<H1>Help for MOORESC</H1>
+<pre>
+PURPOSE
+     this program operates on a single input with pixel numbers that are
+     grown (separately for each number) with the Moore algorithm (see below).
+
+     If a second ouput is given, it will contain a bitmap of the classes in
+     a cluster.  The bitmap has the 1 bit wherever class 1 (given by <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/mooresc_level2.html#pixval">PIXVAL</A> 
+     parameter) participates in a cluster.  Bit 2 for class 2, bit 3 (equals
+     the number 4 for class 3, etc.  The output will be byte for up to 8
+     for parameter <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/mooresc_level2.html#numpix">NUMPIX</A>, halfword for up to 16 and fullword for up to 32.
+
+     mooresc grows the non-zero numbers in the input image in all
+     directions an amount set by the parameter <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/mooresc_level2.html#dmax">dmax</A>.  Then for each
+     pixel of the output image, the count of number blobs that touch
+     that pixel is written to the output pixel.  NOTE THAT EACH
+     INPUT NUMBER IS GROWN SEPARATELY IN ITS OWN BUFFER SPACE.
+     
+     The basic case grows an area of non-zero pixels by layering
+     on 1 pixels, then 2 pixels, etc, for example:
+     
+                999999
+                999
+                99999
+                9
+                
+     becomes 
+                111111 
+               19999991
+               1999111 
+               1999991
+               191111 
+                1 
+     becomes 
+                222222  
+               21111112 
+              2199999912
+              219991112 
+              219999912 
+              21911112 
+               212222  
+                2                etc.
+     
+     The initial values of 9 can be any value greater than 0.
+     
+     The process stops when the value in the parameter <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/mooresc_level2.html#dmax">DMAX</A> is
+     reached.  The term "distance" treats diagonal distance as the
+     sum of horizontal and vertical distance.  Mathematically,
+     this is the L1 norm or "staircase" distance, which is a distance
+     function (satisfies the triangle inequality).
+     
+     The normal case grows equally at all edges, considering all
+     non-zero values to be like the 9's in the above diagram.
+
+TAE COMMAND LINE FORMAT
+
+     mooresc <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/mooresc_level2.html#inp">INP</A>=(PIC1,PIC2,PIC3) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/mooresc_level2.html#out">OUT</A>=OUTPIC <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/mooresc_level2.html#dmax">DMAX</A>=n
+
+     where
+
+     PIC                 is an image.
+     OUTPIC              is  a count of inputs with non-zero areas
+                         grown by a distance of n
+     n                   is a distance in pixels
+
+
+OPERATION
+The program reads <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/mooresc_level2.html#dmax">DMAX</A> lines of the inputs, applying the Moore
+algorithm as lines are read.  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/mooresc_level2.html#dmax">DMAX</A> lines are on rolling
+barrel buffers, so that when the next line is read, the oldest
+line is written to output, then dropped.  There is a separate 
+rolling barrel for each input number.  Only one output line is
+written and that is the count of non-zeros in the last line of
+the rolling barrels.
+
+TIMING
+
+This program is WAY, WAY FASTER than using a convolution filter
+(such as VICAR BOXFLT) followed by F2.
+
+RESTRICTIONS
+
+WRITTEN BY:                   Al Zobrist         31 SEP 10
+REVISIONS:
+  2017-06-06 WLB Migrated to MIPL.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/mooresc_level2.html#inp"><H3>INP</H3></A>
+Input image
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/mooresc_level2.html#out"><H3>OUT</H3></A>
+Output image of overlap count
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/mooresc_level2.html#dmax"><H3>DMAX</H3></A>
+How far to grow the non-zero
+areas before overlap
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/mooresc_level2.html#pixvals"><H3>PIXVALS</H3></A>
+selected values to grow
+in image, non-zero
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/mooresc_level2.html#numpix"><H3>NUMPIX</H3></A>
+number of selected values
+to grow in image
+.END
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/mooresc.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/mooresc.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

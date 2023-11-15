@@ -1,0 +1,90 @@
+<HTML>
+<HEAD><title>HTML Help for CALFIT</title></HEAD>
+<BODY>
+<H1>Help for CALFIT</H1>
+<pre>
+PURPOSE:
+
+EXECUTION:
+
+Example
+
+calfit <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/calfit_level2.html#inp">INP</A>=(C1,C2,C3,C4) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/calfit_level2.html#out">OUT</A>=(A,B) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/calfit_level2.html#calval">CALVAL</A>=(0.0,5.0,10.0,20.0)
+
+OPERATION:
+
+For each pixel, a linear calibration is calculated by least squares fit
+on the calibration images.  Then, the average value for each pixel is
+calculated for the first and last <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/calfit_level2.html#calval">calval</A> values.  Then for each pixel,
+a linear transformation is calculated for compounding the lsq linear to
+the average values.  This compounded linear transformation is output
+to the output images (y=ax+b) where a values are real values in the
+first output image and b values are real values in the second output
+image.  A new image from the sensor can then be calibrated with these
+two real images (A and B) by applying the VICAR routine f2 and the 
+function IN1*IN2+IN3; where IN1 is the A image, IN3 is the B image and
+IN2 is the sensor image to be calibated.
+
+The calibration can be dropped and the least squares fit for each pixel
+can be output in the A and B images.  Select <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/calfit_level2.html#mode">mode</A>=fitonly for this option.
+Also, if numerous extreme values (dead sensor pixels) are ruining the
+average value, the median value can be selected.
+
+(alz comment) I'm not sure, but dead pixels may have been causing lsq fit
+error returns.  Adespike of the inputs cured but too expensive.  So I
+intercepted the lsq error message and output (0,0) as gain and offset.
+
+Quadratic fit is performed if a third output file name is given. Can be
+used only for the FITONLY <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/calfit_level2.html#mode">mode</A>.
+
+The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/calfit_level2.html#inverse">INVERSE</A> keyword causes the program to invert y=ax+b solution
+into x=ay+b solution.  Can be used to invert quadratic as well.
+TIMING: 
+
+TBD
+
+ ORIGINAL PROGRAMMER:    A. Zobrist          12 Feb 2006
+<A NAME="CogProg"> COGNIZANT PROGRAMMER:   A. Zobrist          12 Feb 2006</A>
+ 
+ REVISION HISTORY
+  2006-02-12 AZ  Initial version
+  2006-12-18 AZ  Quadratic fit added
+  2006-12-19 AZ  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/calfit_level2.html#inverse">Inverse</A> keyword added
+  2008-01-03 WLB switched to USES_ANSI_C AND LIB_CARTO; misc cleanup  
+  2019-08-22 WLB - IDS-7922 - Cleaned up -Wall warnings.
+  
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/calfit_level2.html#inp"><H3>INP</H3></A>
+STRING - Calibration files
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/calfit_level2.html#out"><H3>OUT</H3></A>
+STRING - (A,B) calibration for
+linear case
+STRING - (A,B,Q) calibration
+for quadratic case
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/calfit_level2.html#calval"><H3>CALVAL</H3></A>
+REAL - Abscissa of the input
+calibration files
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/calfit_level2.html#inverse"><H3>INVERSE</H3></A>
+KEYWORD - invert y=ax+b solu-
+tion into x=ay+b solution
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/calfit_level2.html#mode"><H3>MODE</H3></A>
+KEYWORD - select calibration or
+fit only, and calibration can
+be to average or median value
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/calfit_level2.html#size"><H3>SIZE</H3></A>
+INTEGER - Region of input files
+to be concatenated
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/calfit_level2.html#sl"><H3>SL</H3></A>
+INTEGER - Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/calfit_level2.html#ss"><H3>SS</H3></A>
+INTEGER - Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/calfit_level2.html#nl"><H3>NL</H3></A>
+INTEGER - Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/calfit_level2.html#ns"><H3>NS</H3></A>
+.END
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/calfit.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/calfit.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

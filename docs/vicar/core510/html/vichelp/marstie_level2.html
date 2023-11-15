@@ -1,0 +1,523 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for MARSTIE</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie.html">MARSTIE</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+There are two options for describing input images. 
+
+Either:
+List the image file names 
+
+Or:
+provide an ascii file with the file names listed, one per record.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out_tpt"><H3>OUT_TPT</H3></A><pre>
+Output tiepoint table.  Can be in the old text <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#format">format</A>, or in XML (the
+default).
+
+The program checks to make sure this file does not exist before running.
+This should prevent (all too common) accidental overwrites.
+
+The old <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#format">format</A> consists of an ASCII table with a header, a record indicating
+the number of tiepoints, then a series of records, one per tiepoint.  Values
+in the record are:
+laft_image, right_image, left_sample, left_line, right_sample, right_line,
+corrected_sample, corrected_line, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#quality">quality</A>, interactive_flag
+
+The new XML <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#format">format</A> contains similar information in a reasonably self-descriptive
+XML <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#format">format</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="in_tpt"><H3>IN_TPT</H3></A><pre>
+The input tiepoint file.  If not specified, tiepoints are automatically
+generated around the edges of the images.
+
+Note:  currently, if <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#in_tpt">IN_TPT</A> is given but -interactive is not, then the
+program will do nothing except write the output.  This can be used to
+convert tiepoint file formats.  If you wish to auto-gen more tiepoints
+for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#pairs">pairs</A> that don't have any, you can add to a tiepoint file (or merge
+them) using -ADD_PAIR.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="band"><H3>BAND</H3></A><pre>
+The vicar image <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#band">band</A> number. Defaults to 1
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="border"><H3>BORDER</H3></A><pre>
+The width of a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#border">border</A> all around the image to avoid in selecting
+pixels for correlation.
+Also is the width added to the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#template">template</A> area all around to permit
+rotation of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#template">template</A>.
+ Defaults to 9.
+ 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="busy"><H3>BUSY</H3></A><pre>
+The business threshold.
+Any correlation area must have a business above <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#busy">BUSY</A> to be correlated.
+Business=mean pixel difference in sample + mean pixel difference in line.
+Defaults to 1.0
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="template"><H3>TEMPLATE</H3></A><pre>
+Correlation size. Must be an odd number. Defaults to 25 square.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="search"><H3>SEARCH</H3></A><pre>
+Correlation <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#search">search</A> area. Must be an odd number. Defaults to 49 square.
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#search">SEARCH</A> &gt> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#template">TEMPLATE</A>. If search is only a bit larger than template then
+many correlations will abort because they will be prohibited from
+searching in promising directions. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="quality"><H3>QUALITY</H3></A><pre>
+Minimum acceptable correlation <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#quality">quality</A>. 
+In batch, correlations with qualities below <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#quality">QUALITY</A> will be rejected. 
+Interactively, correlations with qualities below <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#quality">QUALITY</A> will be displayed
+for interactive editing.  Setting <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#quality">QUALITY</A> to 1.0 will force all tiepoints
+to be displayed (this is not recommended for batch mode!).
+Qualities range from 0 (poor) to 1 (excellent).
+Defaults to 0.6  
+
+When an input tiepoint file is given (using <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#in_tpt">IN_TPT</A>), and -interactive is
+on, then normally only tiepoints which have not already been interactively
+viewed will be available for editing.  This is because a tiepoint's <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#quality">quality</A>
+is set to 1.0 after it has been interactively edited (presumably the user
+got it spot-on).  If you wish to review old tiepoints again, however, simply
+specify a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#quality">QUALITY</A> greater than 1.  This will force *all* tiepoints in the
+file to be interactively edited again.
+
+TBD:  Use the interactive flag in the file, rather than setting <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#quality">quality</A> to 1.0.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="interact"><H3>INTERACT</H3></A><pre>
+To select tiepoints manually.
+MARSTIE will select and correlate tiepoints automatically and will display the
+successful tiepoints on the images. The user can then edit the bad ones 
+or add new ones.  Interactive points are not correlated by MARSTIE to refine
+them, but the "tp" program has a built-in correlator if desired.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="cull"><H3>CULL</H3></A><pre>
+To keep only the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#cull">CULL</A> best <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#quality">quality</A> tiepoints per image pair.
+Defaults to 1
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sigma"><H3>SIGMA</H3></A><pre>
+Keep tiepoints within <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#sigma">SIGMA</A> standard deviations of the mean shift
+for each pair.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="maxshift"><H3>MAXSHIFT</H3></A><pre>
+When tiepoints are automatically generated, they may be rejected due to
+excessive shift in the line and/or sample values.  This prevents the
+correlator from introducing extremely bad tiepoints.  Sometimes, however,
+the pointing may be so bad that excessive shifts are needed to bring the
+mosaic into line.  Raising this parameter will allow such large shifts.
+Or, if the pointing is already good, and the correlator gives bad results,
+this parameter may be reduced to eliminate some of the bad points.
+
+Default: 100.0 pixels
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="edit_type"><H3>EDIT_TYPE</H3></A><pre>
+SINGLE_EDIT mode is the traditional default.  It brings up one tiepoint at
+a time in tp, based on the correlation <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#quality">quality</A>.
+
+MULTI_EDIT mode is a new mode.  It brings up ALL tiepoints for each overlap,
+allowing you to see them all in tp at once.  See the main help for details.
+
+Note that the edit type is ignored unless -<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#interact">INTERACT</A> is on.  Also, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#quality">QUALITY</A>
+is ignored with -MULTI_EDIT on.
+
+MULTI_EDIT is required for ALL_PAIRS, NEW_PAIRS or ADD_PAIRS to take effect.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="pairs"><H3>PAIRS</H3></A><pre>
+This parameter is only effective if -<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#interact">INTERACT</A> and -MULTI_EDIT are on.
+
+With the default, -TIE_PAIRS, only image <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#pairs">pairs</A> that have one or more
+tiepoints will be presented in tp.  This is best for large mosaics, as the
+combinatorial explosion issue would make ALL_PAIRS extremely painful.
+
+With -NEW_PAIRS, it is like the above, but the only <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#pairs">pairs</A> that are brought
+up are those that contain a tiepoint with the interactive flag false.  The
+interactive flag is the last value in the tiepoint file.  This allows you to
+pick up where you left off in -MULTI_EDIT mode.  Set special exit status,
+save the tiepoint pair, and the program exits.  When you run marstie again,
+set -new_pairs, and the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#pairs">pairs</A> you've already edited will not be presented
+again.
+
+This is also useful to change just a few <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#pairs">pairs</A>.  By editing the tiepoint file
+and changing the interactive flag, only those <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#pairs">pairs</A> will be edited.
+
+With -ALL_PAIRS, every possible image pair is brought up in tp, whether or
+not a tiepoint is found.  This is useful for small mosaics (such as MER MI),
+if the automatic tiepoint finder doesn't find anything.  It's also useful for
+mixed-instrument mosaics, for which tiepoints are rarely automatically found.
+
+With -ADD_PAIRS, an input tiepoint file must be given.  First, the automatic
+procedure for determining which <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#pairs">pairs</A> have overlaps is performed (as with
+-TIE_PAIRS or -NEW_PAIRS when no input tiepoint file is given).  Then, the
+input tiepoint file is examined.  If any tiepoints exist for a given pair
+in the input tiepoint file, then the automatic tiepoints for that image pair
+are deleted.  The auto tiepoints are then merged with the input tiepoints, and
+it proceeds as in -NEW_PAIRS.
+
+The -ADD_PAIRS mode is good for merging tiepoint sets done at different times.
+If a section of a larger mosaic has already been tiepointed, -ADD_PAIRS can
+be used to accept all those points, and add whatever is missing from the new
+images.  You can also merge two sets done independently into one input tiepoint
+file, then -ADD_PAIRS will find and present the tiepoints between the sets.
+
+Note that if all tiepoints of a pair were deleted originally, that pair will
+come up again if the auto tiepoint finder thinks there is an overlap.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sep_angle"><H3>SEP_ANGLE</H3></A><pre>
+Maximum separation angle for image <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#pairs">pairs</A>.  If the camera orientations are
+separated by more than this angle, the pair is skipped.  This provides a
+quick efficiency boost by rejecting spurious <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#pairs">pairs</A>.
+
+Typical values:  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#sep_angle">sep_angle</A>=53 for MER navcam
+                 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#sep_angle">sep_angle</A>=36 for MER pancam
+
+TBD: This should be calculated from the camera FOV in the future.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="start_key"><H3>START_KEY</H3></A><pre>
+Starting key number for the tiepoint file (XML <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#format">format</A> only).  Tiepoint files
+contain a list of images, each of which is associated with an integer key.
+Setting <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#start_key">START_KEY</A> to some value allows tiepoint files to be merged easily,
+without the keys conflicting.  It is acceptable to have the same image in
+different sections of a merged file (with different keys); they are properly
+merged when read in.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="format"><H3>FORMAT</H3></A><pre>
+There are two tiepoint file formats: "old" is the simple text-based list,
+as used for most of MER, while "xml" is an XML-based <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#format">format</A> that supports
+additional tiepoint types.  The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#format">FORMAT</A> parameter controls which one to use.
+Over time the use of "old" should be phased out and eventually the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#format">FORMAT</A>
+parameter will disappear.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="normal"><H3>NORMAL</H3></A><pre>
+The local mars <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">surface</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#normal">normal</A> vector coordinate system specified by <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surf_coord">SURF_COORD</A> 
+parameter (defaults to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">surface</A> fixed).
+For most pan/tilt cameras, if the lander is not tilted this vector
+would be: <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#normal">normal</A>=(0,0,-1).  ie: x_component=0, y_component=0, z_component=-1.
+This need not be a unit vector.  This vector is used to define the
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">surface</A> plane to which image points are projected in order to minimize
+parallax.
+For SPHERE1/2 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">surface</A> models, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#normal">normal</A>'s first parameter is used to
+denote sphere's radius.  Thus to describe sphere of radius R, user
+would specify <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#normal">normal</A>=(R, 0, 0).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ground"><H3>GROUND</H3></A><pre>
+Any point on the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">surface</A>, in coordinate system specified by <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surf_coord">SURF_COORD</A> parameter
+(defaults to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">surface</A> fixed).  This defines where the tilted plane is in space.  
+Although any point may be used, normally the point just "under" the origin is selected.
+Defaults:
+Mars Pathfinder:  (0.0, 0.0, 0.0)       (lander zero point is on the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#ground">ground</A>)
+Mars 98 Lander:   (0.0, 0.0, 1.64)      (lander zero point is on top of deck)
+MER           :   (0.0, 0.0, 0.294)
+For MER images taken on top of the lander, the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#ground">ground</A> is roughly at (0.0, 0.0, 0.7)
+For SPHERE1/2 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">surface</A> models, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#ground">GROUND</A> parameter is used to denote sphere's
+center.  
+    
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="surf_coord"><H3>SURF_COORD</H3></A><pre>
+The coordinate system that <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">surface</A> parameters like <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#ground">GROUND</A> and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#normal">NORMAL</A> are defined in.
+For valid values refer to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#coord">COORD</A> parameter description.  The interpretation of the 
+values is dependent on the mission. Defaults to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">surface</A> fixed coordinate system.
+Note that no validation is done for input strings because <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#coord">COORD</A> is using the same
+values.  So user needs to be extra careful in specifying <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surf_coord">SURF_COORD</A> value.  For 
+example <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#coord">COORD</A>=local would be correctly interpreted to mean LOCAL_LEVEL because of
+validation process.  On the other hand specifying <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surf_coord">SURF_COORD</A>=local would lead
+to underlying code treating the input value as invalid and reverting to default
+which is FIXED frame.  So the values for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surf_coord">SURF_COORD</A> should be spelled exactly as
+found in the list of valid values for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#coord">COORD</A> parameter.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="surface"><H3>SURFACE</H3></A><pre>
+The type of mars <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">surface</A> to use. The surface is used to intercept view rays
+emanating from the cameras in order to model out parallax between the
+stereo cameras. The options are <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">surface</A>=INFINITY which means no surface
+is used, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">surface</A>=PLANE (the default case). If surface = PLANE then the plane
+is defined by the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#normal">NORMAL</A> and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#ground">GROUND</A> parameters.  For the cases when PLANE 
+doesn't match local topography sufficiently well, here are two sphere <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">surface</A>
+models: <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">surface</A>=SPHERE1 and surface=SPHERE2.  SPHERE1 is useful to model
+convex surfaces like hills, it returns closest(first) ray-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">surface</A> intersection 
+point.  SPHERE2 is useful to model concave surfaces, like crater when the
+camera point is outside looking in, it returns farthest(second) ray-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">surface</A> 
+intersection point.  For the case when camera is inside the sphere <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">surface</A>, 
+like rover sitting in the crater, there is only a single intersection point
+and SPHERE1 and SPHERE2 behave exactly the same. Last, MESH is a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">surface</A>
+model defined by a mesh file (.obj) which path is given with <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surf_mesh">SURF_MESH</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="surf_mesh"><H3>SURF_MESH</H3></A><pre>
+Mesh OBJ file to use as the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">surface</A> model. For the mesh to be used,
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">SURFACE</A> must be set to MESH. The coordinates of the mesh vertices can be 
+expressed in any CS. However the mesh CS must be supplied via <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surf_csfile">SURF_CSFILE</A>.
+If <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surf_csfile">SURF_CSFILE</A> is not used, then the mesh is assumed to be to the CS that
+results from <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#coord">COORD</A> or <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surf_coord">SURF_COORD</A>
+
+VARI <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surf_csfile">SURF_CSFILE</A> 
+File name of a vicar file whose CS (contained in the labels) will be read and
+assigned to the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">SURFACE</A> model. The type of image and its content are of no
+interest, we are just reading the CS. That CS will supersede any other <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">surface</A> 
+CS definition (<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#coord">COORD</A> or <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surf_coord">SURF_COORD</A>). Its typical use is to supply a CS to a
+given mesh file (expectedly the XYZ from which the mesh is computed from, but
+doesn't have to). But <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surf_csfile">SURF_CSFILE</A> could be use to define a CS in which <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#normal">NORMAL</A> 
+and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#ground">GROUND</A> for a PLANE <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">surface</A> are expressed in.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="config_path"><H3>CONFIG_PATH</H3></A><pre>
+A colon-separated list of directories in which to look for configuration
+and calibration files.  Environment variables are allowed in the list
+(and may themselves contain colon-separated lists).  The directories are
+searched in order for each config/cal file when it is loaded.  This allows
+multiple projectes to be supported simultaneously, and allows the user to
+override any given config/cal file.  Note that the directory structure below
+the directories specified in this path must match what the project expects.
+For example, Mars 98 expects flat fields to be in a subdirectory named
+"flat_fields" while Mars Pathfinder expects them to be directly in the
+directory specified by the path (i.e. no intermediate subdirectories).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="point_method"><H3>POINT_METHOD</H3></A><pre>
+Specifies a mission-specific pointing method to use.  Normally this
+parameter is not used, in which case the "default" pointing methods
+are used.  Some missions may have special, or alternate, pointing
+methods available, which are indicated by this string (for example,
+backlash models, using arm joint angles instead of x/y/z/az/el, etc).
+A substring <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#search">search</A> is used, so multiple methods (where that makes sense)
+can be specified by separating the keywords with commas.
+
+Note that nav files created using one pointing method will most likely
+not be compatible with a mosaic created using a different pointing method.
+
+The methods available vary per mission, but some methods available at
+the time of this writing are:
+
+BACKLASH : Mars 98 SSI only.  Selects a backlash pointing model,
+which adjusts the telemetered azimuth and elevation values based on
+knowledge of the camera's mechanical backlash and the direction the
+motor was travelling when the image was taken.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nosite"><H3>NOSITE</H3></A><pre>
+Disables all label-derived parameters to the Site mechanism which underlies
+coordinate systems.  This forces all sites to be identical, with all rotations
+and offsets set the same.  In the case of MPF or Mars 98, this disables
+the lander quaternion and offset (sets them to identity and 0, respectively).
+This option should not be used with images taken from different vantage
+points (e.g. the spacecraft moved, or mixing a lander and a rover) or
+invalid results will be obtained.  The use of this option invalidates the
+Fixed coordinate frame; any values reported in the Fixed frame will not
+correctly reflect the orientation of the lander/rover.
+
+Obviously, this option should be rarely used; it is intended for when the
+image labels defining the site are invalid or inconsistent.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rsf"><H3>RSF</H3></A><pre>
+Rover State File.  This is a list of filenames to load containing
+Rover State information.  These files contain position and orientation
+information for a rover (or other mobile spacecraft) at various sites.
+They are in XML <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#format">format</A>.  See the "Rover Motion Counter (RMC) Master File SIS"
+for details on these files.
+
+Rover State Files have a priority order.  The files listed first have
+the highest priority.
+
+Environment variables may be used in the list.
+
+For MER, if a directory is specified, then that directory is searched for
+RMC Master files and any found are loaded.  The directory structure and
+filename convention is covered in the RMC SIS.  The directory specified
+is the one containing "master", so if &ltdir&gt is the name specified in the
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#rsf">RSF</A> parameter, the following files will be searched for:
+
+&ltdir&gt/master/<mission>_Master.svf
+&ltdir&gt/master/<mission>_Site_<n>_Master.rvf
+
+The name of each file loaded is printed to the stdout log for reference.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="debug_rsf"><H3>DEBUG_RSF</H3></A><pre>
+If enabled, this causes the internal database of RMC locations to be
+printed out to the stdout log.  This is after the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#rsf">RSF</A> files have been
+loaded and the coordinate systems read from the input label(s).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord"><H3>COORD</H3></A><pre>
+This parameter is ignored by marstie.  It is here for compatibility
+with subroutines used by other programs (see e.g. marsmap).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord_index"><H3>COORD_INDEX</H3></A><pre>
+This parameter is ignored by marstie.  It is here for compatibility
+with subroutines used by other programs (see e.g. marsmap).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="fixed_site"><H3>FIXED_SITE</H3></A><pre>
+Specifies which major Site is the "Fixed" Site for this run.
+
+Historically, MPF and M98 had a single "<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#surface">Surface</A> Fixed" frame which never
+moved, and which all other coordinate system frames were referenced to.
+With the advent of long-range rovers (such as MER and FIDO), that became
+insufficient.  The rover traverses far enough that errors in knowledge of
+coordinate system offset and orientation become unacceptable.
+
+For this reason, a system of major Sites was introduced.  Periodically
+during the mission, a Site frame is declared.  This then becomes the
+reference frame for all activities until the next Site is declared.
+References are kept local, and errors don't propogate across Sites.
+
+However, if images from more than one Site are combined together, the
+Site's must be placed relative to each other.  Therefore a single reference
+frame is still needed to combine different sites.
+
+The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#fixed_site">FIXED_SITE</A> parameter controls which of the major Site frames is
+the reference ("fixed") site for this program run.  This fixed frame
+can vary in different program runs, but is constant throughout one
+execution.
+
+If not specified, <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#fixed_site">FIXED_SITE</A> defaults to the minimum Site number (i.e.
+lowest numbered, or earliest chronologically) used in all input images.
+Normally this default is sufficient; rarely must <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#fixed_site">FIXED_SITE</A> be specified.
+
+One or more Rover State Files must usually be specified in order to combine
+image from more than one Site.  These describe the relationship between
+sites.  See the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marstie_level2.html#rsf">RSF</A> parameter.
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

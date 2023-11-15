@@ -1,0 +1,132 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for GTGEN</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen.html">GTGEN</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+There are five cases to consider:
+1.  single output file, no <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#add">add</A>.
+2.  single input, single output file, no <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#add">add</A>.
+3.  single input, single output file, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#add">add</A>.
+4.  two input, single output file.
+5.  one input, no output (update case)
+6.  one input, no output (update case), <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#add">add</A>
+
+The first case will create a VICAR file from the parameters with
+NL=1 NS=1 (i.e., a single pixel).  This is handy as a holder of a
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GeoTIFF</A> label.  If a file exists already, it will be erased.
+
+The second case will put the parameters into the state label of a VICAR
+image file.  If any state parameters exist, THEY WILL BE ERASED.  This
+erasure includes ALL state labels, whether <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GeoTIFF</A> related or not.
+
+The third case will <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#add">add</A> the parameters into the state label of a VICAR
+image file.  If any state parameters exist, they are kept.  A special
+case for <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#tiecnvrt">TIECNVRT</A>, an existing mapping will be deleted since it doesn't
+make sense to have two mappings.
+
+The fourth case will put the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GeoTIFF</A> state labels of the second
+VICAR input to the state label area of a VICAR image.  If any state
+parameters exist, THEY WILL BE ERASED.  This erasure includes ALL
+state labels, whether <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GeoTIFF</A> related or not.
+
+The fifth case will put the parameters into the state label of a VICAR
+image file.  If any state parameters exist, they are deleted.  This case
+uses update on the vicar label and is the fastest method for large files.
+
+The sixth case will <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#add">add</A> the parameters into the state label of a VICAR
+image file.  If any state parameters exist, they are kept.  This case
+uses update on the vicar label and is the fastest method for large files.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+The output will be a copy of the first input image with a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GeoTIFF</A>
+label inserted from the parameters or the second input image.
+
+If there is no first input, then the output will be a 1 x 1 image
+containing the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GeoTIFF</A> label from the parameters.  The GeoTIFF label
+will be in the state area of the image.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="geotiff"><H3>GEOTIFF</H3></A><pre>
+The key-value pairs are expressed as "key=value".  Double quotes
+must be doubled inside the TAE double quotes (see example below).
+Parenthetical documentation can be added as part of the strings.
+
+The format is flattened <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#out">out</A> for VICAR label purposes.  The higher
+level descriptors such as GeoKeyDirectoryTag are not used in the
+vicar table.  They are restored when an external <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GeoTIFF</A> label is
+created.   The following example is taken from 3.1.1 of the 
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GeoTIFF</A> Format Specification REv 1 (see references).
+
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">geotiff</A>=("ModelTiePointTag=(0,0,0,350807.4,5316081.3,0.0)", "ModelPixelScaleTag=(100.0,100.0,0.0)", "GTModelTypeGeoKey=1(ModelTypeProjected)", "GTRasterTypeGeoKey=1(RasterPixelIsArea)", "ProjectedCSTypeGeoKey=32660(PCS_WGS84-UTM-zone_60N)", "PCSCitationGeoKey=""UTM Zone 60 N with WGS84""")
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="add"><H3>ADD</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#add">Add</A> can only be used in the single input cases.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="tiecnvrt"><H3>TIECNVRT</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GeoTIFF</A> standard implies that a mapped image can be represented
+by a single tiepoint and a scale.  Actually, the scale can include
+negative values to indicate that the image storage is "flipped" from
+the VICAR order (starting at the top left of the image and running
+along the top in sample order, then down in line order), or a matrix
+indicating that the image is rotated in addition.  These 
+representations are very hard for the user to set up, so this
+keyword will convert a simpler set of three tiepoints into a
+tiepoint-scale-model format, using the model matrix only if needed
+(i.e., the simplest format is decided automatically by GTGEN).
+
+Only the first tiepoint is kept, and only the first three are used
+to calculate.  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#tiecnvrt">TIECNVRT</A> cannot be used with the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#add">ADD</A> keyword.
+
+As an example, a DMA DTED can be input (without disturbing its
+lines and samples format) by the following tiepoints:
+
+        "ModelTiePointTag=(0,0,0,121.0,25.0,0.0)"
+        "ModelTiePointTag=(1200,0,0,121.0,26.0,0.0)"
+        "ModelTiePointTag=(0,1200,0,122.0,25.0,0.0)"
+
+DMA DTED also uses RasterPixelIsPoint, and has the rotation diagram
+
+        369
+        258
+        147
+        
+where 123 is the first line, 456 is the second line, etc.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rectfit"><H3>RECTFIT</H3></A><pre>
+The cross terms are simply set to zero.  That is, 
+
+       north   =   a * line  +  b * sample  + c
+       east    =   d * line  +  e * sample  + f
+
+either (a,c) is set to (0,0) or (b,d) is.  For a rectilinear
+image, one of these pairs should be zero, but approximations
+or rounding in the tiepoints cause one of the pairs to be small 
+numbers close to zero.  Which pair is a function of the rotation
+of the image.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

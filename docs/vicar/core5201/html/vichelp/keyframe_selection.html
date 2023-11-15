@@ -1,0 +1,325 @@
+<HTML>
+<HEAD><title>HTML Help for KEYFRAME_SELECTION</title></HEAD>
+<BODY>
+<H1>Help for KEYFRAME_SELECTION</H1>
+<pre>
+
+Keyframe_selection allows the user to obtain a list of keyframes from an initial
+list of frames. The chosen keyframes should have good baselines for both feature tracking plus triangulation and pointing correction via bundle adjustment. The 
+goal is to eliminate frames which can be problematic in the bundle adjustment
+process. Typically, pairs of frames with very short baselines tend to have very
+good feature tracking but the resulting XYZ points can have a large uncertainty.
+Inaccurate XYZ points can drive bundle adjustment towards a local minimum, and 
+fail in correctly optimizing the input camera pointings. On the other hand, very
+large baselines tend to have poorer feature tracking due to perspective 
+distortions and lighting changes, but tend to be better suited for triangulation
+of XYZ points. There, we seek a "sweet spot" in the baseline of the input images
+such that both feature tracking and the resulting bundle adjustment process can
+be as accurate as possible. 
+
+Keyframe selection is non-unique, meaning that different frames can be obtained
+depending on run parameters and what the user desires. Currently, two modes are
+supported: <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#sequential">sequential</A> processing and global processing. Sequential processing 
+is better suited for straight, linear motions such as those achieved by the 
+Mars helicopter, where a given frame tends to share tiepoints only with other
+frames in its temporal vicinity. Global processing is more general and includes
+any type of motion, such that any frame can share tiepoints with any other. This
+includes the movement of a robotic arm, a rover traversing terrain it had 
+already visited, etc.
+ 
+
+PURPOSE:
+To perform a selection of keyframes from an original list of images. The set of 
+overlapping images are related to each other by tiepoints (input). The keyframes
+are recorded in a .txt file (output).
+
+The parameters and overall usage of KEYFRAME_SELECTION is related to the 
+MARSNAV2 program, and is expected to used in conjunction with MARSNAV2, which 
+would receive keyframes as input. The overall goal of keyframe selection is to provide a set of frames to marsnav2 which provide better results than the 
+original list. 
+
+KEYFRAME_SELECTION supports any mission, instrument, and camera model supported 
+by the Planetary Image Geometry (PIG) software suite.
+
+
+EXECUTION:
+
+keyframe_selection <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#inp">inp</A>=ascii_listoffiles <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#out">out</A>=keyframes.txt <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#in_tpt">in_tpt</A>=images.tpt
+
+where ascii_listoffiles is a text file of image names and locations, one per 
+line, containing the list of filenames to select keyframes from.
+
+An input tiepoint list must be provided.
+
+Note: there are two tiepoint file formats; "old" is the text-based list,
+while "xml" is an XML-based format.  The format is auto-detected on read.
+Over time "old" should be phased <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#out">out</A>. Output tiepoint file (see OUT_TPT)
+is always in the new XML format. This can be converted back to the old 
+format if necessary using marstie.
+
+USAGE:
+It is important that all images be connected to at least one other via 
+tiepoints, and also strongly recommended that images be connected by 
+"tracks". A track is an extension of a traditional tiepoint. A tiepoint is an association of 2 observations from 2 images, a track is an association of N observations from N images. A tiepoint is therefore a 2-elements track. 
+All the observations of a given track "look" at the same ground location. 
+A track is therefore associated to one XYZ ground coordinates. By 
+construction, the maximum number of observations contained in a track is 
+equal to the number of image in the project. It is also important to make 
+sure that images or block of images are not disconnected from each other, 
+otherwise a continuous set of keyframes will not be obtained. While keyframe
+selection does not currently deal with tracks directly, just tiepoints between
+pairwise images, the framework which deals with tiepoints and tracks is very 
+similar. 
+
+
+METHOD:
+
+1) The tiepoint list is analyzed and a connectivity matrix is created such that
+every (i, j) entry provides the number of tiepoints for that specific pair.
+
+2) Given the above connectivity matrix and the tiepoints between frames,  homographies 'H' and fundamental matrices 'F' are computed between all available pairs. A homography can model the relationship between the left and right pixel values of a tiepoint very well for small baselines, but the error increases as
+the baseline grows. The opposite happens for a fundamental matrix. The condition
+number of the data matrix for the fundamental matrix solve tends to be very high
+for short baselines, which is undesirable, so this is also taken into account.
+
+3) A cost function is computed based on the parsimony between F and H for each 
+pair, as well as a measure of the overlap between the images, as measured by the
+ratio of the area occupied by matches versus the total image area, aR. The ratio
+of condition numbers for F and H is also measure, aC. Parsimony is measured via 
+the Geometric Robust Information Criterion (GRIC, Torr et al 1997). The cost 
+function is the following:
+
+	F = aC*aR*relGRIC(F,H)
+	relGRIC(F,H) = GRIC(F)/GRIC(H)
+
+This cost function is designed to increase in value when relGRIC(F, H) 
+increases (meaning that F is a better fit than H for the given tiepoints), but 
+at the same time be penalized for a bad condition number in solving for F 
+relative to solving for H, which typically happens with very short baselines, 
+and for relatively low aR values, which typically happen with large baselines.
+
+4) The above cost function is computed across all available pairs and used to 
+fill the keyframe scores matrix, whose dimension is NxN for N input frames.
+
+5) Depending on the choice of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#sequential">sequential</A> versus global processing, the keyframe
+scores matrix is traversed via distinct algorithms, both of which result in a 
+final list of frames which were chosen as keyframes. 
+
+
+NOTES:
+
+Study the output log file, since it provides valuable information about
+the process, such as tiepoints connectivity, pairwise keyframe scores, 
+etc. Overall, keyframe_selection was designed to be not just a program
+to help automatically detect keyframes from a stream of images, but also
+to be a diagnostic tool about the relationships between pairs of images.
+For example, the resulting log file provides information about the 
+condition numbers of the data matrices for homographies "H" and fundamental 
+matrices "F", where for example a high condition number for the fundamental 
+matrix typically occurs with very small baselines or pure rotations. On
+the other hand, a relatively small number of matches between an image 
+pair coupled with a very good estimation of "F" but poor for "H" typically
+occurs when the baseline is too wide. Therefore, though a set of keyframes
+is found automatically by this program, the output log file allows for
+further analysis in manually adding or deleting more frames.
+
+Finally, any tiepoints containing an image listed in the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#ignore">IGNORE</A> list will be 
+removed from consideration.  This allows you to concentrate on certain images without being influenced by others. <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#ignore">IGNORE</A> accepts ranges of images.
+
+
+PARALLEL EXECUTION
+
+Part of this program has been parallelized using Open MP (OMP), which is built 
+into the g++ compiler.
+
+By default the number of threads used equals the number of cores on the machine
+where the program is being run. Parallel processing can be disabled via the 
+-OMP_OFF keyword.  The number of threads can be controlled by setting the 
+OMP_NUM_THREADS environment variable before running the program.  There are 
+numerous other OMP variables that can be set; see the OMP documentation.  
+However, the number of threads is the only one that is likely to be useful in 
+most cases.
+
+
+TIEPOINT TYPES
+
+Not all formats are supported in keyframe_selection. Only the Traditional (0), 
+fiducial (1), Z surface (8), Dynamic (9), and Miss (10) formats are currently 
+supported. Other types may be added later on. 
+
+IMPORTANT: Note that keyframe_selection is only interested in the pixel 
+association, i.e., left line/sample and right line/sample. It does not use 
+other information (projected line/sample, z, for instance). In essence, 
+all tiepoints are seen as traditional tiepoints by keyframe_selection. Because 
+of the nature of fundamental and homography matrix estimation, 
+keyframe_selection CANNOT (currently) use FIDUCIAL tiepoints, though it can read 
+them in. The following specifies formats for each type of input tiepoint (xml). 
+
+0) Traditional
+
+    &lttie type="0" left_key="1" right_key="2"&gt
+      &ltleft line="53.43125" samp="356.2353"/&gt
+      &ltprojected line="634.3415" samp="43.43512"/&gt
+      &ltright line="634.4556" samp="44.43252"/&gt
+      &ltflags quality="0.85635" interactive="0"/&gt
+    &lt/tie&gt
+
+1) Fiducial
+
+    &lttie type="1" left_key="1"&gt
+      &ltleft line="326.32523" samp="21.43516"/&gt
+      &ltxyz x="0.43156" y="1.3455" z="-0.65425"/&gt
+      &ltflags quality="0.764626" interactive="1"/&gt
+    &lt/tie&gt
+
+8) Z Surface
+
+    &lttie type="8" left_key="1" right_key="2"&gt
+      &ltleft line="53.43125" samp="356.2353"/&gt
+      &ltprojected line="634.3415" samp="43.43512"/&gt
+      &ltright line="634.4556" samp="44.43252"/&gt
+      &ltz z="-0.387"/&gt
+      &ltflags quality="0.85635" interactive="0"/&gt
+    &lt/tie&gt
+
+
+9) Dynamic XYZ
+
+    &lttie type="9" left_key="1" right_key="2"&gt
+      &ltleft line="53.43125" samp="356.2353"/&gt
+      &ltprojected line="634.3415" samp="43.43512"/&gt
+      &ltright line="634.4556" samp="44.43252"/&gt
+      &ltflags quality="0.85635" interactive="0"/&gt
+    &lt/tie&gt
+
+10) Miss Distance
+
+    &lttie type="10" left_key="1" right_key="2"&gt
+      &ltleft line="53.43125" samp="356.2353"/&gt
+      &ltprojected line="634.3415" samp="43.43512"/&gt
+      &ltright line="634.4556" samp="44.43252"/&gt
+      &ltflags quality="0.85635" interactive="0"/&gt
+    &lt/tie&gt
+
+
+
+HISTORY:
+  2022-09-30 Mauricio Hess-Flores - Initial keyframe_selection
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Mauricio Hess-Flores</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#inp"><H3>INP</H3></A>
+Input image(s) or
+file list.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#out"><H3>OUT</H3></A>
+Output keyframes file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#in_tpt"><H3>IN_TPT</H3></A>
+Input tiepoint file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#refimage"><H3>REFIMAGE</H3></A>
+Reference image override.
+Can be a list of images.
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#refimage">refimage</A>=-1 means no reference
+image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#until"><H3>UNTIL</H3></A>
+All images up to
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#refimage">REFIMAGE</A>(1) are reference
+images.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#ignore"><H3>IGNORE</H3></A>
+List of images to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#ignore">ignore</A>
+in the tiepoint list.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#ignore_intra"><H3>IGNORE_INTRA</H3></A>
+Causes intra-set overlaps
+(within the non-reference
+set) to be ignored.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#start_key"><H3>START_KEY</H3></A>
+Starting key number for
+tiepoint file (XML format
+only).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#omp_on"><H3>OMP_ON</H3></A>
+Turns on or off parallel
+processing (multiple threads,
+single machine).  Default: on
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use.
+Ignored by keyframe_selection,
+for now.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+Ignored by keyframe_selection,
+for now.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#rsf">RSF</A>
+parameter.
+Ignored by keyframe_selection,
+for now.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+Ignored by keyframe_selection,
+for now.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#coord">COORD</A>/mission combos.
+Ignored by keyframe_selection,
+for now.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+Ignored by keyframe_selection,
+for now.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#disp_connect"><H3>DISP_CONNECT</H3></A>
+Display or not in the stdout
+the images connectivity matrix.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#disp_cost"><H3>DISP_COST</H3></A>
+Display or not in the stdout
+the cost matrix of pairwise
+cost function values.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#edge_dist"><H3>EDGE_DIST</H3></A>
+Percentage from all edges of 
+the image to discard matches
+from, to account for fisheye
+adverse effects on homography
+and fundamental matrix 
+computation. 
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#sequential"><H3>SEQUENTIAL</H3></A>
+Type of keyframe selection
+to perform; choose between
+"<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#sequential">sequential</A>" and 
+"nosequential" (global).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection_level2.html#sel_percent"><H3>SEL_PERCENT</H3></A>
+Percentage of top-scoring 
+frames to keep during 
+global keyframe selection.
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/keyframe_selection.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

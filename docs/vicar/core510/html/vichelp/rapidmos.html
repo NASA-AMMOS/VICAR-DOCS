@@ -1,0 +1,89 @@
+<HTML>
+<HEAD><title>HTML Help for RAPIDMOS</title></HEAD>
+<BODY>
+<H1>Help for RAPIDMOS</H1>
+<pre>
+PURPOSE
+
+    RAPIDMOS mosaics multiple images into one output image. 
+The operation is similar to that of FASTMOS, but with reduced 
+execution time and with some functions removed.  Up to 40
+images may be mosaicked at one time.  Currently only byte
+images are handled.  NOTE: the non-zero portion of the image
+must be convex.
+
+
+EXECUTION
+
+     rapidmos <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/rapidmos_level2.html#inp">INP</A>=(A1,A2,...,An)  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/rapidmos_level2.html#out">OUT</A>=B   <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/rapidmos_level2.html#nl">NL</A>=NL  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/rapidmos_level2.html#ns">NS</A>=NS   		  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/rapidmos_level2.html#offsets">OFFSETS</A>=(LOFF1,SOFF1, LOFF2,SOFF2, ... , LOFFn,SOFFn)
+	
+     A1,A2,...,An       are the input images.
+     B                  is an output image.
+     <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/rapidmos_level2.html#nl">NL</A>			is the number of line in the output image
+     <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/rapidmos_level2.html#ns">NS</A>			is the number of samples in the output image
+     LOFF1,SOFF1...     line and sample in the output image where the
+                        upper left corner of the input image will be
+                        positioned.
+OPERATION
+
+     Mosaicking  is  performed by reading the lines  of  all 
+     input images and combining them into the line of output 
+     image.   If  the  input pixels overlap,  the  preceding 
+     input image supersedes the successive.   Zero pixels of 
+     the  input images are ignored if they lie  outside  the 
+     non-zero perimeter; however, they are preserved if they 
+     are  a  part  of a "zero-island"  within  the  non-zero 
+     perimeter.  Pointers to the left and right edges of each
+     image are kept and updated for each line.  For this reason
+     concave images (which have more than two edges on a line)
+     will not be mosaicked correctly.  It is the use of these
+     pointers, however, that reduces the CPU time compared with
+     FASTMOS.
+
+
+<A NAME="examples">EXAMPLE</A>
+
+     rapidmos <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/rapidmos_level2.html#inp">INP</A>=(A,B,C) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/rapidmos_level2.html#out">OUT</A>=D <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/rapidmos_level2.html#size">SIZE</A>=(1,1,1000,1000)          	      OFF=(100,100, 100,500, -25,150)
+
+     This example mosaics three images, positioning their left 
+     upper   corners  into  pixels (100,100),  (100,500) and 
+     (-25,150) of the output image respectively.
+
+
+RESTRICTIONS
+
+     1.  Only byte images are supported.
+     2.  The non-zero portion of the images must be convex.
+     3.  There may be up to 40 input images.
+     4.  The maximum number of samples for input or output images is 50,000.
+
+WRITTEN BY:                B. Gokhman
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:      K. F. Evans</A>
+
+REVISION:  2		April 1986
+
+Ported to UNIX             C.R. Schenk (CRI) May 1995
+
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/rapidmos_level2.html#inp"><H3>INP</H3></A>
+Input images (up to 40)
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/rapidmos_level2.html#out"><H3>OUT</H3></A>
+Output image
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/rapidmos_level2.html#size"><H3>SIZE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/rapidmos_level2.html#size">Size</A> field for output picture
+Only <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/rapidmos_level2.html#nl">NL</A> and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/rapidmos_level2.html#ns">NS</A> are used.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/rapidmos_level2.html#nl"><H3>NL</H3></A>
+Number of lines in the output
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/rapidmos_level2.html#ns"><H3>NS</H3></A>
+Number of samples in the output
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/rapidmos_level2.html#offsets"><H3>OFFSETS</H3></A>
+Specifies positioning of inputs
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/rapidmos.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/rapidmos.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

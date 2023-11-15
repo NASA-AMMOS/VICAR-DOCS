@@ -1,0 +1,157 @@
+<HTML>
+<HEAD><title>HTML Help for ROVERNAV</title></HEAD>
+<BODY>
+<H1>Help for ROVERNAV</H1>
+<pre>
+PURPOSE
+A program to determine rover location and orientation.
+
+EXECUTION
+xyznet <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#inp">inp</A>=listoflanderfiles <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#out">out</A>=tiepointdata <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#archive">archive</A>=x
+cat tiepointdata x &gt <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#archive">archive</A>
+rovernav <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#inp">inp</A>=listofroverfiles <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#out">out</A>=rovernavigation <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#archive">archive</A>=archive
+
+METHOD:
+
+This is an interactive program.
+The program will display pairs of stereo rover images one after the other.
+The images are displayed with the left eye image on the right and the right
+eye image on the left. You can see stereo by crossing your eyes.
+NOTE: Input images must be entered in left,right ordered pairs since 
+there is no present way of identifying rover stereo pairs.
+
+For each pair select (by clicking the mouse on) existing tiepoint pairs and
+relocate them to their correct locations in the rover images.
+Each tiepoint pair has it's own color so you can associate tiepoints 
+together. Tiepoints come from the tiepoint <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#archive">archive</A>. You cannot create new
+tiepoints or delete existing ones.
+
+You must first click near a tiepoint, selecting it.
+To assist you in associating tiepoints with real estate the program will then
+display below the rover images the image pairs used to create the tiepoint
+you selected from the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#archive">archive</A>. The specific tiepoint you selected will
+appear in the lower images to help you identify the object this tiepoint
+originally designated. If you still want this tiepoint click on it
+again, relocate it, and click a third time to reposition it. You relocate it 
+by moving the cursor not by dragging.
+If, after moving a tiepoint, you don't want it just click on it again to
+undo it.
+
+The program wants you to relocate tiepoints in order to know where the true
+camera is located and oriented. Only relocated tiepoints are used in this
+analysis.
+
+Three boxes can be clicked on to permit you to:
+1. select the next stereo pair.
+2. select the last stereo pair.
+3. solve for the navigation and restart the program to see the result.
+4. exit the program, keeping the lastest navigation solution.
+
+After you exit the program you need to double click on the upper left of the
+window to remove it.
+
+Each time you request a navigation solution the program will compute the 
+correct rover location from only the tiepoints you moved. The program will then 
+purge all the points you relocated and redisplay the archived tiepoints to
+permit you to observe the quality of the solution. A good solution results
+in the tiepoints overlaying the correct real estate. It will likely require 
+several passes to achieve a good solution. If the rover location/heading is
+poorly known most <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#archive">archive</A> points will fall outside the f.o.v. You'll
+have to move them into the fov by first computing a poor solution with the
+points you can see.
+Good solutions require four things:
+1. At least 3 tiepoints NOT in a line.
+2. Points as near to the rover as possible.
+3. Final tiepoints overlaying the features they represent.
+4. A small residual solution.
+
+After generating a solution you can observe the quality of the fit by clicking
+on the solution of choice. In general to create a new solution you must
+re-select tiepoints. If you don't re-select tiepoints you can observe other
+solutions by just clicking on them since they are all solved for and saved.
+When you exit, the latest solution you selected will be saved to the output
+file.
+
+You can override the x,y,z,heading,pitch, & roll contained in the picture label
+by using the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#force">FORCE</A> keyword.
+
+Normally the input consists of a single stereo pair. You can input many stereo
+pairs if you wish but they must all be taken from the same rover position and
+orientation. It is this single location/orientation which is being solved for.
+
+You have two <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#objective">objective</A> functions to choose from. Your solution is the rover
+x,y,z,heading,pitch,roll which minimizes this function.
+If <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#objective">Objective</A>=1 you are minimizing the distance between the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#archive">archive</A> xyz points
+and the xyz points your relocated rover image tiepoints result in.
+If <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#objective">Objective</A>=2 you are minimizing the distance between where the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#archive">archive</A> xyz 
+points project in the rover images and where your corresponding tiepoints
+lie in the same rover image stereo pairs.
+
+When you have relocated as many points as possible the program will perform
+three solutions and give you the choice of which one you wish to adopt for
+the next iteration (if any). Your choices are:
+1. Compute x,y,z
+2. Compute x,y,z,heading
+3. Compute x,y,z,heading,pitch,roll
+You can iterate or move amongst these as you wish.
+Remember that the last one you selected is saved to the output file.
+To begin another solution you must relocate all you tiepoints again.
+
+The program will write an output file each time you request a solution. When 
+you are satisfied just click on EXIT and the last solution will reside in
+the file.
+
+The output file contains ascii records, one for each input file. The data
+contained within each record is:
+Filename,x,y,z,heading,pitch,roll
+xyz are in meters, mars local level. X is north, y is east, z is down.
+heading,pitch,roll are in degrees. Heading is clockwise from north,
+pitch is positive front down, roll is positive counterclockwise facing
+forward.
+
+Warning: It has not been possible to verify the positive rotation direction
+for pitch and roll from test imagery. 
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#inp"><H3>INP</H3></A>
+ input image list
+ of stereo pairs.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#out"><H3>OUT</H3></A>
+ navigation file
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#device"><H3>DEVICE</H3></A>
+ display <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#device">device</A> type.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#percent"><H3>PERCENT</H3></A>
+ stretch saturation
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#archive"><H3>ARCHIVE</H3></A>
+ input data <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#archive">archive</A> name
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#force"><H3>FORCE</H3></A>
+ Override xyzhpr
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#objective"><H3>OBJECTIVE</H3></A>
+ choice of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#objective">objective</A> function
+ 
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+Ignored by rovernav.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#coord">COORD</A>/mission combos.
+Ignored by rovernav.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/rovernav.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

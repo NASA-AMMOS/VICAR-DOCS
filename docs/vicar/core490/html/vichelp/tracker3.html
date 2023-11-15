@@ -1,0 +1,226 @@
+<HTML>
+<HEAD><title>HTML Help for TRACKER3</title></HEAD>
+<BODY>
+<H1>Help for TRACKER3</H1>
+<pre>
+PURPOSE:
+To acquire tiepoints between two images. Tiepoints can be on a sparse <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#grid">grid</A> 
+or as close as every pixel. The program operates in batch mode only.
+There are two tiepoint acquisition strategies:
+
+1. To acquire points on a regular <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#grid">grid</A>.
+2. To read tiepoint locations from an input tiepoint file and correlate these
+   locations only. Chaining of tiepoints is permitted.
+
+To edit tiepoints already in a tiepoint file you can use interactive program
+tptedt or batch program tptedt2.
+This program obsoletes TRACKER and TRACKER2
+
+EXECUTION STATEMENT:
+
+Creating a new <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#grid">grid</A> of tiepoints:
+    tracker3 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#inp">inp</A>=(left,right) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#out">out</A>=x 
+
+Reading initial tiepoint locations from a tiepoint file:
+    tracker3 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#inp">inp</A>=(left,right,x) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#out">out</A>=y
+
+Chaining the same tiepoints through several images:
+    tracker3 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#inp">inp</A>=(a.img,b.img) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#out">out</A>=t1.pts <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#grid">grid</A>=40
+    tracker3 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#inp">inp</A>=(b.img,c.img,t1.pts) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#out">out</A>=t2.pts '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#extend">extend</A>
+    tracker3 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#inp">inp</A>=(c.img,d.img,t2.pts) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#out">out</A>=t3.pts '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#extend">extend</A>
+
+METHOD:
+  The program has two basic modes and a choice of 5 correlation schemes.
+
+Mode 1:
+   For two input files a <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#grid">grid</A> is created on the first input image.
+A corresponding <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#grid">grid</A> is created on the second input image at the same
+locations and each intersection is correlated. Only the right <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#grid">grid</A>
+intersections are permitted to move.
+
+Mode 2:
+   For three input images the third input file is read and interpreted as 
+initial tiepoint locations. No <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#grid">grid</A> is generated. Each tiepoint is
+assumed to consist of 4 numbers representing the first and second input
+image locations first(line,sample) coordinates and second(line,sample)
+coordinates. Either all 4 are read and applied to their respective images 
+or only the second pair is read (see <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#extend">EXTEND</A> keyword). If only the second pair
+is read it will be copied and used on both images. This permits chaining
+of tiepoints through a movie sequence.
+
+  This program offers a suite of correlation schemes most of which provide
+the Gruen correlation method. This method permits distortion of the 
+correlation area in order to accomodate parallax, and can provide excellent
+accuracy in cases where linear correlators fail completely.
+  The Gruen scheme used here permits distortions between correlation areas of
+the form:
+newline=line*A+sample*B+C
+newsamp=line*D+sample*E+F
+The task of the correlator is to determine the coefficients A-F which permit 
+the best correlation value.
+  All the correlation schemes use the same figure of merit or objective
+function. This is a least squares fit between the template and the search
+area. The correlation value is the coefficient of determination for this fit.
+It ranges from 0 to 1. <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#zero">Zero</A> means no correlation at all, and one means perfect
+correlation or anti-correlation.
+  The effect of the above is that two areas can correlate well even if the
+data has been:
+1. Multiplied, added to, or complemented (any linear intensity mapping 
+   is handled).
+2. Rotated, scaled, flipped, transposed, or skewed.
+
+The correlation options include:
+
+LINEAR    
+  This is a conventional image domain correlator performed on integral
+pixel boundaries followed by an interpolation to achieve sub pixel precision.
+No gruen correlation is available here.
+Best for large area searches where little rotation or scale differences
+occur. Best precision is 1/10 pixel. Fastest method.
+
+ANNEAL
+  This is an unconventional non-deterministic search based upon the annealing
+algorithm Metropolis. Best for large area searches where rotation and
+scale are unknown. Slowest method by far. User tailorable using the 
+parameters <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#limit">LIMIT</A> and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#coefrang">COEFRANG</A>. Best precision is user determined.
+The default value of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#limit">LIMIT</A> should give a precision of about 1/20 pixel with
+clean data.
+
+AMOEBA
+  This is a deterministic downhill simplex search. Slightly slower than LINEAR.
+Provides the highest precision (to 1/100 pixel) and unlimited distortion 
+capability. 
+Limitation: The initial guess must be within the correlation peak or else 
+the tiepoint will be in error. This might mean that the 6 polynomial
+mapping coefficients should ALL be close to the correct result. The only
+way to assure this in extreme rotation cases is to use the ANNAMO mode.
+(This is not an easy problem even for humans.)
+
+LINAMO   (the default mode)
+  This uses the LINEAR mode first to get a starting position and finishes
+with the AMOEBA mode as the end game.
+
+ANNAMO
+  This uses the ANNEAL mode first to get a starting position and finishes
+with the AMOEBA mode as the end game.
+
+KQKKOR
+ This mode uses a correlation technique from 
+Ackermann F. (1984). Digital image correlation : performance and 
+potential application in photogrammetry. 
+
+ It is ultimately uses a least squares fit for 6 parameters described
+above. KQKKOR is also used in VICAR TP program. Tests showed that
+KQKKOR generally works faster than LINAMO technique. KQKKOR demonstrated 6 
+to 10 times improvement in speed over LINAMO. However, the number of matches
+produced by KQKKOR was less than number of matches produced by LINAMO
+by about 80%. On other hand KQKKOR returns less noisy tiepoints. If
+you have a lot of images to do the tracking, we recommend compare
+LINAMO and KQKKOR using samples from the sequence and decide which
+method works better. Be careful, if the template window size (<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#nlw">nlw</A>) is
+getting small ( &lt 5 pixels). Correlator might not have enough
+information to find the answer. 
+
+For those of you who wish to embed the Gruen correlator into their own C 
+programs just copy <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#out">out</A> of Tracker3 the subroutine Gruen and it's called
+routines into your source code. You only need the two #define statements
+# define MAX_LEFT_AREA n  ( n is the max template size dimension, ie: n by n)
+# define MAX_RIGHT_AREA m  ( m is the max search size dimension, ie: m by m)
+
+PROGRAM HISTORY
+
+Author: Jean Lorre
+Revisions:
+  2000-06-15 abi - Added KQKKOR correlation mode. 
+  2017-08-11 wlb - Removed DEBUG from imake.
+  2019-09-18 wlb - IDS-7922 - initialized some variables; cleaned up most -Wall warnings.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#inp"><H3>INP</H3></A>
+First: left image.
+Second: right image.
+Third: tiepoints
+       (optional)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#out"><H3>OUT</H3></A>
+Output tiepoint
+file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#asciifile"><H3>ASCIIFILE</H3></A>
+Name of optional
+output
+ascii tiepoints
+file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#correl"><H3>CORREL</H3></A>
+The correlation
+scheme to use.
+LINEAR or
+AMOEBA or
+ANNEAL or
+LINAMO or
+ANNAMO
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#nlw"><H3>NLW</H3></A>
+Number of lines in
+left image template.
+Odd number.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#nsw"><H3>NSW</H3></A>
+Number of samples in
+left image template.
+Odd number.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#nlarea"><H3>NLAREA</H3></A>
+Number of lines in
+right image search 
+area.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#nsarea"><H3>NSAREA</H3></A>
+Number of samples in
+right image search 
+area.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#grid"><H3>GRID</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#grid">Grid</A> interval in
+pixels.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#percent"><H3>PERCENT</H3></A>
+Percentage of
+template used in
+correlation.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#limit"><H3>LIMIT</H3></A>
+Number of cycles
+permitted in 
+annealing
+algorithm.
+annealing only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#coefrang"><H3>COEFRANG</H3></A>
+Range limits of the
+mapping polynomial.
+annealing only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#print"><H3>PRINT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#print">Print</A> tiepoints
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#zero"><H3>ZERO</H3></A>
+Reject areas with
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#zero">zero</A> dn corners.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#quality"><H3>QUALITY</H3></A>
+Edit poor <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#quality">quality</A>
+correlations.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3_level2.html#extend"><H3>EXTEND</H3></A>
+Specify which tiepoint
+column to use. For
+three input files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/tracker3.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

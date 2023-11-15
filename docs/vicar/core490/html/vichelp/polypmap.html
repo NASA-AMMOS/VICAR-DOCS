@@ -1,0 +1,223 @@
+<HTML>
+<HEAD><title>HTML Help for POLYPMAP</title></HEAD>
+<BODY>
+<H1>Help for POLYPMAP</H1>
+<pre>
+PURPOSE
+
+    POLYPMAP converts coordinates for the specified map projection between
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#latitude">latitude</A>-longitude space and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">line</A>-<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">sample</A> space.
+
+The following projections are currently implemented:
+
+  Mercator					'MERCATOR
+  Lambert Two-Standard Conformal Conic		'LAMBERT
+  Cylindrical (Normal)				'CYLINDRI
+  Simple Cylindrical (Rectangular)		'RECTANGU
+  Polar Stereographic				'POLSTERE
+  Oblique Stereographic 			'STEREOGR
+  Polar Orthographic				'POLORTHO
+  Oblique Orthographic 				'ORTHOGRA
+  Oblique Simple Cylindrical 			'OBLICYL
+  Sinusoidal Equal Area Projection  		'SINUSOID 
+  Oblique Sinusoidal                            'OBSINUSO
+  Mollweide                                     'MOLLWEID
+  Transverse Mercator                           'TMERCATO
+
+     The MIPL subroutine CONVEV (TRANV) is used to perform the map projections.
+     POLYPMAP does not support "image space" or "object space".
+     The results of the ported POLYPMAP  differ from the unported POLYPMAP
+     in a few cases; (see under Precision and Accuracy).
+
+EXECUTION
+
+polypmap  INPUT.GRA OUTPUT.GRA  'projection    '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#mode">mode</A>     'placement      			<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#planet">PLANET</A>=body              <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#scale">SCALE</A>=pixel scale       			<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#latitude">LATITUDE</A>=special lat     <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#longitud">LONGITUD</A>=special long    			<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">LINE</A>=special line        <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">SAMPLE</A>=special sample   			<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#paral1">PARAL1</A>=first parallel    <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#paral2">PARAL2</A>=second parallel  			<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#northang">NORTHANG</A>=north angle     '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#pole">pole</A>			 			<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#latrange">LATRANGE</A>=(minlat,maxlat) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#lonrange">LONRANGE</A>=(minlon,maxlon)  			<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#skip">SKIP</A>=nominal data
+
+
+
+    The map projection, the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#planet">planet</A>, and the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#scale">scale</A> must be specified.
+    The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#mode">MODE</A> keyword is used to indicate the direction of the transformation;
+the default is <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#latitude">latitude</A>-longitude to <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">line</A>-<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">sample</A>; use 'INVERSE for line-samp
+to lat-long.
+    The 'AUTOMAT keyword will cause the special <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">sample</A> to be
+calculated so that latitudes and longitudes inside the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#latrange">LATRANGE</A>,
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#lonrange">LONRANGE</A> box will project to a desired location.   'AUTO placement 
+can only be used for a forward transformation.
+
+
+
+<A NAME="examples">EXAMPLES</A>
+
+polypmap  INPUT.GRA OUTPUT.GRA    'LAMBERT   'AUTOPLAC    			<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#planet">PLANET</A>=MARS      <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#scale">SCALE</A>=0.1     			<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">LINE</A>=10   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">SAMPLE</A>=10		 			<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#latrange">LATRANGE</A>=(30,35)  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#lonrange">LONRANGE</A>=(10,15)   			<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#paral1">PARAL1</A> = 35.83  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#paral2">PARAL2</A>=59.17  
+
+
+
+polypmap  INPUT.GRA OUTPUT.GRA    'MERCATOR    			<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#planet">PLANET</A>=EARTH      <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#scale">SCALE</A>=8.7     			<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#longitud">LONGITUD</A>=118    			<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">LINE</A>=500   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">SAMPLE</A>=1000
+
+
+
+
+NOTE: All latitudes and longitudes are in degrees, and all 
+	longitudes are in West degrees (0 to 360).
+
+
+
+
+    Projection Scaling
+	In all map projections there is at least one point at which the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#scale">scale</A>
+	of the projection equals the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#scale">scale</A> on the sphere. The scale at such
+	points, in km/pixel, determines the size of the input picture in the
+	output area. For the Mercator projection, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#scale">scale</A> is correct everywhere
+	on the equator. For the Lambert, it is valid all along both standard
+	parallels. For the Orthographic and Stereographic it is valid at the
+	center of projection. (See also under Help for parameter <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#proj">PROJ</A>.)
+
+
+        Mercator Projection Parameters 
+             <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#latitude">LATITUDE</A>    <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#longitud">LONGITUD</A>     <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">LINE</A>   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">SAMPLE</A>     
+
+        Lambert Projection Parameters
+ 	     <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#latitude">LATITUDE</A>    <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#longitud">LONGITUD</A>     <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#paral1">PARAL1</A>   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#paral2">PARAL2</A>     <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">LINE</A>   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">SAMPLE</A>
+
+	Normal Cylindrical Parameters 
+             <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#latitude">LATITUDE</A>    <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#longitud">LONGITUD</A>     <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">LINE</A>   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">SAMPLE</A>     
+
+	Simple Cylindrical (Rectangular) Projection Parameters
+             <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#latitude">LATITUDE</A>    <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#longitud">LONGITUD</A>     <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">LINE</A>   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">SAMPLE</A>     
+
+        Polar Stereographic and Orthographic
+	     <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#latitude">LATITUDE</A>    <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#longitud">LONGITUD</A>     <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#pole">POLE</A>    <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">LINE</A>   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">SAMPLE</A>
+		
+        Oblique Stereographic and Orthographic
+	     <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#latitude">LATITUDE</A>   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#longitud">LONGITUD</A>     <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#northang">NORTHANG</A>    <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">LINE</A>   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">SAMPLE</A>
+
+	Oblique Simple Cylindrical
+	     <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#latitude">LATITUDE</A>   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#longitud">LONGITUD</A>     <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#northang">NORTHANG</A>    <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">LINE</A>   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">SAMPLE</A>
+
+	Sinusoidal Equal Area Projection
+             <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#longitud">LONGITUD</A>     <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">LINE</A>   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">SAMPLE</A>     
+
+	Oblique Sinusoidal Projection
+             <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#latitude">LATITUDE</A>   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#longitud">LONGITUD</A>     <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">LINE</A>   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">SAMPLE</A>      <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#paral1">PARAL1</A>
+
+        Mollweide Projection
+             <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#longitud">LONGITUD</A>     <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">LINE</A>   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">SAMPLE</A>     <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#scale">SCALE</A>
+       
+        Transverse Mercator
+             <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#latitude">LATITUDE</A>   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#longitud">LONGITUD</A>     <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">LINE</A>   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">SAMPLE</A>      <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#scale">SCALE</A>
+PRECISION AND ACCURACY
+
+The unported POLYPMAP used a local version of the SUBLIB routine TRANV to do
+coordinate transformations.  The ported POLYPMAP uses the SUBLIB routine 
+CONVEV instead.  The change was made for the following reasons:
+1) The local version of TRANV was ten years behind the SUBLIB version.  It was
+   missing several corrections and several projection types.  Instead of
+   using routine MERCPATCH for Mercator projections, this version of TRANV
+   had one <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">line</A> commented <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#out">out</A>;  this appeared to be an inadequate substitute
+   for MERCPATCH, giving different results.  There was nothing comparable
+   to routine RECTPATCH in the local version of TRANV.
+2) The use of local variants of SUBLIB routines makes VICAR maintenance more
+   difficult.
+3) Jean Lorre and Lucas Kamp said that TRANV was not intended for direct calls
+   from application programs but was intended to be accessed via subroutine
+   CONVEV.  
+
+The results from the ported POLYPMAP differ from the unported POLYPMAP in
+the following cases:
+a) Mercator projection:  Because of the code differences described in 1) above,
+   differences such as the following occur:
+   Input lat,lon:       -60.73      -45.21
+   Output <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">line</A>,samp
+    from ported pgm     -24.04       51.33
+   Output <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">line</A>,samp
+    from unported pgm    86.65       51.33
+
+b) Oblique simple cylindrical projection: The unported local version on TRANV
+   appears to be in error, failing to convert THR1 to east longitude for the
+   calculation of OLAMBDA.  The final equation for computing <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">SAMPLE</A> appears to
+   be different.
+   Differences such as the following occur:
+   Input lat,lon:       -60.73      -45.21
+   Output <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">line</A>,samp
+    from ported pgm     -76.53     -134.44
+   Output <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">line</A>,samp
+    from unported pgm   -76.53      -54.67
+c) Sinusoidal projection:  The computations in the ported TRANV have been
+   overhauled, resulting in minor differences such as the following: 
+   Input lat,lon:       -60.73      -45.21
+   Output <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">line</A>,samp
+    from ported pgm      -9.30       25.58
+   Output <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">line</A>,samp
+    from unported pgm    -9.44       25.69
+
+PROGRAM HISTORY:
+Original Programmer:    Frank Evans	May 1986
+<A NAME="CogProg">Cognizant Programmer:   Steve Pohorsky</A>
+Made portable for UNIX: Steve Pohorsky  Feb 1996
+Revision:
+  25 Jun 92  GMY  Added call to INIT_SPICE 70964
+     Feb 96  SP   Ported to UNIX; now using SUBLIB routine CONVEV instead
+                  of a local version of TRANV.  Works differently in a few
+                  cases: see under Precision and Accuracy.
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#inp"><H3>INP</H3></A>
+Input IBIS graphics-1 file
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#out"><H3>OUT</H3></A>
+Output IBIS graphics-1 file
+to be created.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#proj"><H3>PROJ</H3></A>
+The map projection to use.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#mode"><H3>MODE</H3></A>
+'DIRECT for lat-lon to 
+   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">line</A>-<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">sample</A>
+'INVERSE for <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">line</A>-<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">sample</A> to 
+   lat-lon 
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#planet"><H3>PLANET</H3></A>
+Name of target planetary body
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#scale"><H3>SCALE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#scale">Scale</A> in km/pixel.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line"><H3>LINE</H3></A>
+Special <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">line</A> 
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample"><H3>SAMPLE</H3></A>
+Special <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">sample</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#latitude"><H3>LATITUDE</H3></A>
+Special <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#latitude">latitude</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#longitud"><H3>LONGITUD</H3></A>
+Special longitude
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#paral1"><H3>PARAL1</H3></A>
+First standard parallel(Lambert)
+; or, special longitude for Oblique.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#paral2"><H3>PARAL2</H3></A>
+Second standard parallel
+(Only used for Lambert)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#northang"><H3>NORTHANG</H3></A>
+Angle of north in degrees. 
+(Only used for Oblique Orthographic, 
+Oblique Stereographic,
+and Oblique Cylindrical)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#pole"><H3>POLE</H3></A>
+Visible <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#pole">pole</A>
+(Only used for Polar Orthographic 
+and Polar Stereographic)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#placemen"><H3>PLACEMEN</H3></A>
+ 'AUTO for automatic placement
+ of output in <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#line">line</A>-<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#sample">sample</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#latrange"><H3>LATRANGE</H3></A>
+ <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#latrange">LATRANGE</A> specifies the 
+ <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#latitude">latitude</A> range for 'AUTO 
+ placement <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#mode">mode</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#lonrange"><H3>LONRANGE</H3></A>
+ <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#lonrange">LONRANGE</A> specifies the 
+ longitude range for 'AUTO 
+ placement <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#mode">mode</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#skip"><H3>SKIP</H3></A>
+The number of nominal data
+values to <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap_level2.html#skip">skip</A> over.
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/polypmap.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

@@ -1,0 +1,153 @@
+<HTML>
+<HEAD><title>HTML Help for PLUMAGE</title></HEAD>
+<BODY>
+<H1>Help for PLUMAGE</H1>
+<pre>
+PURPOSE:
+PLUMAGE reads a set of inputs and creates an XML suitable for upload
+(ingestion) into PLACES to update the "telemetry" view.  It is intended to
+be run from a pipeline.  The XML is specific to telemetry upload and
+cannot be used to do <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#user">user</A> updates of PLACES.
+
+This program does not submit the XML to PLACES; use "curl" or other tool
+to do that.  It only generates the XML file.
+
+The input can be a single image, a set of images, or a list file containing
+image filenames.
+
+Only the following labels are examined:
+   IDENTIFICATION.ROVER_MOTION_COUNTER
+   IDENTIFICATION.SPACECRAFT_CLOCK_START_COUNT
+   IDENTIFICATION.<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#product_id">PRODUCT_ID</A>
+   ROVER_COORDINATE_SYSTEM.ORIGIN_OFFSET_VECTOR
+   ROVER_COORDINATE_SYSTEM.ORIGIN_ROTATION_QUATERNION
+   SITE_COORDINATE_SYSTEM.ORIGIN_OFFSET_VECTOR
+   SITE_COORDINATE_SYSTEM.ORIGIN_ROTATION_QUATERNION
+   RSM_ARTICULATION_STATE.ARTICULATION_DEVICE_ANGLE (MSL)
+   PMA_ARTICULATION_STATE.ARTICULATION_DEVICE_ANGLE (MER)
+   ARM_ARTICULATION_STATE.ARTICULATION_DEVICE_ANGLE (MSL)
+   IDD_ARTICULATION_STATE.ARTICULATION_DEVICE_ANGLE (MER)
+   CHASSIS_ARTICULATION_STATE.ARTICULATION_DEVICE_ANGLE
+   HGA_ARTICULATION_STATE.ARTICULATION_DEVICE_ANGLE
+
+By default PLUMAGE will also gather Sites seen in SITE_COORDINATE_SYSTEM
+labels.  This can be disabled via -NO_SITE.  Sites are output only once;
+if a duplicate site is seen then the duplicates are quietly ignored.  Note
+that the actual offset values are NOT compared for consistency.
+
+If the -<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#do_msl_init">DO_MSL_INIT</A> flag is set, then the program will first look at the
+INITIAL_STATE_PARMS group for the ROVER_MOTION_COUNTER and Rover position
+and orientation.  If not found, it will revert to the standard labels.  This
+allows PLUMAGE to find the "initial" state before visodom is run for those
+kind of images.  The flag only applies to MSL images, but it is "safe"
+for all MSL images.  It is ignored for other missions.
+
+It is assumed that the coordinate system groups define the proper CS's for
+the image in question (i.e. the indices match the RMC).  This is NOT checked
+because the condition should hold true for all EDR's, and this should really
+only be run on EDR's.
+
+An SCLK range can optionally be specified; any images outside that range will
+be ignored.
+
+PLUMAGE will also gather mechanism joint angles, and image observation times.
+This can be turned off via -NO_MECHANISMS or -NO_OBSERVATION.
+
+There are many parameters to control what strings go into the generated file.
+They should generally not be used for the intended purpose of this program,
+which is to populate the "telemetry" view (except possibly <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#user">USER</A>).  They are
+simply provided for completeness.
+
+The product ID is appended to the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#method">METHOD</A> string by default, in order to provide
+traceability to the product from which the values came.  This can be disabled
+via -NO_PRODUCT_ID.
+
+The entire &ltorigination&gt tag is disabled by default; use -<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#do_orig">do_orig</A> to turn it
+on.  The &lttrace&gt tag is enabled by default; -no_trace turns it off.
+
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#add_site">add_site</A> parameter adds the given number to all Site indices.  The intent
+is to be able to interact with the development PLACES server using "fresh"
+Site territory (i.e. a range of sites not cluttered with previous data).
+It should obviously never be used in operations.
+
+EXECUTION:
+
+plumage NLAxxx.IMG upload.xml -msl
+curl ....
+
+
+HISTORY:
+2011-11-02 rgd Initial version by B. Deen
+2011-12-05 rgd Updated to new telemSolution XML format
+2012-02-03 rgd Added Site coordinate system
+2012-03-16 rgd Added &lttrace&gt and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#add_site">add_site</A>
+2012-05-23 rgd Added &ltmechanism&gt support, removed Mission param (because
+		needed support is now in the PigFileModel class)
+2012-07-05 rgd Added &ltobservation&gt support
+2012-08-07 rgd Added <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#do_msl_init">do_msl_init</A> support
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER: B. Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#inp"><H3>INP</H3></A>
+Input images or list file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#out"><H3>OUT</H3></A>
+Output XML file
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#user"><H3>USER</H3></A>
+Override <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#user">user</A> name
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#method"><H3>METHOD</H3></A>
+Override <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#method">method</A> string
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#institution"><H3>INSTITUTION</H3></A>
+Override <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#institution">institution</A> string
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Override product ID string
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#do_trace"><H3>DO_TRACE</H3></A>
+Enable or disable the
+trace tag
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#do_orig"><H3>DO_ORIG</H3></A>
+Enable or disable the
+origination tag
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#do_product_id"><H3>DO_PRODUCT_ID</H3></A>
+Can be used to turn off
+appending the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#product_id">product_id</A>
+to the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#method">method</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#do_sites"><H3>DO_SITES</H3></A>
+Can be used to turn off
+Site processing
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#do_mechanisms"><H3>DO_MECHANISMS</H3></A>
+Can be used to turn off
+mechanism angle output
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#do_observation"><H3>DO_OBSERVATION</H3></A>
+Can be used to turn off
+observation output
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#do_msl_init"><H3>DO_MSL_INIT</H3></A>
+Turn on or off MSL mode
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#min_sclk"><H3>MIN_SCLK</H3></A>
+Optional min sclk to process
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#max_sclk"><H3>MAX_SCLK</H3></A>
+Optional max sclk to process
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage_level2.html#add_site"><H3>ADD_SITE</H3></A>
+Number to add to site
+indices, for testing
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/plumage.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

@@ -1,0 +1,355 @@
+<HTML>
+<HEAD><title>HTML Help for MARSCOORDTRANS</title></HEAD>
+<BODY>
+<H1>Help for MARSCOORDTRANS</H1>
+<pre>
+PURPOSE:
+
+This program will translate <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A> coordinates from one form into another.
+The coordinates can come from parameters or a file, and may be output to
+parameters, a file, or stdout.
+
+Coordinates
+-----------
+
+The program works with three types of coordinates:  INPUT, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">MOSAIC</A>, and
+PROJECTION.  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">MOSAIC</A> coordinates are always used; they can be converted to
+or from either of the other two types.
+
+INPUT:  These are line/sample coordinates in the input files.  INPUT
+coordinates are expressed as a triplet of (image_number, line, sample).
+All values are 1-based, so (3.0, 1.0, 1.0) means the upper-left corner of
+the third input image.  Note that the image number is expressed as a float
+for consistency with the other modes, although it will always be an integer.
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">MOSAIC</A>:  These are line/sample coordinates in the mosaic file.  MOSAIC
+coordinates are 1-based, so (1.0, 1.0) refers to the upper-left corner of
+the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A>.  They are in the order (line, sample).
+
+PROJECTION:  These are the projected world-space coordinates, expressed in
+the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A>'s coordinate system (unless overridden by <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#coord">COORD</A> et al).  For
+Cylindrical and Polar projection, PROJECTION coordinates are expressed as
+(azimuth, elevation) in DEGREES.  For Vertical projection, they are expressed
+as (X, Y).
+
+Thus there are four modes, selected by the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#direction">DIRECTION</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#coord_type">COORD_TYPE</A> keywords:
+
+-from_mosaic -input      : <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">MOSAIC</A> -&gt INPUT
+-to_mosaic -input:       : INPUT -&gt <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">MOSAIC</A>
+-from_mosaic -projection : <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">MOSAIC</A> -&gt PROJECTION
+-to_mosaic -projection   : PROJECTION -&gt <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">MOSAIC</A>
+
+Note that for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">MOSAIC</A>-&gtINPUT, the result is not necessarily unique, as the
+point could have come from any of several overlapping inputs.  By default
+only the first matching input is reported; this matches the stacking order
+used to create the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A>.  If you wish to see all possible inputs, specify
+-MULTI.
+
+
+Coordinate Systems
+------------------
+
+The standard PIG <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#coord">COORD</A> parameter set is used to specify the coordinate system
+in which the PROJECTION coordinates are accepted or reported.  Use of these
+parameters does not change the mapping of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A>, only the reporting.
+So for example, a poor man's translation from SITE to ROVER frame could be
+effected by running this program once with -site -projection -to_mosaic,
+and feeding the results back into another run using the same <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A> with
+-rover -projection -to_mosaic.
+
+Input Image Files
+-----------------
+
+Obviously, the input <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A> must always be provided via the MOSAIC parameter.
+Cylindrical, polar, and vertical projections are supported.  Projection
+information is derived from the label; however, these values can be overridden
+by <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#scale">SCALE</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#leftaz">LEFTAZ</A>, etc. (this should rarely be needed).
+
+If INPUT coordinates are used, the input files used to make the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A> must
+be supplied.  The input files should generally match what was used to make
+the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A>, but that is not a requirement.  It is possible to provide a
+subset of images, or even completely different ones.  However, if different
+images are provided, the features in the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A> may not match the features in
+the input, as the transform is mathematical and not feature-based.  Any small
+difference in pointing would be apparent.
+
+In order to truly match the inputs, the nav file used to originally make the
+image must also be supplied.  The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#surface">surface</A> model and projection parameters are
+obtained from the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A> and should not be specified.
+
+Input image files are not necessary if PROJECTION coordinates are used.
+
+Input and Output of Coordinates
+-------------------------------
+
+There are two ways of supplying input coordinates: by parameter or by file.
+
+Parameter input uses the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#in_coords">IN_COORDS</A> parameter.  This parameter is simply a
+list of 2-item (or 3-item for INPUT coords) coordinate values, one after
+the other.  For example, converting the two points (50, 33.2) and (102.1, 27)
+would be specified via:
+
+    <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#in_coords">in_coords</A>=(50, 33.2, 102.1, 27)
+
+Thus <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#in_coords">in_coords</A> contains 2n (or 3n for INPUT) values, where n is the number
+of points to convert.
+
+For an input file, provide the filename in the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#in_file">IN_FILE</A> parameter.  File
+formats are discussed below.
+
+Note that it is possible to use both <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#in_coords">IN_COORDS</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#in_file">IN_FILE</A>.  IN_COORDS
+are translated first, followed by <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#in_file">IN_FILE</A>.  Both end up in all output methods.
+However, this is not possible for the TWOLAYER file format; to use that,
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#in_coords">IN_COORDS</A> must not be specified.
+
+There are three methods of output:  printing, parameter, or file.
+
+Printing is simply that:  the translated coordinates are printed to stdout.
+This occurs unless -noprint is specified.  Each coordinate will be printed
+on its own line.
+
+File output writes the results to a file, in the same format as the input
+file.  The formats are discussed below.  This mode is active if a filename
+is specified in <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#out_file">OUT_FILE</A>.
+
+Parameter output uses the TAE parameter output facility.  This mode may be
+useful for running the program from a script.  For efficiency reasons,
+parameter output is not used unless -USE_PARAM is specified.
+
+Note that any or all of the output modes may be used simultaneously.
+
+Coordinate File Formats
+-----------------------
+
+There are two file formats supported:  a simple list of coordinates ("-flat"),
+or one with prepended counts ("-twolayer).  The same format is used for
+input and output files.
+
+In either case, coordinates are presented one per line and separated by
+spaces, e.g.
+
+50.0 33.2
+102.1 27.0
+
+For INPUT coordinates, there will be 3 values per line.
+
+In the case of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">MOSAIC</A>-&gtINPUT only, and if -MULTI is specified, then there
+can be more than one set of coordinates per line, indicating multiple matches.
+All matches will be printed on the same line.  This means that lines will
+exactly match between input and output files.  It is also possible in this
+mode for the coordinate to map to none of the input images; in this case a
+blank line is output.
+
+A -FLAT file is simply a list of coordinates as specified above.
+
+A -TWOLAYER file has coordinates broken into sets.  Each set is prepended
+by an integer saying how many coordinates are in that set.  The entire file
+is prepended by the number of sets.  Thus the file might look like:
+
+3
+2
+50.0 33.2
+102.1 27.0
+3
+12.5 9.0
+10.0 1004.0
+33.1 42.0
+1
+57.0 1020.0
+
+The first 3 indicates there are 3 sets; the first has 2 entries, the second
+3, and the last 1.
+
+TWOLAYER output requires the input also come from a TWOLAYER file; input from
+parameters is not supported.  (parameters input to a FLAT file is allowed).
+
+EXECUTION:
+
+Convert <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A> coordinates to projection, input via params, output to screen:
+
+marscoordtrans <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A>=mosaic.img in_coord=\(50, 33.2, 102.1, 27\)
+   -from_mosaic -projection
+
+Convert <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A> coordinates to input, using files:
+
+marscoordtrans <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A>.lis mosaic.img mosaic.nav <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#in_file">in_file</A>=coord_list.txt
+   <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#out_file">out_file</A>=coord_out.txt -from_mosaic -input -noprint -twolayer
+
+OPERATION:
+
+The program sets up the input images a la marsmap, and the input <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A> as in
+marsunmosaic.  It then loops through all coordinates provided, runs them
+through the appropriate math exactly like marsmap or marsunmosaic, and
+outputs the results.
+
+NOT IMPLEMENTED YET:
+
+Override of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#surface">surface</A> model via parameters
+Projections other than CYLINDRICAL
+Output via <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#out_coords">out_coords</A> parameter
+
+
+HISTORY:
+Nov. 05  Original version, derived from marsmap and marsunmosaic.
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Bob Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#inp"><H3>INP</H3></A>
+Input image(s) or
+file list (optional).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic"><H3>MOSAIC</H3></A>
+Input <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#in_file"><H3>IN_FILE</H3></A>
+Input file of coordinates
+to translate.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#out_file"><H3>OUT_FILE</H3></A>
+Output file of
+translated coordinates.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#in_coords"><H3>IN_COORDS</H3></A>
+Coordinates to translate.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#out_coords"><H3>OUT_COORDS</H3></A>
+Translated coordinates.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#coord_type"><H3>COORD_TYPE</H3></A>
+Select INPUT or PROJECTION
+coordinates.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#direction"><H3>DIRECTION</H3></A>
+Select <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#direction">direction</A> of
+conversion.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#multimatch"><H3>MULTIMATCH</H3></A>
+Select one or multiple
+results for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">MOSAIC</A>-&gtINPUT
+translations.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#use_parm"><H3>USE_PARM</H3></A>
+Enables <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#out_coords">OUT_COORDS</A>
+output.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#print"><H3>PRINT</H3></A>
+Selects whether to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#print">print</A>
+the results or not.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#file_type"><H3>FILE_TYPE</H3></A>
+Select the coordinate
+file format.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#scale"><H3>SCALE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">Mosaic</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#scale">scale</A> in
+pixels/degree.
+CYL, POLAR ONLY
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#leftaz"><H3>LEFTAZ</H3></A>
+Left <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A> azimuth
+Cylindrical only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#rightaz"><H3>RIGHTAZ</H3></A>
+Right <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A> azimuth
+Cylindrical only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#topel"><H3>TOPEL</H3></A>
+Top <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A> elevation
+Cyl, Polar only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#bottomel"><H3>BOTTOMEL</H3></A>
+Bottom <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A>
+elevation.
+Cylindrical only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#proj_origin"><H3>PROJ_ORIGIN</H3></A>
+Overrides center of
+projection.
+Cyl, Polar only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#up_az"><H3>UP_AZ</H3></A>
+Overrides azimuth at
+top of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A>.
+Polar only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#vert_scale"><H3>VERT_SCALE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">Mosaic</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#scale">scale</A> in
+meters/pixel.
+Vertical only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#maxx"><H3>MAXX</H3></A>
+Size of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A> in X
+(meters)
+Vertical only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#maxy"><H3>MAXY</H3></A>
+Size of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#mosaic">mosaic</A> in Y
+(meters)
+Vertical only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#normal"><H3>NORMAL</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#normal">normal</A> vector.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#ground"><H3>GROUND</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#ground">ground</A> point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#surface"><H3>SURFACE</H3></A>
+The type of mars
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#surface">surface</A> to use
+INFINITY, PLANE, SPHERE1, SPHERE2.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#surf_coord"><H3>SURF_COORD</H3></A>
+Coordinate system used to define
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#surface">surface</A> parameters.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#match_method"><H3>MATCH_METHOD</H3></A>
+Specifies a method
+for pointing corrections.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+pointing correction.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marscoordtrans.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

@@ -1,0 +1,248 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for SPARSE</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse.html">SPARSE</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+1. input image to be blurred or deconvolved.
+2. reference image. This is usually a deconvolved image made from a
+   filled aperture (optional).
+3. the pupil function which can be complex (optional).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+1. output image in same format as input image
+2. the real part of the complex pupil (optional). 
+3. the optical transfer function (optional).
+4. the point spread function (optional).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="circle"><H3>CIRCLE</H3></A><pre>
+To create round sub apertures in the empty pupil.
+Sets of four numbers representing:
+1. line coordinate of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#circle">circle</A> center,
+2. sample coordinate of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#circle">circle</A> center,
+3. radius of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#circle">circle</A> in pixels.
+4. piston phase error in wavelengths ( w ).
+Circles are set to a complex amplitude of 1.
+If the radius is positive the dn will be set to exp(0,w*twopi).
+If the radius is negative the sign and phase are ignored and the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#circle">circle</A> 
+dn is set to (0,0).
+ So, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#circle">circle</A>=(100,100,50,0,100,100,-40,0) creates an annulus 10
+pixels thick centered on 100 100.
+Circles can be written onto the second input file if it exists.
+See METHOD for centering things.
+
+Note: <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#circle">circle</A> data can also be entered as x,y,radius,phase.
+ See the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#scale">SCALE</A> keyword.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ring"><H3>RING</H3></A><pre>
+A <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#ring">ring</A> of equally spaced sub apertures can be created at the maximum permitted
+diameter each of the same radius.
+The first argument is the number of sub apertures.
+The second argument is the sub aperture radius in pixels.
+Example: <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#ring">ring</A>=(13,4.0)
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="spokes"><H3>SPOKES</H3></A><pre>
+Creates <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#spokes">spokes</A>
+1. number of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#spokes">spokes</A>.
+2. number of mirrors/spoke.
+3. center hole radius.
+4. radius of inner <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#circle">circle</A>.
+5. radius increase factor.
+6. (optional) number of circles in an outer <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#ring">ring</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sn"><H3>SN</H3></A><pre>
+The Wiener signal to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#noise">noise</A> of the image.
+This causes SPARSE to treat the input image as a blurred image and to
+apply the Wiener restoration filter:
+otf/(|otf|**2 +1/(<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#sn">sn</A>)**2)
+If <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#sn">SN</A> is not specified the program applies the otf directly to the input image
+and no deconvolution is performed.
+See <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#optimize">OPTIMIZE</A> keyword.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="optimize"><H3>OPTIMIZE</H3></A><pre>
+You have the option to permit SPARSE to determine the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#sn">SN</A> value for you and
+to then use it to deconvolve the input image. In this mode you MUST provide
+a second input file which acts as a reference image. This file should be
+a restored image obtained by a filled aperture. <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#optimize">Optimize</A> finds that <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#sn">SN</A>
+value which minimizes the difference between the restoration and this
+reference image.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="cohere"><H3>COHERE</H3></A><pre>
+Specifies that the system behaves coherently.
+The default is INCOHERE (incoherent behavior).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="defocus"><H3>DEFOCUS</H3></A><pre>
+Amount of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#defocus">defocus</A> expressed as the maximum deviation of a spherical wave
+centered at the pupil location nl/2+1, ns/2+1, in wavelengths.
+We assume the wave coincides with the pupil on a <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#circle">circle</A> of radius nl/4, ns/4
+from the center.
+Example: <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#defocus">defocus</A>=0.5 gives a 0.5 wavelength of defocus from the ideal focus.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="find"><H3>FIND</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#find">Find</A> specifies the signal to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#noise">noise</A> value of a filled aperture.
+(you get this by running sparse once for a filled aperture and entering the
+printed s/n ratio as <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#find">FIND</A> value)
+SPARSE will compute the exposure relative to a filled aperture
+required to produce a convolved image
+with this signal to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#noise">noise</A> assuming that photon statitics are the sole cause of
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#noise">noise</A> in the output image.
+There is no effect upon the image.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rotate"><H3>ROTATE</H3></A><pre>
+Smear the otf by rotating it 180 degrees.
+This simulates a rotating sparse aperture or linear array of apertures.
+The initial pupil orientation doesen't matter.
+The default is to not <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#rotate">rotate</A>.
+Only implemented in the incoherent case.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="noise"><H3>NOISE</H3></A><pre>
+Add shot <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#noise">noise</A> such that the signal to noise in the output image is the 
+specified value.
+Example: <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#noise">noise</A>=2.0
+The default is to create a noiseless output image.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="fullwell"><H3>FULLWELL</H3></A><pre>
+Add shot <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#noise">noise</A> to the output image assuming that the mean dn of the input image
+is at the full well ccd charge and that the full well ccd charge is
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#fullwell">FULLWELL</A> electrons.
+
+Example: <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#fullwell">fullwell</A>=10000, causes shot <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#noise">noise</A> to be added in the following manner:
+md=mean input picture dn value.
+gain=(10000)/md
+newdn=olddn+[sqrt(gain*olddn)*r]/gain
+where r is a random number centered on 0 with a mean deviation of 1.
+
+The default is to create a noiseless output image.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="photons"><H3>PHOTONS</H3></A><pre>
+The number of input <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#photons">photons</A>/pixel (not the number detected).
+The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#fullwell">fullwell</A> in electrons = number of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#photons">photons</A> * <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#qe">QE</A> 
+then the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#fullwell">fullwell</A> is used to compute the gain as above.
+
+The default is to create a noiseless output image.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="qe"><H3>QE</H3></A><pre>
+Quantum efficiency of the detector. See <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#photons">PHOTONS</A> keqword.
+Defaults to 1.0
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="reflamda"><H3>REFLAMDA</H3></A><pre>
+Reference wavelength.
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#reflamda">REFLAMDA</A>, in conjunction with <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#lamda">LAMDA</A> permit the user to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#scale">scale</A> the pupil and to
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#scale">scale</A> the phase in order to easily simulate bandwidth effects.
+The default is for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#lamda">LAMDA</A>=<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#reflamda">REFLAMDA</A>=0.55 microns.
+If they are unequal then the ratio R=<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#lamda">LAMDA</A>/<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#reflamda">REFLAMDA</A> is used to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#scale">scale</A> the pupil
+and the phase in the pupil as follows:
+Parameter specified sub pupil locations (relative to the image center) 
+ are multiplied by 1/R.
+Parameter specified sub pupil sizes are multiplied by 1/R.
+Parameter specified sub pupil phases are multiplied by 1/R.
+
+Warning: To keep the pupil from being expanded and running the risk of exceeding
+the nl/2 and ns/2 limits I suggest that <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#reflamda">REFLAMDA</A> &lt= <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#lamda">LAMDA</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="lamda"><H3>LAMDA</H3></A><pre>
+Actual wavelength.
+See description for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#reflamda">REFLAMDA</A> parameter.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="scale"><H3>SCALE</H3></A><pre>
+The pupil scaling factor.
+Defaults to zero.
+If the "<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#circle">CIRCLE</A>" parameter values are input as x,y,r,phase instead of as
+line,sample,r,phase then the x,y,r values are scaled up to fill the largest
+permitted aperture and are then converted to line,sample coordinates. The
+computed scaling value is printed <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#out">out</A>. This is the default for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#scale">scale</A>=0.
+If <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#scale">scale</A> is not zero then the auto scaling to fill the aperture is not
+performed but the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#scale">SCALE</A> value is used instead to scale the circles to some
+other value. This is useful to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/sparse_level2.html#scale">scale</A> many sets of apertures the same.
+X,y values are detected from line,samp values by their negative values.
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

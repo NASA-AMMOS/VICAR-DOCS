@@ -1,0 +1,93 @@
+<HTML>
+<HEAD><title>HTML Help for MEDFILL</title></HEAD>
+<BODY>
+<H1>Help for MEDFILL</H1>
+<pre>
+PURPOSE:
+
+MEDFILL fills holes in an image using a median filter of surrounding
+pixels.
+
+EXECUTION:
+
+The pixels to fill are controlled by <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#min">MIN</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#max">MAX</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#zero">ZERO</A>, and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#nonan">NONAN</A>.  Normally
+any pixels with a "NAN" value (for REAL images only) are filled; -<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#nonan">nonan</A>
+turns this off.  -<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#zero">zero</A> says to fill any pixels with a zero value.  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#min">MIN</A> and
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#max">MAX</A> specify the DN limits; anything outside this range ( &ltMIN or &gtMAX) will
+be filled.  Note that neighboring pixels in the window are ignored if they
+meet the fill criteria.  If there are no neighboring pixels with values, the
+pixel is replaced by the value in <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#nodata">NODATA</A> if that parameter is specified, or
+left alone if <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#nodata">NODATA</A> is not specifed.
+
+The fill window is set by <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#nlw">NLW</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#nsw">NSW</A>.  The default is 5x5, which means a 5x5
+box centered on the pixel.  The window sizes must be odd.
+
+If -<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#bayer">BAYER</A> is set, then it assumes the input image is a Bayer-pattern image,
+so it looks only at pixels with the same <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#bayer">Bayer</A> filter.  Practically speaking,
+this means the image index increments by 2 instead of 1 when filling the window.
+Note that the window size is unaffected, so a 5x5 window will actually look at
+just 8 pixels, indicated by X's below.
+
+X - X - X
+- - - - -
+X - O - X
+- - - - -
+X - X - X
+
+This means that a 3x3 window is essentially a no-op, as only the central pixel
+is considered.  A 7x7 window will be the same as 5x5, but 9x9 will add another
+set of pixels.  To avoid having to worry about <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#bayer">Bayer</A> cell orientation, the two
+Gren pixels are considered separately.
+
+If the window goes off the edge of the image, only the pixels in the image will
+be used - no reflection or extension is done.  If the image has a gradient, this
+could cause a bias on the edges.
+
+In order to accommodate floating-point pixels, the actual pixel values are
+gathered and sorted, rather than trying to use a histogram.
+
+Little consideration has been given to performance.
+
+HISTORY:
+2021-03-18 rgd	Initial version
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER: Bob Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#inp"><H3>INP</H3></A>
+Input image
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#out"><H3>OUT</H3></A>
+Output image
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#nlw"><H3>NLW</H3></A>
+Window height
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#nsw"><H3>NSW</H3></A>
+Window width
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#bayer"><H3>BAYER</H3></A>
+Turns on <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#bayer">Bayer</A> mode
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#nodata"><H3>NODATA</H3></A>
+DN to replace with if no
+data in window
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#zero"><H3>ZERO</H3></A>
+Flag to replace zeros
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#nonan"><H3>NONAN</H3></A>
+Flag to disable NAN replacement
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#min"><H3>MIN</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#min">Min</A> value for good data
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#max"><H3>MAX</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill_level2.html#max">Max</A> value for good data
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/medfill.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

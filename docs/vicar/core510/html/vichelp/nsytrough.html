@@ -1,0 +1,479 @@
+<HTML>
+<HEAD><title>HTML Help for NSYTROUGH</title></HEAD>
+<BODY>
+<H1>Help for NSYTROUGH</H1>
+<pre>
+PURPOSE:
+
+NSYTROUGH computes a measure indicating the roughness of the surface for
+each pixel, for the purposes of InSight instrument placement.  The roughness
+of the body (footplane) and feet (footpatch) are computed, using slightly
+different algorithms.  The program accounts for clock angle rotation and
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#sinkage">sinkage</A>.
+
+The inputs for NSYTROUGH are an XYZ image such as that created by the MARSXYZ
+program, and a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#uix">UIX</A> and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#zix">ZIX</A> image (instrument surface normal and Z location)
+as created by NSYTTILT.
+
+The output of NSYTROUGH is a single 3-band file of type REAL, containing
+flags indicating whether the data met roughness criteria, as well as the
+actual body and feet roughness values (see below for details).
+
+EXECUTION:
+
+nsytrough <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#inp">inp</A>=data.xyz <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#out">out</A>=data.rus <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#uix">uix</A>=data.uis <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#zix">zix</A>=data.zis -seis
+nsytrough <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#inp">inp</A>=data.xyz <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#out">out</A>=data.ruw <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#uix">uix</A>=data.uiw <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#zix">zix</A>=data.ziw -wts
+nsytrough <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#inp">inp</A>=data.xyz <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#out">out</A>=data.ruh <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#uix">uix</A>=data.uih <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#zix">zix</A>=data.zih -hp3
+
+METHOD:
+
+At each pixel in the output file, NSYTROUGH uses the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#uix">UIX</A> and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#zix">ZIX</A> files
+to "place" the instrument at that point.  The point represents the grapple
+of the instrument, so the XY position of the point is what would be communicated
+to the IDS team to actually place the instrument there on the surface.  The
+XY position is derived from the XYZ input file for the given pixel.  If there
+is no XYZ position for the pixel, the pixel is skipped.
+
+Once the instrument is "placed", which means defining a plane for the feet
+and body.  The terrain under that plane is then analyzed, using one of two
+roughness algorithms (see below).  The results are reported in the output
+file, along with a "status" band which indicates whether the point meets
+the roughness thresholds or not.
+
+Note that the program works internally in the Site frame. It will convert the 
+given XYZ to this frame automatically. While other frames could be used (e.g.
+-rover for Lander frame), the roughness would then be measured relative to the 
+lander, which is generally not what it desired.
+
+Instrument Feet and Body
+------------------------
+The size and spacing of the feet and body for each instrument is given in the
+nsyt_foot_dimensions.h file that is compiled into the program.  This should
+be read from a config file, but time constraints may prevent this from
+happening.
+
+The program represents the feet as a set of circles - 3 each for SEIS and WTS,
+and 5 for HP3 (four feet plus the drill location, or "molepatch").  The size
+of these circles matches the size of the feet as they interact with the ground.
+Although one should consult the include file for specific values, at the time
+this help was written, the circle radii are 3cm for SEIS, 4.2665cm for WTS,
+and 5cm for HP3.
+
+The program also represents the instrument bodies as circles.  This is natural
+for the SEIS and WTS, but the HP3 is actually a long thin rectangle.  This is
+accommodated by using a set of (currently, but check the include file) 41
+circles that approximate a rectangle.
+
+Tether Effects
+--------------
+The feet are initially set assuming the tether points directly down the
+-X axis.  However, the actual instruments while being deployed will tend to
+rotate so the tether points back toward the spacecraft.  This is accounted
+for by rotating the instrument (i.e. feet position) based on the tether pivot
+points.
+
+For SEIS, the tether emanates from a single tether box position.  This
+position is hardcoded at x=0.145, y=-0.101 in the lander frame.  The tether
+points radially from this point to the instrument deployment location, and
+the SEIS feet are rotated to match.
+
+For HP3, the algorithm is more complicated, because the tether can be routed
+different ways based on where the instrument is being deployed.  The algorithm
+comes from Won Kin in Section 347:
+
+  HP3 has two "virtual" tether anchor points.
+   - HP3 tether guard post1 --- P1 = (X1, Y1) = (0.083, -0.435)
+   - HP3 mount --- P2 = (X2, Y2) = (-1.279, 0.149)
+   - Line equation between two anchor points:
+     y = ((Y2-Y1)/(X2-X1)) * (x - X1) + Y1 = mx + b
+   - Given the current tether position (X0, Y0):
+     - If Y0 &gt m * X0 + b, use HP3 tether guard post1 P1 as the "virtual" anchor
+       point.
+     - Otherwise, use HP3 mount P2 as the "virtual" anchor point.
+ You can determine the tether direction by assuming that the tether passes
+ through the "virtual" anchor point.
+
+For WTS, there is no tether.  However, the arm moves slowly enough that the
+WTS is likely to rotate with the arm, meaning that there is a most-likely
+rotation value that acts as if there was a tether.
+
+Additionally, there are radial and cross-radial offsets between the WTS and
+SEIS, because the grapples are not coaxial in the nominal placement.  The WTS
+position is thus offset by an amount determined in the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#wts_off">WTS_OFF</A> parameter. These
+offsets are applied before any rotation is done (so cross-radial offset should 
+generally be 0). All WTS rotations (such as for clocking) are done centered
+around the nominal(SEIS) location.  This means that WTS clocking rotation
+(see below) also introduces a small translation in the WTS.
+
+Instrument Clocking
+-------------------
+Although the tether controls the rotation of the instrument while hanging on
+the arm to some extent, the instrument can still rotate within a certain range.
+This rotation is called "clocking".
+
+Zero clocking is defined as the rotation resulting from the tether calculation.
+
+The program analyzes the roughness throughout this range of clocking angles.
+Because it is computationally intractable to compute every possible angle,
+we settle for checking a discrete set of clock angles.  The set of angles
+checked are controlled by the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#clock_range">CLOCK_RANGE</A> and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#clock_step">CLOCK_STEP</A> parameters.  Generally
+these should be set to be centered around 0 clock angle (and to include 0
+clock angle), but this is not mandatory.
+
+The single instrument normal and Z value from the center of the clock range
+are used for all of the clock angles.  While the normal and Z can vary based
+on clocking, it's not feasible to save the tilt for every clock angle.  The
+difference should be negligible in most cases for any terrain upon which we
+might want to actually consider deploying the instrument.
+
+Note that the SEIS and WTS bodies are simple circles and are rotationally
+symmetric. The WTS is assumed to rotate around the position before taking 
+into account the radial and cross-radial offsets introduced in <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#wts_off">WTS_OFF</A> 
+parameter, which again makes it rotationally symmetric.
+
+For the HP3 body, the density of circles representing the body is such that
+only a few clock angles need to be checked in most cases.  The default is to
+check just three - both limits of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#clock_range">clock_range</A>, and the center.  This is
+sufficient for the standard +/- 15 degree clock range.  If you need more
+steps, the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#hp3_body_step">HP3_BODY_STEP</A> parameter can be used to control the step size.
+
+Settling of Feet
+----------------
+The Z location of the instrument can be affected by the feet "settling"
+into the surface (especially with a sandy surface).  The instrument Z (<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#zix">ZIX</A>)
+file coming from NSYTTILT explicitly does not include any settling in its
+value.  If you want to model settling, the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#sinkage">SINKAGE</A> parameter will specify
+the amount to settle.
+
+Settling affects only the body (footplane), not the feet algorithm.  It has
+the effect of simply adding the amount of settling to the final roughness
+value for the body.
+
+Roughness Computation
+---------------------
+Roughness is computed by analyzing each of the circles (feet, or body parts)
+separately.  First, the center of the circle (an XY coordinate) is found in
+the image using a K-D tree (see Implementation Notes, below).  Then a region
+is grown around that point in image space, looking for points that are inside
+the circle.  The points are analyzed to get the standard deviation of the
+points (from the mean for the standard algorithm, or from the Z value for the
+hill algorithm).  Outliers are then removed, defined as points that are
+more than <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#filter_scale">FILTER_SCALE</A> * sigma away from the mean or Z.
+
+The roughness is then computed using the surviving points, and one of the
+two algorithms below.
+
+The largest roughness value from any of the circles is reported as the final
+value.  If any of the circles happen to hit a hole in the XYZ data, then the
+entire roughness calculation fails.
+
+Standard Roughness (Feet)
+-------------------------
+The feet use an algorithm that is very similar to MARSROUGH or MSLROUGH.
+The roughness is simply the maximum extent of any points (after outlier
+rejection) above or below the instrument plane.  In other words, the maximum
+value above the plane, minus the minimum value below the plane.
+
+This means that roughness considers both hills and valleys, which is
+appropriate when considering foot placement (the foot can sit on top of a
+hill, but you also don't want it spanning too large a valley, since the foot
+could slip into it).
+
+Note that the instrument Z value (<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#zix">ZIX</A> parameter) is not relevant for standard
+roughness; the max - min is the same regardless of where the plane is in the
+Z direction.
+
+Hill Roughness (Body)
+---------------------
+For the instrument body, we are concerned about clearance for the belly of
+the instrument.  Thus valleys are not relevant, as the instrument can clear
+them, but hills can be hazardous.  Therefore for the "hill" algorithm, we
+look only at excursions above the plane defined by the instrument feet.  The
+roughness is defined as the maximum distance (after outlier removal) of any
+point above this plane.
+
+The Z value is thus critical for this calculation, as it defines where 0 is.
+The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#sinkage">SINKAGE</A> parameter also comes into play here, as sinkage will depress all
+of the feet and thus lower the plane.  In principle the feet can sink
+unequally, but the worst-case scenario is if they all sink the same (this
+maximizes the hill roughness), so that is all we consider.  Providing <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#sinkage">SINKAGE</A>
+is essentially equivalent to just adding a constant to all the hill roughness
+values.
+
+Note that all other things being equal and with Z at the mean value, hill
+roughness will be half as big as standard roughness, since only positive
+excursions are considered rather than both positive and negative.
+
+Output File Format and State Band
+---------------------------------
+The output file consists of 3 bands in floating-point format:
+
+Band 1: State band (contains goodness flag)
+Band 2: Body (footplane) roughness
+Band 3: Feet (footpatch) roughness
+
+The roughness values are measured in meters.
+
+The State band can contain the following values:
+
+0 = no value
+1 = Exceeds more than one criteria
+2 = Exceeds footplane (body) limit only
+3 = Exceeds footpatch (feet) limit only
+4 = n/a
+5 = Within all limits (good)
+
+As with all the InSight placement products, 5 indicates everything is within
+limits, with other values indicating what parameter is <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#out">out</A> of limits.
+
+Parallel Processing
+-------------------
+This program requires a lot of computational resources.  The number of
+combinations of clock angles that must be checked can get quite large.
+For this reason, the program has been parallelized using Open MP (OMP),
+which is built in to the g++ compiler.
+
+By default the number of threads used equals the number of cores on the machine
+where the program is being run.  Each image line is assigned to a different
+core, with "dynamic" scheduling to keep the workload for each core similar.
+
+Parallel processing can be disabled via the -OMP_OFF keyword.  The number
+of threads can be controlled by setting the OMP_NUM_THREADS environment
+variable before running the program.  There are numerous other OMP variables
+that can be set; see the OMP documentation.  However, the number of threads
+is the only one that is likely to be useful in most cases.
+
+Implementation Notes
+--------------------
+The instrument shapes should be in a data file but for now are compiled in
+to the program, via nsyt_instruments(_h).com.
+
+Clocking is simulated by stepping to different clock values and checking each.
+There is a tradeoff between fidelity and execution time.  The smaller the clock
+steps, the more accurate the result but the slower it runs (dramatically so).
+
+Once an instrument foot or body circle center point is determined, we must
+find the pixel that is closest to that point as a starting point.  This is
+implemented by using a K-D tree as implemented in the "nanoflann" package.
+The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#point_epsilon">POINT_EPSILON</A> parameter determines how far away this point can be from
+the ideal point (default .004m), and the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#leaf_max_size">LEAF_MAX_SIZE</A> determines how big the
+leaves of the tree can be before splitting them.
+
+From there, a region growing algorithm is used to determine all the XYZ points
+that belong to the circle.  The region spirals <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#out">out</A> one pixel at a time until a
+complete box (one pixel wide) is found with no hits within the confines of the
+circle.  This region growing is bounded by the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#max_window">MAX_WINDOW</A> parameter; once
+the box half-width exceeds the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#max_window">MAX_WINDOW</A>, the growing stops.  This is for
+efficiency (to prevent spiraling <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#out">out</A> to the entire image in pathological
+cases), but in practice the window should be set so the entire circle is
+within it.
+
+NOTE:  Holes or gaps in the XYZ image are generally ignored.  The central
+position of each circle has to match the given XYZ coordinate (within
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#point_epsilon">POINT_EPSILON</A>), so holes in the middle of a circle, if big enough, could cause
+the location to be rejected.  But no analysis is done of other holes in
+the area the circle "should" cover.  Holes represent unknowns, so normally the
+presence of holes would be a red flag for placement.  However, the circles are
+generally small enough that significant unknown terrain within one circle
+is unlikely, except for the WTS.  Also, we look for the maximum (and minimum
+in the standard algorithm) extents within the circle, so holes would have
+to also be the highest (or lowest) terrain around to cause a problem.  However,
+it does open the possibility of single pixels representing an entire circle.
+
+TBD Items
+---------
+TBD!!!!:  Improve handling of holes by computing how many pixels the circle
+should cover at the given distance and have a percentage threshold to indicate
+the maximum number of holes (i.e. minimum coverage of pixels) to allow for a
+given location.  Perhaps also a threshold for the absolute minimum number of
+pixels in a circle.  Throw <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#out">out</A> locations that do not meet this criteria.  This
+is complicated by the potential lack of a camera model (if an ortho XYZ is
+input, which is a common use case) - a test would have to be made whether
+a camera model was available, and assume a constant iFOV if not.
+
+TBD!!!!:  Output labels are not being set correctly.
+
+
+HISTORY:
+2015-06     S.Myint	Initial version, based on mslrough
+2015-01     rgd		Nearly complete rewrite, implemented hill algorithm,
+			clocking, use of instrument normal and Z values,
+			fixed many other issues, wrote help.
+2018-01    Steven Lu    Implement radial and cross-radial offsets for WTS.
+<A NAME="CogProg">COGNIZANT PROGRAMMER: B. Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#inp"><H3>INP</H3></A>
+Input XYZ image.
+Must be 1 3-band file
+or (x,y,z) triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#out"><H3>OUT</H3></A>
+Output file.
+Must be 1 filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#uix"><H3>UIX</H3></A>
+Input instrument normal
+image from NSYTTILT.
+Must be 1 3-band file
+or (u,v,w) triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#zix"><H3>ZIX</H3></A>
+Instrument Z value
+from NSYTTILT.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#inst"><H3>INST</H3></A>
+InSight instrument to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#sinkage"><H3>SINKAGE</H3></A>
+How much feet can sink.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#seis_body_thr"><H3>SEIS_BODY_THR</H3></A>
+Threshold for SEIS body roughness.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#seis_feet_thr"><H3>SEIS_FEET_THR</H3></A>
+Threshold for SEIS feet roughness.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#wts_body_thr"><H3>WTS_BODY_THR</H3></A>
+Threshold for WTS body roughness.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#wts_feet_thr"><H3>WTS_FEET_THR</H3></A>
+Threshold for WTS feet roughness.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#hp3_body_thr"><H3>HP3_BODY_THR</H3></A>
+Threshold for HP3 body roughness.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#hp3_feet_thr"><H3>HP3_FEET_THR</H3></A>
+Threshold for HP3 feet roughness.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#clock_range"><H3>CLOCK_RANGE</H3></A>
+Range for clocking.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#clock_step"><H3>CLOCK_STEP</H3></A>
+Step size for clocking.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#hp3_body_step"><H3>HP3_BODY_STEP</H3></A>
+Clocking step size override
+for HP3 body.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#wts_off"><H3>WTS_OFF</H3></A>
+Radial and cross-radial offsets
+between SEIS and WTS
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#max_window"><H3>MAX_WINDOW</H3></A>
+Window size for circle search.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#bad_rough"><H3>BAD_ROUGH</H3></A>
+Value to use for bad roughness.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#filter_scale"><H3>FILTER_SCALE</H3></A>
+Sigma multiplier for
+outlier rejection filter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#min_points"><H3>MIN_POINTS</H3></A>
+Minimum number of points in
+a circle for it to be valid.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#x_center"><H3>X_CENTER</H3></A>
+Center of bounding box (m).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#y_center"><H3>Y_CENTER</H3></A>
+Center of bounding box (m).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#box_radius"><H3>BOX_RADIUS</H3></A>
+Half-width of bounding box
+(in meters).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#leaf_max_size"><H3>LEAF_MAX_SIZE</H3></A>
+Control for KD tree.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#point_epsilon"><H3>POINT_EPSILON</H3></A>
+Control for KD tree search.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#omp_on"><H3>OMP_ON</H3></A>
+Turns on or off parallel
+processing (defualt: on).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytrough.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

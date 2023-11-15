@@ -1,0 +1,403 @@
+<HTML>
+<HEAD><title>HTML Help for MARSRFILT</title></HEAD>
+<BODY>
+<H1>Help for MARSRFILT</H1>
+<pre>
+PURPOSE:
+MARSRFILT does range-based filtering on an XYZ image, returning a new XYZ
+image.  This is intended to compensate for XYZ's having an error (in the
+range direction) that is often much greater than the cross-range resolution.
+This difference causes "spikes" in the XYZ data.  These spikes are greadly
+reduced or eliminated by this program
+
+EXECUTION:
+marsrfilt <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#inp">inp</A>=xyz_data.img <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#out">out</A>=filtered_xyz_data.img
+where:
+xyz_data.img is an input 3-band image of type REAL with the X,Y and Z values
+at that pixel in meters.  The program also acceps separate X, Y, and Z images,
+although that's not the normal usage mode.
+filtered_xyz_data.img is the output 3-band image in the same format.  Multiple
+one-band images are not supported.
+
+
+BACKGROUND:
+
+The stereo range error equation is:
+
+error = range^2 * <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#ifov">ifov</A> * <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#corr">corr</A> / <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#baseline">baseline</A>
+
+where range is the distance from the camera to the object, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#ifov">ifov</A> is the
+instantaneous field of view (angular size of one pixel, generally at the
+center of the image), <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#corr">corr</A> is the correlation accuracy (typically 0.25 to 0.5),
+and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#baseline">baseline</A> is the stereo baseline (separation between the cameras, in meters).
+
+Note that actually, the above is correct for perpendicular range (the distance
+from the camera plane to the point), not the actual range (the distance from
+the lens to the point).  This program works with actual range.  Dividing by
+the sine of the angle between the view ray and the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#baseline">baseline</A> converts the
+error to actual range error.  However, this sin term cancels <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#out">out</A> in the ratio
+equation (below) and so we ignore the difference in this program.  The only
+place it might matter is in the error computed for the proximity filter, where
+it's a second order effect at best.
+
+The size of a pixel (measured horizontally, cross-range) is:
+
+size = range * <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#ifov">ifov</A>
+
+(really, tan(<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#ifov">ifov</A>) but the small angle approximation applies).
+
+For most real stereo cameras, the stereo range error is much bigger than
+the cross-range pixel size.  For example, on MSL the navcam has <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#ifov">ifov</A>=0.00082
+radians and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#baseline">baseline</A>=0.424 meters, while the Mastcam (M34) has <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#ifov">ifov</A>=0.00022
+radians and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#baseline">baseline</A>=0.245 meters.  If we plug in those values (assuming
+0.25 correlation accuracy, a very aggressive assumption to minimize the
+error), we get:
+
+Range	Navcam Error	Navcam Size	Mastcam Error	Mastcam Size
+1	0.0483 cm	0.082 cm	0.022 cm	0.022 cm
+5	1.21 cm		0.41 cm		0.56 cm		0.11 cm
+10	4.83 cm		0.82 cm		2.24 cm		0.22 cm
+50	121 cm		4.1 cm		56.1 cm		1.10 cm
+
+While these are comparable close in (1m), the ratio error/size quickly gets
+quite large; up to 51 for the Mastcam at 50m.
+
+This ratio is key.  It says that the along-range resolution is 51 times worse
+than the cross-range resolution.  In practical terms, it means the noise in
+the along-range direction is 51 times the noise in the cross-range direction.
+
+This discrepancy leads to pronounced "spikes" in the XYZ data.  These are
+most visible when looking at a terrain mesh.  The farther <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#out">out</A> you go, the
+more prevalent these spikes (pointing back at the camera, or away from it) are.
+
+However, the spikes are pure noise, caused by correlation uncertainty.
+
+This program significantly reduces this noise by converting the XYZ to range
+data (thus separating the noisy along-range data from the non-noisy cross-range
+data), filtering the range, and converting it back to XYZ.  Filtering is
+based on the error formula, and is adaptive, so the proper amount of filtering
+is done at each point.
+
+
+METHOD:
+
+In a nutshell, the program implements a weighted plane fit to the range
+data around the given pixel, evaluating the plane at the given pixel.
+This has a similar effect to averaging, but gets around issues with biasing
+the results as the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#window">window</A> slides off the edge of the image.
+
+First, the program reads the XYZ data and converts it (if necessary) to the
+specified coordinate system.
+
+It then does a lowpass filter (standard boxcar filter, excluding 0s) on the
+range data.  This is used as the range for determining the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#window">window</A> size later.
+The boxcar filter prevents the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#window">window</A> size from gyrating wildly from pixel to
+pixel, as it would do if we used the raw range.  This filter does suffer from
+edge effects and other issues, but having an accurate range here is not that
+critical, as it is only used to size the filter, and small inaccuracies in
+the filter size have negligible effect.
+
+The range filter itself proceeds as follows.  Each pixel is computed
+independently, and if <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#omp_on">OMP_ON</A> is enabled, it is parallelized on a line-by-line
+basis.  (see the help for e.g. marsmap for more on OMP).
+
+First, the nominal size of the filter half-<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#window">window</A> is determined.  This is based
+on the ratio of error to size, and ends up being simply:
+
+size = 0.5 * range * <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#corr">corr</A> / <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#baseline">baseline</A>
+
+The correlation quality defaults to 0.25 so as to err on the side of less
+filtering.  The range in this equation is the smoothed range discussed above.
+
+The stereo <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#baseline">baseline</A> is obtained from the image label (it is output from
+marsxyz, in STEREO_BASELINE), and the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#ifov">ifov</A> (used in the proximity filter,
+below) is obtained from the camera model.  Both can be overridden on the
+command line.
+
+The actual half-<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#window">window</A> width is computed by multiplying the nominal width
+by <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#wfactor">WFACTOR</A>.  This allows larger or smaller windows to be selected.
+
+The half-<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#window">window</A> height is derived from the width using the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#aspect_ratio">ASPECT_RATIO</A>
+parameter.  This allows the kernel to be shrunk vertically (e.g. with a ratio
+of 0.5, the default), because there is typically much more range variation
+in the vertical direction than horizontal, for most in-situ scenes.
+
+If the computed <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#window">window</A> height or width is less than the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#min_window">MIN_WINDOW</A> parameter
+(really, half size &lt (<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#min_window">MIN_WINDOW</A>-1)/2 ), the half-size is set to that.  This
+means that some filtering is always done.  If <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#min_window">MIN_WINDOW</A> is 0, anything
+smaller than 3 pixels (half size of 1) will be passed through unchanged, with
+no filtering.
+
+The width of the Gaussian itself is determined by the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#num_sigma">NUM_SIGMA</A> parameter.
+The default is 1.0, meaning 1.0 sigmas fit into the half-<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#window">window</A>.  A larger
+value will use a steeper Gaussian (thus favoring the center more); a value
+close to 0 will emulate a box filter.
+
+The program then loops over the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#window">window</A>.  For each pixel in the window, the
+weight is computed.  This weight is a combination of two factors: the
+Gaussian kernel, and a proximity filter.  These two together implement
+a form of bilateral filter.
+
+The Gaussian kernel is simply:
+
+weight = e ^ (-(x^2 / 2G_x^2 + y^2 / 2G_y^2))
+
+where x and y are the pixel coordinates within the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#window">window</A> (0,0 being the
+center), and G_x, G_y are the Gaussian sigmas determined above.
+
+The proximity filter is used to reject values that are too far away in
+range space.  This helps particularly when there are gaps due to occlusions.
+Without the proximity filter, the data on the far side of the occlusion (which
+could be tens of meters away, say due to a ridgeline) is included in the plane
+fit, which can bias the results, with the effect of the terrain "bending" to
+fill the gap.  The proximity filter prevents this by de-weighting and
+eventually eliminating data that is too far away.
+
+The proximity filter is controlled by the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#prox_min">PROX_MIN</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#prox_max">PROX_MAX</A> parameters.
+The actual expected error in meters (not the ratio) is determined using the
+actual central pixel (as mentioned in the introduction, the sin term related
+to the angle the pixel makes with the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#baseline">baseline</A> is ignored).  This error is
+then multiplied by the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#prox_min">PROX_MIN</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#prox_max">PROX_MAX</A> parameters (in other words, the
+parameters are factors, so the actual min and max values vary dynamically
+with range).  The range of the pixel being considered in the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#window">window</A> is then
+compared to the (actual) range of the central pixel.  If the difference is
+within +/- of the minimum value, the Gaussian weight is passed through
+unchanged.  If it is bigger than the maximum value, the pixel is discarded.
+If it is in between, a proximity weight is applied, which is linearly scaled
+from 1.0 at the min distance to 0.0 at the max distance.  This has the effect
+of gradually rolling off the proximity <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#window">window</A>, which helps to avoid
+discontinuities in the data.
+
+Once the final weight is determined for each pixel in the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#window">window</A>, a plane fit
+is performed.  The plane equation is:
+
+z = Ax + By + C
+
+and the solution matrix equation is:
+
+[  xx  xy  x  ] [ A ]   [ xz ]
+[  xy  yy  y  ] [ B ] = [ yz ]
+[  x   y   n  ] [ C ]   [ z  ]
+
+where each cell is the sum of xx, or xy, etc. throughout the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#window">window</A>.  The
+weight is applied to each element before summing (i.e. the upper left corner
+is the sum of wt * (x*x) not (wt*x) * (wt*x) ), and "n" is the sum of all
+the weights.
+
+The matrix is solved using Cramer's rule, and then evaluated at the center
+to get the final range.  Because the center is x=0 y=0, we actually only have
+to solve for C, so much of the plane fit solution is commented <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#out">out</A> in the
+code.
+
+After the range filter, an optional <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#spike">spike</A> filter removes "spikes" in the
+same way that the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#spike">spike</A> filter in marsxyz does.  It computes an average range
+(after filtering; not the same as the initial average range discussed above)
+for an area of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#spike_window">SPIKE_WINDOW</A> centered on the pixel.  It then takes the
+difference between the range value and the average range, and compares it to
+a threshold.  If the value exceeds the threshold, the pixel is rejected as
+a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#spike">spike</A>.  The threshold is determined by the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#spike_factor">SPIKE_FACTOR</A> parameter.  This
+is used to calculate the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#spike">spike</A> per range squared as follows:
+
+spike_per_rangesq = <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#spike_factor">spike_factor</A> * <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#ifov">ifov</A> * <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#corr">corr</A> / <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#baseline">baseline</A>
+
+which is closely related to the range error equation.  This value is multiplied
+by the range squared to get the threshold to use.
+
+This final range value is then projected back into XYZ using the camera model.
+
+There is one subtlety in this final projection.  The marsxyz program works by
+projecting rays <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#out">out</A> of both eyes of the stereo camera models.  Where they
+intersect, is the XYZ position.  However, due to noise and other errors,
+they rarely actually intersect.  Instead, the reported XYZ position is the
+midpoint at closest approach of the rays.  This means the XYZ position is
+in general not on the actual ray projected from the center of the pixel.
+
+When we reconstruct XYZ from range in this program, there are two options
+on what to do.  The default option (-CMOD) uses the nominal projected ray from
+the camera model - not the slightly skewed value from the XYZ.  This is the
+default because for good camera models, the deviation from the nominal ray
+is largely based on noise in the results - noise that is significantly
+reduced by this program.  It is therefore more likely that the true value
+is along the ray, than it is along the noise-induced skewed ray.
+
+However, for poor-quality camera models, this is not necessarily the case.
+Poor models can have significant distance (called the miss distance) between
+the left and right rays.  Furthermore, this miss distance has a large
+systematic component due to the camera model errors.  In these cases, the
+systematic component can far outweigh the noise.  The -RAY option will
+cause it to project along the original vector (which generally points to the
+midpoint at closest approach) instead.
+
+The practical upshot of -CMOD is that XYZ values run using the left as a
+reference and the right as a reference will not necessarily match, unlike
+the raw marsxyz results.  With -RAY, they may match much closer.
+
+The minimum, maximum, and average of the nominal <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#window">window</A> widths throughout the
+program are saved in labels.  This allows a mesh program to use downsampling
+in cases where there is no full-res (unmodified) data.
+
+It should be noted that there is one potential bias that is not accounted
+for in this program.  As you get closer to the horizon in a typical in-situ
+scene, pixels get farther and farther apart, as the tangent of the view
+angle.  This means that typically, pixels in the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#window">window</A> below the central
+pixel will be closer to the central pixel in range space than pixels an
+equal number of lines above the central pixel.  This will have the effect
+of biasing the results slightly away from the camera.  However, this is a
+second-order effect that is not expected to be an issue for real images.
+It is partially mitigated for two reasons: the proximity filter will be
+more likely to cut off the distant pixels, and correlation tends not to
+work well when the view angle is close to tangent anyway.
+
+
+HISTORY:
+2019-10-04 rgd	Initial version
+<A NAME="CogProg">COGNIZANT PROGRAMMER: Bob Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#inp"><H3>INP</H3></A>
+Input images.
+Must be 1 3-band file
+or (x,y,z) triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#out"><H3>OUT</H3></A>
+Output files
+Will be 1 3-band file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Nav file for pointing
+correction.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#origin"><H3>ORIGIN</H3></A>
+Override of 3D Point
+from which to compute 
+range.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#corr"><H3>CORR</H3></A>
+Correlation accuracy.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#baseline"><H3>BASELINE</H3></A>
+Stereo <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#baseline">baseline</A> override
+(meters).
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#aspect_ratio"><H3>ASPECT_RATIO</H3></A>
+Controls roundness of
+Gaussian kernel.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#num_sigma"><H3>NUM_SIGMA</H3></A>
+Controls steepness of
+Gaussian function
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#wfactor"><H3>WFACTOR</H3></A>
+Controls size of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#window">window</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#window"><H3>WINDOW</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#window">Window</A> size for initial
+range smoothing.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#ifov"><H3>IFOV</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#ifov">IFOV</A> override (radians).
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#prox_min"><H3>PROX_MIN</H3></A>
+Min factor for
+proximity filter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#prox_max"><H3>PROX_MAX</H3></A>
+Max factor for
+proximity filter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#cast"><H3>CAST</H3></A>
+How to reconstruct the XYZ.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#min_window"><H3>MIN_WINDOW</H3></A>
+Min <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#window">window</A> size
+for range filter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#spike"><H3>SPIKE</H3></A>
+Turns on <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#spike">spike</A> filter
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#spike_window"><H3>SPIKE_WINDOW</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#window">Window</A> size for
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#spike">spike</A> filter
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#spike_rangesq"><H3>SPIKE_RANGESQ</H3></A>
+Threshold for <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#spike">spike</A> filter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrfilt.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

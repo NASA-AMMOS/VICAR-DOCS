@@ -1,0 +1,149 @@
+<HTML>
+<HEAD><title>HTML Help for SPARSE</title></HEAD>
+<BODY>
+<H1>Help for SPARSE</H1>
+<pre>
+
+PURPOSE
+
+Sparse simulates the effect of a sparse aperture by constructing a complex
+pupil, computing the OTF, and applying it to the input image.
+
+It can also apply a wiener filter to correct for the effect of an aperture
+(see the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#sn">SN</A> keyword).
+
+EXECUTION
+
+direct:
+
+sparse <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#inp">inp</A>=(in,junk,pupil) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#out">out</A>=blurred  (Note: junk is ignored)
+or
+sparse <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#inp">inp</A>=(in) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#out">out</A>=blurred <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#circle">circle</A>=(257,257,50,0)
+
+inverse:
+
+sparse <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#inp">inp</A>=(blurred,reference,pupil) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#out">out</A>=corrected '<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#optimize">optimize</A>
+or
+sparse <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#inp">inp</A>=(blurred,reference) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#out">out</A>=corrected '<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#optimize">optimize</A>
+or
+sparse <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#inp">inp</A>=(blurred) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#out">out</A>=corrected <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#sn">sn</A>=45 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#circle">circle</A>=(257,257,50,0)
+
+SOME CLARIFICATIONS:
+
+Note on centering the pupil: 
+The images must be a power of 2 in nl and ns. This means there is no center
+pixel. We have defined the center at nl/2+1 and ns/2+1. For incoherent
+imaging it doesen't matter. For coherent imaging it makes a big difference.
+
+Note on the size of the pupil:
+In the incoherent case no part of the filled pupil (aperture) may lie 
+outside a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#circle">circle</A> centered in the pupil and having a radius of 1/4 the image
+nl or ns. It is up to you to check for this condition.
+The largest "filled aperture" would be created like this:
+sparse <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#inp">inp</A>=original.img <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#out">out</A>=blurred.img <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#circle">circle</A>=(257,257,128,0)
+if the picture were 512 by 512 pixels.
+
+Note on simulating spectral bandwidth:
+The program creates monochromatic images. To simulate a spectrum you must 
+run the program many times and add the images. Each run will require you to 
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#scale">scale</A> the pupil in proportion to the wavelength.
+
+Note on pupil phase errors:
+The phase errors introduced are in units of wavelength. To simulate a spectrum
+you will need to make many runs, each with a scaled phase error in proportion to
+the wavelength, and add the results.
+
+Note on wiener correction of color imagery:
+If you have a broadband input image the psf is a function of color. To correct
+for this you must correct for a family of psf's and later select locally
+the best one based upon a the local color.
+
+METHOD:
+
+Incoherent case:
+1. The pupil (aperture) is constructed.
+2. The otf is the autocorrelation of the pupil.
+3. The otf is multiplied by the fft of the image.
+4. Inverse fft.
+
+Coherent case:
+1. The pupil (aperture) is constructed.
+2. The otf is the pupil.
+3. The otf is multiplied by the fft of the image.
+4. Inverse fft.
+
+If <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#sn">SN</A> is specified, requiring a wiener filter, then
+
+Incoherent case:
+1. The pupil (aperture) is constructed.
+2. The otf is the autocorrelation of the pupil.
+3. The filter F=otf/(otf*otf+1/(<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#sn">sn</A>*sn))
+4. The filter F is multiplied by the fft of the image.
+5. Inverse fft.
+
+Coherent case:
+1. The pupil (aperture) is constructed.
+2. The otf is the pupil.
+3. The filter F=conjg(otf)/(|otf|**2+1/(<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#sn">sn</A>*sn))
+3. The filter F is multiplied by the fft of the image.
+4. Inverse fft.
+
+RESTRICTIONS
+
+Image must be of a power of 2.
+Image &lt= 512*512 total pixels.
+
+<A NAME="CogProg">Cognizant Programmer:  JJ Lorre   November 1998</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#inp"><H3>INP</H3></A>
+1. input image
+2. reference image
+3. pupil
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#out"><H3>OUT</H3></A>
+1. output image
+2. pupil image (optional)
+3. otf (optional)
+4. psf (optional)
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#circle"><H3>CIRCLE</H3></A>
+Sub apertures
+line,sample,radius,piston
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#ring"><H3>RING</H3></A>
+1. number of sub apertures,
+2. radius
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#spokes"><H3>SPOKES</H3></A>
+1. number of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#spokes">spokes</A>.
+2. number of mirrors/spoke.
+3. center hole radius.
+4. radius of inner <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#circle">circle</A>.
+5. radius increase factor.
+6. (optional) # circles in <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#ring">ring</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#sn"><H3>SN</H3></A>
+Wiener s/n ratio
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#optimize"><H3>OPTIMIZE</H3></A>
+Finds best <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#sn">SN</A> value.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#cohere"><H3>COHERE</H3></A>
+Coherent case
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#defocus"><H3>DEFOCUS</H3></A>
+Amount of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#defocus">defocus</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#find"><H3>FIND</H3></A>
+To match signal to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#noise">noise</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#rotate"><H3>ROTATE</H3></A>
+smear <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#rotate">rotate</A> otf 180.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#noise"><H3>NOISE</H3></A>
+Add <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#noise">noise</A> amount.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#reflamda"><H3>REFLAMDA</H3></A>
+Reference wavelength.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#lamda"><H3>LAMDA</H3></A>
+Actual wavelength.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#fullwell"><H3>FULLWELL</H3></A>
+Electrons/ccd bin
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#scale"><H3>SCALE</H3></A>
+pupil <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse_level2.html#scale">scale</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/sparse.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

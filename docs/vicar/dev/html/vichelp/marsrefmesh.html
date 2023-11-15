@@ -1,0 +1,243 @@
+<HTML>
+<HEAD><title>HTML Help for MARSREFMESH</title></HEAD>
+<BODY>
+<H1>Help for MARSREFMESH</H1>
+<pre>
+
+Marsrefmesh is a program to refine the vertices coordinates (X,Y,Z) of a
+mesh which models a surface based on some photoconsistency criteria of a series 
+of images of that surface.
+
+EXECUTION:
+
+*IMPORTANT* - See Usage before using the program.
+
+marsrefmesh <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#inp">inp</A>=ascii_listOfFiles refimage=1,2 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#in_mesh">in_mesh</A>=file.OBJ 
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#out_mesh">out_mesh</A>=fileOut.OBJ
+
+where:
+- ascii_listoffiles is a text file containing all the images that will be 
+used in the refinement.
+- refimage ids represent the index of the images in ascii_listOfFiles that will
+be considered reference (see below for more information). 1-based index.
+- <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#in_mesh">in_mesh</A> is the input mesh file that is going to be refined
+- <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#out_mesh">out_mesh</A> is the ouput mesh filename
+
+
+USAGE:
+
+There are important considerations to take into account before using that 
+program:
+
+[1] This program should be used when several images of the area modelized by the
+mesh are available. Most of the time, the mesh is obtained from the correlation
+of a stereo pair of images. If only that pair of images is available, this 
+program should NOT be used. At least no details retrieval should be expected. 
+May be the program can be used as a denoiser, but that has not been tested in 
+this configuration.
+However, if more than two images on the area with reasonable incidence angles 
+are available, this program could be used.
+
+[2] The traditional way of obtaining meshes in mars pipeline is to generate a
+mesh with vertices for every pixels of the image (because correlation is 
+carried on every single pixel of the reference/master image). 
+Given how this program works, the mesh must be subsampled to insure that a mesh 
+face/triangle receive a couple of pixels. This can be achieved during the 
+meshing (marsmesh program) by subsampling the output (X_SUBSAMPLE, Y_SUBSAMPLE 
+parameters in marsmesh) by a factor of 4 for instance. We are not really loosing
+information by subsampling the mesh, because in its full resolution mode, the 
+mesh is highly oversampled as the correlation patch is at least 7x7 pixels, 
+although most of the time around 7x11 pixels.
+
+[3] The program is based on the optimization of a global score (coherency of the
+images through the mesh) and a regularization score (smoothness of the surface).
+However, the balancing between the data attachement (coherency of images) and the
+regularization (surface smoothness) is not trivial, without any hard and fast 
+rule. The scaling of the regularization (<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#lambda">LAMBDA</A>) has to be adjusted on a 
+case-by-case study. To estimate what <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#lambda">LAMBDA</A> shoulde be, a first run of the 
+program with -<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#evaluate">EVALUATE</A> will provide the raw data and regularization costs. From
+these values, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#lambda">LAMBDA</A> can be estimated (still a tricky excercise which will 
+require some experimentation) and the program can be re-run without -ESTIMATE.
+
+
+
+METHOD:
+
+This program is based on the following papers:
+- High accuracy and visibility-consistent dense multiview stereo, Vu et al.,
+  IEEE Transactions PAMI, vol 34., no. 5, 2012
+- Discrete differential-geometry operators for triangulated 2-manifold, Meyer et
+  al.,  Hege HC., Polthier K. (eds) Visualization and Mathematics III. Springer.
+  2003.
+- Implicit fairing of irregular meshes using diffusion and curvature flow, 
+  SIGGRAPH conference proceedings, pp 317-324, 1999
+
+
+The program is based on the variational refinement of the mesh vertices based on
+photo-consistency.
+
+A global score is computed that consists of the sum of the (inverse of) the 
+correlation between all the images once they have been projected on the mesh and
+back-projected to the reference images. That score is augmented with a 
+measurement of the global curvature. The mesh vertices locations are iteratively
+refined to minimize that global score using an unconstrained minimization 
+algorithm. This is a classical regularized approach where the data attachement 
+term is given by the inverse of the correlation score (the better the 
+correlation, the smaller the contribution to the score) and a regularization 
+term, given by the curvature cost, which favors smooth surface and penalize 
+strong bending. 
+
+At least one reference image is needed. If more than one reference image is 
+given, that means that, in turn, all the images are projected onto the reference
+and correlated, and the score cumulated. Potentially, all images of the list can
+also be reference images.
+
+The balancing between data attachement and regularization is controlled with
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#lambda">LAMBDA</A>. A dry run of the program with -<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#evaluate">EVALUATE</A> will provide estimates of the
+data attachement and regularization costs, from which <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#lambda">LAMBDA</A> can be estimated.
+
+
+
+NOTES:
+
+
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Francois Ayoub</A>
+
+HISTORY:
+  2018-09-01 Francois Ayoub - Initial marsrefmesh implementation
+  2019-12-10 Walt Bunch - IDS-7926 Initialized some variables; cleaned up other -Wall warnings; added unit test.
+             Note line 2262:
+             texturedTriangles[i] == 1; // TODO: was this intended to be an assignment?
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#inp"><H3>INP</H3></A>
+Input image(s) or
+file list.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#refimages"><H3>REFIMAGES</H3></A>
+Reference Images index 
+file list
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#in_mesh"><H3>IN_MESH</H3></A>
+Input mesh OBJ file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#out_mesh"><H3>OUT_MESH</H3></A>
+Output mesh OBJ file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#evaluate"><H3>EVALUATE</H3></A>
+Get the initial cost.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#texture_ids"><H3>TEXTURE_IDS</H3></A>
+Images indices to use
+for texturing mesh
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#min_vertices"><H3>MIN_VERTICES</H3></A>
+Minimum number of vertices
+for valid mesh patch.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#min_dist"><H3>MIN_DIST</H3></A>
+Minimum distance from 
+reference cameras.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#max_dist"><H3>MAX_DIST</H3></A>
+Maximum distance from
+reference cameras.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#lambda"><H3>LAMBDA</H3></A>
+Regularization weight.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#sigma"><H3>SIGMA</H3></A>
+Standard deviation of
+Gaussian correlator.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#nb_sigma"><H3>NB_SIGMA</H3></A>
+Number of std dev of
+Gaussian correlator.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Input navigation table.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#out_solution_id"><H3>OUT_SOLUTION_ID</H3></A>
+Solution ID for OUTPUT
+nav file (required if
+XML format).
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID for INPUT
+nav file, if needed.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#until"><H3>UNTIL</H3></A>
+All images up to
+REFIMAGE(1) are reference
+images.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#ignore"><H3>IGNORE</H3></A>
+List of images to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#ignore">ignore</A>
+in the tiepoint list.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#omp_on"><H3>OMP_ON</H3></A>
+Turns on or off parallel
+processing (multiple threads,
+single machine).  Default: on
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#match_method"><H3>MATCH_METHOD</H3></A>
+Specifies a method
+for pointing corrections.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#match_tol"><H3>MATCH_TOL</H3></A>
+Tolerance value for
+matching pointing params
+in pointing corrections file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+Ignored by marsnav, except
+for final surface model.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#coord">COORD</A>/mission combos.
+Ignored by marsnav.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#summary"><H3>SUMMARY</H3></A>
+Which verbosity of 
+optimization report to
+display in stdout
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#residual_disp"><H3>RESIDUAL_DISP</H3></A>
+How many residuals to 
+display in the stdout
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#iter_disp"><H3>ITER_DISP</H3></A>
+Display or not info
+on each solver iteration
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

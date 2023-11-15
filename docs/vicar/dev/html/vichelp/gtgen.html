@@ -1,0 +1,142 @@
+<HTML>
+<HEAD><title>HTML Help for GTGEN</title></HEAD>
+<BODY>
+<H1>Help for GTGEN</H1>
+<pre>
+PURPOSE
+     GTGEN is a VICAR applications program which creates a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GeoTIFF</A>
+     label from parameter input.  This label can be used as a reference
+     for numerous VICAR/IBIS operations such as mapping a graphics
+     data set or an image.  The label can be examined with the 
+     routine GTLIST, including calculated information such as location
+     of corner points and pixel size.  The label is coded as a
+     part of the state VICAR label.  It can be inserted into an IBIS
+     file for graphics or tabular data with routine GTIBIS (not
+     available yet).
+     
+     A special feature of GTGEN is that a three tiepoint set of
+     parameters can be converted into a tiepoint-scale or tiepoint-
+     transformation-matrix format of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GeoTIFF</A> label.  Often, the
+     three tiepoints are known or are easier to work with than the
+     internal formats of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GeoTIFF</A>.  This feature is invoked by the
+     keyword <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#tiecnvrt">TIECNVRT</A>.  If the three tiepoints are not exactly
+     rectilinear (which can be proven by using GTLIST on the result)
+     and a rectilinear mapping is desired, then the keyword <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#rectfit">RECTFIT</A>
+     can be used to give a best fit (in the least-squares sense)
+     that is rectilinear.
+     
+     If a VICAR file is created with the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GEOTIFF</A> parameter but no
+     input data sets, then it will be a 1 x 1 image (one pixel)
+     that serves mainly as the holder of the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GeoTIFF</A> label.  It 
+     would also be useful for the 'COVERINP parameter of VICAR
+     program GTSIZE or GTWARP.
+     
+     GTGEN has six modes of operation, so read the help for 
+     parameter <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#inp">INP</A> to determine your case.
+     
+CALL
+     gtgen <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#inp">INP</A> <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#out">OUT</A> '(QUALIFIERS) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GEOTIFF</A>
+  WHERE:
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#inp">INP</A>            is the input data set (may be none, one, or two).
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#out">OUT</A>            is the output data set (may be none, or one).
+     QUALIFIERS     consist of any of the following keywords:
+          <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#add">ADD</A>           add the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">geotiff</A> parameters to an existing label
+          <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#tiecnvrt">TIECNVRT</A>      convert three tiepoint input to tiepoint-scale-
+                        model format to indicate that image is mapped
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GEOTIFF</A>        are tag-value pairs that become geotiff parms in
+                    the label; each is formatted tag=value.
+OR
+     gtgen (INP1,INP2) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#out">OUT</A>
+  WHERE:
+     INP1           is a VICAR input data set(s).
+     INP2           is a VICAR input data set that has a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GeoTIFF</A>
+                    label in its state label area.
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#out">OUT</A>            is a VICAR output data set that will be a copy
+                    of the first data set with an inserted <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GeoTIFF</A>
+                    label from the second data set.
+     
+    
+OPERATION
+
+For the normal case of creating a label from parameters,
+GTGEN processes the input string pairs, turning each into a
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GeoTIFF</A> tag-value pair.
+
+The parameter uses only the string format.  Numbers are presented as
+strings.  Vectors are presented as a string containing symbols (,,).
+etc.  Double quotes must be doubled inside the TAE double quotes
+(see example below).  Parenthetical documentation can be added as
+part of the strings.
+
+The format is flattened <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#out">out</A> for VICAR label purposes.  The higher
+level descriptors such as GeoKeyDirectoryTag are not used in the
+vicar table.  They are restored when an external <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GeoTIFF</A> label is
+created.   The following example is taken from 3.1.1 of the 
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GeoTIFF</A> Format Specification REv 1 (see references).
+
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">geotiff</A>=("ModelTiePointTag=(0,0,0,350807.4,5316081.3,0.0)", "ModelPixelScaleTag=(100.0,100.0,0.0)", "GTModelTypeGeoKey=1(ModelTypeProjected)", "GTRasterTypeGeoKey=1(RasterPixelIsArea)", "ProjectedCSTypeGeoKey=32660(PCS_WGS84-UTM-zone_60N)", "PCSCitationGeoKey=""UTM Zone 60 N with WGS84""")
+
+For the case of two input files, no parameters are allowed.  The 
+program simply places the ascii file key=value pairs into the
+VICAR state area.  Multiple occurrences of keys become vectors
+in the VICAR state area (since repeats of keys are disallowed).
+
+For the update case of one input, no output data sets... the
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">geotiff</A> parameter is processed in update mode into the primary
+input.  This is the fastest way to process large data sets.
+
+PERFORMANCE
+
+Less than 1 second, except for the case where an output file is
+written.  Then the time is mostly copying the output data set.
+
+RESTRICTIONS
+------------
+
+Only 100 parameter pairs can be input.  For more, use repeated
+calls to GTGEN with the '<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#add">ADD</A> parameter after the first call. 
+
+REFERENCES
+
+     Ritter, N., Ruth, M. "<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff">GeoTIFF</A> Format Specification, Revision 1.0",
+     JPL Cartographic Applications Group.
+     
+Original Programmer: A. L. Zobrist, 4 Aug. 1999
+<A NAME="CogProg">Current Cognizant Programmer: B. A. McGuffie</A>
+Revisions:
+  2008-01-11 WLB - switched to USES_ANSI_C AND LIB_CARTO; misc cleanup
+  2019-09-05 WLB - IDS-7922 - Initialized variable, cleaned up -Wall warnings
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#inp"><H3>INP</H3></A>
+Input file name(s)
+There are six cases:
+1.  1 output, no <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#add">add</A>
+2.  1 input, 1 output, no <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#add">add</A>
+3.  1 input, 1 output, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#add">add</A>
+4.  2 input, 1 output
+5.  1 input, 0 output (update)
+6.  1 input, 0 output (update), <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#add">add</A>
+(see help level 2)
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#out"><H3>OUT</H3></A>
+output file name
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#geotiff"><H3>GEOTIFF</H3></A>
+Key-value pairs expressed
+as one string per pair
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#add"><H3>ADD</H3></A>
+The key-value pairs are
+added to an existing file
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#tiecnvrt"><H3>TIECNVRT</H3></A>
+Three tiepoints in the 
+parameters are converted to
+tiepoint-scale-model
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#rectfit"><H3>RECTFIT</H3></A>
+Used with <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen_level2.html#tiecnvrt">TIECNVRT</A>; gives the
+rectilinear mapping that best
+approximates the tiepoints
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/gtgen.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

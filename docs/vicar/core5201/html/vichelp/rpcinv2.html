@@ -1,0 +1,87 @@
+<HTML>
+<HEAD><title>HTML Help for RPCINV2</title></HEAD>
+<BODY>
+<H1>Help for RPCINV2</H1>
+<pre>
+PURPOSE
+
+   "rpcinv2" calculates the longitude, latitude of the image.
+It performs RPC and RPC inverse iteratively to calculate a more
+correct longitude and latitude.
+
+EXECUTION
+
+The steps of the algorithm are as follows:
+-----------------------------------------
+
+calculate the lon, lat using RPC inverse
+do 10 times
+   Get elevation using bilinear interpolation from DEM using lon, lat
+   Calculate a new x, y of the image using RPC with inputs
+      lon, lat, and elevation
+   Acquire a more correct lon, lat using RPC inverse
+   If the error of old and new lon, lat is less than <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpcinv2_level2.html#thresh">thresh</A>
+      then break from loop
+enddo
+
+<A NAME="examples">EXAMPLES</A>
+
+     rpcinv2 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpcinv2_level2.html#inp">INP</A>=(xxx1, bob.img, dem.hlf) '<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpcinv2_level2.html#print">print</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpcinv2_level2.html#thresh">thresh</A>=0.1
+             <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpcinv2_level2.html#cols">cols</A>=(3,2,1,4,5) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpcinv2_level2.html#fixdted">fixdted</A>=n
+
+   The above command will take in the IBIS file xxx1, image
+file bob.img, the DEM file dem.hlf and calculate the
+lon, lat.  The '<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpcinv2_level2.html#print">print</A> statement tells to print the debug
+statements.  The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpcinv2_level2.html#thresh">thresh</A> tells the algorithm to quit if the error is
+less than 0.1.  The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpcinv2_level2.html#cols">cols</A> describe which columns of the IBIS file
+contains what data (see variables) and the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpcinv2_level2.html#fixdted">fixdted</A> of 'n' tells
+the algorithm to not use the elevation specified in the IBIS file
+but rather the elevation in the dem.hlf.  The output is to the lon,
+lat columns of the input IBIS file.
+
+
+RESTRICTIONS
+
+None to date.  A null IBIS file will give an appropriate error
+and abort.
+
+Original Programmer: P. Kim, 3 Dec, 2007
+
+Revision:
+  4  Nov 2009 Fixed documentation of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpcinv2_level2.html#fixdted">fixdted</A>
+                                               P. Kim
+  8  Jul 2009 Fixed format string size from 5 to 8
+                                               P. Kim
+  19 Mar 2009 Fixed a bug in getElv function dem data
+              acquisition was wrong.           P. Kim
+  2022-07-27 B. Crocco afids to opensource (untested)
+  
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpcinv2_level2.html#inp"><H3>INP</H3></A>
+ Input IBIS interface file,
+ image file, and DEM file in
+ this order
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpcinv2_level2.html#print"><H3>PRINT</H3></A>
+ Specifies whether to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpcinv2_level2.html#print">print</A> the
+ debug statement or not
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpcinv2_level2.html#thresh"><H3>THRESH</H3></A>
+ Specifies the acceptable error
+ threshold.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpcinv2_level2.html#cols"><H3>COLS</H3></A>
+ Specifies which columns of the
+ IBIS file contain X, Y, elev,
+ lon, lat data.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpcinv2_level2.html#fixdted"><H3>FIXDTED</H3></A>
+ Specifies whether to acquire
+ the elevation from DEM or not.
+ If 'n', then elevation will
+ be read in from the DEM file.
+ If 'y', then elevation will
+ be read in from the IBIS file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpcinv2.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpcinv2.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

@@ -1,0 +1,126 @@
+<HTML>
+<HEAD><title>HTML Help for RPC2CUBE</title></HEAD>
+<BODY>
+<H1>Help for RPC2CUBE</H1>
+<pre>
+PURPOSE
+     The RPC's in a label give the transformation of a non-orthorectified image
+     (line,sample) to rectified (lon,lat) coordinates.  Mathematically, the
+     equations (RPF's) are reversed from lon-lat to line-sample.  This routine
+     creates an ultrafine grid (should be finer than the underlying DTED used)
+     that is equivalent to the transformations.
+
+     The cubic form of the grid is useful for solving for rpc's.  A spacecraft
+     modelled distortion to the cube of points can be used to update an rpc.  It
+     is envisioned that the spacecraft angles can be updated this way.
+	   
+CALL
+
+There are two modes
+
+     rpc2cube INP=rpcim OUT=outgrid NAH=nah NAV=nav NAZ=naz DZ=dz
+  WHERE:
+     rpcim          is the input data set (must have a GeoTIFF label with RPC's)
+     dted           is a dted data set (must have a GeoTIFF label, lon-lat)
+     outgrid        is the output ultrafine grid cols=(lon,lat,elv,line,samp)
+     nah            is the number of areas horizontally in the grid (points-1)
+     nav            is the number of areas vertically in the grid (points-1)
+     naz            is the number of areas in the z direction in the grid (points-1)
+     dz             is the distance between the elevation layers
+
+and
+
+     rpc2cube INP=(rpcim,dted) OUT=outgrid NAH=nah NAV=nav NAZ=naz DZ=dz LON1=lon1                 LAT1=lat1 LON2=lon2 ...etc
+  WHERE:
+     rpcim          is the input data set (must have a GeoTIFF label with RPC's)
+     dted           is a dted data set (must have a GeoTIFF label, lon-lat)
+     outgrid        is the output ultrafine grid cols=(lon,lat,elv,line,samp)
+     nah            is the number of areas horizontally in the grid (points-1)
+     nav            is the number of areas vertically in the grid (points-1)
+     naz            is the number of areas in the z direction in the grid (points-1)
+     dz             is the distance between the elevation layers
+     lon1,lat1      is the first corner in clockwise order
+     lon2,lat2      is the second corner in clockwise order
+     lon3,lat3      is the third corner in clockwise order
+     lon4,lat4      is the fourth corner in clockwise order
+  
+OPERATION
+
+In mode one, the corner (lon,lat) points are obtained from the label (these should
+always be present for RPC labels).  The corners are enlarged outward by 5% so the
+generated quadrangle will cover the image data better.
+
+In mode two, the (lon,lat) points are given by the user.  The user should take care
+to cover data.
+
+Then the dted us used to look up elevation for each point using bilinear interp-
+olation.  Then the RPCFWD routine is used to calculate (line,sample) for each
+point.
+
+The columns are always in that order.  The ncols parameter can add extra columns to
+the file.
+
+PERFORMANCE
+
+The file is (nah+1)*(NAV+1)*(NAZ+1) in length.  Almost all of the time will be spent in
+RPCFWD.
+
+Restrictions
+------------
+
+
+
+Original Programmer: A. L. Zobrist, 16 Mar, 2005
+<A NAME="CogProg">Current Cognizant Programmer: A. L. Zobrist</A>
+2022-08-10 B. Crocco afids to opensource (untested)
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc2cube_level2.html#inp"><H3>INP</H3></A>
+Input file with GeoTIFF, RPC's
+and a DTED file
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc2cube_level2.html#out"><H3>OUT</H3></A>
+Output file name, ultra-fine
+grid for image warping
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc2cube_level2.html#ncol"><H3>NCOL</H3></A>
+Number of columns to put in
+grid
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc2cube_level2.html#nah"><H3>NAH</H3></A>
+Number of areas horizontally
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc2cube_level2.html#nav"><H3>NAV</H3></A>
+Number of areas vertically
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc2cube_level2.html#naz"><H3>NAZ</H3></A>
+Number of areas in elevation
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc2cube_level2.html#lon1"><H3>LON1</H3></A>
+Longitude of 1st corner point
+clockwise
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc2cube_level2.html#lat1"><H3>LAT1</H3></A>
+Latitude of 1st corner point
+clockwise
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc2cube_level2.html#lon2"><H3>LON2</H3></A>
+Longitude of 2d corner point
+clockwise
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc2cube_level2.html#lat2"><H3>LAT2</H3></A>
+Latitude of 2d corner point
+clockwise
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc2cube_level2.html#lon3"><H3>LON3</H3></A>
+Longitude of 3d corner point
+clockwise
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc2cube_level2.html#lat3"><H3>LAT3</H3></A>
+Latitude of 3d corner point
+clockwise
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc2cube_level2.html#lon4"><H3>LON4</H3></A>
+Longitude of 4th corner point
+clockwise
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc2cube_level2.html#lat4"><H3>LAT4</H3></A>
+Latitude of 4th corner point
+clockwise
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc2cube_level2.html#dz"><H3>DZ</H3></A>
+distance (meters) between
+elevation layers
+.END
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc2cube.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc2cube.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

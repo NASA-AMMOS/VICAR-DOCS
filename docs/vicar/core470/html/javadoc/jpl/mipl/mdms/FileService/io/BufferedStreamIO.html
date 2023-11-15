@@ -1,0 +1,1079 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+
+<title>BufferedStreamIO</title>
+<meta name="date" content="2018-06-21">
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../../../../script.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
+var altColor = "altColor";
+var rowColor = "rowColor";
+var tableTab = "tableTab";
+var activeTableTab = "activeTableTab";
+</script>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+
+<div class="topNav"><a name="navbar.top">
+
+</a>
+<div class="skipNav"><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/FileService/io/#skip.navbar.top" title="Skip navigation links">Skip navigation links</a></div>
+<a name="navbar.top.firstrow">
+
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../../../overview-summary.html">Overview</a></li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/FileService/io/package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/FileService/io/package-tree.html">Tree</a></li>
+<li><a href="../../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../../index-all.html">Index</a></li>
+<li><a href="../../../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../../../../jpl/mipl/mdms/FileService/io/BoundedBufferedReader.html" title="class in jpl.mipl.mdms.FileService.io"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../../../jpl/mipl/mdms/FileService/io/FileIO.html" title="class in jpl.mipl.mdms.FileService.io"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../../../../index.html?jpl/mipl/mdms/FileService/io/BufferedStreamIO.html" target="_top">Frames</a></li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/FileService/io/BufferedStreamIO.html" target="_top">No&nbsp;Frames</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_top">
+<li><a href="../../../../../allclasses-noframe.html">All&nbsp;Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript">
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>Summary:&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/FileService/io/#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/FileService/io/#method.summary">Method</a></li>
+</ul>
+<ul class="subNavList">
+<li>Detail:&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/FileService/io/#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/FileService/io/#method.detail">Method</a></li>
+</ul>
+</div>
+<a name="skip.navbar.top">
+
+</a></div>
+
+
+<div class="header">
+<div class="subTitle">jpl.mipl.mdms.FileService.io</div>
+<h2 title="Class BufferedStreamIO" class="title">Class BufferedStreamIO</h2>
+</div>
+<div class="contentContainer">
+<ul class="inheritance">
+<li>java.lang.Object</li>
+<li>
+<ul class="inheritance">
+<li>jpl.mipl.mdms.FileService.io.BufferedStreamIO</li>
+</ul>
+</li>
+</ul>
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<hr>
+<br>
+<pre>public class <span class="typeNameLabel">BufferedStreamIO</span>
+extends java.lang.Object</pre>
+<div class="block"><b>Purpose:</b> Hides the complexity of "attaching" an output stream to an
+ input stream for the purpose of file transfers and file transfers with
+ message digest. This class has been revised to allow partial file transfer,
+ which enables resume transfer in the case of network failure.
+ 
+ <PRE>
+ Copyright 2008, California Institute of Technology. 
+ ALL RIGHTS RESERVED. 
+ U.S. Government Sponsorship acknowledge (NASA contract NAS7-918). 2008.
+ </PRE>
+ 
+ <PRE>
+ ============================================================================
+ <B>Modification History :</B>
+ ----------------------
+ 
+ <B>Date              Who              What</B>
+ ----------------------------------------------------------------------------
+ 01/01/1999        MDMS             Initial Release
+ 07/08/2005        Nick             Initial documentation.
+                                    Swapped "rwd" for "rw" for RandomAccFile 
+                                    for server file writing.
+ 07/15/2005        Nick             Set raf.setLength() to occur after file 
+                                    fully transfers to truncate, not before.
+ 06/01/2008        Nick             CRC placed in a read loop. 
+ ============================================================================
+ </PRE></div>
+<dl>
+<dt><span class="simpleTagLabel">Version:</span></dt>
+<dd>$Id: BufferedStreamIO.java,v 1.41 2010/09/08 19:23:05 ntt Exp $</dd>
+<dt><span class="simpleTagLabel">Author:</span></dt>
+<dd>Thomas Huang (Thomas.Huang@jpl.nasa.gov), Nicholas Toole (Nicholas.T.Toole@jpl.nasa.gov)</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="summary">
+<ul class="blockList">
+<li class="blockList">
+
+<ul class="blockList">
+<li class="blockList"><a name="constructor.summary">
+
+</a>
+<h3>Constructor Summary</h3>
+<table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructor Summary table, listing constructors, and an explanation">
+<caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colOne" scope="col">Constructor and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#BufferedStreamIO-java.io.BufferedInputStream-java.io.BufferedOutputStream-">BufferedStreamIO</a></span>(java.io.BufferedInputStream&nbsp;bis,
+                java.io.BufferedOutputStream&nbsp;bos)</code>
+<div class="block">Constructor using default buffer size for buffered I/O streams.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#BufferedStreamIO-java.io.BufferedInputStream-java.io.BufferedOutputStream-int-">BufferedStreamIO</a></span>(java.io.BufferedInputStream&nbsp;bis,
+                java.io.BufferedOutputStream&nbsp;bos,
+                int&nbsp;bufSize)</code>
+<div class="block">Constructor with specified buffer size for buffered I/O streams.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#BufferedStreamIO-java.io.BufferedInputStream-int-java.io.BufferedOutputStream-int-">BufferedStreamIO</a></span>(java.io.BufferedInputStream&nbsp;bis,
+                int&nbsp;inBufSize,
+                java.io.BufferedOutputStream&nbsp;bos,
+                int&nbsp;outBufSize)</code>
+<div class="block">Constructor with specified buffer sizes for each buffered stream object.</div>
+</td>
+</tr>
+</table>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="method.summary">
+
+</a>
+<h3>Method Summary</h3>
+<table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Method Summary table, listing methods, and an explanation">
+<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/FileService/io/show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/FileService/io/show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Method and Description</th>
+</tr>
+<tr id="i0" class="altColor">
+<td class="colFirst"><code>byte[]</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#genChecksum-byte:A-">genChecksum</a></span>(byte[]&nbsp;buffer)</code>
+<div class="block">Generate a checksum on a buffer.</div>
+</td>
+</tr>
+<tr id="i1" class="rowColor">
+<td class="colFirst"><code>byte[]</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#readAndVerifyBufferFromStream-byte:A-long-">readAndVerifyBufferFromStream</a></span>(byte[]&nbsp;buffer,
+                             long&nbsp;fileSize)</code>
+<div class="block">Reads from the (buffered) input stream an writes it to file.</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code>byte[]</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#readAndVerifyFileFromStream-java.lang.String-long-">readAndVerifyFileFromStream</a></span>(java.lang.String&nbsp;fileName,
+                           long&nbsp;fileSize)</code>
+<div class="block">Reads from the (buffered) input stream and writes it to file.</div>
+</td>
+</tr>
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code>byte[]</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#readAndVerifyFileFromStream-java.lang.String-long-long-">readAndVerifyFileFromStream</a></span>(java.lang.String&nbsp;fileName,
+                           long&nbsp;offset,
+                           long&nbsp;length)</code>
+<div class="block">Reads from the (buffered) input stream and writes it to file with the
+ specified offset.</div>
+</td>
+</tr>
+<tr id="i4" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#readBufferFromStream-byte:A-long-">readBufferFromStream</a></span>(byte[]&nbsp;buffer,
+                    long&nbsp;fileSize)</code>
+<div class="block">Reads from the (buffered) input stream and writes it to the specified byte
+ buffer.</div>
+</td>
+</tr>
+<tr id="i5" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#readBufferFromStream-byte:A-long-boolean-">readBufferFromStream</a></span>(byte[]&nbsp;buffer,
+                    long&nbsp;fileSize,
+                    boolean&nbsp;flushChecksum)</code>
+<div class="block">Reads from the (buffered) input stream and writes it to the specified byte
+ buffer.</div>
+</td>
+</tr>
+<tr id="i6" class="altColor">
+<td class="colFirst"><code>protected byte[]</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#readChecksum--">readChecksum</a></span>()</code>
+<div class="block">Reads the checksum from the input buffer and returns it as byte array.</div>
+</td>
+</tr>
+<tr id="i7" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#readFileFromStream-java.io.OutputStream-long-long-">readFileFromStream</a></span>(java.io.OutputStream&nbsp;out,
+                  long&nbsp;offset,
+                  long&nbsp;length)</code>
+<div class="block">Reads a block of binary data from stream and writes to output stream.</div>
+</td>
+</tr>
+<tr id="i8" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#readFileFromStream-java.io.OutputStream-long-long-boolean-">readFileFromStream</a></span>(java.io.OutputStream&nbsp;out,
+                  long&nbsp;offset,
+                  long&nbsp;length,
+                  boolean&nbsp;checksum)</code>
+<div class="block">Reads a block of binary data from stream and writes to output stream.</div>
+</td>
+</tr>
+<tr id="i9" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#readFileFromStream-java.lang.String-long-">readFileFromStream</a></span>(java.lang.String&nbsp;fileName,
+                  long&nbsp;fileSize)</code>
+<div class="block">Reads from the (buffered) input stream and writes it to file</div>
+</td>
+</tr>
+<tr id="i10" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#readFileFromStream-java.lang.String-long-long-">readFileFromStream</a></span>(java.lang.String&nbsp;fileName,
+                  long&nbsp;offset,
+                  long&nbsp;length)</code>
+<div class="block">Reads a block of binary data from stream and write to output file.</div>
+</td>
+</tr>
+<tr id="i11" class="rowColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#readLine--">readLine</a></span>()</code>
+<div class="block">Get a line from input stream</div>
+</td>
+</tr>
+<tr id="i12" class="altColor">
+<td class="colFirst"><code><a href="../../../../../jpl/mipl/mdms/FileService/io/MessagePkg.html" title="class in jpl.mipl.mdms.FileService.io">MessagePkg</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#readMessage--">readMessage</a></span>()</code>
+<div class="block">Construct a message from a reply packet.</div>
+</td>
+</tr>
+<tr id="i13" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#skipFile-long-boolean-">skipFile</a></span>(long&nbsp;fileSize,
+        boolean&nbsp;doChecksum)</code>
+<div class="block">Method to flush an incoming file, and flush an incoming checksum, if
+ required.</div>
+</td>
+</tr>
+<tr id="i14" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#write-java.lang.String-">write</a></span>(java.lang.String&nbsp;s)</code>
+<div class="block">Write string to output stream</div>
+</td>
+</tr>
+<tr id="i15" class="rowColor">
+<td class="colFirst"><code>byte[]</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#writeAndVerifyBufferToStream-byte:A-long-">writeAndVerifyBufferToStream</a></span>(byte[]&nbsp;buffer,
+                            long&nbsp;fileSize)</code>
+<div class="block">Writes a file from memory to to the (buffered) output stream A message
+ digest will be cloned and the reference <code>calculatedChecksum</code>
+ updated.</div>
+</td>
+</tr>
+<tr id="i16" class="altColor">
+<td class="colFirst"><code>byte[]</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#writeAndVerifyFileToStream-java.lang.String-long-">writeAndVerifyFileToStream</a></span>(java.lang.String&nbsp;fileName,
+                          long&nbsp;fileSize)</code>
+<div class="block">Writes the input file onto buffered output stream.</div>
+</td>
+</tr>
+<tr id="i17" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#writeAndVerifyFileToStream-java.lang.String-long-byte:A-">writeAndVerifyFileToStream</a></span>(java.lang.String&nbsp;fileName,
+                          long&nbsp;fileSize,
+                          byte[]&nbsp;suppliedChecksum)</code>
+<div class="block">Writes the input data buffer onto buffered output stream followed by the
+ supplied checksum value.</div>
+</td>
+</tr>
+<tr id="i18" class="altColor">
+<td class="colFirst"><code>byte[]</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#writeAndVerifyFileToStream-java.lang.String-long-long-">writeAndVerifyFileToStream</a></span>(java.lang.String&nbsp;fileName,
+                          long&nbsp;offset,
+                          long&nbsp;length)</code>
+<div class="block">Writes the specified byte range within the input data file to buffered
+ output stream and caclculates the checksum as the data is being
+ transfered.</div>
+</td>
+</tr>
+<tr id="i19" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#writeAndVerifyFileToStream-java.lang.String-long-long-byte:A-">writeAndVerifyFileToStream</a></span>(java.lang.String&nbsp;fileName,
+                          long&nbsp;offset,
+                          long&nbsp;length,
+                          byte[]&nbsp;suppliedChecksum)</code>
+<div class="block">Writes the data block within the input data file onto buffered output
+ stream followed by the supplied checksum value.</div>
+</td>
+</tr>
+<tr id="i20" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#writeFileToStream-byte:A-long-">writeFileToStream</a></span>(byte[]&nbsp;buffer,
+                 long&nbsp;fileSize)</code>
+<div class="block">Writes the input data buffer to buffered output stream.</div>
+</td>
+</tr>
+<tr id="i21" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#writeFileToStream-java.lang.String-long-">writeFileToStream</a></span>(java.lang.String&nbsp;fileName,
+                 long&nbsp;fileSize)</code>
+<div class="block">Reads a file and writes it to the (buffered) output stream.</div>
+</td>
+</tr>
+<tr id="i22" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#writeFileToStream-java.lang.String-long-long-">writeFileToStream</a></span>(java.lang.String&nbsp;fileName,
+                 long&nbsp;offset,
+                 long&nbsp;length)</code>
+<div class="block">Method to read a data block from an input file and writes it to the
+ (buffered) output stream.</div>
+</td>
+</tr>
+<tr id="i23" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#writeLine-java.lang.String-">writeLine</a></span>(java.lang.String&nbsp;s)</code>
+<div class="block">Write line to output stream</div>
+</td>
+</tr>
+<tr id="i24" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../jpl/mipl/mdms/FileService/io/BufferedStreamIO.html#writeMessage-int-java.lang.String-">writeMessage</a></span>(int&nbsp;errorNum,
+            java.lang.String&nbsp;s)</code>
+<div class="block">Write a message to the command stream.</div>
+</td>
+</tr>
+</table>
+<ul class="blockList">
+<li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
+
+</a>
+<h3>Methods inherited from class&nbsp;java.lang.Object</h3>
+<code>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="details">
+<ul class="blockList">
+<li class="blockList">
+
+<ul class="blockList">
+<li class="blockList"><a name="constructor.detail">
+
+</a>
+<h3>Constructor Detail</h3>
+<a name="BufferedStreamIO-java.io.BufferedInputStream-java.io.BufferedOutputStream-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>BufferedStreamIO</h4>
+<pre>public&nbsp;BufferedStreamIO(java.io.BufferedInputStream&nbsp;bis,
+                        java.io.BufferedOutputStream&nbsp;bos)</pre>
+<div class="block">Constructor using default buffer size for buffered I/O streams.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>bis</code> - the BufferedInputStream object</dd>
+<dd><code>bos</code> - the BufferedOutputStream object</dd>
+</dl>
+</li>
+</ul>
+<a name="BufferedStreamIO-java.io.BufferedInputStream-java.io.BufferedOutputStream-int-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>BufferedStreamIO</h4>
+<pre>public&nbsp;BufferedStreamIO(java.io.BufferedInputStream&nbsp;bis,
+                        java.io.BufferedOutputStream&nbsp;bos,
+                        int&nbsp;bufSize)</pre>
+<div class="block">Constructor with specified buffer size for buffered I/O streams.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>bis</code> - the BufferedInputStream object</dd>
+<dd><code>bos</code> - the BufferedOutputStream object</dd>
+<dd><code>bufSize</code> - input/output buffer size in unit of bytes</dd>
+</dl>
+</li>
+</ul>
+<a name="BufferedStreamIO-java.io.BufferedInputStream-int-java.io.BufferedOutputStream-int-">
+
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>BufferedStreamIO</h4>
+<pre>public&nbsp;BufferedStreamIO(java.io.BufferedInputStream&nbsp;bis,
+                        int&nbsp;inBufSize,
+                        java.io.BufferedOutputStream&nbsp;bos,
+                        int&nbsp;outBufSize)</pre>
+<div class="block">Constructor with specified buffer sizes for each buffered stream object.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>bis</code> - the BufferedInputStream object</dd>
+<dd><code>inBufSize</code> - input buffer size in unit of bytes</dd>
+<dd><code>bos</code> - the BufferedOutputStream object</dd>
+<dd><code>outBufSize</code> - output buffer size in unit of bytes</dd>
+</dl>
+</li>
+</ul>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="method.detail">
+
+</a>
+<h3>Method Detail</h3>
+<a name="readFileFromStream-java.lang.String-long-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>readFileFromStream</h4>
+<pre>public&nbsp;void&nbsp;readFileFromStream(java.lang.String&nbsp;fileName,
+                               long&nbsp;fileSize)
+                        throws java.io.IOException</pre>
+<div class="block">Reads from the (buffered) input stream and writes it to file</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>fileName</code> - absolute path of file to be written</dd>
+<dd><code>fileSize</code> - file size in bytes</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when file/stream I/O failed</dd>
+</dl>
+</li>
+</ul>
+<a name="readFileFromStream-java.lang.String-long-long-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>readFileFromStream</h4>
+<pre>public&nbsp;void&nbsp;readFileFromStream(java.lang.String&nbsp;fileName,
+                               long&nbsp;offset,
+                               long&nbsp;length)
+                        throws java.io.IOException</pre>
+<div class="block">Reads a block of binary data from stream and write to output file. If
+ <code>offset</code> is greater than zero, then the the binary data will
+ be append to the existing file.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>fileName</code> - the output file name</dd>
+<dd><code>offset</code> - the offset byte</dd>
+<dd><code>length</code> - the lenght of byte stream</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when network/file IO failure</dd>
+</dl>
+</li>
+</ul>
+<a name="readFileFromStream-java.io.OutputStream-long-long-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>readFileFromStream</h4>
+<pre>public&nbsp;void&nbsp;readFileFromStream(java.io.OutputStream&nbsp;out,
+                               long&nbsp;offset,
+                               long&nbsp;length)
+                        throws java.io.IOException</pre>
+<div class="block">Reads a block of binary data from stream and writes to output stream.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>out</code> - the output file stream, left open on return.</dd>
+<dd><code>offset</code> - the offset byte</dd>
+<dd><code>length</code> - the lenght of byte stream</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when network/file IO failure</dd>
+</dl>
+</li>
+</ul>
+<a name="readFileFromStream-java.io.OutputStream-long-long-boolean-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>readFileFromStream</h4>
+<pre>public&nbsp;void&nbsp;readFileFromStream(java.io.OutputStream&nbsp;out,
+                               long&nbsp;offset,
+                               long&nbsp;length,
+                               boolean&nbsp;checksum)
+                        throws java.io.IOException</pre>
+<div class="block">Reads a block of binary data from stream and writes to output stream.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>out</code> - the output file stream, left open on return.</dd>
+<dd><code>offset</code> - the offset byte</dd>
+<dd><code>length</code> - the lenght of byte stream</dd>
+<dd><code>checksum</code> - True if checksum follows file contents</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when network/file IO failure</dd>
+</dl>
+</li>
+</ul>
+<a name="readBufferFromStream-byte:A-long-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>readBufferFromStream</h4>
+<pre>public&nbsp;void&nbsp;readBufferFromStream(byte[]&nbsp;buffer,
+                                 long&nbsp;fileSize)
+                          throws java.io.IOException</pre>
+<div class="block">Reads from the (buffered) input stream and writes it to the specified byte
+ buffer. The method limits the input file size to be less than or equal to
+ Integer.MAX_VALUE (~2GB), since buffering such large file in memory is not
+ recommended.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>buffer</code> - data buffer to store data read from input stream.</dd>
+<dd><code>fileSize</code> - file size in unit of bytes</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when network I/O error occurs</dd>
+</dl>
+</li>
+</ul>
+<a name="readBufferFromStream-byte:A-long-boolean-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>readBufferFromStream</h4>
+<pre>public&nbsp;void&nbsp;readBufferFromStream(byte[]&nbsp;buffer,
+                                 long&nbsp;fileSize,
+                                 boolean&nbsp;flushChecksum)
+                          throws java.io.IOException</pre>
+<div class="block">Reads from the (buffered) input stream and writes it to the specified byte
+ buffer. The method limits the input file size to be less than or equal to
+ Integer.MAX_VALUE (~2GB), since buffering such large file in memory is not
+ recommended.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>buffer</code> - data buffer to store data read from input stream.</dd>
+<dd><code>fileSize</code> - file size in unit of bytes</dd>
+<dd><code>flushChecksum</code> - Flag indicating if checksum needs to be flushed</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when network I/O error occurs</dd>
+</dl>
+</li>
+</ul>
+<a name="readChecksum--">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>readChecksum</h4>
+<pre>protected&nbsp;byte[]&nbsp;readChecksum()
+                       throws java.io.IOException</pre>
+<div class="block">Reads the checksum from the input buffer and returns it as byte array.
+ The new byte array will be created with length equal to  the digest 
+ length.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>Checksum byte array</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - if IO error occurs</dd>
+</dl>
+</li>
+</ul>
+<a name="skipFile-long-boolean-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>skipFile</h4>
+<pre>public&nbsp;void&nbsp;skipFile(long&nbsp;fileSize,
+                     boolean&nbsp;doChecksum)
+              throws java.io.IOException</pre>
+<div class="block">Method to flush an incoming file, and flush an incoming checksum, if
+ required.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>fileSize</code> - Size of the file to be thrown away.</dd>
+<dd><code>doChecksum</code> - Do we need to flush the checksum too?</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when file I/O fail</dd>
+</dl>
+</li>
+</ul>
+<a name="readAndVerifyFileFromStream-java.lang.String-long-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>readAndVerifyFileFromStream</h4>
+<pre>public&nbsp;byte[]&nbsp;readAndVerifyFileFromStream(java.lang.String&nbsp;fileName,
+                                          long&nbsp;fileSize)
+                                   throws java.io.IOException,
+                                          <a href="../../../../../jpl/mipl/mdms/FileService/io/VerifyException.html" title="class in jpl.mipl.mdms.FileService.io">VerifyException</a></pre>
+<div class="block">Reads from the (buffered) input stream and writes it to file. A message
+ digest will be cloned and the reference <code>calculatedChecksum</code>
+ updated. See <code>MessageDigest</code> for methods to retrieve
+ "checksum": <code>toString()</code> and <code>digest()</code>.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>fileName</code> - absolute path of file to be written</dd>
+<dd><code>fileSize</code> - file size in unit of bytes</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>checksum value in byte array</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when network/file I/O errors</dd>
+<dd><code><a href="../../../../../jpl/mipl/mdms/FileService/io/VerifyException.html" title="class in jpl.mipl.mdms.FileService.io">VerifyException</a></code> - when checksum unmatched</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><code>MessageDigest</code></dd>
+</dl>
+</li>
+</ul>
+<a name="readAndVerifyFileFromStream-java.lang.String-long-long-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>readAndVerifyFileFromStream</h4>
+<pre>public&nbsp;byte[]&nbsp;readAndVerifyFileFromStream(java.lang.String&nbsp;fileName,
+                                          long&nbsp;offset,
+                                          long&nbsp;length)
+                                   throws java.io.IOException,
+                                          <a href="../../../../../jpl/mipl/mdms/FileService/io/VerifyException.html" title="class in jpl.mipl.mdms.FileService.io">VerifyException</a></pre>
+<div class="block">Reads from the (buffered) input stream and writes it to file with the
+ specified offset. A message digest will be cloned and the reference
+ <code>calculatedChecksum</code> updated. If this is a partical file
+ transfer, then the message digest will be first calculated from byte 0 to
+ offset before resume transfer-time calculation of message digest. See
+ <code>MessageDigest</code> for methods to retrieve "checksum":
+ <code>toString()</code> and <code>digest()</code>.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>fileName</code> - the name of the file</dd>
+<dd><code>offset</code> - the offset value to begin the transfer</dd>
+<dd><code>length</code> - the number of bytes to be transfered</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the checksum byte array</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when network/file IO failure</dd>
+<dd><code><a href="../../../../../jpl/mipl/mdms/FileService/io/VerifyException.html" title="class in jpl.mipl.mdms.FileService.io">VerifyException</a></code> - when checksum failed to verify.</dd>
+</dl>
+</li>
+</ul>
+<a name="readAndVerifyBufferFromStream-byte:A-long-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>readAndVerifyBufferFromStream</h4>
+<pre>public&nbsp;byte[]&nbsp;readAndVerifyBufferFromStream(byte[]&nbsp;buffer,
+                                            long&nbsp;fileSize)
+                                     throws java.io.IOException,
+                                            <a href="../../../../../jpl/mipl/mdms/FileService/io/VerifyException.html" title="class in jpl.mipl.mdms.FileService.io">VerifyException</a></pre>
+<div class="block">Reads from the (buffered) input stream an writes it to file. A message
+ digest will be cloned and the reference <code>calculatedChecksum</code>
+ updated. See <code>MessageDigest</code> for methods to retrieve
+ "checksum": <code>toString()</code> and <code>digest()</code>.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>buffer</code> - message digest byte array.</dd>
+<dd><code>fileSize</code> - file size</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the received, verified checksum</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when file I/O fail</dd>
+<dd><code><a href="../../../../../jpl/mipl/mdms/FileService/io/VerifyException.html" title="class in jpl.mipl.mdms.FileService.io">VerifyException</a></code> - when comparisons file fail</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><code>MessageDigest</code></dd>
+</dl>
+</li>
+</ul>
+<a name="writeFileToStream-java.lang.String-long-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeFileToStream</h4>
+<pre>public&nbsp;void&nbsp;writeFileToStream(java.lang.String&nbsp;fileName,
+                              long&nbsp;fileSize)
+                       throws java.io.IOException</pre>
+<div class="block">Reads a file and writes it to the (buffered) output stream.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>fileName</code> - absolute path of file to be read</dd>
+<dd><code>fileSize</code> - file size in unit of bytes</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when network/file I/O error occurs</dd>
+</dl>
+</li>
+</ul>
+<a name="writeFileToStream-java.lang.String-long-long-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeFileToStream</h4>
+<pre>public&nbsp;void&nbsp;writeFileToStream(java.lang.String&nbsp;fileName,
+                              long&nbsp;offset,
+                              long&nbsp;length)
+                       throws java.io.IOException</pre>
+<div class="block">Method to read a data block from an input file and writes it to the
+ (buffered) output stream.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>fileName</code> - the file name.</dd>
+<dd><code>offset</code> - the offset set to begin the transfer</dd>
+<dd><code>length</code> - the number of bytes to be transfered</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when network/file IO failure.</dd>
+</dl>
+</li>
+</ul>
+<a name="genChecksum-byte:A-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>genChecksum</h4>
+<pre>public&nbsp;byte[]&nbsp;genChecksum(byte[]&nbsp;buffer)
+                   throws java.io.IOException</pre>
+<div class="block">Generate a checksum on a buffer. A message digest will be cloned and the
+ reference <code>calculatedChecksum</code> updated. See
+ <code>MessageDigest</code> for methods to retrieve "checksum":
+ <code>toString()</code> and <code>digest()</code>.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>buffer</code> - input message digest byte array.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the checksum byte array.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - since the buffer was retrieved from network/file.</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><code>MessageDigest</code></dd>
+</dl>
+</li>
+</ul>
+<a name="writeFileToStream-byte:A-long-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeFileToStream</h4>
+<pre>public&nbsp;void&nbsp;writeFileToStream(byte[]&nbsp;buffer,
+                              long&nbsp;fileSize)
+                       throws java.io.IOException</pre>
+<div class="block">Writes the input data buffer to buffered output stream. Again, the method
+ limits the data buffer to be less than Integer.MAX_VALUE (~2GB), since
+ buffering such large file in memory is not recommended.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>buffer</code> - in-memory buffer contains the file.</dd>
+<dd><code>fileSize</code> - file size in unit of bytes.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when general I/O failure</dd>
+</dl>
+</li>
+</ul>
+<a name="writeAndVerifyFileToStream-java.lang.String-long-byte:A-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeAndVerifyFileToStream</h4>
+<pre>public&nbsp;void&nbsp;writeAndVerifyFileToStream(java.lang.String&nbsp;fileName,
+                                       long&nbsp;fileSize,
+                                       byte[]&nbsp;suppliedChecksum)
+                                throws java.io.IOException</pre>
+<div class="block">Writes the input data buffer onto buffered output stream followed by the
+ supplied checksum value.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>fileName</code> - absolute path of file to be written</dd>
+<dd><code>fileSize</code> - file size in unit of bytes</dd>
+<dd><code>suppliedChecksum</code> - the input checksum value to be sent</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when network/file I/O failure</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><code>MessageDigest</code></dd>
+</dl>
+</li>
+</ul>
+<a name="writeAndVerifyFileToStream-java.lang.String-long-long-byte:A-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeAndVerifyFileToStream</h4>
+<pre>public&nbsp;void&nbsp;writeAndVerifyFileToStream(java.lang.String&nbsp;fileName,
+                                       long&nbsp;offset,
+                                       long&nbsp;length,
+                                       byte[]&nbsp;suppliedChecksum)
+                                throws java.io.IOException</pre>
+<div class="block">Writes the data block within the input data file onto buffered output
+ stream followed by the supplied checksum value.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>fileName</code> - the file name</dd>
+<dd><code>offset</code> - the offset to begin the transfer</dd>
+<dd><code>length</code> - number of bytes to be transfered</dd>
+<dd><code>suppliedChecksum</code> - the supplied checksum array.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when network/file IO failure</dd>
+</dl>
+</li>
+</ul>
+<a name="writeAndVerifyFileToStream-java.lang.String-long-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeAndVerifyFileToStream</h4>
+<pre>public&nbsp;byte[]&nbsp;writeAndVerifyFileToStream(java.lang.String&nbsp;fileName,
+                                         long&nbsp;fileSize)
+                                  throws java.io.IOException</pre>
+<div class="block">Writes the input file onto buffered output stream. A message digest will
+ be cloned and the reference <code>calculatedChecksum</code> updated. See
+ <code>MessageDigest</code> for methods to retrieve digest:
+ <code>toString()</code> and <code>digest()</code>.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>fileName</code> - absolute path of file to be written</dd>
+<dd><code>fileSize</code> - file size in unit of bytes</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>calculatedChecksum message digest byte array.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when network/file I/O failure</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><code>MessageDigest</code></dd>
+</dl>
+</li>
+</ul>
+<a name="writeAndVerifyFileToStream-java.lang.String-long-long-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeAndVerifyFileToStream</h4>
+<pre>public&nbsp;byte[]&nbsp;writeAndVerifyFileToStream(java.lang.String&nbsp;fileName,
+                                         long&nbsp;offset,
+                                         long&nbsp;length)
+                                  throws java.io.IOException</pre>
+<div class="block">Writes the specified byte range within the input data file to buffered
+ output stream and caclculates the checksum as the data is being
+ transfered. This is a partical block, the the bytes 0-offset checksum
+ value will be first calculated before continue on the reset of the
+ transfer.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>fileName</code> - the file name</dd>
+<dd><code>offset</code> - the offset to begin the transfer</dd>
+<dd><code>length</code> - number of bytes to be transfered</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the checksum byte array</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when network/file IO failure</dd>
+</dl>
+</li>
+</ul>
+<a name="writeAndVerifyBufferToStream-byte:A-long-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeAndVerifyBufferToStream</h4>
+<pre>public&nbsp;byte[]&nbsp;writeAndVerifyBufferToStream(byte[]&nbsp;buffer,
+                                           long&nbsp;fileSize)
+                                    throws java.io.IOException</pre>
+<div class="block">Writes a file from memory to to the (buffered) output stream A message
+ digest will be cloned and the reference <code>calculatedChecksum</code>
+ updated. See <code>MessageDigest</code> for methods to retrieve digest:
+ <code>toString()</code> and <code>digest()</code>.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>buffer</code> - file in-memory buffer</dd>
+<dd><code>fileSize</code> - file size in bytes</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>calculatedChecksum message digest byte array.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when network/file I/O failures</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><code>MessageDigest</code></dd>
+</dl>
+</li>
+</ul>
+<a name="readMessage--">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>readMessage</h4>
+<pre>public&nbsp;<a href="../../../../../jpl/mipl/mdms/FileService/io/MessagePkg.html" title="class in jpl.mipl.mdms.FileService.io">MessagePkg</a>&nbsp;readMessage()
+                       throws java.io.IOException</pre>
+<div class="block">Construct a message from a reply packet. See <code>writeMessage()</code>
+ for reply packed format.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a MessagePkg object that contains the message just read.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when general I/O failure</dd>
+</dl>
+</li>
+</ul>
+<a name="readLine--">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>readLine</h4>
+<pre>public&nbsp;java.lang.String&nbsp;readLine()
+                          throws java.io.IOException</pre>
+<div class="block">Get a line from input stream</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>an <code>'\n'</code> or <code>'\r'</code> delimited line</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when read failed</dd>
+</dl>
+</li>
+</ul>
+<a name="writeMessage-int-java.lang.String-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeMessage</h4>
+<pre>public&nbsp;void&nbsp;writeMessage(int&nbsp;errorNum,
+                         java.lang.String&nbsp;s)
+                  throws java.io.IOException</pre>
+<div class="block">Write a message to the command stream. A message consists of integer and a
+ message. The format of the reply is " <number>: <message>".</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>errorNum</code> - the input error value.</dd>
+<dd><code>s</code> - the line to be written</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when write failed</dd>
+</dl>
+</li>
+</ul>
+<a name="writeLine-java.lang.String-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeLine</h4>
+<pre>public&nbsp;void&nbsp;writeLine(java.lang.String&nbsp;s)
+               throws java.io.IOException</pre>
+<div class="block">Write line to output stream</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>s</code> - the line to be written</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when write fails</dd>
+</dl>
+</li>
+</ul>
+<a name="write-java.lang.String-">
+
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>write</h4>
+<pre>public&nbsp;void&nbsp;write(java.lang.String&nbsp;s)
+           throws java.io.IOException</pre>
+<div class="block">Write string to output stream</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>s</code> - the string to be written</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - when write fails</dd>
+</dl>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+<div class="bottomNav"><a name="navbar.bottom">
+
+</a>
+<div class="skipNav"><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/FileService/io/#skip.navbar.bottom" title="Skip navigation links">Skip navigation links</a></div>
+<a name="navbar.bottom.firstrow">
+
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../../../overview-summary.html">Overview</a></li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/FileService/io/package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/FileService/io/package-tree.html">Tree</a></li>
+<li><a href="../../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../../index-all.html">Index</a></li>
+<li><a href="../../../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../../../../jpl/mipl/mdms/FileService/io/BoundedBufferedReader.html" title="class in jpl.mipl.mdms.FileService.io"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../../../jpl/mipl/mdms/FileService/io/FileIO.html" title="class in jpl.mipl.mdms.FileService.io"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../../../../index.html?jpl/mipl/mdms/FileService/io/BufferedStreamIO.html" target="_top">Frames</a></li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/FileService/io/BufferedStreamIO.html" target="_top">No&nbsp;Frames</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_bottom">
+<li><a href="../../../../../allclasses-noframe.html">All&nbsp;Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript">
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>Summary:&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/FileService/io/#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/FileService/io/#method.summary">Method</a></li>
+</ul>
+<ul class="subNavList">
+<li>Detail:&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/FileService/io/#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/FileService/io/#method.detail">Method</a></li>
+</ul>
+</div>
+<a name="skip.navbar.bottom">
+
+</a></div>
+
+</body>
+</html>

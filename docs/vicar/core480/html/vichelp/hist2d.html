@@ -1,0 +1,315 @@
+<HTML>
+<HEAD><title>HTML Help for HIST2D</title></HEAD>
+<BODY>
+<H1>Help for HIST2D</H1>
+<pre>
+PURPOSE and OUTPUT FILE DESCRIPTION
+
+HIST2D will generate a two-dimensional histogram file from a VICAR file of 
+three dimensions. The two-dimensional histogram file has as its Y-axis (lines) 
+the range of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A> values of the input file or such values scaled for radiance or 
+reflectance, I/F, and as its X-axis (samples) the input's band numbers.  Thus 
+each line of the histogram file represents the frequency of a data number (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A>) 
+through all the bands of the input file.  A sample slice through all the lines 
+of the histogram file represents a one-dimensional histogram for a band of the 
+input file. Please note the values of the Y-axis decrease from their maximum to
+zero as file line number increases. Band number of the X-axis increases as file
+sample number increases.  This provides a common origin for both <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A> or scaled
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A> value and band dimensions.
+OUTPUT FILE DESCRIPTION continued 
+  
+The frequencies of each band's histogram are represented by the pixels or data 
+numbers (DNs) of the file, corresponding to the number of occurrences of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A>, I/F
+or radiance values in the input file. Histogram data numbers have a range of 
+either (0,255) or (0,32767), depending on the output data <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#format">format</A> specified by 
+the user.  Frequencies are normalized to 255 for byte output <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#format">format</A> and 32767 
+for halfword output <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#format">format</A>.
+EXECUTION
+
+To execute the program HIST2D, the following syntax should be used:
+
+	HIST2D   <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#inp">INP</A>   <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#out">OUT</A>   user-parameters
+
+where <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#inp">INP</A> is the three-dimensional (3-D) VICAR <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#format">format</A> file used to generate the 
+two-dimensional (2-D) histogram output file, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#out">OUT</A>.  
+
+USER PARAMETERS - SUMMARY
+
+User parameters consist of the histogram range (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#limits">LIMITS</A>), <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#format">format</A> of output data 
+(<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#format">FORMAT</A>), input file windowing parameters (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#sb">SB</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#ns">NS</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#nb">NB</A>), incrementing 
+values for various input file dimensions to speed execution of histogram 
+(<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#sinc">SINC</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#linc">LINC</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#binc">BINC</A>), a parameter to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#exclude">exclude</A> or include the input file data number 
+value of 0 in the histogram range (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#exclude">EXCLUDE</A>), parameters to control the output 
+size (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#out_nl">OUT_NL</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#out_ns">OUT_NS</A>), a parameter to replicate sample values (band numbers) 
+to fit in the vertical dimension (REPLICATE), a parameter to define the y-axis
+scale of the two-dimensional histogram (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A>, IOF, RAD) and a parameter to take
+the logarithm of the two-dimensional histogram values to increase resolution
+(<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#log">LOG</A>).
+USER PARAMETERS
+
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#limits">LIMITS</A>
+
+This allows the user to restrict the data values of the input file used to 
+generate the two-dimensional histogram output file.  Valid <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#limits">limits</A> for byte
+input data should be between (0,255).  Valid <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#limits">limits</A> for halfword input data
+should be between (-32768,32767).  Defaults: (0,255) for byte; (0,32767 for 
+halfword; (-32752,32767 for halfword of calibration type RADIANCE or IOF,
+which correspond to the ISIS "Special Values" range.
+
+The range specified by the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#limits">limits</A> parameter is then mapped into the number of
+output lines in the file, such that an output file of 512 lines with <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#limits">limits</A>
+(-32768,32767) would map 32768 values into 512 discrete units.  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A> values 
+between -32768 and 0 are accumulated for each band's histogram and added to the
+zero (0) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A> value frequency of the respective histogram.
+
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#rlimit">RLIMIT</A>
+
+This sets a lower limit to valid floating point (REAL*4) data, which can be
+useful for treating ISIS data which assigns the lower end of the range to
+"special values".  Note that this is platform-dependent;  the default
+(0xFF7FFFFA) is for IEEE floating point.
+
+USER PARAMETERS continued
+
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#format">FORMAT</A> 
+
+Allows the user to specify an output file of data type byte (BYTE) or halfword
+(HALF).  The default is BYTE.
+
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#sinc">SINC</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#linc">LINC</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#binc">BINC</A>
+
+Sample, line, and band increments are used to control the amount of the input 
+image file used in the calculation of the two-dimensional histogram.  The
+default for all incrementations is one (1).
+
+USER PARAMETERS continued
+
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#sb">SB</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#ns">NS</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#nb">NB</A>
+
+Starting line, starting sample, starting band, number of lines, number of 
+samples and number of bands are used to control what portion of the image file
+is used to compute the two-dimensional histogram.  The default is for all 
+starting values to be one (1) and the number of (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#nl">NL</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#ns">NS</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#nb">NB</A>) values are the
+values obtained by XVGET of the input file.
+
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#out_nl">OUT_NL</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#out_ns">OUT_NS</A>
+
+These control the output file (two-dimensional histogram) dimensions of 
+number of lines and of samples.  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#out_ns">OUT_NS</A> should not be smaller than the
+number of bands specified for the window of the input file bands. The
+defaults are <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#out_nl">OUT_NL</A>=512 and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#out_ns">OUT_NS</A>=512.
+
+USER PARAMETERS continued
+
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A>, IOF, RAD
+
+The output file's y-axis may be scaled in raw <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A>, IOF or radiance (RAD).
+If RAD or IOF is specified, the following label items must be found 
+in the history labels of the input file: "CAL_TYPE='RAD'", "RAD_CONV",
+"RAD_BASE", and "SOLAR_F".  These items make possible the conversion 
+between <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A> and radiance and IOF.  Radiance and Solar Flux must be provided 
+in units of uWATT/cm**2/micron/steradian.  The default keyword is <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A>.
+USER PARAMETERS continued
+
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#log">LOG</A>,NOLOG
+
+This keyword controls whether or not the logarithm is taken of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A>'s of the
+output file, the two-dimensional histogram.  Default keyword is <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#log">LOG</A>.
+
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#test">TEST</A>, NOTEST
+
+These keywords control whether or not a <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#test">test</A> histogram file and screen display 
+are produced which are used for verification of the correct operation of the 
+program.  This option is for the software developers' and testers' use.  The 
+following are output to screen: band number at which maximum <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A> occurs in 
+histogram plot; scale of the Y-axis in terms of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A> per pixel; scale of 
+histogram file's <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A> to histogram's frequency axis.
+EXECUTION EXAMPLES
+
+VICAR&gt HIST2D  IO_LIMB.IMG  IO_LIMB.HST  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#format">FORMAT</A>=HALF <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#limits">LIMITS</A>=(123,3000)
+
+The above example takes input file IO_LIMB.IMG and generates a 2-D histogram 
+file, IO_LIMB.HST, of data <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#format">format</A> HALF.  Data numbers -32768 to 122 and 3000 to 
+32767 are not included in the generation of the histogram.  In this case the
+resolution of the Y-axis will be (0,4096).  HIST2D follows HICCUP.COM handling 
+of halfword inputs, except negative halfword values are included in the scaling
+of the output.  A convenient maximum value for the Y-axis is chosen based on 
+the maximum <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A> value found in the input file which happens to be less than the 
+upper value of the user specified <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#limits">LIMITS</A> parameter.  IF THE LOWER LIMIT IS LESS
+THAN ZERO, the absolute value of that lower LIMIT is added into the maximum.
+This maximum is always a multiple of 256 in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A> mode of operation.  Please 
+note that <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A> 0 is not always the Y-axis origin for halfword data; the origin
+is the lower LIMIT value.  LIMIT defaults are (0,255) for byte; (0,32767) for
+halfword data; and (-32752,32767) for halfword data of calibration type RADIANCE
+or IOF.
+EXECUTION EXAMPLES (continued)
+
+VICAR&gt HIST2D  JUPITER_LIMB.IMG  JUPITER_LIMB.HST  '<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#exclude">EXCLUDE</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#sl">SL</A>=20 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#ss">SS</A>=120 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#nb">NB</A>=201
+
+This example takes input file JUPITER_LIMB.IMG and generates a 2-D histogram
+file, JUPITER_LIMB.HST, of default data <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#format">format</A> BYTE.  If the input file is
+of data <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#format">format</A> BYTE, the histogram range of bin DNs is (1,255) because of the
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#exclude">EXCLUDE</A> parameter.  Byte data allows the user specified range endpoints to be 
+mapped to 0 and 511 on the Y-axis of the two dimensional histogram.  The bin 
+size is 255/512 or 0.498, thus mapping the 255 values into 512 bins.   
+Finally, HIST2D, because of "<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#sl">SL</A>=20 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#ss">SS</A>=120", ignores the first 19 lines and 
+first 119 samples of each band of the input file JUPITER_LIMB.IMG.  Also, due
+to "<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#ns">NS</A>=201", only bands 1 through 201 are included in the processing.  
+VICAR LABELS OF 2-D HISTOGRAM FILE
+
+In order to provide the necessary information to a display routine or mask 
+program, a number of VICAR label items are added to the histogram file.  These 
+items include the input file data number (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A>) range of the histogram (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#limits">LIMITS</A> - 
+revised depending on the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#exclude">EXCLUDE</A> parameter value), the incrementing values of 
+the input file dimensions (INC_LSB - LSB is an acronym for line, sample, band), 
+the input file windowing parameters (WINDOW - array of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#sb">SB</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#ns">NS</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#nb">NB</A>), and 
+the input file name of HIST2D (INP_FILE).  MAXDN is also a label item which
+describes the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A>, IOF, or RAD value that represents the maximum pixel value
+of the y-axis of the two histogram.  All these label items provide sufficient 
+information to properly display the two-dimensional histogram.
+POSSIBLE ERROR CONDITIONS
+
+The program HIST2D does not accept two-dimensional files as inputs.  That is to
+say that input files must have at least two bands to be processed; otherwise the
+program aborts.  Also, input files must be of data <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#format">format</A> BYTE or HALF.  Other 
+forms of input will result in a program abort.  
+BIN CALCULATION
+
+For the users' benefit, the following formula is used to calculate the appro-
+priate bin in which a byte input file data number (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A>) will fall.
+
+	BIN_size = [UPPER_limit - LOWER_limit + 1] / <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#out_nl">OUT_NL</A>
+
+	BIN 	 = [INPUT_data_number - LOWER_limit] / BIN_size
+
+where 	UPPER_limit is the upper limit of the histogram range (units - <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A>),
+	LOWER_limit is the lower limit of the histogram range (units - <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A>),
+	<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#out_nl">OUT_NL</A> is the number of lines in the histogram file (default is 512),
+	BIN_size is the size of the bin (units - <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A>),
+	INPUT_data_number is the data number to be placed in a bin, and
+	BIN is the bin number of the INPUT_data_number (0,511).
+HISTORY
+
+Written by: Justin F. McNeill, November 1989
+<A NAME="CogProg">Cognizant Programmer: L.W.Kamp</A>
+Revisions: 
+
+  1990-06    JFM - Addition of output size parameters <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#out_nl">OUT_NL</A> & <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#out_ns">OUT_NS</A>;
+                   write output file such that band and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A> dimensions have a common
+                   origin; provide parameter to provide for replication of band samples
+                   to fit in 512 samples.
+  1990-07    JFM - Handling of IOF and RAD y-axis scales is provided.   
+  1990-08    JFM - Window label item revised to be
+                   (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#sb">SB</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#ns">NS</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#nb">NB</A>). <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#log">LOG</A> parameters added to help and
+                   tutor. Samplewidth problem corrected and negative halfword data
+                   properly handled. Ref. FRs 63221 & 63222 Improved error checking of
+                   user parameters. Revised <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#test">test</A> script. Solar flux units changed to
+                   WATT/CM**CM/MICRON/STER
+  1990-09    JFM - Code added to prevent division by zero. FR 63252     
+  1990-10    JFM - RAD_BASE offset for conversion of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A> to IOF or RAD added in calculations. <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#test">Test</A> script revised.	     
+  1991-06    JFM - Per band radiance offset and scaling implemented.    
+  1991-09    LWK - Changed NELEMENTS to NELEMENT in XLGET per new Vicar exec; removed SUN_D check from RAD case.
+  1992-02    JFM - Program will handle merged mosaic cubes with or
+                   without per-band scaling. Interface with NIMSMASK (MAXDN)
+                   corrected. <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#test">Test</A> option added for development purposes. Histogram
+                   calculation for byte and halfword simplified. PCA added.
+  1992-05    JFM - Corrected upper limit of NIMS special values to -32752.
+  1993-11    LWK - Fixed default lower <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#limits">LIMITS</A> of -32752 for RAD/IOF case PCA stuff removed
+  1994-02    LWK - Get solar flux from label instead of internal routine;
+                   flux units changed to uWatt/cm**2/micron/ster; added keyword
+                   SCALTYPE
+  1994-05    LWK - Fixed bug when radiance &gt maxs[35]
+  1995-01    LWK - Ported to Alpha
+  1995-02    LWK - Added <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#break_um">BREAK_UM</A> option
+  1995-04    LWK - Disable <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#log">LOG</A> option when maxfreq=1 (for TSTSYSNIMS2)
+  1995-06    LWK - Tweaked <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#log">LOG</A> scale for sparse histograms to allow points with freq=1 to appear
+  1995-11    LWK - Fixed retrieval of wavelengths from label
+  1996-08    LWK - Fixes for Phase-2 data:  allowed for non-integer sample replication factor
+  1997-07    LWK - Allow floating-point (Radiance) data
+  1997-10    LWK - Corrected error computing histogram scale for floating-point (Radiance) data
+  1998-01-26 LWK - Fixed floating-point scale yet again
+  1998-02-17 LWK - Fixed bug in floating-point scale for RAD mode
+  1998-05-14 LWK - Put in check & abend for empty cube (instead of letting pgm crash)
+  1998-05-27 LWK - Write BREAK_NO to label for IOF-only case too
+  1998-06-19 LWK - Set RAD_BASE/CONV when not in cube label
+
+  2003-05-26 LWK - Increased MAXBANDS from 408 to 1024 (one of the
+                   <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#test">test</A> cases has 512 -- failed in unix, but not vms!); made
+                   NIMS_SPEC_R a parameter (R_MIN); renamed "end[3]" to "xend[3]" to
+                   avoid conflict with system variable
+  2019-06-13 WLB - IDS-7924: Fixed <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#format">format</A> string error.
+                   Cleaned up misc. compiler warnings.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#inp"><H3>INP</H3></A>
+Input image file name
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#out"><H3>OUT</H3></A>
+2D Histogram file name
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#tout"><H3>TOUT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#test">Test</A> output file name
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#limits"><H3>LIMITS</H3></A>
+Histogram range of input DNs
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#rlimit"><H3>RLIMIT</H3></A>
+Lower histogram range of input
+data if floating-point
+(NOTE: the default is specific
+to IEEE!)
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#exclude"><H3>EXCLUDE</H3></A>
+Variable to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#exclude">exclude</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A> 0 
+from input
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#format"><H3>FORMAT</H3></A>
+Data <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#format">format</A> of histogram DNs
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#sinc"><H3>SINC</H3></A>
+Increment through input file 
+by <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#sinc">SINC</A> number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#linc"><H3>LINC</H3></A>
+Increment through input file 
+by <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#linc">LINC</A> number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#binc"><H3>BINC</H3></A>
+Increment through input file 
+by <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#binc">BINC</A> number of bands
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#sl"><H3>SL</H3></A>
+Starting line of input file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#ss"><H3>SS</H3></A>
+Starting sample of input file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#sb"><H3>SB</H3></A>
+Starting band of input file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#nl"><H3>NL</H3></A>
+Number of lines to be used 
+of input file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#ns"><H3>NS</H3></A>
+Number of samples to be used 
+of input file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#nb"><H3>NB</H3></A>
+Number of bands to be used 
+of input file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#out_nl"><H3>OUT_NL</H3></A>
+Number of desired lines in 
+output; default is 512.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#out_ns"><H3>OUT_NS</H3></A>
+Number of desired samples in 
+output; default is 512.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#replic"><H3>REPLIC</H3></A>
+Keyword to replicate the number
+of bands to fit within 512.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn"><H3>DN</H3></A>
+Keyword to control the y-axis or
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#dn">DN</A> scale of the two-dimensional
+histogram.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#log"><H3>LOG</H3></A>
+Keyword to specify that the 
+logarithm be applied to the 
+histogram.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#test"><H3>TEST</H3></A>
+Keyword to specify that <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#test">test</A>
+option for correct program
+output is specified.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d_level2.html#break_um"><H3>BREAK_UM</H3></A>
+Wavelength below which Radiance
+is divided by Solar Flux
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist2d.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

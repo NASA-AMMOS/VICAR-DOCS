@@ -1,0 +1,172 @@
+<HTML>
+<HEAD><title>HTML Help for TRICOEF</title></HEAD>
+<BODY>
+<H1>Help for TRICOEF</H1>
+<pre>
+PURPOSE:
+TRICOEF is used to compute and store for later retrieval the conformal
+and authalic coefficients permitting computation of conformal 
+(angle preserving) and authalic (equal area) projections of 
+triaxial ellipsoids.
+Tricoef computes the triaxial ellipsoid coefficients for computing:
+1. Conformal latitude and longitude  from Snyder latitude and longitude.
+2. Authalic  latitude and longitude  from Snyder latitude and longitude.
+Coefficients are stored in an IBIS <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#archive">archive</A> whose name is defined via the
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#archive">ARCHIVE</A> parameter.
+To use these coefficients see the subroutine TRIAXTRAN.
+
+Warning:
+1. The mp routines compute the same coefficients but without a random number
+generator to permit you to observe how sensitive the solution is to the
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#klimit">KLIMIT</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#mlimit">MLIMIT</A>, & <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#nlimit">NLIMIT</A> parameters. You can run tricoef several times to
+check the repeatability of lat & lon for the conformal case.
+
+2. Occasionally the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#archive">archive</A> gets corrupted, You can tell when the computed
+lat & lon's are erroneous. To clear this condition "rm triaxial_archive.ibis".
+
+USAGE & EXECUTION examples:
+
+tricoef <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#radius">radius</A>=(1000.,998.,900.)   Coefficients are computed and
+                                   then discarded since no <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#planet">planet</A> was
+                                   specified.
+
+tricoef <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#planet">planet</A>=IO <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#mlimit">mlimit</A>=7 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#nlimit">nlimit</A>=7 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#klimit">klimit</A>=7
+                                   Radii come from the spice. 
+                                   Coefficients are saved in the 
+                                   <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#archive">archive</A> under the name IO. If no
+                                   <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#archive">archive</A> exists one is created.
+ 
+tricoef <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#planet">planet</A>=XYZ <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#radius">radius</A>=(1.,.9,.8) 
+                                   A Synthetic <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#planet">planet</A> XYZ is created and 
+                                   the coefficients are saved under XYZ 
+                                   in the same <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#archive">archive</A> as above.
+where:
+ <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#radius">radius</A>=(a,b,c)
+ a = X <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#radius">radius</A> (largest)  defining prime meridian (longitude=0).
+ b = Y <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#radius">radius</A> (middle)   defining +90 degrees east longitude.
+ c = Z <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#radius">radius</A> (smallest) defining spin axis.
+
+
+OPERATION:
+See: Snyder J P, Conformal Mapping of the Triaxial Ellipsoid, 
+     Survey Review Vol.28, 217, July 1985
+     Also private communications for the authalic case.
+
+The coordinate systems here are all right handed. Longitude increases 
+towards the east. Holding the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#planet">planet</A> before you with north up and the
+prime meridian in front of you east increases to your right. 
+Mother will help you distinguish between left and right.
+Snyder describes the Snyder system in his article. I have derived the triaxial
+definition of planetodetic so see me for clarification (j Lorre).
+
+The purpose of this program is to compute an adequate set of coefficients
+permitting accurate computation of conformal & authalic lat & lon. Precision
+depends upon the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#mlimit">MLIMIT</A> & <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#nlimit">NLIMIT</A> parameters for conformal and the MLIMIT
+& <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#klimit">KLIMIT</A> & <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#nlimit">NLIMIT</A> parameters for authalic projections. 
+The larger they are the
+more accurate the results but the longer the computation time.
+Each computation of lat & lon requires <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#mlimit">MLIMIT</A>*<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#nlimit">NLIMIT</A>*2 trigonometric
+computations for conformal and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#mlimit">MLIMIT</A>*<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#klimit">KLIMIT</A>+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#nlimit">NLIMIT</A> computations for 
+authalic.
+The more eccentric the object the larger <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#mlimit">MLIMIT</A> & <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#nlimit">NLIMIT</A> & <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#klimit">KLIMIT</A>
+must be. To determine when you have arrived at good values:
+
+1. Scrutinize the RMS error term printed for a measure of 
+   conformality or authalicity constraint violation.
+   An rms of .001 is a 0.1 percent violation of the constraint.
+   The number should look like: .00000000854 but not like: .00456.....
+
+2. Compare runs with increasing values of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#mlimit">MLIMIT</A> & <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#nlimit">NLIMIT</A> &<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#klimit">KLIMIT</A> until the
+   computed lat & lon's don't change. TRICOEF uses a random number 
+   ( only in the conformal case where ill conditioning is critical)
+   generator to produce points for fitting, thus assuring that each
+   run is unique. You can run the same command line repeatedly to 
+   assure that computed lat,lon values are repeatable. Note that
+   different coefficients can give you similar lat,lon values but if
+   the coefficients are large or vary widely between runs it might
+   indicate ill conditioning.
+
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#archive">archive</A> is an IBIS file in the new IBIS format.
+The ibis coefficient storage file is used to store coefficients for 
+other programs to retrieve. This file has columns of 1024 elements
+per column. Each <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#planet">planet</A> has one column with the planet name as a header.
+All values are real*8.
+The order of coefficients in each column is as follows:
+Word 1  Contains the constant <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#mlimit">MLIMIT</A>
+Word 2  Contains the constant <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#klimit">KLIMIT</A>
+Word 3  Contains the constant <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#nlimit">NLIMIT</A>
+Word 4  Contains the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#planet">planet</A> major <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#radius">radius</A> A normalized to 1.0
+Word 5  Contains the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#planet">planet</A> middle <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#radius">radius</A> B normalized to B/A
+Word 6  Contains the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#planet">planet</A> minor <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#radius">radius</A> C normalized to C/A
+Word 7  Begins the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#nlimit">NLIMIT</A>*<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#mlimit">MLIMIT</A> CC matrix coefficients for conformal.
+        k=7+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#nlimit">nlimit</A>*<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#mlimit">mlimit</A>
+Word k  Begins the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#nlimit">NLIMIT</A>*<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#mlimit">MLIMIT</A> CP matrix coefficients for conformal.
+        k=k+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#nlimit">nlimit</A>*<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#mlimit">mlimit</A>
+Word k  Begins the (<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#mlimit">MLIMIT</A>+1)*(<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#klimit">KLIMIT</A>+1) COEF coefficients for authalic.
+        k=k+(<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#mlimit">mlimit</A>+1)*(<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#klimit">klimit</A>+1)
+Word k  Begins the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#nlimit">NLIMIT</A> coefficients for authalic.
+        k=k+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#nlimit">nlimit</A>-1
+( k is the total number of words used )
+
+These values are needed to operate the coordinate conversion subroutine
+Triaxtran. When a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#planet">planet</A> is added a new column will be created.
+If a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#planet">planet</A> is specified which is already in the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#archive">archive</A>
+the old column will be overwritten by the new data. Thus the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#archive">archive</A>
+grows to accomodate all planets of interest.
+Notice that the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#archive">archive</A> defaults to your local directory. Change the
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#archive">archive</A> default if you want it elsewhere.
+
+For your convenience the subroutine GET_ELLIPSOID is provided in the 
+source code for extracting the data from the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#archive">archive</A> in a format 
+required by Triaxtran. You can copy the source to your own application
+to read the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#archive">archive</A>.
+
+A WARNING TO ALL:
+The subroutine TRIAXTRAN uses ALL the coefficients in the appropriate
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#archive">archive</A> column to perform authalic and conformat transformations. This
+includes the normalized <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#planet">planet</A> radii stored as column elements 4,5, and 6.
+If you try using other radii than the ones stored with their column
+coefficients the results will be incorrect.
+
+HISTORY:
+7-15-93  J Lorre. 
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Jean Lorre</A>
+
+05-11-98   RRP   Updated pdf to constrain <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#mlimit">mlimit</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#klimit">klimit</A>, and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#nlimit">nlimit</A> to have
+                 positive values less then 15.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#archive"><H3>ARCHIVE</H3></A>
+Coefficients
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#archive">archive</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#planet"><H3>PLANET</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#planet">Planet</A> name
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#radius"><H3>RADIUS</H3></A>
+Three <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#planet">planet</A> radii.
+A,B, and C.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#mlimit"><H3>MLIMIT</H3></A>
+Number of longitude
+terms.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#klimit"><H3>KLIMIT</H3></A>
+Number of latitude
+terms. Authalic only.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#nlimit"><H3>NLIMIT</H3></A>
+Number of latitude
+terms.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#test"><H3>TEST</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef_level2.html#test">Test</A> TRIAXTRAN
+subroutine using
+coefficients
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/tricoef.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

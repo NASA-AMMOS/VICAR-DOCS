@@ -1,0 +1,105 @@
+<HTML>
+<HEAD><title>HTML Help for MPFTOPO</title></HEAD>
+<BODY>
+<H1>Help for MPFTOPO</H1>
+<pre>
+PURPOSE:
+To generate a vertical view of the landing site with the elevation as the DN.
+To generate a vertical view of the landing site.
+To fill in gores in the image.
+value.
+
+EXECUTION:
+mpftpt <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#inp">inp</A>=(left,right) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#out">out</A>=(line_disparity,sample_disparity,mask) ...
+mpfxyz <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#inp">inp</A>=(left,right,line_disparity,sample_disparity)    <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#out">out</A>=(x.img,y.img,z.img,error.img) parameters
+mpftopo <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#inp">inp</A>=(x.img,y.img,z.img,left) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#out">out</A>=topo.img parameters
+where:
+x.img is the x value at that pixel in meters.
+y.img is the y value at that pixel in meters.
+z.img is the z value at that pixel in meters.
+left is the left eye image of a stereo pair
+
+OUTPUT IMAGE COORDINATES:
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#coords">COORDS</A> keyword determines the output coordinates.
+
+If <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#coords">COORDS</A>=1 the output is in CAHV camera coordinates.
+Here sample is X, line is -Y, and DN is Z.
+
+If <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#coords">COORDS</A>=2 the output is in Lander coordinates.
+Here sample is X, line is Y, and DN is -Z.
+
+If <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#coords">COORDS</A>=3 the output is in Mars Local Level coordinates.
+Here sample is Y, line is -X, and DN is -Z.
+(North is up) (This is the default output).
+
+
+
+METHOD:
+Mpftopo first places each point from the input files into the output after 
+scaling and offset.
+Then the gores are filled:
+From each empty pixel the program searches outward in 8 directions to locate
+the nearest populated border. It then computes the range R (in pixels) to the
+8 border points. The value at the empty location is then weighted from:
+ 
+DN = sum(dn(i)/R(i)**2) / sum(1/R(i)**2)    sum from 1 to 8
+
+
+
+HISTORY:
+12-1-95  J Lorre. 
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Jean Lorre</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#inp"><H3>INP</H3></A>
+First: x image
+Second: y image
+Third: z image
+Fourth: left eye view
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#out"><H3>OUT</H3></A>
+topo map
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#coords"><H3>COORDS</H3></A>
+coordinate system
+CAHV = 1
+Lander = 2
+Mars = 3 (default)
+ 
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#format"><H3>FORMAT</H3></A>
+Output <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#format">format</A>
+BYTE HALF or REAL
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#scale"><H3>SCALE</H3></A>
+Pixels/meter in the
+output
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#center"><H3>CENTER</H3></A>
+Four numbers:
+X,Y,line,sample)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#dnscale"><H3>DNSCALE</H3></A>
+Four numbers:
+(Z_lo,DN_lo,Z_hi,DN_hi)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#nlout"><H3>NLOUT</H3></A>
+# lines in output
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#nsout"><H3>NSOUT</H3></A>
+# samples in output
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#mode"><H3>MODE</H3></A>
+Output dn value.
+Z or DN
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#band"><H3>BAND</H3></A>
+The vicar image
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo_level2.html#band">band</A> number.
+Defaults to 1
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/mpftopo.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

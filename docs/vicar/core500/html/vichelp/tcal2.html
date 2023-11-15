@@ -1,0 +1,220 @@
+<HTML>
+<HEAD><title>HTML Help for TCAL2</title></HEAD>
+<BODY>
+<H1>Help for TCAL2</H1>
+<pre>
+PURPOSE:
+
+   TCAL2 is a program which calibrates data to ground radiance, ground
+ temperature, or emittance for thermal images (defined by what???)
+ by calling lowtran. The input is data which have already been calibrated
+ to instrument radiance (expected in in watts/...) (for TIMS data this is
+ done with the program TIMSCAL).  The output is a band interleaved by line
+ (BIL) data set of all the bands in two byte integer. TCAL2 is different from
+ TIMSCAL2 in that it is not only for TIMS images (i.e. it can run on different
+ sized images and has an option for filter function input), it can take as
+ a digital elevation model (DEM) file as an input to account for varying
+ elevation across a scene and it can read in atmospheric data to pass to the
+ Lowtran7.
+
+EXECUTION:
+
+   The following is the execution statement format for TCAL2:
+
+	TCAL2 INP = pix OUT = calpix PARAMS
+
+   where INP, OUT, and PARAMS are parameters discussed in their res-
+ pective parameter sections. 
+
+
+OPERATION:
+
+   TCAL2 takes as input any thermal dataset that is calibrated instrument
+ radiance in watts (for TIMS this is the output dataset of TIMSCAL in IRAD
+ mode, WATTS units). An input DEM can also be specified; if one is, it will
+ be used to obtain the correct target elevations for input into Lowtran. Tcal2
+ uses LOWTRAN7 to compute the atmospheric path radiance, transmittance, and
+ ground reflected atmospheric radiance. These values are convolved with the
+ instrument functions and the instrument perceived radiances to obtain either
+ ground radiance, ground temperature or emittance. The formula used to compute
+ ground radiance is:
+
+        IRAD  =  [GRAD + (1.0-e)*L   ]*Trans + L
+                                sky           path
+
+ To compute emittance, one channel is assumed to have a constant (user
+ specified) emittance. The temperature of each pixel is computed, based upon
+ this assupmtion. For this temperature, the blackbody radiance in each bandpass
+ is computed. The emittance is the ratio of the computed ground radiance to the
+ blackbody radiance of that band.
+   The units output for radiance images are in milliwatts/m**2/um/sr. The units
+ output for temperature images are in hundredths of degrees Celsius. Units 
+ output for emissivity are dimensionless, but scaled by 10,000. Output is in 
+ halfword (two byte signed integer) format. 
+
+
+WRITTEN BY:  J. H. REIMER    1982
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Ron Alley</A>
+
+REVISION: 3,  June 15, 1992
+
+history:
+    mj-n translate to c and genaralize to work on non-tims images
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#inp"><H3>INP</H3></A>
+ instrument radiance
+ image (in watts)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#out"><H3>OUT</H3></A>
+ Output data set of
+ all bands of
+ calibrated data.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#outp"><H3>OUTP</H3></A>
+ name for Lowtran
+ OUTPUT file
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#table"><H3>TABLE</H3></A>
+ name for Lowtran
+ TABLE file
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#filfile"><H3>FILFILE</H3></A>
+ file containing filter
+ functions for each band
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#size"><H3>SIZE</H3></A>
+ standard VICAR2 output size		       
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#sl"><H3>SL</H3></A>
+ Starting line					       
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#ss"><H3>SS</H3></A>
+ Starting sample					       
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#nl"><H3>NL</H3></A>
+ Number of lines					       
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#ns"><H3>NS</H3></A>
+ Number of samples				       
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#calmode"><H3>CALMODE</H3></A>
+ This keyword selects the type	
+ of decalibatrion performed
+ Valid: GRAD, GTEM, BTEM, EMIS	
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#amodel"><H3>AMODEL</H3></A>
+ The model for which the
+ atmospheric corrections will	
+ be performed via LOWTRAN.	
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#models"><H3>MODELS</H3></A>
+ The models for Lowtran
+ parameters M1-M6 and MDEF
+ respectively
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#factors"><H3>FACTORS</H3></A>
+ Multiplicative factors for
+ atmospheric H2O, CO2, O3,
+ O2, CH4 and SO2 concentrations
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#atmfile"><H3>ATMFILE</H3></A>
+ Input file containing
+ a RS atmosphere
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#height"><H3>HEIGHT</H3></A>
+ Instrument altitude
+ (km above MSL) [H1]
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#datum"><H3>DATUM</H3></A>
+ Target elevation
+ (km above MSL) [H2]
+ Not used with a DEM		
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#gndalt"><H3>GNDALT</H3></A>
+ Elevation of ground under
+ the target (km above MSL)
+ Not used with a DEM		
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#tbound"><H3>TBOUND</H3></A>
+ Temperature (K) of the
+ ground
+ 
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#demfile"><H3>DEMFILE</H3></A>
+ optional input Digital
+ Elevation Model file (M)                                    
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#elevstep"><H3>ELEVSTEP</H3></A>
+ Elevation step between
+ successive runs of Lowtran
+ when using a DEM (km)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#tilt"><H3>TILT</H3></A>
+ pointing of the instrument's
+ center of field of view off
+ nadir (+ direction is towards
+ the zero sample)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#defl"><H3>DEFL</H3></A>
+ half the field of view of
+ the instrument, the default:
+ 38.28 is for TIMS
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#e"><H3>E</H3></A>
+ The emissivity assumed for
+ each band. (Only the REFCHAN
+ band is used in the EMIS mode)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#refchan"><H3>REFCHAN</H3></A>
+ (For EMIS only)
+ The channel to be used as the
+ reference channel.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#date"><H3>DATE</H3></A>
+ Date of data acquisition for
+ choosing a TIMS filter function
+ Overrides date in the VICAR
+ label (yymmdd)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#iemsct"><H3>IEMSCT</H3></A>
+ Lowtran parameter of the same
+ name, indicates whether to run
+ in thermal radiance mode or in
+ radiance + solar scattered mode
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#sunangle"><H3>SUNANGLE</H3></A>
+ 1) Azimuth angle between obs.
+    LOS and observer to Sun path
+ 2) Solar Zenith Angle
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#obs_loc"><H3>OBS_LOC</H3></A>
+ 1) Observer latitude
+ 2) Observer longitude
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#sun_loc"><H3>SUN_LOC</H3></A>
+ 1) Sun latitude
+ 2) Sun longitude
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#time"><H3>TIME</H3></A>
+ Greenwich time
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#psipo"><H3>PSIPO</H3></A>
+ Path Azimuth Angle (degrees
+East of due North)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#hengreen"><H3>HENGREEN</H3></A>
+ Asymmetry parameter for use
+with Henyey-Greenstein
+Phase function [G] 
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#list"><H3>LIST</H3></A>
+ controls what information is
+ printed to the terminal
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2_level2.html#zeroes"><H3>ZEROES</H3></A>
+are the zeroes in the
+DEM data?
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/tcal2.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

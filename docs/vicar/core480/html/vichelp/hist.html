@@ -1,0 +1,224 @@
+<HTML>
+<HEAD><title>HTML Help for HIST</title></HEAD>
+<BODY>
+<H1>Help for HIST</H1>
+<pre>
+PURPOSE:
+HIST prints DN-frequency histograms of one or more areas of an input data
+set. It is accepts BYTE, HALF, FULL, and REAL image data types and allows 
+the user to specify the maximum number of bars to be used in the graph, 
+as well as the range of values which those bars represent. There are several
+options available for the print <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#format">format</A> of the output. The DN axis may be
+aligned vertically using 80 columns (NORMAL) or 132 columns (WIDE); or, the
+DN axis can be horizontal and formatted to fit within a 23x80 screen (SCREEN).
+The WINDOW and WBAR options plot to IDL windows.  If <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#pplot">PPLOT</A> is 
+specified, the histogram is generated as a line plot on the printer. The 
+SCREEN <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#mode">mode</A> works only on byte data, and the WINDOW and WBAR modes will not 
+run in batch. The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#pplot">PPLOT</A> option and one of the other options may be run in the 
+same execution.
+Note that HIST does not determine the histogram <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#limits">limits</A>: these must be
+set by the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#limits">LIMITS</A> parameter, which defaults to (0,255) for byte, or to
+(-32768,32767) for other data types. (To obtain an estimate of the DN
+range in an image, use the keyword NOHIST in a preliminary run, then
+run HIST again with suitable <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#limits">LIMITS</A>.)
+Examples
+
+HIST A 
+
+This command will print out an 80-column-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#format">format</A> histogram of input image A
+based on A's full <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#area">area</A>.  The histogram will be normalized such that the
+first and second most frequent values are each represented by a fifty
+character bar. (This is determined by the graph display <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#format">format</A>, the default
+narrow <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#format">format</A> in this case, and by the default for the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#spikes">SPIKES</A> option; the
+wide-graph <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#format">format</A> has a different default normalization procedure which prints 
+the graph so that the largest bar is 100 characters and all other bars are
+proportional.  This narrow <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#format">format</A> allows the user to see in detail the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#size">size</A>
+of the shorter bars when some bars are much larger than others.  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#spikes">SPIKES</A>
+option described here is described in more detail below.  The default is
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#spikes">SPIKES</A>=1.) Pixel values will be distributed among a maximum of 256
+(default) bars as appropriate; the default range of pixel values to accept
+is 0 through 255 for byte data, and -32768 through 32767 for halfword,
+real, and integer data. 
+HIST A <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#bins">BINS</A>=21 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#limits">LIMITS</A>=(0.0,40.0) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#format">FORMAT</A>=HALF
+
+This command will print out an 80-column histogram as above, but will use
+21 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#bins">bins</A>, evenly spaced, with centers from 0.0 to 40.0. The width of each bin,
+then, is 2.0. There are, in addition, two <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#bins">bins</A> to keep track of pixels which
+are outside of the specified <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#limits">limits</A>. These <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#bins">bins</A> are also represented by 
+labeled bars on the graph.  Note that the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#format">FORMAT</A> option was used to specify 
+that the image is to be read as HALF data; the default is to read the image 
+data <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#format">format</A> from the image's system label. (The allowable data types are 
+BYTE, HALF, FULL, and REAL.)
+HIST A 'SCREEN '<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#pplot">PPLOT</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#title">TITLE</A>="TRONA CLASSIFICATION RESULTS"
+
+This command will plot the histogram of A, with DN values running horizontally
+across the 80 column screen, and the populations running vertically. The 
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#format">format</A> is set to allow viewing of the entire histogram at once. The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#bins">bins</A> are 
+compressed as needed to fit on the screen, and only byte data is permitted for
+the screen option. The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#pplot">PPLOT</A> keyword causes a pen plot to be generated on the
+printer, in addition to the screen histogram. The value of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#title">TITLE</A> 
+parameter is put as a caption to the plot.
+HIST A 'WIDE <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#area">AREA</A>=(1,1,15,15)
+
+This command will print out another histogram of image A, this time using
+the wide (132 column) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#format">format</A>.  Only the first 15 samples of the first 15
+lines of the image will be plotted on the graph. 
+
+HIST A <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#area">AREA</A>=(1,1,15,15,100,100,10,40) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#bins">BINS</A>=300
+
+This command will print two graphs in the narrow <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#format">format</A>, using a maximum of
+three hundred bars to represent the data.  The range of the bars will be
+either of two defaults: 0 through 255 if image A is in byte <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#format">format</A>, and
+-32768 through 32767 if the image is in another, larger <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#format">format</A>.  Note that
+the request is for two graphs of the same image.  The first graph will be
+for the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#area">area</A> (1,1,15,15) and the second will be for the area
+(100,100,10,40).  If the 'WIDE option is used, these graphs will be labeled
+with headers giving the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#area">area</A> represented; the default, compact histogram
+does not give this information. 
+HIST A <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#spikes">SPIKES</A>=3 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#linc">LINC</A>=2 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#sinc">SINC</A>=3
+
+This command will produce a histogram of image A for which only every third
+sample of every second line will be read.  This is done mainly to speed
+output of the program.  Note that there is also an <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#inc">INC</A> option which may be
+set to any similar increment, in effect setting <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#linc">LINC</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#sinc">SINC</A> to the same
+value.  Again, this is done mainly to speed processing of the image.  Note,
+too, the use of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#spikes">SPIKES</A> option.  As mentioned in the example above,
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#spikes">SPIKES</A> specifies the bar which is to be normalized to a bar value of 50,
+which is the maximum; any values larger than this value will be reduced to
+50, and the graph will indicate the rank of each bar which is 50 units
+long.  This option, in effect, removes any large <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#spikes">spikes</A> in the graph which
+would otherwise dwarf smaller bars in the narrow <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#format">format</A>.  The default value
+of SPIKE is one. 
+
+PROGRAM HISTORY
+
+WRITTEN BY:  Alan Mazer, September 1983
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Ray Bambery</A>
+REVISIONS:
+     MODIFIED FOR VAX CONVERSION BY ALAN S MAZER, 23 SEPT 1983
+     REVISION 1 BY ASM, FEBRUARY 7 1984 - SPEED ENHANCEMENTS
+         1) REPLACED CONVERSION OF ALL INPUT DATA TO REAL-TYPE WITH
+	     SEPARATE TABULATION ROUTINES FOR EACH TYPE
+         2) ADDED LOOK-UP TABLE FOR BYTE-IMAGE PROCESSING
+  1984-10-9   LWK  converted to Vicar2, check for rounding error in sdev.
+  1984-10-11  LWK  for byte data, compute stats from histogram.
+  1984-12-13  LWK  revised treatment of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#bins">BINS</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#limits">LIMITS</A>.
+  1985-4-17   REA  fixed bug in <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#linc">LINC</A> & <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#area">AREA</A> parameters
+  1985-4-17   LWK  revised processing of REAL*4 data
+  1986-11-11  REA  modify formatting, hist collection routines, add
+		       output parameters <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#mean">MEAN</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#sigma">SIGMA</A>
+  1987-1-12   REA  add <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#exclude">EXCLUDE</A>, SCREEN parameters
+  1987-2-4    REA  add SPLOT, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#pplot">PPLOT</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#title">TITLE</A> parameters
+  1987-8-4    REA  fix bug in x-axis scaling algorithm
+  1987-10-27  REA  add 3-D file capability
+  1989-8-23   REA  add BAR graph parameter
+  1990-2-22   REA  add output parameters <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#min">MIN</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#max">MAX</A>
+  1990-10-5   REA  add laserprinter capabilities
+  1991-4-8    REA  convert to UNIX
+  1992-8-6    REA  add WINDOW and WBAR options
+  1996-10-25  REA  remove Regis options
+  1997-8-20   REA  add <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#bychan">BYCHAN</A> option
+  2000-7-12   REA  adjust print-out column widths for DN and population
+  2001-2-16   REA  fix <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#min">min</A>/<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#max">max</A> bug when both regular and pen plots;
+                   consolidate statistics logic.
+  2015-08-10  WLB  replaced xqout call with xvqout call to pass out vars to shell vicar
+
+OPERATION:
+The main part of the program, MAIN44, sets up defaults and handles most of
+the options requested by the user, modifying variables and setting flags. 
+MAIN44 then calls subroutine WORK (through STACKA for dynamic storage
+allocation). 
+
+WORK goes through each of the areas of the image, reading the lines which
+are part of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#area">area</A>, and sorting pixels into buckets based on the number
+of buckets and their range.  The bucket width equals the difference between
+the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#limits">limits</A> of the range, divided by the number of buckets minus 1. The 
+variables SUM and SUM2 are updated for each pixel to be used later for the 
+calculation of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#mean">mean</A> and standard deviation.  
+
+Finally, when the entire <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#area">area</A> has been read in, PHIST, SHIST, or PLOTXY is 
+called to dislay the histogram data, and the next <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#area">area</A> for the image, if any,
+is similarly processed. 
+
+WRITTEN BY:  Alan Mazer, September 1983
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Ron Alley</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#inp"><H3>INP</H3></A>
+Input image file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#size"><H3>SIZE</H3></A>
+Standard VICAR <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#bands"><H3>BANDS</H3></A>
+Starting band, # of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#bands">bands</A>
+(for 3-D <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#format">format</A> data)
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#sl"><H3>SL</H3></A>
+Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#ss"><H3>SS</H3></A>
+Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#sb"><H3>SB</H3></A>
+Starting band
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#nl"><H3>NL</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#ns"><H3>NS</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#nb"><H3>NB</H3></A>
+Number of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#bands">bands</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#format"><H3>FORMAT</H3></A>
+KEYWORD - Input data <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#format">format</A> 
+(BYTE, HALF, FULL, REAL)
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#spikes"><H3>SPIKES</H3></A>
+Bar to be normalized 
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#sinc"><H3>SINC</H3></A>
+Sample increment
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#linc"><H3>LINC</H3></A>
+Line increment
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#inc"><H3>INC</H3></A>
+Line/sample increment
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#area"><H3>AREA</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#area">Area</A>(s) to be graphed
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#mode"><H3>MODE</H3></A>
+Output <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#format">format</A> options, Valid:
+NORMAL, WIDE, SCREEN,
+WINDOW, WBAR, NOHIST
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#pplot"><H3>PPLOT</H3></A>
+PostScript print option
+Valid: <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#pplot">PPLOT</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#title"><H3>TITLE</H3></A>
+STRING - Optional <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#title">title</A> for
+plot.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#nocum"><H3>NOCUM</H3></A>
+Non-cumulative percentages?
+Valid: <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#nocum">NOCUM</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#bins"><H3>BINS</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#max">Max</A> number of graph bars
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#limits"><H3>LIMITS</H3></A>
+Range of pixel values
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#exclude"><H3>EXCLUDE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#exclude">Exclude</A> 0 DN pixels from
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#mean">mean</A> and std dev calculations
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#bychan"><H3>BYCHAN</H3></A>
+Produce a histogram for each
+band? (Valid: <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#bychan">BYCHAN</A>)
+(Default: 1 histogram of all
+ selected <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#bands">bands</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#pause"><H3>PAUSE</H3></A>
+KEYWORD: adds interactive
+pausing when screen full.
+Valid: NOPAUSE, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#pause">PAUSE</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#mean"><H3>MEAN</H3></A>
+Output parameter
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#sigma"><H3>SIGMA</H3></A>
+Output parameter
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#min"><H3>MIN</H3></A>
+Output parameter
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist_level2.html#max"><H3>MAX</H3></A>
+Output parameter
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/hist.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

@@ -1,0 +1,201 @@
+<HTML>
+<HEAD><title>HTML Help for MARSROUGH</title></HEAD>
+<BODY>
+<H1>Help for MARSROUGH</H1>
+<pre>
+PURPOSE:
+
+MARSROUGH computes a measure indicating the roughness of the surface for
+each pixel, given XYZ and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#uvw">UVW</A> (surface normal) images as input.  This
+roughness value is a floating-point number representing the maximum peak-to-
+peak deviation from the plane perpendicular to the normal, measured in the
+same coordinate system that the XYZ's are expressed in.
+
+The inputs for MARSROUGH are an XYZ image such as that created by the MARSXYZ
+program, and a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#uvw">UVW</A> image such as that created by MARSUVW.  These can each
+be single 3-band files or three 1-band files; see MARSXYZ and MARSUVW for
+details.
+
+The output of MARSROUGH is a single 1-band file of type REAL.  As with
+XYZ images, the output image may contain holes (missing data), defined
+by MISSING_CONSTANT.  In addition, values for which roughness could not
+be calculated are assigned a different constant, specified by the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#bad_rough">BAD_ROUGH</A>
+parameter identified by the INVALID_CONSTANT label.
+
+There will likely be many more holes than in the input images, since the
+roughness algorithm requires a patch around each pixel.
+
+EXECUTION:
+
+marsrough <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#inp">inp</A>=data.xyz <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#out">out</A>=data.rough <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#uvw">uvw</A>=data.uvw
+where:
+data.xyz is an input 3-band image of type REAL with the X, Y and Z values
+at that pixel in meters (the unit is actually irrelevant).
+data.<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#uvw">uvw</A> is an input 3-band image of type REAL with the U, V, and W components
+of the unit vector for each pixel.
+
+Any program producing 3D position could be used; marsxyz is simply an example.
+
+METHOD:
+
+NOTE:  At the present time, it is ASSUMED that the input XYZ image is in
+Site coordinates, while the input <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#uvw">UVW</A> image is in Rover coordinates.  This
+matches what is generated for MER.  This will soon be updated to read the
+coordinate system directly from the label.
+
+The actual algorithm and core code was developed by Chris Leger of Section 348.
+Description from him:
+
+The surface roughness algorithm attempts to quantify the suitability of a
+surface for RAT placement.  At each point in an image, the algorithm examines
+points lying within an inner disc and outer annulus about the 3D point at the
+current pixel.  The highest and lowest points (relative to the local surface
+normal) lying in the annulus are recorded, as is the highest point in the
+disc.  The surface roughness is computed as MAX(max_disc_height,
+max_annulus_height) - min_annulus height.  The rationale is that the RAT
+contact sensors could touch the surface at the low points in the annulus, and
+the rest of the RAT hardware will be safe only if the high points in the
+annulus and disc are less than 1cm above the low points.  Low points in the
+inner disc do not affect the RAT's safety.
+
+The parameters have been tuned for MER RAT.  While the algorithm may be
+applicable to other missions, the parameters almost certainly would need
+tweaking.
+
+The output will be expressed in units defined by the coordinate system
+specified by the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#coord">COORD</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#coord_index">COORD_INDEX</A> parameters.
+
+
+HISTORY:
+06-30-03  Initial marsuvw by B. Deen, based on code from Chris Leger (348).
+12-10-03  Major revamp of algorithm by C. Leger
+<A NAME="CogProg">COGNIZANT PROGRAMMER: B. Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#inp"><H3>INP</H3></A>
+Input XYZ images.
+Must be 1 3-band file
+or (x,y,z) triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#out"><H3>OUT</H3></A>
+Output files.
+Mast be 1 filenames
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#uvw"><H3>UVW</H3></A>
+Input <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#uvw">UVW</A> images.
+Must be 1 3-band file
+or (u,v,w) triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#outer_radius"><H3>OUTER_RADIUS</H3></A>
+Outer Radius of annulus.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#inner_radius"><H3>INNER_RADIUS</H3></A>
+Inner radius of annulus.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#max_rough"><H3>MAX_ROUGH</H3></A>
+Maximum roughness
+to output.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#bad_rough"><H3>BAD_ROUGH</H3></A>
+Value that represents
+invalid computations.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#max_window"><H3>MAX_WINDOW</H3></A>
+Max window size.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#min_close"><H3>MIN_CLOSE</H3></A>
+Min # of points in the
+plane fit.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#x_center"><H3>X_CENTER</H3></A>
+Center of bounding box.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#y_center"><H3>Y_CENTER</H3></A>
+Center of bounding box.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#box_radius"><H3>BOX_RADIUS</H3></A>
+Half-width of bounding box.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrough.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

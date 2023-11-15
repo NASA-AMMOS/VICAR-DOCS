@@ -1,0 +1,783 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+
+<title>ImageOutputStreamStride</title>
+<meta name="date" content="2018-06-21">
+<link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../../../script.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
+var altColor = "altColor";
+var rowColor = "rowColor";
+var tableTab = "tableTab";
+var activeTableTab = "activeTableTab";
+</script>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+
+<div class="topNav"><a name="navbar.top">
+
+</a>
+<div class="skipNav"><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/#skip.navbar.top" title="Skip navigation links">Skip navigation links</a></div>
+<a name="navbar.top.firstrow">
+
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../../overview-summary.html">Overview</a></li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+<li><a href="../../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html" title="class in jpl.mipl.io.streams"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../../jpl/mipl/io/streams/RandomAccessFileInputStream.html" title="class in jpl.mipl.io.streams"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../../../index.html?jpl/mipl/io/streams/ImageOutputStreamStride.html" target="_top">Frames</a></li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/ImageOutputStreamStride.html" target="_top">No&nbsp;Frames</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_top">
+<li><a href="../../../../allclasses-noframe.html">All&nbsp;Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript">
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>Summary:&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/#field.summary">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/#method.summary">Method</a></li>
+</ul>
+<ul class="subNavList">
+<li>Detail:&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/#field.detail">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/#method.detail">Method</a></li>
+</ul>
+</div>
+<a name="skip.navbar.top">
+
+</a></div>
+
+
+<div class="header">
+<div class="subTitle">jpl.mipl.io.streams</div>
+<h2 title="Class ImageOutputStreamStride" class="title">Class ImageOutputStreamStride</h2>
+</div>
+<div class="contentContainer">
+<ul class="inheritance">
+<li>java.lang.Object</li>
+<li>
+<ul class="inheritance">
+<li><a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html" title="class in jpl.mipl.io.streams">jpl.mipl.io.streams.ImageInputStreamStride</a></li>
+<li>
+<ul class="inheritance">
+<li>jpl.mipl.io.streams.ImageOutputStreamStride</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<hr>
+<br>
+<pre>public class <span class="typeNameLabel">ImageOutputStreamStride</span>
+extends <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html" title="class in jpl.mipl.io.streams">ImageInputStreamStride</a></pre>
+<div class="block">This class implements the multi-element write functions of
+ <code>ImageOutputStream</code> but with the addition of an extra
+ parameter, which specifies the pixel stride in the array.  This
+ allows one to write directly from an array (usually in a
+ <code>DataBuffer</code>) where the pixels are not contiguous in memory.
+ For example, a pixel interleaved array could be written to a band
+ sequential file by writing from every 3rd array element.
+ <p>
+ It would be nice to actually implement <code>ImageOutputStream</code>
+ (or extend <code>ImageOutputStreamImpl</code>) in this class.  However,
+ to maintain JDK 1.3 compatibility, we can't do this (yet).  That may
+ be a future enhancement.
+ <p>
+ An additional enhancement over ImageOutputStream is that we can handle
+ VAX-format reals in addition to forward and reverse IEEE reals.  They
+ are converted from Java reals (IEEE) as they are written out.
+ <p>
+ This class tries to be as efficient as possible.  For example, if the
+ source object actually is an <code>ImageOutputStream</code> and the
+ pixel stride is 1, we call the ImageOutputStream methods directly.
+ <p>
+ Allowable output sinks in order of preference are:
+ <ul>
+ <li>ImageOutputStream</li>
+ <li>DataOutput</li>
+ <li>OutputStream</li>
+ </ul>
+ Note that <code>RandomAccessFile</code> is a <code>DataOutput</code>
+ and thus is legal.
+ <p>
+ Although we extend <code>ImageInputStreamStride</code>, that's only
+ useful for objects that implement both an input and an output interface
+ (e.g. <code>ImageOutputStream</code>, <code>RandomAccessFile</code>).
+ Output-only objects will cause a <code>NullPointerException</code> to be
+ thrown from any of the input routines.
+ <p>
+ Large portions of this code were shamelessly ripped off from
+ <code>ImageOutputStream</code>...</div>
+</li>
+</ul>
+</div>
+<div class="summary">
+<ul class="blockList">
+<li class="blockList">
+
+<ul class="blockList">
+<li class="blockList"><a name="field.summary">
+
+</a>
+<h3>Field Summary</h3>
+<table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Field Summary table, listing fields, and an explanation">
+<caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Field and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected java.io.DataOutput</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/io/streams/ImageOutputStreamStride.html#Z:Z_do">_do</a></span></code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected javax.imageio.stream.ImageOutputStream</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/io/streams/ImageOutputStreamStride.html#Z:Z_ios">_ios</a></span></code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected java.io.OutputStream</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/io/streams/ImageOutputStreamStride.html#Z:Z_os">_os</a></span></code>&nbsp;</td>
+</tr>
+</table>
+<ul class="blockList">
+<li class="blockList"><a name="fields.inherited.from.class.jpl.mipl.io.streams.ImageInputStreamStride">
+
+</a>
+<h3>Fields inherited from class&nbsp;jpl.mipl.io.streams.<a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html" title="class in jpl.mipl.io.streams">ImageInputStreamStride</a></h3>
+<code><a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#Z:Z_byteBuf">_byteBuf</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#Z:Z_di">_di</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#Z:Z_direct_float_okay">_direct_float_okay</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#Z:Z_direct_int_okay">_direct_int_okay</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#Z:Z_float_order">_float_order</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#Z:Z_iis">_iis</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#Z:Z_int_order">_int_order</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#Z:Z_is">_is</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#BYTE_BUF_LENGTH">BYTE_BUF_LENGTH</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#HIGH_ORDER">HIGH_ORDER</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#LOW_ORDER">LOW_ORDER</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#VAX_ORDER">VAX_ORDER</a></code></li>
+</ul>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="constructor.summary">
+
+</a>
+<h3>Constructor Summary</h3>
+<table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructor Summary table, listing constructors, and an explanation">
+<caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colOne" scope="col">Constructor and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/io/streams/ImageOutputStreamStride.html#ImageOutputStreamStride-java.lang.Object-int-">ImageOutputStreamStride</a></span>(java.lang.Object&nbsp;stream,
+                       int&nbsp;order)</code>
+<div class="block">Constructor with just one order applying to both ints and floats.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/io/streams/ImageOutputStreamStride.html#ImageOutputStreamStride-java.lang.Object-int-int-">ImageOutputStreamStride</a></span>(java.lang.Object&nbsp;stream,
+                       int&nbsp;int_order,
+                       int&nbsp;float_order)</code>
+<div class="block">Constructor with different byte orders for ints and floats.</div>
+</td>
+</tr>
+</table>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="method.summary">
+
+</a>
+<h3>Method Summary</h3>
+<table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Method Summary table, listing methods, and an explanation">
+<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Method and Description</th>
+</tr>
+<tr id="i0" class="altColor">
+<td class="colFirst"><code>protected void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/io/streams/ImageOutputStreamStride.html#fromDoubles-byte:A-double:A-int-int-int-">fromDoubles</a></span>(byte[]&nbsp;b,
+           double[]&nbsp;d,
+           int&nbsp;off,
+           int&nbsp;len,
+           int&nbsp;pixelStride)</code>
+<div class="block">Convert an array of doubles to a byte array buffer.</div>
+</td>
+</tr>
+<tr id="i1" class="rowColor">
+<td class="colFirst"><code>protected void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/io/streams/ImageOutputStreamStride.html#fromFloats-byte:A-float:A-int-int-int-">fromFloats</a></span>(byte[]&nbsp;b,
+          float[]&nbsp;f,
+          int&nbsp;off,
+          int&nbsp;len,
+          int&nbsp;pixelStride)</code>
+<div class="block">Convert an array of floats to a byte array buffer.</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code>protected void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/io/streams/ImageOutputStreamStride.html#fromInts-byte:A-int:A-int-int-int-">fromInts</a></span>(byte[]&nbsp;b,
+        int[]&nbsp;i,
+        int&nbsp;off,
+        int&nbsp;len,
+        int&nbsp;pixelStride)</code>
+<div class="block">Convert an array of ints to a byte array buffer.</div>
+</td>
+</tr>
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code>protected void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/io/streams/ImageOutputStreamStride.html#fromLongs-byte:A-long:A-int-int-int-">fromLongs</a></span>(byte[]&nbsp;b,
+         long[]&nbsp;l,
+         int&nbsp;off,
+         int&nbsp;len,
+         int&nbsp;pixelStride)</code>
+<div class="block">Convert an array of longs to a byte array buffer.</div>
+</td>
+</tr>
+<tr id="i4" class="altColor">
+<td class="colFirst"><code>protected void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/io/streams/ImageOutputStreamStride.html#fromShorts-byte:A-short:A-int-int-int-">fromShorts</a></span>(byte[]&nbsp;b,
+          short[]&nbsp;s,
+          int&nbsp;off,
+          int&nbsp;len,
+          int&nbsp;pixelStride)</code>
+<div class="block">Convert an array of shorts to a byte array buffer.</div>
+</td>
+</tr>
+<tr id="i5" class="rowColor">
+<td class="colFirst"><code>protected void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/io/streams/ImageOutputStreamStride.html#write-byte:A-int-int-">write</a></span>(byte[]&nbsp;b,
+     int&nbsp;off,
+     int&nbsp;len)</code>
+<div class="block">Internal routine to write a bunch of bytes from an array.</div>
+</td>
+</tr>
+<tr id="i6" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/io/streams/ImageOutputStreamStride.html#writeBytes-byte:A-int-int-int-">writeBytes</a></span>(byte[]&nbsp;b,
+          int&nbsp;off,
+          int&nbsp;len,
+          int&nbsp;pixelStride)</code>
+<div class="block">Writes <code>length</code> bytes to the stream's current position from
+ the array <code>b</code> starting at index <code>offset</code>.</div>
+</td>
+</tr>
+<tr id="i7" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/io/streams/ImageOutputStreamStride.html#writeDoubles-double:A-int-int-int-">writeDoubles</a></span>(double[]&nbsp;d,
+            int&nbsp;off,
+            int&nbsp;len,
+            int&nbsp;pixelStride)</code>
+<div class="block">Writes <code>length</code> doubles to the stream's current position from
+ the array <code>d</code> starting at index <code>offset</code>.</div>
+</td>
+</tr>
+<tr id="i8" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/io/streams/ImageOutputStreamStride.html#writeFloats-float:A-int-int-int-">writeFloats</a></span>(float[]&nbsp;f,
+           int&nbsp;off,
+           int&nbsp;len,
+           int&nbsp;pixelStride)</code>
+<div class="block">Writes <code>length</code> floats to the stream's current position from
+ the array <code>f</code> starting at index <code>offset</code>.</div>
+</td>
+</tr>
+<tr id="i9" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/io/streams/ImageOutputStreamStride.html#writeInts-int:A-int-int-int-">writeInts</a></span>(int[]&nbsp;i,
+         int&nbsp;off,
+         int&nbsp;len,
+         int&nbsp;pixelStride)</code>
+<div class="block">Writes <code>length</code> ints to the stream's current position from
+ the array <code>i</code> starting at index <code>offset</code>.</div>
+</td>
+</tr>
+<tr id="i10" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/io/streams/ImageOutputStreamStride.html#writeLongs-long:A-int-int-int-">writeLongs</a></span>(long[]&nbsp;l,
+          int&nbsp;off,
+          int&nbsp;len,
+          int&nbsp;pixelStride)</code>
+<div class="block">Writes <code>length</code> longs from the stream's current position from
+ the array <code>l</code> starting at index <code>offset</code>.</div>
+</td>
+</tr>
+<tr id="i11" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/io/streams/ImageOutputStreamStride.html#writeShorts-short:A-int-int-int-">writeShorts</a></span>(short[]&nbsp;s,
+           int&nbsp;off,
+           int&nbsp;len,
+           int&nbsp;pixelStride)</code>
+<div class="block">Writes <code>length</code> shorts to the stream's current position from
+ the array <code>s</code> starting at index <code>offset</code>.</div>
+</td>
+</tr>
+<tr id="i12" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/io/streams/ImageOutputStreamStride.html#writeUShorts-short:A-int-int-int-">writeUShorts</a></span>(short[]&nbsp;u,
+            int&nbsp;off,
+            int&nbsp;len,
+            int&nbsp;pixelStride)</code>
+<div class="block">Writes <code>length</code> ushorts to the stream's current position from
+ the array <code>u</code> starting at index <code>offset</code>.</div>
+</td>
+</tr>
+</table>
+<ul class="blockList">
+<li class="blockList"><a name="methods.inherited.from.class.jpl.mipl.io.streams.ImageInputStreamStride">
+
+</a>
+<h3>Methods inherited from class&nbsp;jpl.mipl.io.streams.<a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html" title="class in jpl.mipl.io.streams">ImageInputStreamStride</a></h3>
+<code><a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#readBytes-byte:A-int-int-int-">readBytes</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#readDoubles-double:A-int-int-int-">readDoubles</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#readFloats-float:A-int-int-int-">readFloats</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#readFully-byte:A-int-int-">readFully</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#readInts-int:A-int-int-int-">readInts</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#readLongs-long:A-int-int-int-">readLongs</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#readShorts-short:A-int-int-int-">readShorts</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#readUShorts-short:A-int-int-int-">readUShorts</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#toDoubles-byte:A-double:A-int-int-int-">toDoubles</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#toFloats-byte:A-float:A-int-int-int-">toFloats</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#toInts-byte:A-int:A-int-int-int-">toInts</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#toLongs-byte:A-long:A-int-int-int-">toLongs</a>, <a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html#toShorts-byte:A-short:A-int-int-int-">toShorts</a></code></li>
+</ul>
+<ul class="blockList">
+<li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
+
+</a>
+<h3>Methods inherited from class&nbsp;java.lang.Object</h3>
+<code>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="details">
+<ul class="blockList">
+<li class="blockList">
+
+<ul class="blockList">
+<li class="blockList"><a name="field.detail">
+
+</a>
+<h3>Field Detail</h3>
+<a name="Z:Z_ios">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>_ios</h4>
+<pre>protected&nbsp;javax.imageio.stream.ImageOutputStream _ios</pre>
+</li>
+</ul>
+<a name="Z:Z_do">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>_do</h4>
+<pre>protected&nbsp;java.io.DataOutput _do</pre>
+</li>
+</ul>
+<a name="Z:Z_os">
+
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>_os</h4>
+<pre>protected&nbsp;java.io.OutputStream _os</pre>
+</li>
+</ul>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="constructor.detail">
+
+</a>
+<h3>Constructor Detail</h3>
+<a name="ImageOutputStreamStride-java.lang.Object-int-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>ImageOutputStreamStride</h4>
+<pre>public&nbsp;ImageOutputStreamStride(java.lang.Object&nbsp;stream,
+                               int&nbsp;order)</pre>
+<div class="block">Constructor with just one order applying to both ints and floats.  The
+ Object argument is the stream (one of several types, see class comments)
+ that'll do the actual work.</div>
+</li>
+</ul>
+<a name="ImageOutputStreamStride-java.lang.Object-int-int-">
+
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>ImageOutputStreamStride</h4>
+<pre>public&nbsp;ImageOutputStreamStride(java.lang.Object&nbsp;stream,
+                               int&nbsp;int_order,
+                               int&nbsp;float_order)</pre>
+<div class="block">Constructor with different byte orders for ints and floats.  99.9999%
+ of the time they'll be the same but since VICAR has different variables
+ holding the ordering, so do we...</div>
+</li>
+</ul>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="method.detail">
+
+</a>
+<h3>Method Detail</h3>
+<a name="writeBytes-byte:A-int-int-int-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeBytes</h4>
+<pre>public&nbsp;void&nbsp;writeBytes(byte[]&nbsp;b,
+                       int&nbsp;off,
+                       int&nbsp;len,
+                       int&nbsp;pixelStride)
+                throws java.io.IOException</pre>
+<div class="block">Writes <code>length</code> bytes to the stream's current position from
+ the array <code>b</code> starting at index <code>offset</code>.  Only
+ every <code>pixelStride</code>th array element is written out.  In other
+ words, consecutive bytes are written to the stream but they can be
+ scattered in the input array.
+ <p>
+ Pixels are converted from internal Java format as they are written.  (not
+ really applicable to bytes though).</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - if the stream does</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><code>ImageOutputStream.write(byte[], int, int)</code></dd>
+</dl>
+</li>
+</ul>
+<a name="writeShorts-short:A-int-int-int-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeShorts</h4>
+<pre>public&nbsp;void&nbsp;writeShorts(short[]&nbsp;s,
+                        int&nbsp;off,
+                        int&nbsp;len,
+                        int&nbsp;pixelStride)
+                 throws java.io.IOException</pre>
+<div class="block">Writes <code>length</code> shorts to the stream's current position from
+ the array <code>s</code> starting at index <code>offset</code>.  Only
+ every <code>pixelStride</code>th array element is written out.  In other
+ words, consecutive shorts are written to the stream but they can be
+ scattered in the input array.
+ <p>
+ Pixels are converted from internal Java format as they are written.</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - if the stream does</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><code>ImageOutputStream.writeShorts(short[], int, int)</code></dd>
+</dl>
+</li>
+</ul>
+<a name="writeUShorts-short:A-int-int-int-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeUShorts</h4>
+<pre>public&nbsp;void&nbsp;writeUShorts(short[]&nbsp;u,
+                         int&nbsp;off,
+                         int&nbsp;len,
+                         int&nbsp;pixelStride)
+                  throws java.io.IOException</pre>
+<div class="block">Writes <code>length</code> ushorts to the stream's current position from
+ the array <code>u</code> starting at index <code>offset</code>.  Only
+ every <code>pixelStride</code>th array element is written out.  In other
+ words, consecutive ushorts are written to the stream but they can be
+ scattered in the input array.
+ <p>
+ Pixels are converted from internal Java format as they are written.
+ <p>
+ This is really the same as writeShorts() since the UShorts are stored in
+ a short array anyway.  We just have a separate routine in case it matters
+ sometime.</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - if the stream does</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><code>writeShorts(short[], int, int)</code></dd>
+</dl>
+</li>
+</ul>
+<a name="writeInts-int:A-int-int-int-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeInts</h4>
+<pre>public&nbsp;void&nbsp;writeInts(int[]&nbsp;i,
+                      int&nbsp;off,
+                      int&nbsp;len,
+                      int&nbsp;pixelStride)
+               throws java.io.IOException</pre>
+<div class="block">Writes <code>length</code> ints to the stream's current position from
+ the array <code>i</code> starting at index <code>offset</code>.  Only
+ every <code>pixelStride</code>th array element is written out.  In other
+ words, consecutive ints are written from the stream but they can be
+ scattered in the input array.
+ <p>
+ Pixels are converted from internal Java format as they are written.</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - if the stream does</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><code>ImageOutputStream.writeInts(int[], int, int)</code></dd>
+</dl>
+</li>
+</ul>
+<a name="writeLongs-long:A-int-int-int-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeLongs</h4>
+<pre>public&nbsp;void&nbsp;writeLongs(long[]&nbsp;l,
+                       int&nbsp;off,
+                       int&nbsp;len,
+                       int&nbsp;pixelStride)
+                throws java.io.IOException</pre>
+<div class="block">Writes <code>length</code> longs from the stream's current position from
+ the array <code>l</code> starting at index <code>offset</code>.  Only
+ every <code>pixelStride</code>th array element is written out.  In other
+ words, consecutive longs are written to the stream but they can be
+ scattered in the input array.
+ <p>
+ Pixels are converted from internal Java format as they are written.</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - if the stream does</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><code>ImageOutputStream.writeLongs(long[], int, int)</code></dd>
+</dl>
+</li>
+</ul>
+<a name="writeFloats-float:A-int-int-int-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeFloats</h4>
+<pre>public&nbsp;void&nbsp;writeFloats(float[]&nbsp;f,
+                        int&nbsp;off,
+                        int&nbsp;len,
+                        int&nbsp;pixelStride)
+                 throws java.io.IOException</pre>
+<div class="block">Writes <code>length</code> floats to the stream's current position from
+ the array <code>f</code> starting at index <code>offset</code>.  Only
+ every <code>pixelStride</code>th array element is written out.  In other
+ words, consecutive floats are written to the stream but they can be
+ scattered in the input array.
+ <p>
+ Pixels are converted from internal Java format as they are written.</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - if the stream does</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><code>writeFloats(short[], int, int)</code>, 
+<code>ImageOutputStream.writeFloats(float[], int, int)</code></dd>
+</dl>
+</li>
+</ul>
+<a name="writeDoubles-double:A-int-int-int-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeDoubles</h4>
+<pre>public&nbsp;void&nbsp;writeDoubles(double[]&nbsp;d,
+                         int&nbsp;off,
+                         int&nbsp;len,
+                         int&nbsp;pixelStride)
+                  throws java.io.IOException</pre>
+<div class="block">Writes <code>length</code> doubles to the stream's current position from
+ the array <code>d</code> starting at index <code>offset</code>.  Only
+ every <code>pixelStride</code>th array element is written out.  In other
+ words, consecutive doubles are written to the stream but they can be
+ scattered in the input array.
+ <p>
+ Pixels are converted from internal Java format as they are written.</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - if the stream does</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><code>ImageOutputStream.writeDoubles(double[], int, int)</code></dd>
+</dl>
+</li>
+</ul>
+<a name="write-byte:A-int-int-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>write</h4>
+<pre>protected&nbsp;void&nbsp;write(byte[]&nbsp;b,
+                     int&nbsp;off,
+                     int&nbsp;len)
+              throws java.io.IOException</pre>
+<div class="block">Internal routine to write a bunch of bytes from an array.  Needed because
+ everyone's write() routine is different.</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd>
+</dl>
+</li>
+</ul>
+<a name="fromShorts-byte:A-short:A-int-int-int-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>fromShorts</h4>
+<pre>protected&nbsp;void&nbsp;fromShorts(byte[]&nbsp;b,
+                          short[]&nbsp;s,
+                          int&nbsp;off,
+                          int&nbsp;len,
+                          int&nbsp;pixelStride)</pre>
+<div class="block">Convert an array of shorts to a byte array buffer.</div>
+</li>
+</ul>
+<a name="fromInts-byte:A-int:A-int-int-int-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>fromInts</h4>
+<pre>protected&nbsp;void&nbsp;fromInts(byte[]&nbsp;b,
+                        int[]&nbsp;i,
+                        int&nbsp;off,
+                        int&nbsp;len,
+                        int&nbsp;pixelStride)</pre>
+<div class="block">Convert an array of ints to a byte array buffer.</div>
+</li>
+</ul>
+<a name="fromLongs-byte:A-long:A-int-int-int-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>fromLongs</h4>
+<pre>protected&nbsp;void&nbsp;fromLongs(byte[]&nbsp;b,
+                         long[]&nbsp;l,
+                         int&nbsp;off,
+                         int&nbsp;len,
+                         int&nbsp;pixelStride)</pre>
+<div class="block">Convert an array of longs to a byte array buffer.</div>
+</li>
+</ul>
+<a name="fromFloats-byte:A-float:A-int-int-int-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>fromFloats</h4>
+<pre>protected&nbsp;void&nbsp;fromFloats(byte[]&nbsp;b,
+                          float[]&nbsp;f,
+                          int&nbsp;off,
+                          int&nbsp;len,
+                          int&nbsp;pixelStride)</pre>
+<div class="block">Convert an array of floats to a byte array buffer.</div>
+</li>
+</ul>
+<a name="fromDoubles-byte:A-double:A-int-int-int-">
+
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>fromDoubles</h4>
+<pre>protected&nbsp;void&nbsp;fromDoubles(byte[]&nbsp;b,
+                           double[]&nbsp;d,
+                           int&nbsp;off,
+                           int&nbsp;len,
+                           int&nbsp;pixelStride)</pre>
+<div class="block">Convert an array of doubles to a byte array buffer.</div>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+<div class="bottomNav"><a name="navbar.bottom">
+
+</a>
+<div class="skipNav"><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/#skip.navbar.bottom" title="Skip navigation links">Skip navigation links</a></div>
+<a name="navbar.bottom.firstrow">
+
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../../overview-summary.html">Overview</a></li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+<li><a href="../../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../../../jpl/mipl/io/streams/ImageInputStreamStride.html" title="class in jpl.mipl.io.streams"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../../jpl/mipl/io/streams/RandomAccessFileInputStream.html" title="class in jpl.mipl.io.streams"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../../../index.html?jpl/mipl/io/streams/ImageOutputStreamStride.html" target="_top">Frames</a></li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/ImageOutputStreamStride.html" target="_top">No&nbsp;Frames</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_bottom">
+<li><a href="../../../../allclasses-noframe.html">All&nbsp;Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript">
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>Summary:&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/#field.summary">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/#method.summary">Method</a></li>
+</ul>
+<ul class="subNavList">
+<li>Detail:&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/#field.detail">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/io/streams/#method.detail">Method</a></li>
+</ul>
+</div>
+<a name="skip.navbar.bottom">
+
+</a></div>
+
+</body>
+</html>

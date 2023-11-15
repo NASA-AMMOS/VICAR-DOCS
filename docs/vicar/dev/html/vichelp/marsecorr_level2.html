@@ -1,0 +1,1152 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for MARSECORR</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr.html">MARSECORR</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+Input images. Needs to be 2 images, the left and the right images of the 
+stereo pair.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+Output disparity image. It's a two <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#bands">bands</A> files containing the disparity
+in line and sample. It has the same size as the left image scaled with the
+pyramid level factor (left size / 2^(pyramid level)).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="in_mesh"><H3>IN_MESH</H3></A><pre>
+This 2-elements parameter supplies a mesh (.OBJ) as a surface prior. The first
+element is the .OBJ file, while the second element is a vicar file whose 
+coordinate system (CS) corresponds to the CS of the mesh. Usually is will be the
+XYZ vicar file from which the mesh was computed, but it doesn't have to. The 
+need of that vicar file comes from the unablility to construct a full CS from 
+the limited CS information stored in the mesh ancillary. This might change in 
+the futur. 
+When processing a given tile of the Left image, all pixels of that tile are
+projected onto the mesh and the average range (distance Left camera to mesh
+surface) and average surface normal are computed. They will be used to define
+the plane onto which the Right image will be projected onto and back to the Left
+image for correlation.
+(Note for improvement: might be best to compute the min/max instead
+of the average and extend the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#search">search</A> range from these min/max values. Could be
+usefull in case a tile contains a close range and far range feature due to 
+some occlusions).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="in_normal"><H3>IN_NORMAL</H3></A><pre>
+Surface normal file that will provide a local orientation of the plane to
+project onto. The file is expected to have a 1-to-1 relationship with the
+left imagei (i.e., same size). When processing a given tile of the Left image, 
+the average surface normal vector of the pixels in that tile is computed, which
+defines the surface plane normal onto which the Right image will be projected 
+and back to the left image for correlation. For instance, if Left is a navcam, 
+then <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#in_normal">IN_NORMAL</A> could be the surface normal file obtained from nav stereo. 
+Otherwise, a corresponding surface normal file has to be generated, with 
+marsdispwarp for instance.
+This input can improve the result by providing a projecting surface more 
+closely matching the actual surface orientation.
+If <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#in_mesh">IN_MESH</A> is used, this parameter is ignored.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="in_range"><H3>IN_RANGE</H3></A><pre>
+Similar to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#in_normal">IN_NORMAL</A> but for the range (i.e., distance) between the camera
+center and the surface. This will provide an initial guess for the range and
+will prevent scanning all the possible ranges (i.e., all along the epipolar 
+line). The average range is computed for each tile, similar to the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#in_normal">IN_NORMAL</A>
+case. The program will then use that initial range to set up a small <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#search">search</A>
+space around that range. The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#search">search</A> space is [avg range - step: avg range + step]
+with *step* defined from <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#samp_range">SAMP_RANGE</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#linear_step">LINEAR_STEP</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#power_step">POWER_STEP</A>. 
+This input can significantly reduce the processing time. 
+If <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#in_mesh">IN_MESH</A> is used, this parameter is ignored.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out_coefs"><H3>OUT_COEFS</H3></A><pre>
+Output affine coefficients. It's a 6-<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#bands">bands</A> files containing the local affine
+coefficients of the best matching pixel in the right image. It has the same
+size as the output disparity image.
+Xright = a*Xleft + b*Yleft + c
+Yright = d*Xleft + e*Yleft + f
+The file will contains the a, b, c, d, e, f coefficients. The offsets, i.e., 
+c and f, are set to 0 as that information is contained in the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#out">OUT</A> file.
+The local affine transformation for a given pixel in the left image is obtained
+by projecting neighboor pixels onto a plane set at a given distance and whose 
+orientation is the average of the 2 cameras pointing directions, and 
+backprojecting these points in the right image. 
+This affine coefficients file is similar to the one used as input in marscor3
+and could be used along with the disparity map to refine the disparity.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out_quality"><H3>OUT_QUALITY</H3></A><pre>
+Output Pearson correlation coefficient obtained for the best matching pixel.
+Same size as the output disparity image.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="bands"><H3>BANDS</H3></A><pre>
+Band index of the *left* and *right* images to process. Default is the first
+band for both image. If one number is entered, that band index is applied to 
+both image. If two numbers are entered, the first one applies to the first
+image and the second one to the second image. If the band number is larger 
+than the number of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#bands">bands</A> in the images, the last band is quietly selected.  
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="pyrlevel"><H3>PYRLEVEL</H3></A><pre>
+Pyramid level of the output disparity. Default is 0. 0 is full resolution, 1 is 
+half resolution in each dimension, 2 is quarter, etc.  
+Pyramid level drastically reduces processing times as the number of pixels
+in the left image to match reduces, but also the length of the epipolar curves
+in the right image reduces.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_range"><H3>MIN_RANGE</H3></A><pre>
+A given pixel in the left image is projected <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#out">out</A> in the 3D world at different
+ranges. The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#min_range">MIN_RANGE</A> variable sets the starting range. Smaller range than 
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#min_range">MIN_RANGE</A> won't be considered. Default is 10 cm. Must be stricly greater than
+0. No matter the processing options and inputs, any ranges that are outside the
+bracket defined by <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#min_range">MIN_RANGE</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#max_range">MAX_RANGE</A> won't be considered.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_range"><H3>MAX_RANGE</H3></A><pre>
+Similar to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#min_range">MIN_RANGE</A>, but for a maximum range. Default is 100,000 m. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="right_max_dist"><H3>RIGHT_MAX_DIST</H3></A><pre>
+Set the maximum closeness limit for the right image. 
+When sampling different ranges, the XYZ point is by construction in front and at
+a minimum distance of the left camera. However, the XYZ can end up being very 
+close to the Right camera center (even behind, but there is a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#check">check</A> against 
+that). With some camera models (CAHVORE in particular), projection of a very 
+close XYZ to the image plane fails and diverges. This parameters sets that 
+maximum closeness limit to the right camera (optical center). The default one
+seems to work with CAHVORE camera tested. It is not expected to be a parameter
+oftenly modified. In fact, this should be a camera model parameter and not a 
+program parameter.   
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="samp_range"><H3>SAMP_RANGE</H3></A><pre>
+There are two ways to sample the range. Linear or power law. A linear law will
+linearly sample the range from <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#min_range">MIN_RANGE</A> to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#max_range">MAX_RANGE</A> with a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#linear_step">LINEAR_STEP</A> 
+increment (but see <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#linear_step">LINEAR_STEP</A> for options). Depending on MIN/<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#max_range">MAX_RANGE</A> and 
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#linear_step">LINEAR_STEP</A>, this could lead to a very large (and useless) number of range 
+samples. Adjust parameters with caution.
+With the power law approach the sampling range changes with the range. When the
+range is small, the samples are close to each other, and as the range increases,
+the samples are farther and farther appart. The sampling step for a given range
+is controlled by <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#power_step">POWER_STEP</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="linear_step"><H3>LINEAR_STEP</H3></A><pre>
+Sets the distance between two consecutives range samples. Two options available:
+If <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#linear_step">LINEAR_STEP</A> is negative, its (absolute) value indicates the number of samples
+between <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#min_range">MIN_RANGE</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#max_range">MAX_RANGE</A>. The step is defined as 
+(<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#max_range">MAX_RANGE</A> - <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#min_range">MIN_RANGE</A>) / abs(<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#linear_step">LINEAR_STEP</A>).
+If <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#linear_step">LINEAR_STEP</A> is positive, its value indicates the step length. From a given
+range to the next, the distance is <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#linear_step">LINEAR_STEP</A>.
+Default is -50.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="power_step"><H3>POWER_STEP</H3></A><pre>
+Defines the step between successive range. The value indicates the order of
+magnitude difference between the step and the range value.
+For instance:
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#power_step">POWER_STEP</A>=0, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#min_range">MIN_RANGE</A>=0.1, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#max_range">MAX_RANGE</A>=50
+ranges: 0.1, 0.2, ..., 0.9, 1, 2, 3,..., 10, 20, 30, 40, 50
+
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#power_step">POWER_STEP</A>=1, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#min_range">MIN_RANGE</A>=0.1, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#max_range">MAX_RANGE</A>=50
+ranges: 0.1, 0.11, 0.12, ..., 0.98, 0.99, 1, 1.1, 1.2..., 9.9, 10.0, 11, 12,..50
+
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#power_step">POWER_STEP</A>=2, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#min_range">MIN_RANGE</A>=0.1, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#max_range">MAX_RANGE</A>=50
+ranges: 0.1, 0.101, 0.102, ..., 0.999,  1, 1.01, 1.02..., 9.99, 10.0, 10.1,...50
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="epi_step"><H3>EPI_STEP</H3></A><pre>
+When looking for a match in the right image of a given left image pixel, we want
+to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#search">search</A> along the epipolar curve in the right image. That epipolar curve is 
+defined by projecting the left pixel <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#out">out</A> at some ranges and projecting them back
+to the right image. <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#epi_step">EPI_STEP</A> defines the spacing in the right image between each
+successive backprojected points. If <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#epi_step">EPI_STEP</A>=1, then the range list is defined 
+such that backprojected points are contiguous. If <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#epi_step">EPI_STEP</A>=5, then the list of
+ranges will be smaller (i.e., less processing) and such that backprojected 
+points are more or less spaced by 5 pixels. Default <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#epi_step">EPI_STEP</A> is 2.
+The larger <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#epi_step">EPI_STEP</A>, the faster the process, but at the same time the higher the
+chance of missing the correct location. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="template"><H3>TEMPLATE</H3></A><pre>
+Size of the correlation window in pixels. Default : 11. 
+Tuning this parameter is an art. Typically, larger values give smooth maps at 
+coarse resolution and not very sensitive to small objects. Small values give 
+finer resolution of disparity maps, but may not converge on some pixels. 
+Correlation window can be rectangular using two parameters (line, sample).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="search"><H3>SEARCH</H3></A><pre>
+Define the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#search">search</A> area of the correlation between the left patch and the right 
+patch. It's the same value for x and y direction and the value is the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#search">search</A>, 
+in pixel, to be done in left, right, up and down. This <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#search">search</A> is done for
+each backprojected location, that is for each tested range. At a given range, 
+the right image is projected <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#out">out</A> to the given range and backprojected to the
+left image. Then, a 2D correlation <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#search">search</A> is done.  
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="score_min"><H3>SCORE_MIN</H3></A><pre>
+For a given left image pixel, if the best correlation score is less than 
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#score_min">SCORE_MIN</A>, the corresponding disparity is set to 0.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="filter"><H3>FILTER</H3></A><pre>
+Activate a pre-processing gaussian low-pass <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#filter">filter</A> applied to both input
+images. This is useful to reduce the noise of the input images.
+Note that this <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#filter">filter</A> is not necessary if <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#pyrlevel">PYRLEVEL</A> &gt 0, as the images are
+automatically filtered before downsampling.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="filter_size."><H3>FILTER_SIZE.</H3></A><pre>
+Scales the intensity of the gaussian low-pass filtering.
+If 1 or less, then no filtering.
+The value of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#filter_size">FILTER_SIZE</A> corresponds approximately to the low pass filtering
+that should be done to subsample the image with a factor of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#filter_size">FILTER_SIZE</A>. For
+instance, if set to 2, this corresponds to the low pass filtering that would 
+be done if we were to reduce the resolution by a factor of 2. 
+In the case for instance of MSL mastcam images (x3 difference resolution between
+left and right - right being higher resolution), a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#filter_size">FILTER_SIZE</A> of (1,3) should 
+be used. Or if one wants to also denoise a little the first image (the second
+image is automatically denoised due to the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#filter_size">FILTER_SIZE</A>=3), then (1.1, 3) could 
+be used. If left and right images have the same resolution, and only a small low
+pass filtering is needed to denoise, then a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#filter_size">FILTER_SIZE</A> of 1.1 to 1.4 depending
+on the noise level. 
+No effect if <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#filter">FILTER</A> is off.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="filter_const"><H3>FILTER_CONST</H3></A><pre>
+Ultimately, when <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#filter">FILTER</A> is on, the images are low pass filtered with a Gaussian
+kernel. The kernel support is sized to 3-sigmas and the sigma value is defined
+from <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#filter_size">FILTER_SIZE</A>. However, FILTER_SIZE value is not equal to sigma. The latter 
+is derived from the former using this relation, which is generally accepted in
+the litterature:
+sigma = Cst * SQRT(<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#filter_size">filter_size</A> ^2 -1) with Cst ~0.5 - 0.8
+FILTER_CONST controls this Cst. Default is 0.6.
+As one can see FILTER_CONST and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#filter_size">FILTER_SIZE</A> are related, so the overall low
+pass filtering can be tuned with both. However, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#filter_size">FILTER_SIZE</A> should be used
+primarily, with FILTER_CONST being rarely changed. It's actually a parameter
+mostly to avoid having a hard-coded value in the code. 
+No effect if <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#filter">FILTER</A> is off.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sep_angle"><H3>SEP_ANGLE</H3></A><pre>
+If relative camera orientation between Left and Right camera is larger than
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#sep_angle">SEP_ANGLE</A>, exit. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="planenorm"><H3>PLANENORM</H3></A><pre>
+This 3-elements parameter defines the orientation of the plane onto which the 
+image will be projected. <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#planenorm">PLANENORM</A> defines the plane normal. This parameter will
+be overriden if MULTIPLANE is ON, or if a 3D prior is supplied with <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#in_normal">IN_NORMAL</A> or
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#in_mesh">IN_MESH</A>. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="hit_min_angle"><H3>HIT_MIN_ANGLE</H3></A><pre>
+This parameter defines the minimium ray hit angle with the plane surface that is
+acceptable. Depending on the plane orientation, a pixel projected on the plane
+might hit the plane with a very small incidence angle. In that case, the 
+projected image will be highly distorted and the correlation has high chances of
+failing. One option is to project these pixels to infinity. However, the 
+incidence angle limit at which the pixels are projected to infinity will create
+a discontinuity between the pixels just above the limit and the ones just below.
+In the current implementation, if the incidence angle to the plane is less than
+the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#hit_min_angle">HIT_MIN_ANGLE</A>, that step is skipped.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="gap_input"><H3>GAP_INPUT</H3></A><pre>
+A 3D prior can be used to refine the surface plane definition onto which the
+image tile will be projected, using <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#in_range">IN_RANGE</A>/<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#in_normal">IN_NORMAL</A> or <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#in_mesh">IN_MESH</A>. Each pixel of
+a left image tile are projected on the 3D prior to retrieve the average range
+(distance between camera and surface) and average surface normal to define
+the projection suface plane. However, in some case, some tiles won't be 
+"covered" with the 3D prior (gap in the prior, prior <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#out">out</A> of FOV, etc), that is,
+no average range and normal can be defined. The question is how to define the 
+projection surface normal for these tiles. There are three options available 
+which are selected with this parameter:
+- EMPTY: Nothing to do, these tiles won't be processed and the output disparity
+map will be set to 0 for all the pixels of these tiles
+- FULL_SWEEP: The non "covered" tiles get to scan the full range bracket defined
+by <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#min_range">MIN_RANGE</A>/<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#max_range">MAX_RANGE</A> and use <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#planenorm">PLANENORM</A> for the surface normal.
+ 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="run_pyr"><H3>RUN_PYR</H3></A><pre>
+This parameter activates a pyramidal approach. This is mainly useful to speed
+up the process, although experience shows that it also help the general quality
+of the correlation resutl. When activated, the images are downsampled to a 
+critical size (controlled by <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#max_pyr_size">MAX_PYR_SIZE</A>). Then the images are correlated at 
+that size on full <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#search">search</A> range and/or ranges defined from a prior (<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#in_mesh">IN_MESH</A>,
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#in_range">IN_RANGE</A>). Results are passed on to the next level where the images are one size
+up and the range bracket is narrowed down around the range found in the previous 
+scale. This is reiterated until the final pyramid level of the output 
+correlation. Either full resolution or level given by PYR_LEVEL.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_pyr_size"><H3>MAX_PYR_SIZE</H3></A><pre>
+This parameters controls the minimum size of the images allowable by the 
+pyramidal approach. This parameter is only relevant if <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#run_pyr">RUN_PYR</A> is used.
+When pyramical approach is used, the input images are downsampled by a 
+factor of 2, 4, 8, etc.. until one side (col or row) or either the Left or Right
+image is smaller than <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#max_pyr_size">MAX_PYR_SIZE</A>. When the side size is less than MAX_PYR_SIZE
+then the downsampling stops and the correlation process begins.
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="grid_tile"><H3>GRID_TILE</H3></A><pre>
+By default, to define the homography between the left and right image for a 
+given tiles, the four corners of the tile are projected to the right image
+(at a given range) and the homography is defined from these 4 tie points.
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#grid_tile">GRID_TILE</A> define a sub-grid of points in the left tiles to project to the right 
+image and define the homography from these tie-points. If <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#grid_tile">GRID_TILE</A> is set to 5,
+then a 5x5 subgrid of points equally spaced in the tile are projected in the 
+right image, to generate 25 tiepoints which are used to defined the homography 
+using the Direct Linear Transform (DLT) algorithm and Least square.
+Normally the use of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#grid_tile">GRID_TILE</A> is not necessary. However, in some instances, the 
+camera model presented some instabilities on pixels at the corners/edges which 
+bias the homography when using only the four corners of the tiles, for tiles at 
+the edge of the image. This is mostly the case with non-linear camera such as 
+fisheye or camera with high distortion. The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#grid_tile">GRID_TILE</A> allows to avoid that 
+problem. If correlation results appear weird/incorrect at the image corners, try
+rerun the process using <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#grid_tile">GRID_TILE</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="res_ratio_max"><H3>RES_RATIO_MAX</H3></A><pre>
+Normally, the difference of scaling between the L and R is automatically 
+accounted for by the algorithm. The difference of resolution could be due to the
+cameras themselves (e.g., the mast cam on MSL which have a resolution difference
+of 3), the geometry of acquisition (e.g., as you move away from one camera, you 
+get closer to the other camera), the projection plane orientation,... In some 
+case, the difference of resolution can be very high (in the hundreds).
+As the algorithm adapts the size of the correlation window based on the 
+scaling difference, the correlation window can grow very large, which will 
+dramatically increase processing time, for usually not much more results (most 
+likely useless part of the images anyway). This parameter allows to put a cap on
+the maximum resolution ratio allowed. If the parameter is activated and the 
+resolution ratio goes beyond the cap, the program will consider that the 
+point is unreliable and skip it.
+
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="tile_size"><H3>TILE_SIZE</H3></A><pre>
+This defines the size (x and y, in pixels) of the tiles. To account for any
+camera model (linear and non-linear), the left image is sliced into tiles and
+each tile is processed independantly. At the tile level, the camera model is
+approximated by a linear model (pinhole). For linear model (e.g., CAHV) the 
+tile size doesn't have an influence on the accuracy of the approximation as the
+"approximation" is equal to the actual model (but it does in terms of speed
+processing - see below). For other camera model, the larger the size of the 
+tile, the less accurate becomes the approximation. This is mostly true for 
+strongly non-linear model (e.g., CAHVORE), especially at the edge of the image. 
+The goal of the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#tiling">tiling</A> (and its linear model approximation) is to speed up the 
+processing. A linear model allows us to use the homography transform between
+the left and right image at the tile level which dramatically lowers processing
+time as opposed to pixel-wise processing. 
+There is a trade-off to find for the tile size, with three parameters to 
+balance:
+- A larger tiles means more of the left image is processed at once using a 
+homography transform. For non-linear camera, the approximation is less and less
+accurate with larger tiles
+- The multi-threading of the program is done on the tile list. If large tiles
+are used, then all the available threads might not be involved, which would
+cause a lost of processing speed.
+- Too small tile size will augment the number of tiles which will increase the
+number of pinhole model approximation to process, which will increase the 
+processing time.
+The minimum tile size is equal to the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#template">TEMPLATE</A> size. If smaller values are
+entered, then they are enlarged to the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#template">TEMPLATE</A> size. The default tile size
+is 3xTEMPLATE size which gives all-around good result. For faster processing, 
+a tile size between 50 and 200 are usually good compromise (as long as all
+threads are involved).
+NOTE: If the Right image has a small overlap with the Left image, it is 
+recommended to set not too large tile size. To get an initial estimate of the
+range space to process, the program uses the 4 corners of each tiles in a first
+pass which migh entirely miss the area of overalp and estimate that there is 
+none. Think of it as a too large mesh net for a too small fish to catch.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME=""><H3></H3></A><pre>
+If activated, the program will just estimate the potential overlap between the
+images based on the other inputs (MIN/<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#max_range">MAX_RANGE</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#in_range">IN_RANGE</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#in_normal">IN_NORMAL</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#in_mesh">IN_MESH</A>,
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#gap_input">GAP_INPUT</A>) and return the percentage of possible coverage in the ouput 
+variable <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#overlap_check">OVERLAP_CHECK</A>. No actual computation of the disparity map is done. This
+is meant to be a quick fail test to see if it's worth trying computing the 
+disparity between two images.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="overlap_check"><H3>OVERLAP_CHECK</H3></A><pre>
+output variable that will contain the percentage of the Left image area that 
+has an intersecting Field Of View (FOV) with the Right image for the range 
+bracket defined by user (either default or from 3D prior). A common FOV does not
+guarantee an actual surface overlap, it just says that given the range bracket 
+there is possibly one.
+The percentage represents the number of tiles with common FOV with the Right
+image over the total number of tiles. This means that the granularity of the
+percentage depends on the number of tiles. For instance, if the Left image
+is sliced into 4 tiles, then the coverage percentage will be either 0, 25, 50, 
+75 or 100 %.
+Note that it only takes one of the corner of a tile to be in the FOV of the 
+Right image to flag the whole tile as having an intersecting FOV.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="stat_filter"><H3>STAT_FILTER</H3></A><pre>
+This parameter activate a median-of-sort <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#filter">filter</A> applied to the disparity
+maps. This is meant to remove outliers, and *patch* of similarly-valued 
+outliers. 
+In a truly randomly-distributed outliers situation, a regular median <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#filter">filter</A> 
+usually doesa good job at removing them. The problem with dense correlation, 
+i.e., correlation done for each pixel of the Left image with a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#template">TEMPLATE</A>, is that
+a bogus value has high chances to be replicated in the neighbooring pixels. The
+reason is that the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#template">TEMPLATE</A> content of a neighbooring pixel has more or
+less the same content that the content of the pixel. Hence, whatever in the
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#template">TEMPLATE</A> content caused a bogus measurement for a particular pixel is likely to
+be present in the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#template">TEMPLATE</A> content of the neighboor pixel and cause a similar 
+bogus measurement. It's related to the fattening effect, a well known effect in
+correlation. As a consequence, the correlation map is polluted with *patches* of
+outliers that are hard to remove with a standard median <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#filter">filter</A>.
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#stat_filter">STAT_FILTER</A> is based on the assumption that disparity changes smoothly, so 
+we're checking that the neighborood of a given pixel has a disparity similar to 
+that given pixel. To overcome the fattening effect, the neighborood is defined 
+as the correlation <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#template">template</A> size (TEMPLATE) slightly augmented by a few pixels. 
+As explained above, the reason is that a salient feature will be seen in a 
+series of neighbooring correlation window (depends on the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#template">TEMPLATE</A> size). This
+may cause a patch of uniform outliers which may satisfy the smoothness criteria.
+Therefore a neighborood slightly larger than the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#template">template</A> size is taken. 
+Two thresholds are used to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#check">check</A> the validity of a pixel:
+- the allowed disparity amplitude difference between the queried pixel and the
+  ones in the neighborood
+- the minimum number of pixels in the neighborood that need to satisfy the 
+  disparity amplitude criteria to deem the current pixel not an outlier
+
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#filter">filter</A> works like this (think of it as sort or median filter):
+For a given pixel:
+- Compute the disparity difference between the pixels of the neighborood and 
+  the disparity of that queried pixel ("remove" the line/samp offset before). 
+- Count the number of pixel whose difference is less than a threshold
+- If that number is larger than a threshold, the current pixel is valid.
+  Otherwise, it is deemed an outlier.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="stat_extent"><H3>STAT_EXTENT</H3></A><pre>
+The number of pixels beyond the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#template">TEMPLATE</A> size that will define the neighborood.
+Default is 2. So, for instance, if <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#template">TEMPLATE</A>=9 and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#stat_extent">STAT_EXTENT</A>=2, then the
+neighborood will be a 13x13 patch.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="stat_sthreshold"><H3>STAT_STHRESHOLD</H3></A><pre>
+This variable indicates the amount of variation in terms of disparity changes
+that is allowed in the neighborood. The default is 1.2. Note that the line/samp 
+disparity has been removed as well as the scale factor between the left and
+right image.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="stat_nthreshold"><H3>STAT_NTHRESHOLD</H3></A><pre>
+Percentage (values between 0 and 100) of the required number of *smooth* pixels
+in the neighborood to validate the current pixel as a good one.
+Default is 50. A large value will force smoothness which will remove more 
+outliers but which may also remove good values that are in an area of strong
+disparity changes. A small value will have the opposite effect, that is keep as
+much inliers are possible but letting more outliers in.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out_draw"><H3>OUT_DRAW</H3></A><pre>
+This parameter is for debugging or fun or curiosity. It displays the epipolar 
+curve corresponding to left pixels identified with <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#draw_coord">DRAW_COORD</A>. This parameter 
+contains the name of the image file to create that will show the right image
+with overlay of the epipolar curve corresponding to the left pixel(s) and within
+MIN/<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#max_range">MAX_RANGE</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#epi_step">EPI_STEP</A>. 
+Note that the computation of the disparity map is not happening, only the
+drawing of the epipolar curve.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="draw_coord"><H3>DRAW_COORD</H3></A><pre>
+Identify which pixel in left image does the epipolar curve in the right image
+is going to be drawn. There are two strategies based on the sign of the pixel
+coordinates.
+If positive, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#draw_coord">DRAW_COORD</A> is the pixel coordinates (line, samp) of a given pixel.
+Only one specific pixel can be drawn. If only one value is given, then sample
+and line are set the same. For instance <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#draw_coord">DRAW_COORD</A>=(19,400) then left pixel: 
+line:19, sample:400. If <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#draw_coord">DRAW_COORD</A>=78, then left pixel: line:78, sample:78.
+If negative, it indicates a subgrid sampling in line and sample direction.
+For instance <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#draw_coord">DRAW_COORD</A>=(-10,-20) then every pixel whose line location is 
+multiple of 10 and sample location is multiple of 20 will be drawn. If 
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#draw_coord">DRAW_COORD</A>=-50, then every pixel whose line and sample directions is multiple
+of 50 will be drawn.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="tiling"><H3>TILING</H3></A><pre>
+If ON, account for image <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#tiling">tiling</A>. TILING is not related to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#tile_size">TILE_SIZE</A>, and is
+just an unfortunate naming conflict. <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#tiling">TILING</A> refers to the M2020 image tiling
+process which downsample/upsample image onboard and on ground respectively.
+If ON, then <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#tiling">tiling</A> of the image (if any) will be accounted for in the process, 
+in a similar way as marscor3. That is, the size of the correlated patches will 
+be increased such that at least <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#template">TEMPLATE</A> "real" pixels are correlated. The
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#tiling">tiling</A> level is set and unique per tile (tile here refers to the slicing of the
+left image in smaller parts whose geometry is approximated by a pinhole) and
+defined by the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#tiling">tiling</A> level of the center pixel of the tile. Other possible 
+approaches include the mode of the downsampling factor for all pixels of the
+tile.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="multi_plane"><H3>MULTI_PLANE</H3></A><pre>
+If on, a multi-plane approach will be run. In a simple run of the program, the
+right image is projected on a plane in 3D and backprojected onto the left image.
+The assumption is that the plane approximates the topography sufficiently well.
+If it is not the case, correlation quality suffers. In situation were a single 
+plane is not enough, the multi-plane approach can be activated. In that case, 
+not one, but a series of planes covering the half-sphere, with more or less 
+density (see <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#multi_num">MULTI_NUM</A>), will be used to successively project the image. A 
+winner-takes-all stategy (on correlation score) is used to get the best match. 
+The assumption is that for a given pixel, the correlation score will be the 
+best when the plane approximating the best the local topography is used.
+The main disadvantage of this approach is the steep increase in processing
+time. It is strongly recommended to use this with -<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#run_pyr">RUN_PYR</A>, as the full list
+of plane orientations will be run on the smallest image, and subsequent larger
+images in the pyramid process will only used a sublist of plane orientations
+defined from the previous pyramid level.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="multi_num"><H3>MULTI_NUM</H3></A><pre>
+This variable control the sampling of the plane orientations in the half-sphere
+that will be used in the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#multi_plane">MULTI_PLANE</A> approach. It is NOT the actual number of 
+planes, but it defines the number of tilts (or latitude rotations) applied to 
+the default plane orientation (i.e., the plane perpendicular to the look angle 
+of the tile center pixel). And for each tilt, there is a number of longitude
+rotations. The sampling strategy follows the one used in Affine SIFT technique
+to simulate all affine transforms between two images:
+Guoshen Yu, and Jean-Michel Morel, ASIFT: An Algorithm for Fully Affine 
+Invariant Comparison, Image Processing On Line, 1 (2011), pp. 11-38. 
+https://doi.org/10.5201/ipol.2011.my-asift
+It is important to keep <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#multi_num">MULTI_NUM</A> number as low as possible for two reasons:
+- Processing time will increase significantly with each increase of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#multi_num">MULTI_NUM</A>.
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#multi_num">MULTI_NUM</A>=3 corresponds to 18 planes and MULTI_NUM=5 to 56 planes.
+- The more planes, the higher chance of approximating the surface correctly,
+but it also increases the possible solution space, and because of imperfect
+images, geometries, processing, etc, we augment the chance of wrong matches. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="level_plane"><H3>LEVEL_PLANE</H3></A><pre>
+If ON, the level (horizontal) plane will be added to the list of planes used in
+the program. This is because for in-situ images, the horizontal plane is 
+frequently a very good approximation of part of the image topography. This 
+addition will be irrespective of the use of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#multi_plane">MULTI_PLANE</A>. If MULTI-PLANE is not 
+activated, 2 planes will therefore be used. The plane defined by <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#planenorm">PLANENORM</A> (if 
+defined, or the plane normal to the tile pixel center look otherwise) and the 
+horizontal plane. If user define <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#planenorm">PLANENORM</A> as the horizontal plane, then it 
+won't be added as it is the same.
+WARNING: The horizontal plane is defined as the plane whose normal is (0,0,,-1).
+So, it is required that the CS used is compliant with this. This is not great,
+and it should be agnostic of the CS used. To be corrected eventually.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="shift_epi"><H3>SHIFT_EPI</H3></A><pre>
+In theory, a pixel in the left image has its corresponding pixel in the right
+image on the epipolar curve corresponding to that left pixel. However, 
+imperfection in camera model and relative camera orientation accuracy,
+the corresponding pixel could be some pixels away from the epipolar curve
+(can be few tens of pixels in some situations). So, searching only along the
+epipolar curve is not enough and the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#search">search</A> space must be enlarged to search
+the area around the epipolar curve (set with <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#search">SEARCH</A>). A large SEARCH is a 
+strong driver in the total processing time. In a normal process, the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#search">SEARCH</A>
+must be sized to be at least a bit larger than the epipolar offset. However, 
+the pyramidal approach could be leveraged to reduce the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#search">search</A> space. A given
+offset in the full resolution image is divided by 2 in the next pyramid level, 
+and by 4 for the next one and so forth. If SHIFT_PIXEL is activated, the average
+epipolar offset measured at a given pyramid level is accounted for in the
+next pyramid level. Doing so, the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#search">SEARCH</A> now should be sized according to what
+the offset would be at the lowest pyramid level.
+This parameter has no effect if <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#run_pyr">RUN_PYR</A> is disabled.
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ewa"><H3>EWA</H3></A><pre>
+Activate <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#ewa">ewa</A> resampler to be used if necessary on the left and right images, or
+on either one of them, or none.
+ 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ewa_threshold"><H3>EWA_THRESHOLD</H3></A><pre>
+Set the threshold on the change of scale above which the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#ewa">EWA</A> resampler will be
+used. The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#ewa">ewa</A> resampler is a more complex and more time consuming process than 
+the standard bicubic interpolator. But it is more versatile. Mostly because it 
+accounts for any low-pass prefiltering that could be needed. For instance, if 
+the right image, once projected on the left, loose its native resolution by a
+factor of 2 (scale of 2), a sort of minification, then resampling the right 
+image to the left image requires a lowpass prefilter before interpolating the 
+value. The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#ewa">ewa</A> does this automatically, but the bicubic don't. So ewa should be
+used. However, what if the scale is 1.1? In theory, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#ewa">ewa</A> should be used, but in
+practice the scale amplitude is so small compared to 1 than a bicubic would 
+provide good result too without the time penalty of a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#ewa">ewa</A>. <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#ewa_threshold">EWA_THRESHOLD</A> set 
+the scale limit at which the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#ewa">ewa</A> kicks in. Default is set to 1.2. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="kewa_sigma"><H3>KEWA_SIGMA</H3></A><pre>
+Definition of the Gaussian kernel profile lookup table for use in <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#ewa">ewa</A> resampler.
+Defines the sigma of the Gaussian profile. Should rarely, if any, be changed.
+Mostly here to avoid hard coded values.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="kewa_nsigma"><H3>KEWA_NSIGMA</H3></A><pre>
+Definition of the Gaussian kernel profile lookup table for use in <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#ewa">ewa</A> resampler.
+Defines the number of sigmas of the Gaussian profile. Should rarely, if any, be
+changed. Mostly here to avoid hard coded values.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="kewa_nsamples"><H3>KEWA_NSAMPLES</H3></A><pre>
+Definition of the Gaussian kernel profile lookup table for use in <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#ewa">ewa</A> resampler.
+Defines the number of samples per sigma.Should rarely, if any, be changed. Mostly 
+here to avoid hard coded values.
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="navtable"><H3>NAVTABLE</H3></A><pre>
+Corrected navigation filename.
+If marsnav was run on the input images it created a table of corrected
+pointing parameters. If you refer to this table using <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#navtable">NAVTABLE</A> it
+will override the pointing parameters (e.g. azimuth and elevation) in the
+picture labels, giving you a better registered output.
+
+ 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="config_path"><H3>CONFIG_PATH</H3></A><pre>
+A colon-separated list of directories in which to look for configuration
+and calibration files.  Environment variables are allowed in the list
+(and may themselves contain colon-separated lists).  The directories are
+searched in order for each config/cal file when it is loaded.  This allows
+multiple projectes to be supported simultaneously, and allows the user to
+override any given config/cal file.  Note that the directory structure below
+the directories specified in this path must match what the project expects.
+For example, Mars 98 expects flat fields to be in a subdirectory named
+"flat_fields" while Mars Pathfinder expects them to be directly in the
+directory specified by the path (i.e. no intermediate subdirectories).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="match_method"><H3>MATCH_METHOD</H3></A><pre>
+Specifies a method for pointing corrections.
+
+Loose method matchs with pointing parameters of the image.
+Tight method matchs with unique id of the image.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="match_tol"><H3>MATCH_TOL</H3></A><pre>
+Tolerance value for matching pointing parameters in the pointing corrections file.
+Used if <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#match_method">MATCH_METHOD</A>=LOOSE
+Default value is pretty arbitrary, though seems to work well so far....
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="point_method"><H3>POINT_METHOD</H3></A><pre>
+Specifies a mission-specific pointing method to use.  Normally this
+parameter is not used, in which case the "default" pointing methods
+are used.  Some missions may have special, or alternate, pointing
+methods available, which are indicated by this string (for example,
+backlash models, using arm joint angles instead of x/y/z/az/el, etc).
+A substring <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#search">search</A> is used, so multiple methods (where that makes sense)
+can be specified by separating the keywords with commas.
+
+Note that nav files created using one pointing method will most likely
+not be compatible with a mosaic created using a different pointing method.
+
+The methods available vary per mission, but some methods available at
+the time of this writing are:
+
+CAHV_FOV: All Missions using CAHV-based camera models.  Valid values are:
+* MIN or INTERSECT:    Aligning stereo-pair cameras produces virtual camera 
+                       with FOV equal to INTERSECTION area of two input 
+	               cameras. (default) As a result, the output image is 
+                       missing,sometimes a significant, (depending on camera 
+                       geometry) part of overlap area between two cameras but 
+                       there are no black areas on the side.  The image data
+	               is stretched in horizontal direction.
+
+* MAX or UNION:        Aligning stereo-pair cameras produces virtual camera 
+                       with FOV equal to UNION area of two input cameras.
+         	       The result is the opposite of the MIN option: 
+                       wide black areas on the side, but the stereo-pair's 
+	               intersection area is preserved.  The image data
+	               is squeezed in horizontal direction.
+
+Note that the above two entries have two names each, which are equivalent
+and it's up to the user to decide which one is more intuitive to him/her.
+
+* LINEAR:              Uses only CAHV vectors and ignores higher order terms 
+                       OR(E) while aligning the cameras.  As a result, this
+                       mode has advantage of best preserving horizontal
+	               aspect ratio.  The features in the image look
+                       similar, scale-wise, to the original.
+
+BACKLASH : Mars 98 SSI only.  Selects a backlash pointing model,
+which adjusts the telemetered azimuth and elevation values based on
+knowledge of the camera's mechanical backlash and the direction the
+motor was travelling when the image was taken.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nosite"><H3>NOSITE</H3></A><pre>
+Disables all label-derived parameters to the Site mechanism which underlies
+coordinate systems.  This forces all sites to be identical, with all rotations
+and offsets set the same.  In the case of MPF or Mars 98, this disables
+the lander quaternion and offset (sets them to identity and 0, respectively).
+This option should not be used with images taken from different vantage
+points (e.g. the spacecraft moved, or mixing a lander and a rover) or
+invalid results will be obtained.  The use of this option invalidates the
+Fixed coordinate frame; any values reported in the Fixed frame will not
+correctly reflect the orientation of the lander/rover.
+
+Obviously, this option should be rarely used; it is intended for when the
+image labels defining the site are invalid or inconsistent.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="omp_on"><H3>OMP_ON</H3></A><pre>
+Turns on or off parallel processing.  The default is on.  The main help
+describes some environment variables that can further control parallel
+processing.  Note that this program uses standard OpenMP (which is built in
+to the gcc/g++ compilers), so further details can be found in the OpenMP
+documentation.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="data_set_name"><H3>DATA_SET_NAME</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#data_set_name">DATA_SET_NAME</A> typically identifies the instrument that acquired the
+data, the target of that instrument, and the processing level of the data.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#data_set_name">DATA_SET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="data_set_id"><H3>DATA_SET_ID</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#data_set_id">DATA_SET_ID</A> value for a given data set or product is constructed
+according to flight project naming conventions.  In most cases the
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#data_set_id">DATA_SET_ID</A> is an abbreviation of the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#data_set_name">DATA_SET_NAME</A>.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#data_set_id">DATA_SET_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="release_id"><H3>RELEASE_ID</H3></A><pre>
+When a data set is released incrementally, such as every three months during
+a mission, the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#release_id">RELEASE_ID</A> is updated each time part of the data set is released.
+For each mission(or host id if multiple spacecrafts), the first release of a data
+set should have a value of "0001".
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#release_id">RELEASE_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="product_id"><H3>PRODUCT_ID</H3></A><pre>
+Specifies a permanent, unique identifier assigned to a data product by
+its producer. Most commonly, it is the filename minus the extension.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#product_id">PRODUCT_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="producer_id"><H3>PRODUCER_ID</H3></A><pre>
+Specifies the unique identifier of an entity associated with the
+production of a data set. This value is copied to the output label,
+property IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#producer_id">PRODUCER_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="producer_inst"><H3>PRODUCER_INST</H3></A><pre>
+Specifies the identity of a university, research center, NASA center or other
+institution associated with the production of a data set.
+This value is copied to the output label, property IDENTIFICATION, keyword
+PRODUCER_INSTITUTION_NAME.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="target_name"><H3>TARGET_NAME</H3></A><pre>
+Specifies a target.  The target may be a planet, satelite, ring, region, feature,
+asteroid or comet.  This value is copied to the output label, property
+IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#target_name">TARGET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="target_type"><H3>TARGET_TYPE</H3></A><pre>
+Specifies the type of a named target. This value is copied to the output
+label, property IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#target_name">TARGET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rsf"><H3>RSF</H3></A><pre>
+Rover State File.  This is a list of filenames to load containing
+Rover State information.  These files contain position and orientation
+information for a rover (or other mobile spacecraft) at various sites.
+They are in XML format.  See the "Rover Motion Counter (RMC) Master File SIS
+"
+for details on these files.
+
+Rover State Files have a priority order.  The files listed first have
+the highest priority.
+
+Environment variables may be used in the list.
+
+For MER, if a directory is specified, then that directory is searched for
+RMC Master files and any found are loaded.  The directory structure and
+filename convention is covered in the RMC SIS.  The directory specified
+is the one containing "master", so if &ltdir&gt is the name specified in the
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#rsf">RSF</A> parameter, the following files will be searched for:
+
+&ltdir&gt/master/<mission>_Master.svf
+&ltdir&gt/master/<mission>_Site_<n>_Master.rvf
+The name of each file loaded is printed to the stdout log for reference.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="debug_rsf"><H3>DEBUG_RSF</H3></A><pre>
+If enabled, this causes the internal database of RMC locations to be
+printed <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#out">out</A> to the stdout log.  This is after the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#rsf">RSF</A> files have been
+loaded and the coordinate systems read from the input label(s).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord"><H3>COORD</H3></A><pre>
+The coordinate system to use for the output camera model.  Also the coordinate
+system used for the actual ray tracing.  Note that the surface model parameters
+are always expressed in the Fixed site, however.
+
+The interpretation of the values is dependent on the mission.  Some
+representative missions are listed here:
+
+Fixed - The Fixed frame (default).  This is the ultimate reference frame
+    (see also <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#fixed_site">FIXED_SITE</A> for rover missions).
+Instrument - The "natural" frame for the instrument (of the first input
+    image).  MPF: Lander or Rover; M98: MVACS; MER: Rover.
+Site - A major Site frame.  For rover missions, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#coord_index">COORD_INDEX</A> specifies which
+    Site frame to use.  Non-rover missions treat this as Fixed.
+Rover - An instance of the Rover frame.  For rover missions, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#coord_index">COORD_INDEX</A>
+    specifies which instance of the rover frame to use.  Non-rover mission
+    use the spacecraft frame (e.g. Lander for M98).
+Local_Level - An instance of a Local Level frame.  This is typically
+    coincident with the Rover frame (in XYZ) but oriented toward North
+    like the Site and Fixed frames.  For MER, this is an instance of a
+    Drive index move.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord_index"><H3>COORD_INDEX</H3></A><pre>
+The index specifies which instance of a coordinate system to use.  It is
+currently applicable only to rover-based missions, but could have other
+uses.  The index is equivalent to the Rover Motion Counter (RMC) for MER
+and FIDO.
+
+For MER/FIDO, there are many Site frames.  Each is numbered with a single
+index.  For Site Frames, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#coord_index">coord_index</A> specifies which to use.  Likewise,
+there are many Local_Level and Rover frames, corresponding to values of
+the RMC.  The multiple instances of this frame are selected by <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#coord_index">COORD_INDEX</A>.
+
+Generally <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#coord_index">COORD_INDEX</A> defaults sensibly so you don't usually need to
+specify it.  It will default to the instance used by the first input.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="fixed_site"><H3>FIXED_SITE</H3></A><pre>
+Specifies which major Site is the "Fixed" Site for this run.
+
+Historically, MPF and M98 had a single "Surface Fixed" frame which never
+moved, and which all other coordinate system frames were referenced to.
+With the advent of long-range rovers (such as MER and FIDO), that became
+insufficient.  The rover traverses far enough that errors in knowledge of
+coordinate system offset and orientation become unacceptable.
+
+For this reason, a system of major Sites was introduced.  Periodically
+during the mission, a Site frame is declared.  This then becomes the
+reference frame for all activities until the next Site is declared.
+References are kept local, and errors don't propogate across Sites.
+
+However, if images from more than one Site are combined together, the
+Site's must be placed relative to each other.  Therefore a single reference
+frame is still needed to combine different sites.
+
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#fixed_site">FIXED_SITE</A> parameter controls which of the major Site frames is
+the reference ("fixed") site for this program run.  This fixed frame
+can vary in different program runs, but is constant throughout one
+execution.
+
+If not specified, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#fixed_site">FIXED_SITE</A> defaults to the minimum Site number (i.e.
+lowest numbered, or earliest chronologically) used in all input images.
+Normally this default is sufficient; rarely must <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#fixed_site">FIXED_SITE</A> be specified.
+
+One or more Rover State Files must usually be specified in order to combine
+image from more than one Site.  These describe the relationship between
+sites.  See the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsecorr_level2.html#rsf">RSF</A> parameter.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="solution_id"><H3>SOLUTION_ID</H3></A><pre>
+Specifies which solution ID to use for pointng corrections.
+
+There are potentially many different definitions for the same coordinate
+system.  These are identified via a unique Solution ID.  If this parameter
+is given, only the specified solution's definition is searched for.
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

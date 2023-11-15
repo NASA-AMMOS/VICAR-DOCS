@@ -1,0 +1,359 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for HORIZON</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon.html">HORIZON</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+A single 1-band grayscale input image. The program works better if the input 
+image is radiometric corrected.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+The output of this program will be a Comma-separated values (CSV) file.
+The length of the output CSV file should always be exactly the the same as
+input image's width. Each integer value in the CSV file represents the
+horizon border's LINE position in that specific SAMP.
+For example:
+  324,325,325,326,327, ... ...
+This means that at column or SAMP 0, the horizon border is at row or LINE 324;
+at column or SAMP 1, the horizon border is at row or LINE 325, and so on. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sh_thresh_min"><H3>SH_THRESH_MIN</H3></A><pre>
+Minimum threshold value for detecting strong horizon borders. The program will
+iteratively search through gradient magnitude image for finding preliminary 
+horizon borders. This parameter defines at what value the search starts. 
+According to the definition of Sobel operator, the pixel intensity range in 
+gradient magnitude image is from 0 to 2.68E+8. See METHOD section for how 
+the range is calculated. In theory, we should choose the minimum value to be 
+0. However, if we do, the program will become very sensitive to weaker horizon 
+borders and the noisy edges mostly present in sky region in the gradient magnitude 
+image. The program should still be able to find the horizon borders, but it 
+requires more computation power to achieve that. In practice, it is unlikely 
+the strong horizon border pixel values in gradient magnitude image will be smaller 
+than 200, so it is set to be 200 by default. Decreasing the threshold value should 
+make the program sensitive to weaker horizon borders. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sh_thresh_max"><H3>SH_THRESH_MAX</H3></A><pre>
+Maximum threshold value for detecting strong horizon borders. Similar to parameter
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#sh_thresh_min">SH_THRESH_MIN</A>, the difference is this parameter defines at what value the search
+ends. According to the definition of Sobel operator, the pixel intensity range in
+gradient magnitude image is from 0 to 2.68E+8. In theory, the maximum value should
+be 2.68E+8. However, for a natural 12-bit image it is unlikely the intensity 
+difference will reach 4096, which means the searching process is also unlikey
+will reach 2.68E+8. In practice, almost all the times, the program finds the optimal 
+solution when <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#sh_thresh_max">SH_THRESH_MAX</A> &lt 1000, so the default is set to be 1000. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sh_sif"><H3>SH_SIF</H3></A><pre>
+Strong horizon search incremental factor. This parameter should be used together with
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#sh_thresh_min">SH_THRESH_MIN</A> and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#sh_thresh_max">SH_THRESH_MAX</A> to be meaningful. The program will iteratively search
+through gradient magnitude image for finding preliminary horizon borders. It defines
+the sampling step from <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#sh_thresh_min">SH_THRESH_MIN</A> to <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#sh_thresh_max">SH_THRESH_MAX</A>. Considering the balance between
+search precision and computational complexity, the default is set to be 50. Increase
+the value of this parameter should cause seach precision and computational complexity
+to decrease. Decrease the value of this parameter should cause search precision and
+computational complexity to increase.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="wh_thresh_min"><H3>WH_THRESH_MIN</H3></A><pre>
+Minimum threshold value for detecting weak horizon borders. Similar to <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#sh_thresh_min">SH_THRESH_MIN</A>.
+The difference is this parameter is used to find weak horzion borders. Weak horizon
+borders will be represented as weaker edges in gradient magnitude image. This parameter
+should be set to a little bigger than 0. Doing so will make the program sensitive
+enough to find weak edges. Addtional processes are enabled to exculde noisy edges when 
+detecting weak horizon borders. See METHOD section for details.
+ 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="wh_thresh_max"><H3>WH_THRESH_MAX</H3></A><pre>
+Maximum threshold value for detecting weak horizon borders. Similar to <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#sh_thresh_max">SH_THRESH_MAX</A>.
+The difference is this parameter is used to find weak horzion borders. This parameter
+is usually set to equal to or a little smaller than <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#sh_thresh_min">SH_THRESH_MIN</A>.  
+ 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="wh_sif"><H3>WH_SIF</H3></A><pre>
+Weak horizon search incremental factor. Similar to <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#sh_sif">SH_SIF</A>. This parameter should be 
+set to smaller than <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#sh_sif">SH_SIF</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="outlier_thresh"><H3>OUTLIER_THRESH</H3></A><pre>
+If the position a horizon border is vertically away its N immediate neighbors by the 
+value of this parameter in pixels, the horizon border will be classified as an outlier. 
+This parameter is used in outliers and weak horizon borders detection and refinement 
+step.
+ 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="outlier_sif"><H3>OUTLIER_SIF</H3></A><pre>
+Outlier search interval factor. This parameter defines how many immediate neighbors 
+in one direction to be used for calculating the average to compare with the target 
+horizon border. The total number of neighboring pixels to be used is 2 times this
+parameter.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="wh_mag_thresh"><H3>WH_MAG_THRESH</H3></A><pre>
+Gradient magnitude image weak horizon borders threshold value. This parameter is used 
+for detecting the presence of weak horizon borders. If the current pixel value in
+gradient magnitude image is greater than the average of the current pixel column by 
+the value of this parameter. The current pixel will temporarily be marked as possible
+weak horizon border for further verification. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="wh_dir_thresh"><H3>WH_DIR_THRESH</H3></A><pre>
+Gradient direction image weak horizon borders threshold value. This parameter is used 
+for verifying if a temporary weak horizon border previously marked using parameter 
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#wh_mag_thresh">WH_MAG_THRESH</A> is a true weak horizon border. For a temporary weak horizon border previously
+marked using parameter <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#wh_mag_thresh">WH_MAG_THRESH</A>, if the absolute difference between the temporary weak 
+horizon border and 1/3 of its neighboring pixels' direction defined in a N x N space is 
+within the range of -<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#wh_dir_thresh">WH_DIR_THRESH</A> to WH_DIR_THRESH, then the temporary weak horizon border
+will be classified as true weak horizon border.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="wh_dir_sif"><H3>WH_DIR_SIF</H3></A><pre>
+Gradient direction image weak horizon searching interval factor. This parameter is 
+used to define a N x N search space for identifying a possible weak horizon border.
+In general, this parameter shouldn't be changed very often. It is provided to handle
+some extreme situations. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="wh_iter_max"><H3>WH_ITER_MAX</H3></A><pre>
+Maximum iterations to search for outliers and weak horizon borders. Outliers and weak 
+horizon borders detection and refinement is a iterative process. The pamameter defines 
+the maximum iterations the program will detect and refine ourliers and weak horizon 
+borders. The maximum iteration cannot exceed 30. If it exceeds 30, it will be reset to
+be 30 in the program. If this parameter is set to 0, then the outliers and weak horizon
+borders detection and refinement process will be turned off.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="baa_thresh"><H3>BAA_THRESH</H3></A><pre>
+Border average acceptance threshold value. This parameter is used together with 
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#bar_thresh">BAR_THRESH</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#bp_factor">BP_FACTOR</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baada_thresh">BAADA_THRESH</A>, and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baadr_thresh">BAADR_THRESH</A> to remove outliers and
+columns without sky region. Please see the algorithm described in METHOD section
+for how to use this parameter.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="bar_thresh"><H3>BAR_THRESH</H3></A><pre>
+Border average rejection threshold value. This parameter is used together with 
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baa_thresh">BAA_THRESH</A>, BP_THRESH, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baada_thresh">BAADA_THRESH</A>, and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baadr_thresh">BAADR_THRESH</A> to remove outliers and 
+columns without sky region. Please see the algorithm described in METHOD section
+for how to use this parameter.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="bp_factor"><H3>BP_FACTOR</H3></A><pre>
+Border partition factor. This parameter is used together with <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baa_thresh">BAA_THRESH</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#bar_thresh">BAR_THRESH</A>,
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baada_thresh">BAADA_THRESH</A>, and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baadr_thresh">BAADR_THRESH</A> to remove outliers and columns without sky region.
+The program provides the option to remove outliers and columns without sky region 
+using the horizon borders as a whole. The program also provides the option to
+first cut the horizon borders into parts, and then remove outliers and columns without
+sky region. This parameter indicates how many parts to cut the horizon borders.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="baada_thresh"><H3>BAADA_THRESH</H3></A><pre>
+Border average of absolute difference acceptance threshold value. This parameter is 
+used together with <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baa_thresh">BAA_THRESH</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#bar_thresh">BAR_THRESH</A>, BP_THRESH, and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baadr_thresh">BAADR_THRESH</A> to remove 
+outliers and columns without sky region. Please see the algorithm described in 
+METHOD section for how to use this parameter.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="baadr_thresh"><H3>BAADR_THRESH</H3></A><pre>
+Border average of absolute difference rejection threshold value. This parameter is used
+together with <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baa_thresh">BAA_THRESH</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#bar_thresh">BAR_THRESH</A>, BP_THRESH, and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#baada_thresh">BAADA_THRESH</A> to remove outliers
+and columns without sky region. Please see the algorithm described in METHOD section
+for how to use this parameter.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="smooth_img"><H3>SMOOTH_IMG</H3></A><pre>
+Optional output for smoothed image. The size of the smoothed image will be slightly 
+smaller than the original image depending on the size of filter window is used. 
+The width and height of the smoothed image output is given by the two equation below:
+
+  smoothed_image_width = original_image_width - 2 * floor(<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#filter_size">filter_size</A> / 2)
+  smoothed_image_height = original_image_height - 2 * floor(<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/horizon_level2.html#filter_size">filter_size</A> / 2) 
+
+After applying the smoothing filter on the original image, the smoothed image has the 
+same width and height compared to the original image, but the pixel values of the borders 
+of the smoothed image will not be accurate. Instead of keeping the inaccurate pixel values,
+the program will cut the borders.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="gm_img"><H3>GM_IMG</H3></A><pre>
+Optional output for gradient magnitude image. Gradient magnitude image is calculated using 
+Sobel operator. For detailed calculation, please see METHOD section. Gradient magnitude 
+image provides analytical and other useful information. It is recommanded to output the 
+gradient magnitude image, especially when tweaking the parameters. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="gd_img"><H3>GD_IMG</H3></A><pre>
+Optional output for gradient direction image. Gradient direction image is calculated using 
+Sobel operator. For detailed calculation, please see METHOD section. Gradient direction 
+image is used when identifying whether a pixel or a group of pixels is weak horizon 
+border(s) or noise. It is recommaned to output the gradient direction image, especially 
+when tweaking the parameters.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ql_img"><H3>QL_IMG</H3></A><pre>
+Optional output for horizon borders overlay on top of the original image served for quick 
+look purpose. The final horizon borders will be assigned with DN value 10000, and the
+preliminary horizon borders ill be assigned with DN value -10000. It is highly recommanded
+to output the quick look image.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="filter_size"><H3>FILTER_SIZE</H3></A><pre>
+The smoothing filter size in pixels. The minimum filter size allowed in this program is
+3 x 3. Filter size significantly affects the program's execution time. The computational
+complexity of applying a smoothing filter to an image is O(MNC^2), where C is the filter 
+size, M is the image width, and N is the image height. Filter size should be defined based 
+on the size of noises. In general, if the noise size is 3 x 3, then a filter size of 
+7 x 7 should be effective to blend them.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="filter_type"><H3>FILTER_TYPE</H3></A><pre>
+The smoothing filter type. Three filter types are provided in this program. They are
+MIN, MAX, and MEDIAN. MIN filter is usually used to blend salt noise. MAX filter is 
+usually used to blend pepper noise. MEDIAN filter is usually used to blend salt-and-pepper
+noise.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="trimtop"><H3>TRIMTOP</H3></A><pre>
+Number of line(s) to cut from the upper border of the input image. If this parameter is 
+set to 0, then nothing will be cutted. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="trimbot"><H3>TRIMBOT</H3></A><pre>
+Number of line(s) to cut from the lower border of the input image. If this parameter is
+set to 0, then nothing will be cutted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="trimleft"><H3>TRIMLEFT</H3></A><pre>
+Number of sample(s) to cut from the left border of the input image. If this parameter is
+set to 0, then nothing will be cutted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="trimright"><H3>TRIMRIGHT</H3></A><pre>
+Number of sample(s) to cut from the right border of the input image. If this parameter is
+set to 0, then nothing will be cutted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="trim_img"><H3>TRIM_IMG</H3></A><pre>
+Optional output for image with borders trimmed.  
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

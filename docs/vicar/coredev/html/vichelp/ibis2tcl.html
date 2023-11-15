@@ -1,0 +1,122 @@
+<HTML>
+<HEAD><title>HTML Help for IBIS2TCL</title></HEAD>
+<BODY>
+<H1>Help for IBIS2TCL</H1>
+<pre>
+PURPOSE
+
+     "IBIS2TCL" transfers particular values specified by row and
+column from an IBIS interface file to TCL variables.   The values
+may be transfered in double, real, integer, or character (string) format.
+The number of columns and column length may also be transfered 
+to TCL variables.  Whereas the IBIS-1 strings were four characters
+long, IBIS-2 character strings are allowed to be up to eighty (80)
+characters long.
+
+
+EXECUTION
+
+  ibis2tcl  FILE.INT  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#v1">V1</A>=LAT <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#v2">V2</A>=LONG <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#v3">V3</A>=LABEL <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#v4">V4</A>=COUNT    			<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#ibisloc">IBISLOC</A>=(1,1, 4,3, 2,2, 4,5)  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#vartype">VARTYPE</A>=(0,0,2,1)
+
+In this example, the input interface file is FILE.INT.  The real values at
+(row 1 , col 1) and (row 4 , col 3) in the interface file are put into the
+real TCL variables LAT and LONG, respectively.  The character data at (2,2)
+is transfered to the LABEL string variable, and the integer format data
+at (4,5) is transfered to the COUNT integer variable.
+The TCL variable names are entered with the name parameters <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#v1">V1</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#v2">V2</A>, ... , <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#v25">V25</A>.  
+The variable names can also be entered positionally and real data types
+assumed:
+
+  ibis2tcl  FILE.INT  LAT LONG   <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#ibisloc">IBISLOC</A>=(5,6,2,1)
+
+
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#ibisloc">IBISLOC</A> can be defaulted in which case the assumed locations start with the
+first row and column and continue with all the elements in each row for as
+many rows as required to get <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#varcnt">VARCNT</A> elements:
+
+  ibis2tcl  FILE.INT  A B C D E F  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#varcnt">VARCNT</A>=6
+
+The number of values put in TCL variables is equal to the number of locations
+specified by <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#ibisloc">IBISLOC</A> or is specified by <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#varcnt">VARCNT</A> if IBISLOC is defaulted;
+there should be enough variables listed to accommodate that many.  If the
+locations are defaulted then <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#varcnt">VARCNT</A> must be specified.
+
+
+The number of columns and/or the length of the columns in the interface
+file can be transfered to TCL integer variables.  Values in the interface
+file can be transfered as well.
+
+  ibis2tcl FILE.INT  LABEL  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#ibisloc">IBISLOC</A>=(6,1) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#vartype">VARTYPE</A>=2  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#vncol">VNCOL</A>=NCOL  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#vclen">VCLEN</A>=CLEN
+  ibis2tcl FILE.INT  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#vclen">VCLEN</A>=CLEN
+
+
+
+
+The following procedure is an example of its use:
+
+PROCEDURE
+  LOCAL LAT   TYPE=REAL
+  LOCAL LONG  TYPE=REAL
+  LOCAL LABEL TYPE=(STRING,4)  !4 for IBIS-1, up to 80 for IBIS-2
+  LOCAL CLEN  TYPE=INTEGER
+BODY
+  ibis2tcl  FILE.INT  LAT LONG LABEL    <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#ibisloc">IBISLOC</A>=(1,1,4,3,2,2)     					<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#vartype">VARTYPE</A>=(0,0,2)  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#vclen">VCLEN</A>=CLEN
+  write "LAT = &LAT    LONG = &LONG "
+  write "LABEL = &LABEL"
+  write "COLUMN LENGTH = &CLEN"
+END-PROC
+
+
+
+
+
+RESTRICTIONS
+
+The TCL variable types must match the type specified with the
+    <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#vartype">VARTYPE</A> parameter.
+The TCL variables for the number of columns and the column length 
+    must be of integer type.
+The maximum number of TCL variables allowed per execution is 25.
+The interface file cannot have more than 1,000,000 rows or 200 columns.
+
+
+
+ WRITTEN BY:		K.F. Evans	June 1985
+
+<A NAME="CogProg"> COGNIZANT PROGRAMMER:  B.A. McGuffie</A>
+
+ REVISION:	3		April 1986
+                4 AMS  (CRI)    Jan.  1995  Made portable for UNIX
+                                            and added IBIS-2 capabilities
+                5 BAM           June  1998  Increased columns; corrected pdf.
+                6 BAM           Dec.  1998  Allowed for double precision.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#inp"><H3>INP</H3></A>
+ Input interface file
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#v1"><H3>V1</H3></A>
+The first TCL variable name, etc
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#ibisloc"><H3>IBISLOC</H3></A>
+The IBIS rows and columns 
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#varcnt"><H3>VARCNT</H3></A>
+The number of variables
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#vartype"><H3>VARTYPE</H3></A>
+The type for each variable
+-1 for double precision,
+0 for real, 
+1 for integer,
+2 for character string,
+3 for real to integer conversion
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#vncol"><H3>VNCOL</H3></A>
+The TCL variable name
+to get the number of columns
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl_level2.html#vclen"><H3>VCLEN</H3></A>
+The TCL variable name
+to get the column length
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/ibis2tcl.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

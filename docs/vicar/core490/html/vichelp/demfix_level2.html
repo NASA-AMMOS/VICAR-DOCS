@@ -1,0 +1,60 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for DEMFIX</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/demfix.html">DEMFIX</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+The primary DEM is the one to be fixed.  Holes in the data are represented
+by values less than or equal to the parameter <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/demfix_level2.html#thresh">THRESH</A>.
+
+The secondary DEM is used to supply values to fill the holes in the 
+primary DEM.  Several adjustments are done to fit the correction to the
+hole:
+     1.  The patch is "boosted" by the average of the difference of edge
+         pixels around the hole.
+     2.  The boosted patch is adjusted by the residual differences of
+         edge pixels around the hole.  All the residuals are weighted 
+         by 1.0/distance-squared from each pixel in the hole so the
+         patch will smoothly meet the primary DEM at all of the edges.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="demfac"><H3>DEMFAC</H3></A><pre>
+If the primary image has pixel values representing .1 meter and the
+secondary is in meters use <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/demfix_level2.html#demfac">demfac</A>=10.0 to correct the values going
+from the secondary to the primary.
+
+Note that an offset (different values for sea level in the two images)
+would have no effect  on this algorithm since the second image patch is 
+"boosted" to agree with the primary image according to overlapping
+pixels.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="pow"><H3>POW</H3></A><pre>
+The value 2 gives 1/distance-squared interpolation on edge pixels around
+the hole.  This means that the residual differences between the primary
+and secondary DEM's are interpolated to each filled (hole) pixel with a
+weight of one over the distance squared (distance between the hole pixel
+and the edge pixel).
+
+The value 1 gives one over distance interpolation.  
+
+Values between .05 and 3.0 are allowed.  The default value is 2.0.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="edgetype"><H3>EDGETYPE</H3></A><pre>
+Use this if your DEM has bad pixels on the edge.  For example some
+SRTM images have changes of 1000 meters in one pixel at the edge.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

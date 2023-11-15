@@ -1,0 +1,125 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for MARK</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/mark.html">MARK</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+
+     <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/mark_level2.html#inp">INP</A>=PIC
+ or  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/mark_level2.html#inp">INP</A>=(PIC,LOC)
+
+ The primary input image (PIC) will be reproduced as the output image
+ with scribed rectangles.  The maximum image width is 2048 samples.
+
+ The optional secondary input (LOC) is used to specify the pixel locations to
+ be scribed inside rectangles.  Each record of LOC should contain a list of
+ line-sample coordinates (L,S) in REAL <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/mark_level2.html#data">data</A> format (single precision floating
+ point) as follows:
+
+   L1,S1,L2,S2,L3,S3,...
+
+ A maximum of 900 pixel locations may be input.  
+
+ In certain applications (e.g. TRACKER3) the matching pixel locations from
+ pairs of images (tiepoints) may be interleaved in LOC:
+
+    L1,S1,U1,V1,L2,S2,U2,V2,L3,S3,U3,V3,....
+
+ If the keyword 'ODD_ONLY is specified, then pixel coordinates (L1,S1), (L2,S2),
+ (L3,S3),... are used.
+
+ If the keyword 'EVENONLY is specified, then pixel coordinates (U1,V1), (U2,V2),
+ (U3,V3),... are used.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+ The output image will contain the input with scribed rectangles.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sl"><H3>SL</H3></A><pre>
+ INTEGER-OPTIONAL
+ Starting line.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ss"><H3>SS</H3></A><pre>
+ INTEGER-OPTIONAL
+ Starting sample.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nl"><H3>NL</H3></A><pre>
+ INTEGER-OPTIONAL
+ Number of lines.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ns"><H3>NS</H3></A><pre>
+ INTEGER-OPTIONAL
+ Number of samples.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="boxsize"><H3>BOXSIZE</H3></A><pre>
+ TYPE=INTEGER
+
+ The interior dimensions of the rectangles.
+ The exact dimensions depend on the fractional location of the 
+ rectangle center and wither the box is an odd or even number of
+ pixels:
+         FRACTIONAL PART=F        <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/mark_level2.html#size">SIZE</A>=N         CENTERS
+                                 ODD  EVEN    LINE    SAMPLE
+        0.0 .LE. F .LT. .25      N    N-1      L        S   
+        .25 .LE. F .LT. .25      N-1  N        L+1/2    S+1/2
+        .75 .LE. F .LT. 1.0      N    N-1      L+1      S+1
+
+ The maximum <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/mark_level2.html#boxsize">boxsize</A> is 30 x 30 samples. Default is BOXSIZE=8.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="data"><H3>DATA</H3></A><pre>
+
+	<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/mark_level2.html#data">DATA</A>=(l1,s2,l2,s2,l3,s3,...)
+
+ The center locations of rectangles to be scribed specified as (line,samp)
+ pairs of floating point numbers.   A maximum of 500 locations can be input.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="maxdn"><H3>MAXDN</H3></A><pre>
+
+	<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/mark_level2.html#maxdn">MAXDN</A> = 3000
+
+ The DN value of the scribed rectangle will be 0 or <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/mark_level2.html#maxdn">MAXDN</A>, depending upon
+ whether the mean value of the pixels on the perimeter are greater than or
+ less than <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/mark_level2.html#maxdn">MAXDN</A>/2, respectively.  Default MAXDN=255 for byte <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/mark_level2.html#data">data</A> and
+ 511 for halfword <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/mark_level2.html#data">data</A>.
+
+ Note the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/mark_level2.html#maxdn">MAXDN</A> parameter is useful primarily for halfword <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/mark_level2.html#data">data</A> since the
+ default is only appropriate for old Mariner missions which returned 9 bit <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/mark_level2.html#data">data</A>.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

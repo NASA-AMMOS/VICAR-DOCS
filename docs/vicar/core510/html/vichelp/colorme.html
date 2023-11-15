@@ -1,0 +1,111 @@
+<HTML>
+<HEAD><title>HTML Help for COLORME</title></HEAD>
+<BODY>
+<H1>Help for COLORME</H1>
+<pre>
+PURPOSE:
+To convert uncalibrated rgb images into rgb images whose mean color is 
+specified via a parameter.
+
+EXECUTION:
+typically:
+colorme <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#inp">inp</A>=(r,g,b) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#out">out</A>=(ro,go,bo) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#device">device</A>=alps <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#monitor">monitor</A>=left <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#xyy">xyy</A>=(.44,.4,35.)
+or:
+colorme <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#inp">inp</A>=(r,b) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#out">out</A>=(ro,go,bo) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#device">device</A>=alps <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#monitor">monitor</A>=left <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#xyy">xyy</A>=(.44,.4,35.)
+or:
+colorme <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#inp">inp</A>=(g) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#out">out</A>=(ro,go,bo) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#device">device</A>=alps <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#monitor">monitor</A>=left <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#xyy">xyy</A>=(.44,.4,35.)
+
+WARNING:
+The program lists the number of saturations. Every saturated pixel
+is adjusted down in intensity to preserve the initial color balance.
+To avoid this reduce the target Y tristimulus value (the
+third value you specified with the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#xyy">XYY</A> keyword) and try it again.
+Y represents the scene brightness. 
+
+
+METHOD:
+   The program first computes the mean input rgb values above zero.
+It then computes the target rgb values which resulted from the 
+desired parameter <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#xyy">xyY</A> color for the specified <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#device">device</A>.
+It then computes linear factors mapping the input dn's to the output such
+that the mean input rgb's map to the target rgb's.
+
+   The program reads in a calibration file for the specified <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#device">device</A>. This is 
+an ascii file with data in records like this:
+STEP#                Yn      x       y       R-DN    G-DN    B-DN
+1               0.122616  0.278170  0.298730   0.0   0.0   0.0
+2               1.267030  0.595390  0.329050  64.0   0.0   0.0
+3               5.354223  0.627000  0.332000  128.0   0.0   0.0
+4               12.874659  0.632610  0.333000  192.0   0.0   0.0
+
+The first 3 records are skipped by the program so the first record read is:
+1               0.122616  0.278170  0.298730   0.0   0.0   0.0
+
+These correspond to a calibration giving the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#xyy">xyY</A> values for a data cube of
+all combinations of rgb dn values in some coarse interval like 32 or 64
+dn steps. The file must end with a .2
+
+   The method used is to create a 40 by 40 by 40 cube in Luv coordinates
+spanning the range of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#xyy">xyY</A> values in the calibration file. Each input pixel
+in <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#xyy">xyY</A> is converted to Luv space and compared with the cube to see if
+a mapping polynomial exists there. If it exists then the Luv value is
+converted to rgb using the polynomial.
+r=AL+Bu+Cv+D
+g=EL+Fu+Gv+H
+b=IL+Ju+Kv+M
+If no polynomial exists it is computed and stored into the cube.
+Equations (as above) are solved by least squares using the 8 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#nearest">nearest</A> Luv
+points (in the cube, one in each octant) to the cube coordinate.
+
+Note:
+This is not rigorous color processing. It is to be used when you don't know
+anything but the average color of the result.
+
+HISTORY:
+6-30-96  J Lorre. 
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Jean Lorre</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#inp"><H3>INP</H3></A>
+1-3 input images
+ordered as r g b.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#out"><H3>OUT</H3></A>
+3 Output images
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#device"><H3>DEVICE</H3></A>
+Output <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#device">device</A> name
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#path"><H3>PATH</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#path">Path</A> name for 
+calibration files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#monitor"><H3>MONITOR</H3></A>
+Whether the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#monitor">monitor</A> is
+left or right.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#nearest"><H3>NEAREST</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#nearest">Nearest</A> # points
+for fitting
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#thresh"><H3>THRESH</H3></A>
+Threshold for computing
+mean input dn's.
+dn_in &gt <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#thresh">thresh</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#xyy"><H3>XYY</H3></A>
+target output color.
+x is x chromaticity.
+y is y chromaticity.
+Y is Luminance Y
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme_level2.html#area"><H3>AREA</H3></A>
+size field from which
+to compute histogram
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/colorme.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

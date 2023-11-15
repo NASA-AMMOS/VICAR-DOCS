@@ -1,0 +1,719 @@
+<HTML>
+<HEAD><title>HTML Help for PHOTFUNC</title></HEAD>
+<BODY>
+<H1>Help for PHOTFUNC</H1>
+<pre>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#purpose">PURPOSE</A>:
+
+PHOTFUNC corrects an <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> for spatial variations in apparent brightness caused
+by illumination and viewing geometry.  This variation, known as the photometric
+function, is removed to enable comparison of albedo differences on the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A>
+surface.  In addition, the brightness correction enables the generation of
+mosaics free from brightness differences along the edges of mosaic elements.
+
+EXECUTION:
+
+    PHOTFUNC <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#inp">INP</A>=(INIMG[,GEOMA][,GRID][,CMAP]) [<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#out">OUT</A>=OUTIMG]  user-parameters...
+
+  where: INIMG and OUTIMG are the input and output images,
+         GEOMA is a geometric correction parameter file,
+         GRID is a PHOTFIT grid file,
+         CMAP is a classification map (see STATS, FASTCLAS),
+	 [] brackets denote optional values.
+
+Note: The grid input is currently deactivated (PHOTFIT is obsolete.
+      See PHOTFIT2 and PHOTOM)
+
+OPERATION:  PHOTFUNC can be used on virtually any <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> of a planet or
+satellite, provided that the projection and lighting geometry are known.
+The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> may be a raw flight image (image <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">space</A>), one that has been corrected
+for geometric distortions (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#object">object</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">space</A>), or one that has been map projected.
+The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> may be arbitrarily large and of any data format.
+
+The projection and lighting geometry is normally obtained by via the SPICE
+server or from the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> label.  Alternatively, these may be provided via
+parameters.
+
+Because the computations can be fairly expensive, the function is computed
+exactly for a grid of points spaced m samples and n lines apart (see <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sinc">SINC</A>,
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#linc">LINC</A>, and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#incr">INCR</A> parameters).  For intermediate points within the grid, the
+function is computed using bilinear interpolation.  Note that with increasingly
+faster computers, the need for the interpolation is rapidly diminishing.  Use
+the '<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#nointerp">NOINTERP</A> keyword to force exact computations at each pixel.
+
+PHOTFUNC can also operate in a second mode, in which no photometric 
+correction is performed, but information relating to the illumination 
+geometry and photometry is calculated and printed (see <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#nocorrec">NOCORREC</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#print">PRINT</A>
+parameters).
+
+Further information is given under the following headings below:
+
+  THE PHOTOMETRIC FUNCTION
+  PROJECTION AND LIGHTING GEOMETRY
+  GEOMETRIC DISTORTIONS
+  COMPUTING THE OM MATRIX
+  COMPUTING THE LIGHTING ANGLES
+  INTERPOLATION ALGORITHM
+  CLASSIFICATION MAP OPTION
+<A NAME="examples">  EXAMPLES</A>
+
+THE PHOTOMETRIC FUNCTION:  A model of the intrinsic reflectivity of a surface
+is called a Photometric Function F:
+		
+	F(I,E,G,w,...) = B/J
+where:
+	B	is the observed reflected surface brightness,
+	J	is the brightness incident on the surface,
+	I	is the angle of incidence (i.e., of the sun),
+	E	is the angle of emission (i.e., of the observer),
+	G	is the phase, 
+	w	is the albedo of surface particles, and
+	...	denotes any other quantities which may contribute to the 
+                functional relationship of B/J.
+(See also HELP PHOTFIT2.)
+
+PHOTFUNC uses such a model to correct the observed brightness to the
+normalized brightness, B0, which is the brightness that would be 
+observed with normal (90-degree) illumination and viewing angle
+(I = E = G = 0).  Thus:
+
+	B0/J = F(0,0,0,w,...)
+
+and the correction factor f = B/B0 can be computed by dividing the above 
+equations.  Then the apparent brightness B in the input picture is divided
+by f in order to obtain an estimate of the normalized brightness B0 in the 
+output picture. 
+
+Currently, PHOTFUNC supports eight models for F:
+  the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#minnaert">Minnaert</A> function:  F=B0*(COS(I)**k*COS(E)**(k-1),
+    (the Lambert function is equivalent to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#minnaert">Minnaert</A> for k=1)
+  three <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#hapke">Hapke</A> functions (1978 version, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#cook">Cook</A> modification, and 1984 version),
+  the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#veverka">Veverka</A> function, and
+  the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#mosher">Mosher</A> function (a variant of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#veverka">Veverka</A> function).
+  the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#buratti">Buratti</A>-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#veverka">Veverka</A> function.
+  the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#irvine">Irvine</A> function.
+See parameters <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#minnaert">MINNAERT</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#hapke">HAPKE</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#cook">COOK</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#veverka">VEVERKA</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#buratti">BURATTI</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#mosher">MOSHER</A>, and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#irvine">IRVINE</A>.
+
+Since the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#program">program</A> actually only corrects by the normalized factor f, constant
+factors, such as B0 in the first model, drop <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#out">out</A> and they are not needed
+as input to the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#program">program</A>.  (Thus <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#minnaert">Minnaert</A> needs only 1 parameter in PHOTFUNC.)
+
+When the gain introduced by the function is greater than a constant (see
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#maxcor">MAXCOR</A> parameter), no correction is applied.  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#all">All</A> points which are uncorrected
+for any reason (e.g. points off the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A>) are set to ZERO.
+
+Planets also have a systematic brightness variation with <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#solar">solar</A> phase
+angle. Planetary science literature contains the magnitude phase
+coefficients for satellites and planets. Burns (1977) "Planetary
+Satellites" is one good source. If the geometric effects are removed,
+the planet must still be brightened up by a factor obtained from the
+magnitude phase coefficient depending on the phase angle. CAUTION:
+The coefficients quoted in the literature usually refer to the
+integrated disk of the planet. Care must be taken to account for any
+phase defect (if the terminator is in the picture) which effectively
+reduces the planet's area. By dividing the DNs in the picture by a
+factor of (1+COS(G))/2 where G is the phase angle, the phase
+defect can be removed. 
+
+Also it may be necessary to determine the magnitude phase coefficient
+if the picture was taken at a phase angle not previously seen and/or
+different parts of the planet have different coefficients. The
+coefficient can change over a range of phase angles. Callisto is a
+good example. The leading hemisphere has a different coefficient than
+the trailing hemisphere. Callisto's coefficient also changes at about
+50 degrees phase. 
+
+PROJECTION AND LIGHTING GEOMETRY
+
+To remove the photometric function from an <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A>, the projection and
+lighting geometry for the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> must be known.  Under normal circumstances,
+this information is automatically retrieved from the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> label or by
+accessing the SPICE server.  The following description is intended to help
+the user to provide any missing information via parameters.
+
+The projection and lighting information is used to:
+
+(1) relate each pixel in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> to a surface point on the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A> body
+(2) compute the incidence, emission, and phase angles of light reflected off
+    that surface point.
+
+Both of these problems require a model of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A> body.  PHOTFUNC uses a
+tri-axial ellipsoid model defined by the three <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#radii">radii</A> of the ellipsoid (See
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#radii">RADII</A> parameter).
+
+The projection information required depends on whether the input <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> is a
+raw flight <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> or one that has been transformed to a standard map projection.
+
+For raw images, the following information is required (user parameters in
+parenthesis):
+
+  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> constants: <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#focal">focal</A> length, pixel <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#scale">scale</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#line">line</A>-samp coordinates of
+    optical axis intercept (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#focl">FOCL</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#pscale">PSCALE</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#laxis">LAXIS</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#saxis">SAXIS</A>)
+  geometric distortion parameters: see section on GEOMETRIC DISTORTIONS below.
+  spacecraft vector: lat-long coordinates of the spacecraft and it's distance
+    from the center of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A> body (SLAT, SLON, RMAG, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">SPACE</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#rsvector">RSVECTOR</A>).
+  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> pointing direction: transformation matrix from (rotating) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A>-
+    centered coordinates to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A>-centered coordinates (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#ommatrix">OMMATRIX</A>).
+
+For map projected images, the projection geometry is defined by the following:
+
+  type of projection: e.g. orthographic, stereographic, mercator (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#project">PROJECT</A>)
+  picture <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#scale">scale</A> in pixels/km (SCALE)
+  special point <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#line">line</A>-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sample">sample</A> (LINE,SAMPLE)
+  special point lat-long (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#latitude">LATITUDE</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#longitud">LONGITUD</A>)
+  special parallels (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#par1">PAR1</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#par2">PAR2</A>) for Lambert projection only
+
+The special point is different for each projection.  See <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#program">program</A> MAP3 for a
+description of the above parameters.
+
+The lighting geometry for the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> is defined by:
+
+  spacecraft vector: same as above
+  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#solar">solar</A> vector: lat-long coordinates of the sun (SOLAR).
+
+The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#program">program</A> first determines whether the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> has been map projected by
+scanning for a map label (see programs MAP3, MAPTRANS).  The required projection
+geometry is normally provided in this map label.  However, the map label
+currently does not contain the lighting geometry (spacecraft and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#solar">solar</A> vectors).
+The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#program">program</A> will attempt to retrieve these vectors from the SPICE server using
+the same strategy as for raw flight images (see immediately below).  The user
+may avoid SPICE access by supplying these vectors via the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">SPACE</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#solar">SOLAR</A>
+parameters.
+
+For raw flight images, PHOTFUNC will first scan the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> label to determine
+the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A> name, spacecraft ID, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> ID, and Spacecraft-Event-Time (see
+parameters <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">TARGET</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#mission">MISSION</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">CAMERA</A>, and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#scet">SCET</A>).  For a "supported" mission (see
+parameter <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#mission">MISSION</A>), the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> constants and geometric distortion parameters
+are automatically retrieved from built-in tables (via a call to getcamcon).
+See also the section on GEOMETRIC DISTORTIONS below.
+
+If SPICE data is available for the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#mission">mission</A> (e.g. Voyager, Galileo, Cassini),
+the projection and lighting geometry is automatically retrieved from the SPICE
+server.  If not, that information can be supplied in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> label (see
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#program">program</A> PERSLAB) or via parameters.  If the OM matrix is not know, see the
+section on COMPUTING THE OM MATRIX below.
+
+GEOMETRIC DISTORTIONS
+
+If the input <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> is a flight image (i.e. not map projected), the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#program">program</A> will
+check if it has already been corrected for geometric <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> distortions (by
+scanning for the GEOMA keyword in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> label).  An uncorrected image is
+is said to be in "<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">space</A>" while a corrected image is said to be in "<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#object">object</A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">space</A>" (see keywords DIST, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">IMAGE</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#object">OBJECT</A>).  Note that "object space" is
+identical to the perspective projection output by <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#program">program</A> MAP3.
+
+If the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> is uncorrected, a model of the geometric distortions must be
+available so that it can be accounted for in the projection geometry.  For CCD
+cameras (e.g. Galileo, Cassini), the geometric distortions are largely due to
+the radial distortions of the optics.  For vidicon cameras (e.g. Voyager and
+earlier missions) the distortions are defined by displacements in the reseau
+pattern embedded on the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A>'s face-plate.  For each "supported" <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#mission">mission</A>,
+a nominal model of the geometric distortions is retrieved from built-in tables.
+For CCD cameras, this model is adequate.  For vidicon cameras, more accurate
+results may be obtained by locating the reseau in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> and inputing the
+resulting GEOMA parameters (see parameter <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#inp">INP</A> and programs RESLOC and RESLOCVO).
+
+   resloc f1636832.fic (res,geo)
+   photfunc (f1636832.fic,geo) a.img <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#hapke">HAPKE</A>=(.5,.2,10.,.5,.2) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A>=IO
+
+A raw Voyager <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> containing geometric distortions is first input to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#program">program</A>
+RESLOC to locate the reseau and compute geometric correction parameters (geo).
+These parameters are input to PHOTFUNC together with the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> (the
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> must be first) and are used to account for the geometric distortions.
+
+   resloc f1636832.fic (res,geo)
+   <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#farenc">farenc</A> (f1636832.fic,geo) (c,p,g) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A>=IO
+   geoma (f1636832.fic,g) b.img
+   photfunc b.img a.img <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#hapke">HAPKE</A>=(.5,.2,10.,.5,.2) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A>=IO       <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sscpt">sscpt</A>=(400.,400.)
+
+This is similar to the previous example, except that <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#program">program</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#farenc">FARENC</A> is used to
+correct the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> pointing and output GEOMA parameters (g) which center the
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A> in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> and correct for geometric distortion.  GEOMA is then used to
+create an <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#object">object</A>-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">space</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A>.  The result is input into PHOTFUNC, which
+recognizes that the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> is in <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#object">object</A>-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">space</A> from the GEOMA keyword in the
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> label.  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sscpt">SSCPT</A> parameter is required to indicate that the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A>
+center has been translated to the center of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> by <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#farenc">FARENC</A>.  Note that
+if an <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#object">object</A>-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">space</A> output is desired, then running GEOMA before PHOTFUNC is
+more effecient since PHOTFUNC runs faster if it does not need to account for
+geometric distortions.
+
+Currently, no nominal models are available for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">Space</A> Telescope or SIPS.
+
+COMPUTING THE OM MATRIX
+
+If the OM matrix is not available, it may be computed via the (1) far-encounter
+or (2) tiepoints algorithms.  Both of these methods require that the remaining
+projection information be known.
+
+The far encounter algorithm is used in images in which the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#limb">limb</A> is
+visible in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A>.  VICAR programs <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#farenc">FARENC</A> or NAV is used to fit the
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#limb">limb</A> and obtain the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#line">line</A>-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sample">sample</A> coordinates of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A> center.  Parameters
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sscpt">SSCPT</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#osscpt">OSSCPT</A>, or <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#isscpt">ISSCPT</A> may be used to input these value to PHOTFUNC.  This
+algorithm also requires the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#north">north</A> angle (orientation of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A>'s spin axis
+measured clockwise from up in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A>).  See <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#norangle">NORANGLE</A> parameter.
+The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#program">program</A> inputs these values into the far encounter algorithm (see VICAR
+subroutine MOMATI) to compute the OM matrix.
+
+The tiepoints algorithm is used in high-resolution images in which the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#limb">limb</A> is not available.  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> is first paired with a reference image whose
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> pointing is known (see programs MANMATCH, NAV2).  Common features
+(tiepoints) are located in both images (by determining their <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#line">line</A>-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sample">sample</A>
+coordinates) and the corresponding <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#latitude">latitude</A>-longitude coordinates are computed.
+These (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#line">line</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sample">sample</A>) and (lat,long) pairs are input to PHOTFUNC via the
+TIEPOINTS parameter.
+
+Note that a common use of the far encounter and tiepoints algorithms is to
+improve the nominal <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> pointing initially available from the SPICE server.
+The programs referred to above normally store their results into SPICE C-kernels
+from which they are automatically retrieved by PHOTFUNC.  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#farenc">FARENC</A> and
+TIEPOINTS parameters are therefore necessary only if the SPICE server interface
+is circumvented or unavailable.
+
+COMPUTING THE LIGHTING ANGLES
+
+To compute the lighting angles at a given pixel, the programs must transform
+that pixel to a surface point on the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A>, and use the spacecraft and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#solar">solar</A>
+vectors to compute vectors that point from that surface point to the sun and
+spacecraft.  In addition, the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A> body model (polar and equatorial <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#radii">radii</A>) is
+used to compute the surface normal at that point.
+
+The incidence angle is the angle between the surface normal and the vector
+pointing to the sun.
+
+The emission angle is the angle between the surface normal and the vector
+pointing to the spacecraft.
+
+The phase angle is the angle between the vectors pointing to the sun and
+spacecraft.  Note that since the geometry is three-dimensional, the phase angle
+is normally not equal to the sum of the incidence and emission angles.
+
+INTERPOLATION ALGORITHM:  The photometric function is computed exactly for a
+grid of points whose spacing is specified by parameters <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#linc">LINC</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sinc">SINC</A>, or <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#incr">INCR</A>.
+For intermediate points within the grid, the function is computed using
+bilinear interpolation.  In general, a smaller grid spacing reduces the error
+introduced by the interpolation, but increases the execution time.
+
+If one or more of the four grid points surrounding a given pixel is off the
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A> body, the photometric function will be computed exactly for every pixel
+within the box within the four grid points.  This criteria can be extended to
+apply to points within <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#limb">LIMB</A> degrees or the limb or TERM degrees of the
+terminator (see <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#limb">LIMB</A> and TERM parameters).  This strategy for avoiding large
+interpolation errors near the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#limb">limb</A> or terminator may not be the best, as shall
+be clear below.
+
+The keyword '<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#nointerp">NOINTERP</A> causes the photometric function to be computed exactly
+at every pixel in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A>.  In this mode, the grid (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#linc">LINC</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sinc">SINC</A>) is used to
+skip efficiently over dark sky regions of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A>.
+
+It is instructive to compute the error introduced by the interpolation
+algorithm by photometrically correcting a full-disk <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> with and without
+interpolation:
+
+	photfunc f1636832.geo a.img MINN=0.7
+	photfunc f1636832.geo b.img MINN=0.7 'NOIN
+        f2 (a.img,b.img) c.img func="100*in1/in2"
+        fit c.img 'EHIST
+
+The error introduced near the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#limb">limb</A> of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A> is significant.  For high
+resolution images (no visible <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#limb">limb</A>) the error introduced by interpolation is
+negligible.
+
+Keep in mind that the interpolation algorithm was developed in the '70s when
+computers were 1000 times slower and 1000 times more expensive.  In an age of
+more powerful computers, the interpolation algorithm seems less relevant.  The
+following timing results were obtained on a Sun Ultra 5 workstation:
+
+Timing data using interpolation with a 10x10 grid spacing (the default):
+					CPU sec		Wall clock sec
+Galileo 800x800 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">Image</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">Space</A> image:	 1.63		 3.52
+Cassini 1024x1024 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">Image</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">Space</A> image:	 1.84		 4.77
+Voyager 800x800 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">Image</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">Space</A> image:	 3.96		 5.35
+Voyager 1000x1000 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#object">Object</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">Space</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A>:    1.57		 3.44
+500x500 Rectilinear projection:		 1.49		 2.70
+
+Corresponding timing data using the 'NOIN keyword:
+					CPU sec		Wall clock sec
+Galileo 800x800 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">Image</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">Space</A> image:	 8.50            9.80
+Cassini 1024x1024 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">Image</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">Space</A> image:	15.33		17.00
+Voyager 800x800 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">Image</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">Space</A> image:	25.22		26.63
+Voyager 1000x1000 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#object">Object</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">Space</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A>:    4.84		 6.09
+500x500 Rectilinear projection:		13.44		15.04
+
+Also, some of the photometric functions are computationally expensive if
+calculated for every pixel.  The following are timing results using the 'NOIN
+keyword on a 1024x1024 Cassini <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">space</A> image:
+						CPU sec		Wall clock sec
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#minnaert">Minnaert</A>:					15.33		17.00
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#buratti">BURATTI</A>:					17.13		19.23
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#veverka">VEVERKA</A>:					15.44		17.20
+Old <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#hapke">HAPKE</A> function:				15.87		17.44
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#hapke">HAPKE</A> function with <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#cook">COOK</A> modification:		15.86		17.39
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#hapke">HAPKE</A> with one term Henyey-Greenstein:		25.72		27.18
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#hapke">HAPKE</A> with two term Legendre polynomial:	24.93		27.20
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#irvine">IRVINE</A>:						16.99		18.95
+
+CLASSIFICATION MAP OPTION:
+
+It is possible to have PHOTFUNC apply its photometric correction only
+to certain points in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A>, by supplying a classification map (such
+as can be generated by <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#program">program</A> FASTCLAS) as a supplementary input file, 
+and specifying a <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#class">class</A> by the CLASS parameter.  Then only pixels which 
+have the specified DN value in the classification map are corrected.  
+This can be useful if different types of terrain in an <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> are to have 
+different photometric parameters, as would be the case for the more 
+physically realistic functions, such as those of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#hapke">Hapke</A>.  
+
+The following example illustrates the use of the classification map option.
+Note that the example fails because of this programmer's ignorance in
+using STATS and FASTCLAS.  However, the method should work in principal.
+
+fit io.org a.img (1,1,450,450) 'byte
+fit io.blu b.img (1,1,450,450) 'byte
+fit io.vio c.img (1,1,450,450) 'byte
+
+stats (a.img,b.img,c.img) stats.img exclude=0    class1=(188,81,20,20) class2=(369,80,20,20)
+fastclas (a.img,b.img,c.img,stats.img) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#class">class</A>.img sigma=(20.,10.)
+
+copy io.vio c.img (1,1,450,450)
+photfunc (c.img,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#class">class</A>.img) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#out">out</A>.img <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#irvine">IRVINE</A>=(1.14,.118,.0019) CLASS=2     'CYLI <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#scale">SCALE</A>=8. <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#north">NORTH</A>=0.     LATI=80. LONG=230. <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#line">LINE</A>=225. SAMP=1.
+   <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#solar">SOLAR</A>=(0.541,171.276) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">SPACE</A>=(-.032,156.474,806030.)  
+A 450x450 area of a color triplet is extracted from an IO global mosaic and
+convert to byte data (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#program">program</A> STATS will only accept byte inputs).  Programs
+STATS and FASTCLAS are run to create a classification map (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#class">class</A>.img) which is
+then input to PHOTFUNC.  Only pixels from <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#class">Class</A> 2 of the map will be corrected.
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#all">All</A> other pixels are output as 0 DN.  Note that the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> input to PHOTFUNC
+must represent the same <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> area as that of the classification map.  This is
+accomplished by copying the area from the mosaic BEFORE inputing into PHOTFUNC.
+
+This example also illustrates how to enter the projection and lighting geometry
+for map-projected images if these are not included in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> label.
+
+As the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#program">program</A> is currently structured, a separate run must be made for 
+each <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#class">class</A>, with the output of one run forming the input for the next, 
+until <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#all">all</A> classes have been processed.  (The option to do all classes
+except for a specified one is also supported.)  It should be possible 
+for a future modification to process <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#all">all</A> classes in one run.
+
+<A NAME="examples">EXAMPLES:</A>
+
+!--------------------------Galileo <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A>-------------------------------
+
+  photfunc <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#inp">inp</A>=18494401.1 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#out">out</A>=a.img MINN=0.7
+
+A <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#minnaert">Minnaert</A> function is applied to a Galileo <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> of Callisto.  PHOTFUNC will
+retrieve the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#mission">mission</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> id, Spacecraft-Event-Time, and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A> (Callisto)
+from the flight label. These <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> identifiers are used to automatically
+retrieve the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> and lighting geometry via the SPICE server.  If everything
+goes well, running PHOTFUNC can be as easy as pi.
+
+!--------------------------Cassini <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A>-------------------------------
+
+photfunc n1354897340.1 a.img <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#buratti">BURATTI</A>=(0.5,.6,-.003,.14,.14,1.0)     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sscpt">SSCPT</A>=(512.,512.)
+
+Assume that the input <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> has been previously processed by <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#program">program</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#farenc">FARENC</A> to
+center the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A> body in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A>.  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sscpt">SSCPT</A> parameter specifies that the
+center of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A> is at <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#line">line</A>-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sample">sample</A> coordinates (512,512).  This will result
+in a re-computation of the OM matrix (see description of far encounter algorithm
+above).
+
+!--------------------------VGR <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">space</A> image-------------------------------
+
+photfunc f1636832.fic a.img <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#hapke">HAPKE</A>=(.5,.2,10.,.5,.2) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A>=IO
+
+A raw Voyager <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> containing geometric distortions is input to PHOTFUNC.
+Since no geometric distortion parameters are provided, nominal values are
+retrieved from built-in tables and used to account for the geometric distortions
+in the projection geometry.  Note that the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">TARGET</A> parameter is required since
+the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A> body is not identified in Voyager flight labels.  See the section
+on GEOMETRIC DISTORTIONS above.
+
+!------------------What to do when SPICE data is not available-----------------
+
+photfunc f1636832.fic a.img <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#buratti">BURATTI</A>=(0.5,.6,-.003,.14,.14,1.0) '<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#nospice">NOSPICE</A>      <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">TARGET</A>=IO <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#solar">SOLAR</A>=(0.541,171.276) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">SPACE</A>=(-.032,156.474,806030.)      <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sscpt">SSCPT</A>=(539.67,601.21) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#norangle">NORANGLE</A>=15.7
+
+Assume that the input <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> has a Voyager flight label.  The '<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#nospice">NOSPICE</A> keyword
+prevents the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#program">program</A> from attempting to retrieve data from a non-existent
+SPICE server.  Based on the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#mission">mission</A> (VGR-1) and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> identifiers in the label,
+the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> constants and nominal geometric distortion parameters are retrieved
+from built-in tables.  Based on the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">TARGET</A> parameter, the polar and equatorial
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#radii">radii</A> are retrieved as well (careful, these may not be the latest or greatest).
+
+Assuming that the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> label contains no further useful information, the
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#solar">solar</A> and spacecraft vectors must be input via parameters.  Finally, the
+subspacecraft <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#line">line</A>-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sample">sample</A> coordinates (a.k.a <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A> center) and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#north">north</A> angle are
+input to enable the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#program">program</A> to compute the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> pointing (see description of
+far encounter algorithm above).
+
+photfunc f1636832.geo a.img <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#veverka">VEVERKA</A>=(0.5,-0.01,0.5,0.01) '<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#nospice">NOSPICE</A>
+    <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#radii">RADII</A>=(1824.3,1824.3,1815.7)      <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#solar">SOLAR</A>=(0.541,171.276) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">SPACE</A>=(-.032,156.474,806030.)      <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#tiepoint">TIEPOINT</A>=(381.86,382.64,19.35,229.21,          382.17,498.94,25.83,190.00,          381.98,615.31,32.86,163.58,          498.40,498.49,2.539,179.32,          498.53,615.11, 8.65,156.13)
+
+The above example demonstrates the use of the tiepoints mode to specify the
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> pointing for a high-resolution Voyager <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> (see description of
+tiepoints algorithm above).
+
+!------------------------Unsupported missions---------------------------------
+
+  photfunc <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#inp">inp</A>=a.img <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#out">out</A>=b.img <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#veverka">VEVERKA</A>=(0.5,-0.01,0.5,0.01) '<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#object">OBJECT</A>      <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">TARGET</A>=IO <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#focl">FOCL</A>=1500.19 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#laxis">LAXIS</A>=500. <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#saxis">SAXIS</A>=500. <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#pscale">PSCALE</A>=84.8214      <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#solar">SOLAR</A>=(0.541,171.276) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">SPACE</A>=(-.032,156.474,806030.)      <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sscpt">SSCPT</A>=(539.67,601.21) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#norangle">NORANGLE</A>=15.7
+
+If the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> is taken from a spacecraft which is not recognized by PHOTFUNC,
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#all">all</A> projection and lighting geometry information must be supplied via
+parameters.  Here the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A> constants are specified by identifying the target
+body, and the OM matrix is computed from the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A> center and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#north">north</A> angle
+(<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sscpt">SSCPT</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#norangle">NORANGLE</A>).
+
+!--------------------------Map projected <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A>---------------------------------
+
+map3 &"path1"f1636832.geo b.img <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#nl">NL</A>=500 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#ns">NS</A>=500     'RECT <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">TARGET</A>=IO <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#scale">SCALE</A>=10.     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#line">LINE</A>=1. SAMP=1. LATI=80. LONG=230.
+photfunc b.img a.img <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#irvine">IRVINE</A>=(1.14,.118,.0019) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">TARGET</A>=IO
+
+A Voyager <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A> of IO is mapped to a rectilinear projection via <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#program">program</A> MAP3.
+The resulting projection is input to PHOTFUNC.  Although the projection
+information can be retrieved from the "map label" output by MAP3, this label
+does not currently contain the lighting geometry.  PHOTFUNC will attempt to
+retrieve that information from SPICE.  Since both MAP3 and PHOTFUNC will
+access the SPICE server (in this example), and since the Voyager label does
+not include the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A> name, this must be provided via the TARGET parameter.
+
+RESTRICTIONS:
+
+1. The GRID option is currently disabled.
+
+HISTORY
+
+Written By: Joel <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#mosher">Mosher</A>			1 AUGUST 1978
+<A NAME="CogProg">Cognizant Programmer: L.W.Kamp</A>
+Revision: 1				9 FEBRUARY 1981
+Revision: 2     CONVERT TO VICAR2      16 MAY 1985
+Revision: 3     Viking additions       11 MAY 1986
+Rev. 4:     Mods for new PHOTFIT.  2 APR 1987  -- LWK.
+Rev. 5:     Added classificaion map option,  19 Aug. 1987  -- LWK.
+Rev. 6:     Use normalized phot. func., 2 Sept. 1987 -- LWK
+Rev. 7:     Add 6-parameter <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#hapke">Hapke</A> fcn., bug fixes, 8 Oct. 1987 -- lwk
+Rev 8       Many bug fixes. Put in exact photometric function at
+            every point for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#limb">limb</A> & terminator.
+23 Aug 89  ..GMY..  Delete fiddling FDS for WA frames of simultaneous exposure
+15 Aug 93   jjl ability to read map3 perspective label type.
+06 Sep 02  GMY: Major revisions to help and test files.
+	   Major revisions to projection and lighting geometry determination
+	   Add NAIF keyword and delete obsolete SEDR keyword (AR 107288)
+           Updated to read IBIS format geometric distortion files (AR 107368)
+           Changed NOSEDR keyword to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#nospice">NOSPICE</A>.
+	   Deleted GEOMA, NAH, NAV, and START parameters.
+	   Deleted LUMS and THRESH parameters.
+           Logic controlling <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#line">line</A> loop and interpolation redesigned.
+           Fix bug in <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#farenc">farenc</A> algorithm.  Fix to work on floating point images.
+	   Fix computation of surface normal vector.
+07 Oct 02  Replaced oblate spheroid model with triaxial ellipsoid.  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#all">All</A> calls
+           to convev have been replaced by calls to mp routines.
+           Added 'NOIN parameter.
+10 Jan 13 -lwk- fixed CHARACTER continuation lines for new compiler flag on Solaris
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#inp"><H3>INP</H3></A>
+1-4 input files: <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">image</A>,
+[GEOMA], [GRID], [CMAP].
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#out"><H3>OUT</H3></A>
+Output file (optional)
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#size"><H3>SIZE</H3></A>
+Standard VICAR <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#size">size</A> field.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sl"><H3>SL</H3></A>
+Starting <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#line">line</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#ss"><H3>SS</H3></A>
+Starting <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sample">sample</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#nl"><H3>NL</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#ns"><H3>NS</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#radii"><H3>RADII</H3></A>
+Three <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#radii">radii</A> of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A>
+(RA,RB,RC)
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#linc"><H3>LINC</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#line">Line</A> spacing of tiepoints.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sinc"><H3>SINC</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sample">Sample</A> spacings of tiepoints.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#incr"><H3>INCR</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#line">Line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sample">sample</A> spacings 
+of tiepoints.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#nointerp"><H3>NOINTERP</H3></A>
+Keyword: Perform no
+interpolation
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#minnaert"><H3>MINNAERT</H3></A>
+The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#minnaert">Minnaert</A> constant K
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#mosher"><H3>MOSHER</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#mosher">Mosher</A> function constants 
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#veverka"><H3>VEVERKA</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#veverka">Veverka</A> function constants
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#hapke"><H3>HAPKE</H3></A>
+Constants for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#hapke">Hapke</A> functions
+(4 values= OLD, 5/6 values= NEW)
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#cook"><H3>COOK</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#cook">Cook</A> modification to OLD <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#hapke">HAPKE</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#buratti"><H3>BURATTI</H3></A>
+(6 values)
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#buratti">Buratti</A> function.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#irvine"><H3>IRVINE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#irvine">Irvine</A> constants K,A,B
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#project"><H3>PROJECT</H3></A>
+Specifies projection.
+VALID: LAMBERT,MERCATOR,
+ORTHOGRA,STEREOGR,POLE,
+CYLINDRI,RECTANGU,LATLON
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#par1"><H3>PAR1</H3></A>
+Northern most parallel 
+of Lambert conformal.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#par2"><H3>PAR2</H3></A>
+Southern most parallel 
+of Lambert conformal
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#north"><H3>NORTH</H3></A>
+Angle measured clockwise from 
+the center of projection.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#scale"><H3>SCALE</H3></A>
+Projection <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#scale">scale</A> in km/pixel
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#line"><H3>LINE</H3></A>
+Projection special <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#line">line</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sample"><H3>SAMPLE</H3></A>
+Projection special <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sample">sample</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#latitude"><H3>LATITUDE</H3></A>
+Projection special <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#latitude">latitude</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#longitud"><H3>LONGITUD</H3></A>
+Projection special longitude
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#farenc"><H3>FARENC</H3></A>
+Far encounter mode.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sscpt"><H3>SSCPT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#object">Object</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">space</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sample">sample</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#osscpt"><H3>OSSCPT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#object">Object</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">space</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sample">sample</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#isscpt"><H3>ISSCPT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image">Image</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">space</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sample">sample</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#norangle"><H3>NORANGLE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#north">North</A> angle in degrees.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#tiepoint"><H3>TIEPOINT</H3></A>
+Specifies <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#tiepoint">tiepoint</A> mode.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target"><H3>TARGET</H3></A>
+String specifying the name
+of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">target</A> body.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#nospice"><H3>NOSPICE</H3></A>
+Disables access to the
+SPICE server.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#solar"><H3>SOLAR</H3></A>
+Subsolar <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#latitude">latitude</A> and longitude
+in degrees.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space"><H3>SPACE</H3></A>
+Subspacecraft lat., long. and
+distance to center of planet.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#slatitud"><H3>SLATITUD</H3></A>
+Subspacecraft <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#latitude">latitude</A> in degrees
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#slongitud"><H3>SLONGITUD</H3></A>
+Subspacecraft longitude in degrees
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#rmagnitu"><H3>RMAGNITU</H3></A>
+Distance from spacecraft to
+planet center in km.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#ommatrix"><H3>OMMATRIX</H3></A>
+Relationship between planet
+coord. system and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A>
+coord. system.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#rsvector"><H3>RSVECTOR</H3></A>
+Planet to spacecraft vector
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#object"><H3>OBJECT</H3></A>
+Indicates <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> distortions
+removed.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#image"><H3>IMAGE</H3></A>
+System distortion not
+geometrically correct.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#distor"><H3>DISTOR</H3></A>
+System distortion not
+geometrically correct.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#focal"><H3>FOCAL</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">Camera</A>'s <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#focal">focal</A> length in mm.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#focl"><H3>FOCL</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">Camera</A>'s <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#focal">focal</A> length in mm.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#laxis"><H3>LAXIS</H3></A>
+Value of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#line">line</A> in <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#object">object</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">space</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#saxis"><H3>SAXIS</H3></A>
+Value of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#sample">sample</A> in <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#object">object</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">space</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#pscale"><H3>PSCALE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#scale">Scale</A> in <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#object">object</A> 
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#space">space</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#focal">focal</A> plane.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#mission"><H3>MISSION</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#mission">Mission</A>.
+VALID=(VGR-1,VGR-2,GLL,CASSI,WFPC1,
+WFPC2,SIPS,QUEST,VIKOR,MAR-9,MAR10
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#scet"><H3>SCET</H3></A>
+Optional SpaceCraft Event Time
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera"><H3>CAMERA</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">Camera</A> serial number.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#noprojec"><H3>NOPROJEC</H3></A>
+Specifies picture not taken by
+any of the mentioned projects.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#print"><H3>PRINT</H3></A>
+Information about picture 
+is to be printed.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#all"><H3>ALL</H3></A>
+Data is to be printed <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#out">out</A> for
+points beyond the terminator.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#nocorrec"><H3>NOCORREC</H3></A>
+No photometric function
+correction is done.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#maxdn"><H3>MAXDN</H3></A>
+Maximum data number the
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#program">program</A> can output.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#terminat"><H3>TERMINAT</H3></A>
+Restricts interpolation
+to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#terminat">TERMINAT</A> degrees 
+from terminator.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#limb"><H3>LIMB</H3></A>
+Restricts interpolation
+to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#limb">LIMB</A> degrees 
+from planet <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#limb">limb</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#multiply"><H3>MULTIPLY</H3></A>
+Output DN to be multiplied
+by a constant.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#class"><H3>CLASS</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#class">Class</A> number in classification 
+map
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#maxcor"><H3>MAXCOR</H3></A>
+Optional keyword
+Maximum permitted intensity
+correction.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target"><H3>TARGET</H3></A>
+STRING - <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#target">Target</A> body name
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#spicemode"><H3>SPICEMODE</H3></A>
+Optional keyword
+Location of SPICE kernels
+(LOCAL or REMOTE)
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#ckname"><H3>CKNAME</H3></A>
+Optional 4-char string
+C-kernel name
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#ckid"><H3>CKID</H3></A>
+Optional 4-char string
+C-kernel ID
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#userid"><H3>USERID</H3></A>
+Optional 3-char string
+User who created <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#groupid"><H3>GROUPID</H3></A>
+Optional 3-char string
+Group which created <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#institute"><H3>INSTITUTE</H3></A>
+Optional 4-char string
+Facility which created <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#purpose"><H3>PURPOSE</H3></A>
+Optional 4-char string
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#purpose">Purpose</A> for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#program"><H3>PROGRAM</H3></A>
+Optional 6-char string
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#program">Program</A> which created <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#spkid"><H3>SPKID</H3></A>
+Optional 4-char string
+SP kernel for created <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#reqnum"><H3>REQNUM</H3></A>
+Optional 4-char string
+IPL request number for created <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#cdate"><H3>CDATE</H3></A>
+Optional 12-char string
+Date and time <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc_level2.html#camera">camera</A> pointing was created
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/photfunc.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

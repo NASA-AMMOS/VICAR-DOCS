@@ -1,0 +1,208 @@
+<HTML>
+<HEAD><title>HTML Help for FASTCLAS</title></HEAD>
+<BODY>
+<H1>Help for FASTCLAS</H1>
+<pre>
+PURPOSE
+	FASTCLAS is a multispectral classifier using an algorithm which
+combines the parallelepiped and Bayesian techniques.  Inputs are registered
+multispectral data and training statistics from VICAR program STATS.  The
+inputed multispectral data can be in either separate Vicar Data Sets or
+in <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#mss">MSS</A> format (See help on MSS).  FASTCLAS differs from an earlier version 
+in that the program allows <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">prior</A> probabilities to be input in the parameter 
+field and used in the Bayesian decision rule.  The input probabilities may 
+consists of simple <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">prior</A> probabilities, derived from the expected magnitude 
+of representaion of classes in the final image.  Multiple sets of 
+probabilities may also be input, with one or two of the data channels serving 
+not as multispectral values, but as indices to the appropriate set of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">prior</A> 
+probabilities.  Another feature of FASTCLAS allows the user to reset any 
+class <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#mean">mean</A> for any <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#band">band</A>, thus overriding the mean value provided by STATS.
+OPERATION
+	FASTCLAS uses a combination of the parallelepiped algorithm and the
+Bayesian maximum likelihood algorithm for classifying multispectral data.
+Assume that N spectral bands are available and training statistics from the
+Vicar program STATS have been computed.  FASTCLAS reads the statistics data
+set and generates a look-up table to hold the boundaries in the N-dimensional
+decision space for each class.  For each dimension (<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#band">band</A>) the decision
+boundary is  MU +/- (R * <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#sigma">SIGMA</A>), where MU is the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#mean">mean</A> for the class, SIGMA
+the standard deviation and R the number of standard deviations to be used.
+This is the parallelepiped algorithm.
+ 
+	To be assigned to class J (DNout = J), a pixel's spectral signature
+must fall within the N-dimensional decision boundary for class J.  If a
+pixel's spectral signature falls outside the decision boundry for all
+classes, the pixel is assigned to the unknown class (DNout = 0).  A pixel
+whose spectral signature falls within the decision boundary for more than
+one class is considered ambiguous.  The user has the option of resolving
+the ambiguity by the Bayesian maximum likelihood algorithm, or leaving the
+pixel ambiguous (DNout = 255).
+	The Bayesian Algorithm performs as follows. First it assumes that 
+there are N spectral bands, and considers a pixel as an N-dimensional
+              _
+sample vector X. Let K  be the covariance matrix computed for the training
+            __        i
+class i and MU  the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#mean">mean</A> of class i. The multi-variate probability P  that
+_	      i    						    i
+X is a member of class i is given by:
+ 
+ 	         1	            -1/2   _   __  T  -1      _   __
+   P = ------------------------- * e    * (X - MU ) (K  )  * (X - MU )
+    i         N/2          1/2              i    i    i        i
+           2PI      *  |K |			   
+			 i
+where |K | = det(K )
+        i         i
+	But since we are only interested in the maximum P over all classes,
+it is convenient to compute:
+				_   __	 T  -1	   _   __
+	Q = Log (P ) = C  - 1/2(X - MU )  (K  ) * (X - MU ) + Log (<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prob">PROB</A> )
+	 i     e  i     i             i     i	         i       e     i
+where:		    
+		C = -1/2 (N * Log (2PI) + Log |K |
+		 i               e	     e  i
+_
+X is then assigned to the class i, for which Q is a maximum.
+ 
+	Thus for each pixel in the scene we assign a class number 
+corresponding to the class to which the pixel most likely belongs.
+	If the keyword <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#check">CHECK</A> is given, the Bayesian confidence value is
+computed for each pixel after it is classified.  If the pixel's spectral
+signature is outside the multivariate confidence interval, the pixel is
+reclassified as unknown.
+ 
+	The order in which the spectral bands are input to FASTCLAS will
+influence the running time.  Since the table look-up portion uses a process 
+of elimination, bands which give the best spectral separation between classes 
+should be given first.  If the spectral data is in <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#mss">MSS</A> format, the order is 
+controlled by the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#use">USE</A> parameter.
+	If the parameters <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prob">PROB</A> and/or <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">PRIOR</A> have been coded, the Bayesian
+decision rule uses <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">prior</A> probabilities in the final classification.  In the
+simplest case, one set of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">prior</A> probabilities is specified by the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prob">PROB</A>
+parameter.  One probability must be input for each class described in the
+STATS file, and the probabilities must sum to 1.  The program checks to make
+sure the appropriate number of probabilities are input, but does not <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#check">check</A>
+to be sure that they sum to 1.
+ 
+	If the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">PRIOR</A> parameter has been coded, then the user inputs several
+sets of probabilities, and the set used in the decision rule is determined
+by the value in the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#band">band</A> identified as a <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">prior</A> probability channel.  For
+example if "<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">PRIOR</A>=(5,3)" is coded, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#band">band</A> 5 will be taken as a prior probability
+index channel, and will contain only DN values of 0 through 3.  Before each
+pixel is classified, the 'DN sub 5' value will be checked.  If the 'DN sub 5'
+equals 1, then the first set of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">prior</A> probabilities input in the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prob">PROB</A>
+parameter will be used; if 'DN sub 5' equals 2, the second set of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">prior</A>
+probabilities will be used in the Bayesian decision rule, and so forth.  The
+program also systematically samples the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">prior</A> channel image and uses the input
+probabilities to calculate, using Bayes' rule, a set of unconditional <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">prior</A>
+probabilities which are applied when 'DN sub 5' equals 0.
+ 
+	The <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">PRIOR</A> parameter can also specify two such channels.  In this case,
+the program expects a set of probabilities for each possible DN value in each
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">prior</A> probability channel.  With those probabilities as input, the program
+calculates a full set of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">prior</A> probabilities (under assumptions of indepen-
+dence) which are doubly contingent on the indexes present in the two channels
+for each pixel.  Zeros may be used freely throughout as index values.  When
+a zero is encountered, the program assumes no information concerning that
+channel is present, and reverts to a separately calculated set of slightly
+contingent or uncontingent probabilities as appropriate.
+<A NAME="examples">EXAMPLES</A>
+ 
+1)	FASTCLAS <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#inp">INP</A>=(A,B,C,ST) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#out">OUT</A>=OUT <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#size">SIZE</A>=(1,1,500,500) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#sigma">SIGMA</A>=2.5 	 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#csigma">CSIGMA</A>=(2,3,1.5) '<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#dont">DONT</A>
+ 
+	This example classifies the multispectral imagery on data sets
+A, B, and C according to the training statistics on data set ST. A 2.5
+standard deviation confidence interval is used for each input <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#band">band</A> in
+each class with the exception that <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#band">band</A> 3 of class 2 uses a 1.5 standard
+deviation interval. The Bayesian routine is suppressed for resolving
+ambiguity.
+2)	FASTCLAS (MS,ST) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#out">OUT</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#mss">MSS</A>=6 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#use">USE</A>=(2,3,4,5) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#sigma">SIGMA</A>=3.0   	 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prob">PROB</A>=(0.125,0.137,0.029,0.414,0.295)		     	 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#mean">MEAN</A>=(3,4,144.0,3,5,168.0)
+ 
+	Input data set MS contains 6 specral bands of imagery (<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#mss">MSS</A> format)
+with clasification to be performed using only bands 2, 3, 4 & 5. A 3.0
+standard deviation confidence interval is used for each <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#band">band</A> in each class.
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">Prior</A> probabilities are supplied for each of the classes identified in the
+STATS file and will be used in the Bayesian decision rule. (i.e. Class 1 
+probability is replaced with .125 in all bands, Class 2 is replaced with
+0.137 in all bands, etc.) For class 3, the STATS means for bands 4 and 5 
+are to be reset to 144.0 and 168.0 respectively.
+ 
+NOTE: a 0 probability for a class doesn't zero it <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#out">out</A> unless there is 
+also a 0 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#csigma">CSIGMA</A> for it.
+3)	FASTCLAS (MSPR2,ST) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#out">OUT</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#mss">MSS</A>=5,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#use">USE</A>=(4,2,3,1) '<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#check">CHECK</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">PRIOR</A>=(5,4)   	 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prob">PROB</A>=(1,0.071,0.302,0.207,0.319,0.101,				 	       2,0.271,0.313,0.092,0.107,0.271,				 	       3,0.112,0.419,0.393,0.076,0.000,				 	       4,0.2,0.2,0.2,0.4,0.0)
+ 
+	The input data set consists of five bands in <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#mss">MSS</A> format. Bands 
+4, 2, 3, and 1 will be used in classification, with the parallelepiped
+classifier using them in that order. The multivariate confidence interval 
+will be checked. <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#band">Band</A> 5 is a <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">prior</A> probability index channel assuming
+DN values 0-4, and four sets of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">prior</A> probabilities are specified, each 
+set summing to 1. The fact that five values are given for each set (1) 
+implies that the STATS file describes exactly five classes and (2) 
+associates the first probability values with the first class in the STATS
+file, the second value with the second class, etc. (i.e. <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prob">Prob</A> of class 1
+occurring in level 1 of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#band">band</A> 5 is 0.071, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prob">prob</A> of class 2 occuring in level 1
+of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#band">band</A> 5 is 0.302, etc.)
+4)	FASTCLAS (MSPR2,ST) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#out">OUT</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#mss">MSS</A>=6 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#use">USE</A>=(1,2,3,4) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#sigma">SIGMA</A>=3.0    	 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">PRIOR</A>=(5,3,6,2) 					 	 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prob">PROB</A>=(5,1,0.017,0.249,0.301,0.433,			 	       5,2,0.321,0.230,0.409,0.040,			 	       5,3,0.519,0.107,0.218,0.156,			 	       6,1,0.213,0.414,0.021,0.352,			 	       6,2,0.107,0.318,0.052,0.477)
+ 
+	The input dataset is six bands in <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#mss">MSS</A> format. Bands 1-4 are
+multispectral, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#band">band</A> 5 is a <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">prior</A> probability index band with DN values
+ranging from 0-3, and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#band">band</A> 6 is also a <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">prior</A> probability index band with 
+DN values ranging from 0-2. <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior">Prior</A> probabilities in each set sum to 1, and 
+the fact that there are four values in each set implies that the STATS 
+file describes exactly four classes.
+TIMING
+	The runnning of FASTCLAS is a function of the picture <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#size">size</A>, number
+of spectral bands, number of possible classes and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#size">size</A> of confidence
+intervals desired (<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#sigma">SIGMA</A>'S).  In addition, running time is data dependent;
+that is, it varies depending on the number of times ambiquity must be
+resolved.  Therefore it is difficult to estimate the running time accurately.
+ 
+WRITTEN BY: J. D. Addington & A.H. Strahler	Oct. 23, 1984
+CONVERTED TO VAX BY: Helen De Rueda		March 8, 1984
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  R. E. Alley</A>
+Revisions:
+         Made Portable for UNIX ... J. Turner (CRI) Jan 02, 1995
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#inp"><H3>INP</H3></A>
+input data sets
+first, image dataset(s)
+last, statistics dataset
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#out"><H3>OUT</H3></A>
+output data set
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#size"><H3>SIZE</H3></A>
+Vicar <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#sl"><H3>SL</H3></A>
+Starting line of image
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#ss"><H3>SS</H3></A>
+Starting sample of image
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#nl"><H3>NL</H3></A>
+Number of line in image
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#ns"><H3>NS</H3></A>
+Number of samples in image
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#mss"><H3>MSS</H3></A>
+Specifies # of bands
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#band"><H3>BAND</H3></A>
+Which bands are stored
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#use"><H3>USE</H3></A>
+which bands are used
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#sigma"><H3>SIGMA</H3></A>
+Standard deviation 
+multiplier for boundary
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#csigma"><H3>CSIGMA</H3></A>
+Standard Deviations multiplier
+for Classes
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#dont"><H3>DONT</H3></A>
+No Bayesian if ambiguous
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#check"><H3>CHECK</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#check">Check</A> multivariate confidence
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prior"><H3>PRIOR</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#band">Band</A> contains index values
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#prob"><H3>PROB</H3></A>
+Denotes probabilities
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#mean"><H3>MEAN</H3></A>
+Replaces STATS <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas_level2.html#mean">mean</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/fastclas.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

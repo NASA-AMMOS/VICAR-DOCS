@@ -1,0 +1,321 @@
+<HTML>
+<HEAD><title>HTML Help for MARSDEPTH</title></HEAD>
+<BODY>
+<H1>Help for MARSDEPTH</H1>
+<pre>
+PURPOSE:
+
+MARSEDEPTH is used to compute the excursion of all points in an XYZ image
+from a plane.  The program fits a plane to an input target XYZ point and an
+input surface normal vector UVW at the target XYZ.  Then it computes the 
+vertical distances of all points in the input XYZ image from the fitted plane.
+The output is a one-band image of the distances. 
+
+Optionally, the excursion (or depth) analysis can be limited to the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#fov">FOV</A> 
+(Field Of View) of a camera. To limit the output image to the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#fov">FOV</A> of a
+camera, the user must provide MARSDEPTH with two optional inputs:  a
+"prototype" image from the camera s/he is interested in, and a stand-off
+value.  The prototype image is used simply to build a camera model.  The 
+camera model from the prototype image file is reoriented and repositioned 
+based on the given target XYZ position, the surface normal vector UVW at 
+the target, and the stand-off distance.   The camera model is repositioned
+at (targetUVW * <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#standoff">standoff</A> + targetXYZ), and reorient along (-targetUVW) 
+direction perpendicular to the fitted plane.  Then we mask off the results 
+according to whether they’re in the image <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#fov">FOV</A> of the adjusted camera model.  
+The output image contains the deviations from the given plane for each pixel,
+from which a histogram can be determined.
+
+To use MARSEDEPTH without a camera model and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#fov">FOV</A> filtration (simpler use),
+the user needs to provide the following:
+  - An input XYZ image
+  - The XYZ position of a target point
+  - The coordinate system in which target XYZ is given (defaults to SITE)
+  - The UVW surface normal at target point should be up looking
+    (defaults to (0,0,-1)
+  - The coordinate system in which target UVW is given (defaults to SITE)
+  - The intended direction of the target UVW vector:  Set keyword -NORMAL
+    to indicate target UVW is a surface normal up-looking vector.  Set 
+    keyword -<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#approach">APPROACH</A> to indicate that target UVW is a surface normal but
+    down-looking vector.  Defaults to -NORMAL because target UVW vector
+    defaults to the up-looking vector (0,0,-1).
+Keep in mind that a plane fitted to a point and a vector has a positive
+and a negative side.  The positive side of the plane is the side where the
+vector is.  The other side is the negative side of the plane.  Therefore,
+in the case of this simple use of MARSDEPTH with (0,0,-1) target UVW 
+vector and -NORMAL keyword, all points below the fitted plain (the side
+closer to Mars) will have negative distances, and all points above the
+plain (the side closer to sky) will have positive values.  To negate the
+results in the output file, you can trick the program by providing an
+up-looking target UVW vector and setting -<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#approach">APPROACH</A> keyword.  You may also
+negate the results by setting the target UVW vector to a down-looking 
+vector, such as (0,0,1), and setting the keyword -NORMAL.  
+
+To use MARSDEPTH with a camera model and its <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#fov">FOV</A> filtration, the user
+needs to provide the information mentioned above plus the following:
+  - a prototype image file for using its camera model
+  - stand-off distance (defaults to 0.2 and ignored if no proto. image)
+  - <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#fov">FOV</A> limit in degrees (defaults to 30.0 and ignored if no proto. image)
+The "trick" mentioned above (in the case of the simple use of MARSDEPTH
+without any prototype image) is a requirement here with prototype image.
+The reason is that with camera model we need the target UVW vector to be
+the view direction of the camera, which should be downward.  Stand-off 
+should always be a positive number.  Therefore, with an optional
+prototype image for camera model we need either
+  - an up-looking target UVW vector like (0,0,-1)/SITE, and
+  - <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#approach">APPROACH</A> keyword set (-APPROACH), and
+  - stand-off &gt 0 
+or
+  - a down-looking target UVW vector like (0,0,1)/SITE, and
+  - NORMAL keyword set (-NORAML), and
+  - stand-off &gt 0.
+
+
+EXECUTION:
+
+marsdepth <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#inp">inp</A>=data.xyz <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#out">out</A>=data.depth \
+          <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#target_xyz">target_xyz</A>=\(&ltx&gt, <y>, <z>\) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#target_uvw">target_uvw</A>=\(<x>, <y>, <z>\) \
+          -site -normal
+marsdepth <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#inp">inp</A>=data.xyz <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#out">out</A>=data.depth \
+          <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#target_xyz">target_xyz</A>=\(&ltx&gt, <y>, <z>\) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#target_uvw">target_uvw</A>=\(<x>, <y>, <z>\) \
+          <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#xyz_cs">xyz_cs</A>=&lttarget xyz <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#coord">coord</A> type&gt <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#uvw_cs">uvw_cs</A>=<target uvw coord type> \
+          -site -normal
+marsdepth <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#inp">inp</A>=data.xyz <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#out">out</A>=data.depth \
+          <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#target_xyz">target_xyz</A>=\(&ltx&gt, <y>, <z>\) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#target_uvw">target_uvw</A>=\(<x>, <y>, <z>\) \
+          -site -appraoch
+marsdepth <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#inp">inp</A>=data.xyz <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#out">out</A>=data.depth \
+          <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#target_xyz">target_xyz</A>=\(&ltx&gt, <y>, <z>\) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#target_uvw">target_uvw</A>=\(<x>, <y>, <z>\) \
+          <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#xyz_cs">xyz_cs</A>=&lttarget xyz <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#coord">coord</A> type&gt <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#uvw_cs">uvw_cs</A>=<target uvw coord type> \
+          -site -<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#approach">approach</A>
+marsdepth <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#inp">inp</A>=data.xyz <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#out">out</A>=data.depth \
+          <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#target_xyz">target_xyz</A>=\(&ltx&gt, <y>, <z>\) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#target_uvw">target_uvw</A>=\(<x>, <y>, <z>\) \
+          <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#proto_image">proto_image</A>=&ltprototype image&gt <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#standoff">standoff</A>=0.2  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#fov">FOV</A>=30.0 \
+          -site -<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#approach">approach</A>
+marsdepth <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#inp">inp</A>=data.xyz <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#out">out</A>=data.depth \
+          <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#target_xyz">target_xyz</A>=\(&ltx&gt, <y>, <z>\) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#target_uvw">target_uvw</A>=\(<x>, <y>, <z>\) \
+          <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#xyz_cs">xyz_cs</A>=&lttarget xyz <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#coord">coord</A> type&gt <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#uvw_cs">uvw_cs</A>=<target uvw coord type> \
+          <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#proto_image">proto_image</A>=&ltprototype image&gt <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#standoff">standoff</A>=0.2  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#fov">FOV</A>=30.0 \
+          -site -<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#approach">approach</A>
+where:
+data.xyz  is an input 3-band XYZ REAL image,
+data_depth  is the output 1-band REAL image with depth information,
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#target_xyz">target_xyz</A>  is a 3D XYZ coordinates of the target point,
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#target_uvw">target_uvw</A>  is a 3D surface normal vector at the target point,
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#xyz_cs">xyz_cs</A>  is the coordinate type of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#target_xyz">target_xyz</A> point,
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#uvw_cs">uvw_cs</A>  is the coordinate type of the surface normal vector at the target,
+-site  indicates using the SITE coordinate system,
+-nomal  indicates that the provided <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#target_uvw">target_uvw</A> is in normal direction,
+-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#approach">approach</A>  indicated that the provided <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#target_uvw">target_uvw</A> is in approach direction,
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#proto_image">proto_image</A>  is the optional input image used for its camera model,
+stanfoff  is the stand-off distance for the camera model, and
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#fov">fov</A>  is the camera model FOV filtration limit in degrees.
+
+In the first case, a plane is fitted to the target point (XYZ) and the 
+surface normal at the XYZ. The values in the output image, are the distances
+of their coresponding points from the input XYZ image to the fitted plane.
+The positive side of the plane is where the normal vector is, and the other
+side of the plave is the negative side.
+
+The second case is similar to the first case, and the only difference is
+that the coordinates types for both the target XYZ point an the surface
+normal at the target point are given.  The coordinate types are given when
+they are not the same as the default ones.
+
+The third case is similar to the first case with the only difference being
+-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#approach">approach</A> keyword set and not -normal.  In this case, the negative side of
+the fitted plane is the side where the surface normal vector is, and the 
+other side is the positive side.
+
+The fourth case is similar to the second case with the only difference being
+-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#approach">approach</A> keyword set and not -normal.  In this case, the negative side of
+the fitted plane is the side where the surface normal vector is, and the 
+other side is the positive side.
+
+The fifth case is the third case with the added optional information (a
+prototype image for its camera model, the stand-off distance and the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#fov">FOV</A>
+filtration limit) to created a camera model Field Of View to eliminate
+all the input image points outside of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#fov">FOV</A>.
+
+The sixth case is the fourth case with the added optional information (a
+prototype image for its camera model, the stand-off distance and the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#fov">FOV</A>
+filtration limit) to created a camera model Field Of View to eliminate
+all the input image points outside of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#fov">FOV</A>.
+
+METHOD:
+
+MARSEDEPTH is used to compute the excursion of all points in an XYZ image
+from a plane.  The program fits a plane to an input target XYZ point and an
+input surface normal vector UVW at the target XYZ.  Then it computes the 
+vertical distances of all points in the input XYZ image from the fitted plane.
+The output is a one-band image of the distances. 
+
+The side of the plane pointed at by the surface normal vector is the positive
+side of the plane, and the other side is the negative side of the plane.  The
+distances on the positive side are positive, and the distances on the negative
+side are negative.  If the -<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#approach">approach</A> keyword is set, then the negative side of
+the plane is the one pointed at by the surface normal vector, on the other
+side is the positive side.
+
+All the points is the input XYZ image file that are invalid, i.e. (0,0,0), are
+ignored.  The points can additionally get filtered <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#out">out</A> based on the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#fov">FOV</A> of an
+optional input camera model after being reoriented and repositioned.  Then all
+the input XYZ image points outside of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#fov">FOV</A> of the camera are ignored as
+well.  When the optional camera model information are provided, the keyword
+-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#approach">approach</A> should be set
+
+
+
+
+OUTPUT FORMAT:
+
+The output is a 1-band file in REAL format.
+
+Without the optional camera model, the points in the output file are the 
+distances of their matching points in the input XYZ image from the fitted
+plane.
+
+With the optional camera model, the points in the output file are the
+distances of their matching points in the input XYZ image from the camera
+along the camera <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#approach">approach</A> (the negative of the surface normal vector).
+
+
+HISTORY:
+2020-07-10 Initial marsdepth by E. Sarkissian, under the cognizance of
+Bob Deen
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#inp"><H3>INP</H3></A>
+Input XYZ image.
+Must be 1 3-band file
+or (x,y,z) triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#out"><H3>OUT</H3></A>
+Output file.
+Must be 1 filename
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#target_uvw"><H3>TARGET_UVW</H3></A>
+Surface normal vector, 
+a (u,v,w) triplet, at
+the target point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#uvw_cs"><H3>UVW_CS</H3></A>
+The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#coord">coord</A>. type of
+the target UVW.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#target_xyz"><H3>TARGET_XYZ</H3></A>
+The target point, an
+(x,y,z) triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#xyz_cs"><H3>XYZ_CS</H3></A>
+The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#coord">coord</A>. type of
+the target point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#approach"><H3>APPROACH</H3></A>
+To choose surface
+normal or its negative.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#proto_image"><H3>PROTO_IMAGE</H3></A>
+A prototype image used
+for its camera model.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#standoff"><H3>STANDOFF</H3></A>
+The distance of the 
+modeled camera from
+the target point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#bad_depth"><H3>BAD_DEPTH</H3></A>
+Depth value for any
+ignored XYZ image point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#fov"><H3>FOV</H3></A>
+Limit in degrees
+on the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#fov">FOV</A> of the
+camera model.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#hist_bins"><H3>HIST_BINS</H3></A>
+Number of bins for
+depth histogram
+data.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsdepth.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

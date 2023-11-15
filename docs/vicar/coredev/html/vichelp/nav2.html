@@ -1,0 +1,799 @@
+<HTML>
+<HEAD><title>HTML Help for NAV2</title></HEAD>
+<BODY>
+<H1>Help for NAV2</H1>
+<pre>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#purpose">PURPOSE</A>
+
+NAV2 is an interactive <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">program</A> which improves the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing of an <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A>
+by registering it to a reference <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> whose <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing is accurately
+known.  NAV2 is currently specific to Voyager, Galileo, and Cassini flight
+images.  
+
+The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> to be navigated (primary image) and the reference image must have
+overlapping areas in which common features (tiepoints) can be identified.
+These tiepoints are used in combination with <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> projection data retrieved
+from the MIPS SPICE server to correct the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing angles (C-matrix) of
+the primary <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A>.
+
+In cases where the uncertainties in <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing for the primary and
+reference frames are equivalent, both images may be navigated simultaneously.
+The C-matrices of both frames are modified, with the geometric errors being
+split evenly between the two frames.
+
+The algorithms implemented in NAV2 are based on notes provided by
+Andy Ingersoll, 3-19-85.  See also VICAR programs NAV, FARENC and MANMATCH.
+
+EXECUTION:
+
+NAV2 is an interactive <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">program</A> and requires the allocation of a display device
+with an <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> plane, graphics plane, and cursor (e.g. trackball, mouse):
+
+      USE  EPA2		!allocate a display device
+      NAV2  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#inp">INP</A>=(PIC,REF)  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#target">TARGET</A>=targetname
+   or NAV2  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#inp">INP</A>=(PIC,REF)  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#out">OUT</A>=NEWPTS  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#target">TARGET</A>=targetname
+   or NAV2  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#inp">INP</A>=(PIC,REF,OLDPTS)  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#out">OUT</A>=NEWPTS  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#target">TARGET</A>=targetname
+where
+    PIC is the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> to be navigated (primary frame),
+    REF is a reference <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> whose <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing is accurately known.
+    OLDPTS and NEWPTS are optional input and output tiepoint files.
+    <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#target">TARGET</A> is a required parameter for Voyager.
+
+PIC and REF must be Galileo, Voyager, or Cassini images in byte format.
+The input images may be raw images containing geometric <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> distortions
+or images which have been geometrically corrected.
+
+If NEWPTS is included, NAV2 will output all tiepoints to this file.
+Tiepoints saved from a previous session can be input as an optional
+third input file (0LDPTS).  OLDPTS and NEWPTS are in IBIS graphics file format.
+
+OPERATION:
+
+NAV2 uses an east-longitude system.  For Voyager, latitudes are input
+and output to the user as planetographic.  Planetocentric latitudes are
+used for all other missions.  An oblate spheroid <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#target">target</A>-body model is used.
+
+Initially, the input frames are displayed on a split screen, with the primary
+frame on the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> and the reference frame on the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> (this is the same
+convention used by the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">program</A> PICREG).  The images are displayed at reduced
+resolution to display the complete field of view.  If tiepoints are input from
+a previous session, these are displayed in graphics (see OLDPTS and NEWPTS in
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">program</A> execution statement above).
+
+The MIPS SPICE server is accessed to retrieve the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> projection geometry
+for both the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> images.  If the input <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A>(s) contain geometric
+distortions, the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">program</A> will attempt to account for this.  Special provisions
+must be made for dealing with vidicon <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> distortions (e.g. Voyager).  See
+the following sections below for details:
+
+	GEOMETRIC <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">CAMERA</A> DISTORTIONS
+	ACCESSING SPICE DATA
+
+The primary frame is navigated via the following steps:
+
+   1) Using the cursor and split-screen display, the user identifies one or
+      more common features (tiepoints) in both images.
+
+   2) The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#fit">FIT</A> command is used to recompute the C-matrix so as to minimize
+      displacement errors (in pixels) between the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> images.
+      The displacement error for a tiepoint is zero if both <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A>
+      pixel locations <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#project">project</A> to the same latitude-longitude coordinates.
+      The RMS error, the tiepoint generating the maximum error, and the number
+      of points used in the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#fit">fit</A> are reported.
+
+   3) The user may iteratively <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#delete">delete</A> bad points and redo the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#fit">fit</A>,
+      or go back to acquire more tiepoints.
+
+   4) When the user exits from the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">program</A>, a final <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#fit">fit</A> is performed.
+      The (line,sample) position of the planet center and the north
+      angle (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#angln">ANGLN</A>) are computed and reported.  Finally, the corrected
+      <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing can be optionally stored in a C-kernel.
+
+All tiepoint selection is peformed interactively, with the user responding to
+prompts from the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">program</A>.  See NAV2 COMMAND PROCESSOR below.
+
+ADJUSTING FOR ATMOSPHERIC FEATURE MOTION:
+
+If the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#target">target</A>-body is a planet with an atmosphere, NAV2 will automatically
+prompt the user for intructions for dealing with zonal and meridional wind
+currents:
+
+	Do you wish to adjust for wind speed?
+	Enter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#y">Y</A> or <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#n">N</A> &gt
+
+If the user responds with '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#n">N</A>', then all tiepoints are assumed to be stationary.
+If the user responds with '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#y">Y</A>', the next prompt is issued:
+
+	Do you wish to split the pointing error between the two frames?
+	Enter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#y">Y</A> or <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#n">N</A> &gt
+
+Entering '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#y">Y</A>' will cause both primary and reference frames to be navigated
+simultaneously.  The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing angles of both frames are adjusted by
+moving each optic axis an equal distance (i.e. it is assumed that the
+uncertainties in <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing are equivalent for the two frames).
+
+If the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#target">target</A>-body is Jupiter, the following prompt is issued:
+
+	Do you wish to use the zonal velocity profile?
+	Enter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#y">Y</A> or <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#n">N</A> &gt
+
+Entering '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#y">Y</A>' will cause the zonal velocity of each tiepoint to be computed
+as a function of its latitude using a zonal velocity profile.  The profile is
+based on Voyager data.  The meridional velocities are assumed to be zero.
+
+The profile is a table consisting of (latitude, zonal-velocity) pairs, where
+the latitudes are stored in monotonically increasing order but at variable
+angular spacing.  For latitudes between table values, linear interpolation is
+used to compute the zonal velocity.  The table contains data between latitudes
+-55.26 and +55.26.  For latitudes outside the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#range">range</A> of the table, the zonal
+velocities are assumed to be zero.
+
+The SCET is used to determine the time separation between frames. This is used
+to convert zonal velocities into pixel displacements (see SCET parameter).
+
+At this point, control is passed to the NAV2 command processor.
+
+NAV2 COMMAND PROCESSOR:
+
+Upon entry, the user will be prompted to input commands.
+
+The user-prompts in NAV2 are nested, so that certain commands will
+invoke <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">program</A> modules which issue lower level prompts, and so forth.
+All prompts (ideally) will accept the '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#exit">EXIT</A> command, which causes
+an <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#exit">exit</A> to the next higher level prompt.  In many cases, entering
+
+The controlling <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">program</A> is identified by the prompt:
+
+		NAV2&gt
+
+Entering '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#help">HELP</A> will result in:
+
+	ENTER <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#exit">EXIT</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#czoom">CZOOM</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#h">H</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#hist">HIST</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#spikes">SPIKES</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#stretch">STRETCH</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#str1">STR1</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#str2">STR2</A>,
+        <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#gerase">GERASE</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#spts">SPTS</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#get">GET</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#delete">DELETE</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#fit">FIT</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#navpts">NAVPTS</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#navvel">NAVVEL</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#edit">EDIT</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#params">PARAMS</A>,
+        SL, SL1, SL2, SS, SS1, SS2, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#zoom">ZOOM</A>, U, U1, U2, D, D1, D2, L, L1,
+        L2, R, R1, R2, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#help">HELP</A>&gt
+
+If the user responds by typing carriage return (without entering any
+characters at all) the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">program</A> will acquire a tiepoint.  See Tiepoint
+Acquisition Cycle below.
+
+The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#czoom">CZOOM</A> command is used to center the display about a feature and
+change the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> resolution of the display.  Entering <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#czoom">CZOOM</A>=1 will
+cause the split screen to be re-displayed at normal resolution.  The
+user will be prompted to center the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> screens via the
+trackball.  If previously acquired features are visible, they are
+re-displayed in graphics.
+
+Entering '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#h">H</A> (for Home) will cause the original full-field-of-view
+display to appear.
+
+Entering <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#stretch">STRETCH</A>=(5,220) will cause a hardware stretch (linear) of
+the displayed images.
+
+The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#str1">STR1</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#str2">STR2</A> commands may be used to <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#stretch">stretch</A> the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> areas independently.  Entering <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#str1">STR1</A>=(10,128) will cause the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> area to be stretched as it is being written to the image-display memory
+plane.  Note that these commands are independent of the hardware <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#stretch">stretch</A>,
+so that following these commands with <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#stretch">STRETCH</A>=(5,220) will result in further
+stretching of the stretched images.
+
+The '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#hist">HIST</A> command displays the histograms of the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> areas for both <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> and
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> pictures.  The histograms are displayed in graphics, using a logarithmic
+scale in the frequency axis.  The histogram display may be modified by entering
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#spikes">SPIKES</A>=5, which will cause the five highest frequencies to be scaled to the
+maximum height of the frequency axis.
+
+Entering '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#gerase">GERASE</A> will erase the graphics plane.
+
+Entering '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#spts">SPTS</A> will re-display the acquired tiepoints.
+
+Entering <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#get">GET</A>=15 will move the cursor to feature 15 on the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A>
+screen.  If the feature is not visible, the display window will be
+moved so that it is.  The (line,sample) and (lat,lon) coordinates
+of the feature are reported.
+
+Entering <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#delete">DELETE</A>=15 will delete feature 15.  If you later change
+your mind, entering <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#restore">RESTORE</A>=15 will restore the feature.
+
+Entering <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#fit">FIT</A>=2 will cause the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> angular components ANGLA and
+ANGLB of the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> to be recomputed, resulting in an updated
+transformation from (line,sample) to (lat,lon).  The angles are
+recomputed by performing a least squares <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#fit">fit</A> so that points in the
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> occur at the same (lat,lon) coordinates as corresponding
+points in the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A>.
+
+Entering <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#fit">FIT</A>=3 will cause the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> angular components ANGLA, ANGLB,
+and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#angln">ANGLN</A> (north angle) of the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> to be recomputed.
+
+Entering <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#navvel">NAVVEL</A> will cause NAV2 to adjust for wind speed when fitting
+the tiepoints.  The user is prompted to specify processing modes for wind
+adjustment as before.  This command is valid for atmospheric planets only.
+
+Entering <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#navpts">NAVPTS</A> cancels any adjustments made for wind speed.
+
+Entering '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#edit">EDIT</A> will enable the user to edit the navigation data.
+See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#edit">EDIT</A> COMMAND below.
+
+Entering '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#params">PARAMS</A> will enable the user to <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#edit">edit</A> the area correlation
+parameters.  See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#params">PARAMS</A> COMMAND below.
+
+Entering SL=250 SS=80 will move the display windows of both <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> and
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> so that (line,samp)=(250,80) appears in the upper <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A>
+corner.
+
+Entering <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#zoom">ZOOM</A>=2 will magnify the displayed area to twice normal resolution
+(via pixel replication).
+
+The commands U, D, L, R are for moving the displayed areas up, down,
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A>, or <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A>.  Entering U=10 will move the displayed areas up 10 pixels.
+
+The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> may be moved independently using SL1, SS1, U1, D1, etc.
+Similarly, the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> may be moved using SL2, SS2, U2, D2, etc.
+
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#edit">EDIT</A> COMMAND
+
+Typing '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#edit">EDIT</A> will permit the user to edit the navigation data.
+
+	Enter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">LEFT</A> or <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">RIGHT</A>&gt
+
+Typing '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">RIGHT</A> will permit the navigation data for the right <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> to be
+edited.  The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#edit">EDIT</A> command processor is identified by the prompt:
+
+	<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#edit">EDIT</A>&gt
+
+The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#edit">EDIT</A> command processor enables the user to modify values which
+effect <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing.  These include planet constants, camera
+constants, and SEDR data.  Under normal circumstances, the user
+will never have to <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#edit">edit</A> the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing data since these are
+automatically retrieved from the SEDR file and frame label.
+
+Typing <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#help">HELP</A> will cause of all the available commands to be listed:
+
+	Enter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#exit">EXIT</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#help">HELP</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#geodet">GEODET</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#geocen">GEOCEN</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#pr">PR</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#er">ER</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">CAMERA</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#fl">FL</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#oaxis">OAXIS</A>,
+	<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#sc">SC</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#ssp">SSP</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#pc">PC</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#angln">ANGLN</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#range">RANGE</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#target">TARGET</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#wapc">WAPC</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#status">STATUS</A>,
+        <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#save">SAVE</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#restore">RESTORE</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#getsedr">GETSEDR</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#ckname">CKNAME</A>&gt
+
+Typing '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#exit">EXIT</A> will return control back to the NAV2 command processor.
+
+Typing '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#geodet">GEODET</A> will cause all latitudes input by the user to be treated as
+planetographic, and to report all latitudes to the user as planetographic.
+Typing '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#geocen">GEOCEN</A> will cause all input and output latitudes to be treated as
+planetocentric.  Note that the default is <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#geodet">GEODET</A> for Voyager and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#geocen">GEOCEN</A> for
+all other projects.
+
+
+Typing <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#pr">PR</A>=54450 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#er">ER</A>=60330 will change the values of the planet's
+polar and equatorial radii to 54450 and 60330 km respectively.
+
+Typing <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">CAMERA</A>=7 will change the camera-ID to VGR-1 NA (provided the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> is
+from Voyager).  The focal length, picture scale, and optic axis intercept for
+this <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> will be automatically set for this camera.
+
+Typing  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#fl">FL</A>=1200.175 will change the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> focal length to
+1200.175 mm.
+
+Typing <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#oaxis">OAXIS</A>=(400,300) will place the optical axis intercept
+at (line,sample)=(400,300).
+
+Typing <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#sc">SC</A>=80 will change the picture scale to 80 pixels
+per mm on the focal plane.
+
+Typing <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#ssp">SSP</A>=(60,240.3) will change the spacecraft position
+to (SCLAT,SCLON)=(60,240.3).
+
+Typing <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#pc">PC</A>=(445.3,558.4) will move the planet center to
+(SCLINE,SCSAMP)=(445.3,558.4).  This will cause the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing
+to be updated.
+
+Typing <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#angln">ANGLN</A>=190.9 will cause the orientation of the projected
+spin axis to be changed to 190.9 degrees, measured clockwise
+from <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> (the positive sample direction).
+
+Typing <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#range">RANGE</A>=4794909 will cause the distance from spacecraft to
+planet center to be changed to 4794909 km.
+
+Typing <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#target">TARGET</A>=SATURN will change the target-ID to Saturn and
+automatically changes the polar and equatorial radii to Saturn's
+nominal values.
+
+Typing <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#wapc">WAPC</A>=(455.1,376.2) changes the (line,sample) coordinates
+of the planet center in the wide-angle frame.  The (line,sample)
+coordinates are converted to the narrow-angle field of view and
+the result used as the (line,sample) coordinates for the NA planet
+center.  The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing is then updated.  Here it is assumed
+that the frame being processed is the NA from a WA-NA simultaneous
+exposure.
+
+Typing '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#status">STATUS</A> will cause a summary of the navigation data to be
+printed.
+
+Typing '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#save">SAVE</A> will store the current navigation data in the array
+SNAV.  Typing '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#restore">RESTORE</A> will replace the navigation data by
+whatever is in SNAV.  Typing '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#getsedr">GETSEDR</A> will replace the navigation
+data with the nominal pointing.
+
+Typing <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#ckname">CKNAME</A>=FARE specifies that the desired source of C-matrix is FARENC.
+Valid source names are:
+
+	DAVI	--Data determined by Mert Davies
+	NAV     --Data determined by <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">program</A> NAV
+	FARE    --Data determined by <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">program</A> FARENC
+	NAV2    --Data determined by <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">program</A> NAV2
+	NEAR    --Data determined by <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">program</A> MANMATCH
+        NAIF    --Data determined by NAIF
+
+The default is to select the C-matrix in the above order of priority.
+
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#params">PARAMS</A> COMMAND
+
+Typing '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#params">PARAMS</A> will enable the user to modify the area correlation
+parameters:
+
+	Enter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#exit">EXIT</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#corr">CORR</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#project">PROJECT</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#hpf">HPF</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#phase">PHASE</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#interp">INTERP</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nlw">NLW</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nsw">NSW</A>,
+        <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#zwind">ZWIND</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nocorr">NOCORR</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#noprojec">NOPROJEC</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nohpf">NOHPF</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nophase">NOPHASE</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nointerp">NOINTERP</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#status">STATUS</A>
+
+Typing '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#exit">EXIT</A> will return control to the NAV2 command processor.
+
+Entering '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#corr">CORR</A> will enable the area correlation algorithm.  The algorithm
+consists of multiplying the Fourier transform of the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> area by the
+complex conjugate of the transform of the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> area, computing the inverse
+transform and locating the maximum.
+
+Entering '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#project">PROJECT</A> will cause the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> area to be projected to the same
+perspective as the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> area, prior to correlation.  This feature
+corrects for large perspective differences between frames.
+
+Entering '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#hpf">HPF</A> will cause the axes of the transforms to be set to zero.
+This is equivalent to applying a high-pass filter to the areas prior
+to correlation.
+
+Entering '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#phase">PHASE</A> will cause the correlation to be performed using phase
+information only.
+
+Entering '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#interp">INTERP</A> will cause the correlation maxima to be located to
+sub-pixel accuracy by locating the centroid of the correlation peak.
+
+Entering <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nlw">NLW</A>=64 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nsw">NSW</A>=80 specifies the dimensions of the correlation
+areas to be 64x80 pixels.  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nlw">NLW</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nsw">NSW</A> must be even integers.
+
+Entering <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#zwind">ZWIND</A>=10 will cause a 10x10 window to be used for computing the
+average DN <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#value">value</A> centered on each tiepoint.  This value is stored in the
+output tiepoint file (see below).
+
+The commands '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nocorr">NOCORR</A>, '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#noprojec">NOPROJEC</A>, 'NHPF, '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nophase">NOPHASE</A>, and '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nointerp">NOINTERP</A> disable
+the corresponding functions.
+
+Entering '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#status">STATUS</A> displays the current parameter settings.
+
+The default values are '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#corr">CORR</A>, '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#noprojec">NOPROJEC</A>, '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#hpf">HPF</A>, '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nophase">NOPHASE</A>, '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#interp">INTERP</A>,
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nlw">NLW</A>=64 and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nsw">NSW</A>=64.
+
+TIEPOINT ACQUISITION CYCLE
+
+Tiepoints are selected by means of the split screen display.  When a new
+tiepoint is to be acquired, its initial location is determined by positioning
+the cursor over the feature in the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A>.  The user enters a carriage
+return (CR), thus sending a blank string to the command processor.  This
+signals the command processor to begin a tiepoint acquisition cycle.
+
+The coordinates of the cursor position on the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> are read and
+converted into (line,sample) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> coordinates.  The (lat,lon) coordinates
+of the selected feature are computed, based upon current <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing
+information, and the results reported:
+
+	FN= 25  (L1,S1)=( 345.23, 673.31)  (LAT1,LON1)=( 22.32,245.32)
+
+If the user has elected to compensate for atmospheric motion, the following
+prompt is issued:
+
+	Enter velocity components (U,V) &gt
+
+The zonal and meridional velocities should be entered in meters/sec.  If
+the Jupiter zonal velocity profile has been selected, U is automatically
+computed and the prompt is not issued.
+
+A rough estimate of the feature's location in the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> is obtained by
+computing the location of the corresponding (lat,lon) coordinates in the
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A>, compensating for any feature motion.  The cursor is automatically
+moved to this location in the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> screen and the following prompt is issued:
+
+	Position <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">RIGHT</A> cursor&gt
+
+The user may then position the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> cursor to center it over the feature.
+When the user is satisfied that the cursor has been properly centered,
+he responds by entering (CR).  The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">program</A> then performs an area correlation
+to refine the position of the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> feature (See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#params">PARAMS</A> COMMAND to modify
+the correlation parameters).  The resulting position is then reported:
+
+	        (L2,S2)=( 673.34, 124.32)  (LAT2,LON2)=( 25.23,247.31)
+
+The tiepoint is then stored and the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">program</A> returns with the NAV&gt prompt.
+
+The tiepoint acquisition cycle may be aborted at any time by entering
+'<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#exit">EXIT</A>.  If, for example, the selected feature is not visible in the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A>
+screen, the user should <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#exit">exit</A> the cycle to re-position the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> window.
+If a tiepoint is accidentally acquired, it may be deleted via the
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#delete">DELETE</A> command.
+
+Initially, the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">program</A> may fail badly in predicting the position of the
+feature in the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A>.  This is because the nominal pointing may
+be very inaccurate.  The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">program</A> periodically updates the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing
+of the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A>, based upon the tiepoints acquired up to that point.
+
+GENERAL COMMENTS
+
+The general rules regarding TAE parameters apply:
+
+Commands may be abbreviated, as long as enough letters are typed
+to insure uniqueness.
+
+When a command is not followed by a <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#value">value</A>, it must be preceded
+by an apostrophe, e.g. '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#edit">EDIT</A>.  The exception is that if the first
+keyword in a list is entered, the apostrophe may be ommitted,
+e.g:
+	Enter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">LEFT</A> or <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">RIGHT</A>&gt L
+
+If you need <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#help">help</A> or want to <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#get">get</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#out">out</A> of a routine, try typing
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#help">HELP</A> or <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#exit">EXIT</A>.  Sometimes it works, sometimes it doesn't....
+
+GEOMETRIC <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">CAMERA</A> DISTORTIONS:
+
+NAV2 assumes that the input images (primary and reference) have been acquired
+via a <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> system with a shutter and focal plane (e.g. vidicon/CCD sensor),
+so that the images are perspective projections of the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#target">target</A> body.  The input
+images may be raw images containing geometric <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> distortions (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A>-space
+frames), or images which have been geometrically corrected (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#object">object</A>-space
+frames).
+
+NAV2 corrects for Galileo or Cassini <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> distortions using a built-in radial
+distortion model.
+
+If a Voyager <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A>-space frame is used, then the reseau locations must first
+be located and stored into a reseau location file (see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#res">RES</A> parameter):
+
+  	RESLOC  (PIC,RFILE)
+	RESLOC  (REF,RFILE)
+	NAV2  (PIC,REF)  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#out">OUT</A>=TPT  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#res">RES</A>=RFILE
+
+In this case, both PIC and REF are <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A>-space frames (It is possible for one
+or both images to be <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#object">object</A>-space).  The reseaux are located using RESLOC
+and stored in the Reseau Location File.   NAV2 then retrieves the reseau
+locations from the file (see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#res">RES</A> parameter).
+
+If the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#res">RES</A> parameter is not specified, the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">program</A> automatically accesses the
+file for the planet-of-encounter as follows:
+
+		VGR:[CCA314.VGR]RESJ.FIL	(Jupiter)
+		VGR:[CCA314.VGR]RESS.FIL	(Saturn)
+		VGR:[CCA314.VGR]RESU.FIL	(Uranus)
+		VGR:[CCA314.VGR]RESN.FIL	(Neptune)
+
+Note that the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#res">RES</A> parameter is not required for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#object">object</A>-space frames.
+
+ACCESSING SPICE DATA
+
+NAV2 will retrieve the projection geometry for both images by accessing the
+MIPS SPICE server.  Data is retrieved from the server by <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#target">target</A> name,
+spacecraft ID, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> ID, and Spacecraft-Event-Time.  These <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> identifiers
+are usually determined by scanning the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> label.  Note, however, that the
+Voyager flight label does not include the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#target">target</A> name.  Therefore, the target
+parameter must be included when running NAV2 on Voyager images.
+
+The following parameters may also be used to control the access of SPICE data:
+
+  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#spicemode">SPICEMODE</A> specifies whether SPICE data is retrieved from LOCAL kernels or
+  or via the REMOTE SPICE server.  If defaulted, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#spicemode">SPICEMODE</A> is set to the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#value">value</A>
+  of the environmental variable DEFAULTSPICE.
+
+  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#ckname">CKNAME</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#ckid">CKID</A> are alternative ways to specify the C kernel to be used.  For
+  example, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#ckname">CKNAME</A>=FARE or <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#ckid">CKID</A>=M904 specifies that MIPS_FARENC.CK is to be used.
+  When specified, the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#ckid">CKID</A> parameter overrides the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#ckname">CKNAME</A> parameter.  If the
+  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing data is not found in the requested C kernel, the other C 
+  kernels are searched.
+
+Within a given C kernel, there may be a number of different versions of <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A>
+pointing for a given <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A>.  The segment identifier for each version contains
+provenance information identifying the creator of the pointing data.  One or
+more of the following parameters may be used to retrieve a specific 
+instance of <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing based upon this provenance information:
+
+  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#cdate">CDATE</A> specifies the date and time the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing was created.
+  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#reqnum">REQNUM</A> identifies the request number associated with the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing.
+  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#purpose">PURPOSE</A> identifies the purpose for creating the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing.
+  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">PROGRAM</A> identifies the program which created the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing.
+  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#spkid">SPKID</A> identifies the SP-kernel used to create the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing.
+  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#userid">USERID</A> identifies the user who created the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing.
+  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#groupid">GROUPID</A> identifies the group which created the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing.
+  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#institute">INSTITUTE</A> identifies the facility which created the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing.
+
+  A complete list of CK and SPK IDs are located in the ASCII file assigned the
+  logical name (or environmental variable) KERNELDB.
+
+TIEPOINT FILE FORMAT
+
+The tiepoints are written to an IBIS interface (tabular) file with one
+row for each tiepoint.  The following column format is used:
+
+     Column       Description			   Format
+
+        1     First input matching line            real*4
+        2     First input matching sample          real*4
+        3     Second input line                    real*4
+        4     Second input sample                  real*4
+	5     First input estimated line           real*4
+	6     First input estimated sample         real*4
+        7     First input Z <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#value">value</A>                  real*4
+        8     Second input Z <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#value">value</A>                 real*4
+        9     Correlation <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#value">value</A>                    real*4
+       10     Sequence number                      real*4
+
+The estimated (line,sample) coordinates of the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> are computed
+using the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing information retrieved from the SEDR (prior to
+any updates by the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">program</A>).  The Z values are obtained by averaging
+the DN values over an area centered on the tiepoint (see <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#zwind">ZWIND</A> and
+ZREJECT parameters).  The correlation <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#value">value</A> is a number between -1 and
++1, where +1 represents perfect positive correlation and -1 represents
+perfect negative correlation.  The sequence number is 1 for the first
+tiepoint, 2 for the second, etc.
+
+HISTORY
+
+Original Programmer: Gary Yagi, 1 November, 1986
+<A NAME="CogProg">Current Cognizant Programmer: Gary Yagi</A>
+Revisions:
+ 1988-09-23 GMY * Modify for new VRDI interface, multiple versions of <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A>
+		  pointing in SEDR.
+		* Implement 1024x1024 display capability.
+		* Add code to support systems with only one video plane.
+		* Implement capability to process <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A>-space frames.
+		* Change tiepoint file format to IBIS interface file.
+		* Add independent stretches for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> images.
+		* Implement compensation for atmospheric feature motion.
+		* Add Jupiter zonal-velocity profile.
+		* Fix FRs 35652 and 37254.
+		* Numerous other modifications and minor bug fixes.
+ 1990-07-28 GMY * Galileo conversion
+ 1991-08-21 GMY * Fix FRs 66566, 61146.
+ 1997-05-07 SMC Port to Unix and Alpha
+                 * Switch the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> memory plane (IMP) of image and tiepoint,
+                   so the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> can be properly displayed on 8-bit device.
+                 * Upgrade all CONVISOS calls to take camera_id parameter.
+                 * Replace all implicit declaration with explicit ones.
+                 * distinguish between REAL*8 and REAL*4, the old VMS was able
+                   to operate between the two types interchangablly, but the
+                   new OS has problems with it.
+                 * Upgraded to GETSPICE2 and PUTSPICE2
+                 * Convert the S/C ID and Planet ID of the VGR SPICE/SEDR
+                   buffer to that of the GLL's so that PBNAME and PUTSPICE2
+                   can operate and terminate correctly
+                 * Replaced the xdglconstant call with xdglinit so that the
+                   graphic plane can be displayed accross all kinds of devices
+                   and that colors can be used.
+                 * Modified maplabel.f/zonal routine to use Binary Searching
+                   algorithm to find the proper record.  The previous routine
+                   had a problem of going into infinite loop.
+ 2001-10-10 GMY Fix Linux compile errors (NAV2_LINUX)
+                Modify to handle Cassini and VGR <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> space.
+		Add Cassini and VGR <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> space test cases to unit test.
+ 2016-02-18 WLB Added enable/disable-log to tstnav2.pdf
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#inp"><H3>INP</H3></A>
+STRING - File names for
+input and reference images,
+and optional input tiepoint
+file.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#out"><H3>OUT</H3></A>
+STRING - File name for
+ouput tiepoint file.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#spicemode"><H3>SPICEMODE</H3></A>
+Optional keyword
+Location of SPICE kernels
+(LOCAL or REMOTE)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#ckname"><H3>CKNAME</H3></A>
+Optional 4-char string
+C-kernel name
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#ckid"><H3>CKID</H3></A>
+Optional 4-char string
+C-kernel ID
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#userid"><H3>USERID</H3></A>
+Optional 3-char string
+User who created <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#groupid"><H3>GROUPID</H3></A>
+Optional 3-char string
+Group which created <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#institute"><H3>INSTITUTE</H3></A>
+Optional 4-char string
+Facility which created <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#purpose"><H3>PURPOSE</H3></A>
+Optional 4-char string
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#purpose">Purpose</A> for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program"><H3>PROGRAM</H3></A>
+Optional 6-char string
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">Program</A> which created <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#spkid"><H3>SPKID</H3></A>
+Optional 4-char string
+SP kernel for created <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#reqnum"><H3>REQNUM</H3></A>
+Optional 4-char string
+IPL request number for created <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#cdate"><H3>CDATE</H3></A>
+Optional 12-char string
+Date and time <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">camera</A> pointing was created
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#target"><H3>TARGET</H3></A>
+STRING - <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#target">Target</A> body name
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#dbug"><H3>DBUG</H3></A>
+KEYWORD - Output diagnostic
+information for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#program">program</A>
+maintenance.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#czoom"><H3>CZOOM</H3></A>
+INTEGER - Center display and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#zoom">zoom</A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#h"><H3>H</H3></A>
+KEYWORD - Display entire <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#hist"><H3>HIST</H3></A>
+KEYWORD - Histogram of displayed <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> area
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#spikes"><H3>SPIKES</H3></A>
+INTEGER - Number of <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#spikes">spikes</A> in histogram.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#stretch"><H3>STRETCH</H3></A>
+INTEGER - <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#stretch">Stretch</A> the displayed <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#str1"><H3>STR1</H3></A>
+INTEGER - <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#stretch">Stretch</A> the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> display
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#str2"><H3>STR2</H3></A>
+INTEGER - <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#stretch">Stretch</A> the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> display
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#gerase"><H3>GERASE</H3></A>
+Erase graphics plane
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#spts"><H3>SPTS</H3></A>
+KEYWORD - Display tiepoints
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#get"><H3>GET</H3></A>
+INTEGER - print tiepoint information
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#delete"><H3>DELETE</H3></A>
+INTEGER - <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#delete">Delete</A> tiepoint
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#fit"><H3>FIT</H3></A>
+INTEGER - <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#fit">Fit</A> tiepoints and
+compute new OM and C matrices.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#navvel"><H3>NAVVEL</H3></A>
+KEYWORD - Adjust for atmospheric
+feature motion.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#navpts"><H3>NAVPTS</H3></A>
+KEYWORD - Cancels adjustment for
+atmospheric motion.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#sl"><H3>SL</H3></A>
+INTEGER - Set starting line
+of display window.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#ss"><H3>SS</H3></A>
+INTEGER - Set starting sample
+of display window.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#u"><H3>U</H3></A>
+INTEGER - Raise displayed area
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#d"><H3>D</H3></A>
+INTEGER - Lower displayed area
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#l"><H3>L</H3></A>
+INTEGER - Move displayed area <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#r"><H3>R</H3></A>
+INTEGER - Move displayed area <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#sl1"><H3>SL1</H3></A>
+INTEGER - Set starting line
+of display window, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> only
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#ss1"><H3>SS1</H3></A>
+INTEGER - Set starting sample
+of display window, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> only
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#u1"><H3>U1</H3></A>
+INTEGER - Raise displayed area,
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> only
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#d1"><H3>D1</H3></A>
+INTEGER - Lower displayed area,
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> only
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#l1"><H3>L1</H3></A>
+INTEGER - Move displayed area <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A>,
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> only
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#r1"><H3>R1</H3></A>
+INTEGER - Move displayed area <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A>,
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> only
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#sl2"><H3>SL2</H3></A>
+INTEGER - Set starting line
+of display window, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> only
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#ss2"><H3>SS2</H3></A>
+INTEGER - Set starting sample
+of display window, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> only
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#u2"><H3>U2</H3></A>
+INTEGER - Raise displayed area,
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> only
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#d2"><H3>D2</H3></A>
+INTEGER - Lower displayed area,
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> only
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#l2"><H3>L2</H3></A>
+INTEGER - Move displayed area <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A>,
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> only
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#r2"><H3>R2</H3></A>
+INTEGER - Move displayed area <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A>,
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#right">right</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#image">image</A> only
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#zoom"><H3>ZOOM</H3></A>
+INTEGER - Magnify or compress displayed
+area by an integral factor.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#params"><H3>PARAMS</H3></A>
+KEYWORD - <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#edit">Edit</A> processing parameters
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#corr"><H3>CORR</H3></A>
+KEYWORD - Enable correlation
+function.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#project"><H3>PROJECT</H3></A>
+KEYWORD - <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#project">Project</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#left">left</A> area prior
+to correlation.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#hpf"><H3>HPF</H3></A>
+KEYWORD - High pass filter areas
+prior to correlation.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#phase"><H3>PHASE</H3></A>
+KEYWORD - Correlate <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#phase">phase</A>
+information only.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#interp"><H3>INTERP</H3></A>
+KEYWORD - Locate centroid
+of correlation peak.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nlw"><H3>NLW</H3></A>
+INTEGER - Length of correlation
+window in pixels.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nsw"><H3>NSW</H3></A>
+INTEGER - Width of correlation
+window in pixels.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#zwind"><H3>ZWIND</H3></A>
+INTEGER - Size of area used to
+compute average DN (Z) values.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nocorr"><H3>NOCORR</H3></A>
+KEYWORD - Disable correlation
+function.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#noprojec"><H3>NOPROJEC</H3></A>
+KEYWORD - Disable projection
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nohpf"><H3>NOHPF</H3></A>
+KEYWORD - Disable high
+pass filter.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nophase"><H3>NOPHASE</H3></A>
+KEYWORD - Disable <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#phase">phase</A>
+correlation.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#nointerp"><H3>NOINTERP</H3></A>
+KEYWORD - Disable centroid
+location.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#edit"><H3>EDIT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#edit">Edit</A> navigation data
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#geodet"><H3>GEODET</H3></A>
+Use planetographic latitudes
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#geocen"><H3>GEOCEN</H3></A>
+Use planetocentric latitudes
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#pr"><H3>PR</H3></A>
+REAL - Polar radius (km)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#er"><H3>ER</H3></A>
+REAL - Equatorial radius (km)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#fl"><H3>FL</H3></A>
+REAL - <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#camera">Camera</A> focal length (mm)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#oaxis"><H3>OAXIS</H3></A>
+REAL - Optical axis intercept
+ (line,sample) coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#sc"><H3>SC</H3></A>
+REAL - Picture scale (pixels/mm)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#ssp"><H3>SSP</H3></A>
+REAL - Spacecraft position (lat,lon)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#pc"><H3>PC</H3></A>
+REAL - Planet center (line,sample)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#wapc"><H3>WAPC</H3></A>
+REAL - Wide-angle planet center (line,sample)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#angln"><H3>ANGLN</H3></A>
+REAL - North angle
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#range"><H3>RANGE</H3></A>
+REAL - Spacecraft <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#range">range</A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#save"><H3>SAVE</H3></A>
+KEYWORD - <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#save">Save</A> navigation data
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#restore"><H3>RESTORE</H3></A>
+KEYWORD - <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#restore">Restore</A> navigation data
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#getsedr"><H3>GETSEDR</H3></A>
+KEYWORD - Retrieve SEDR nav data
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#status"><H3>STATUS</H3></A>
+KEYWORD - Print navigation data or processing parameters
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#res"><H3>RES</H3></A>
+STRING--OPTIONAL
+Specifies the Voyager Reseau Location File.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#help"><H3>HELP</H3></A>
+List available commands
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#exit"><H3>EXIT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2_level2.html#exit">Exit</A> from routine
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/nav2.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

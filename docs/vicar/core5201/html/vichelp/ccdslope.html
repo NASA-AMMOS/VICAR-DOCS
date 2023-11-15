@@ -1,0 +1,360 @@
+<HTML>
+<HEAD><title>HTML Help for CCDSLOPE</title></HEAD>
+<BODY>
+<H1>Help for CCDSLOPE</H1>
+<pre>
+PURPOSE:
+ 
+CCDSLOPE measures the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#light">light</A> transfer properties of a CCD camera system.
+The camera's response to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#light">light</A> is assumed to be linear, and the slope
+and offset of the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#light">light</A> transfer curve are determined by the program.
+ 
+The program is one of a series of programs originally developed to support
+radiometric calibration of the Galileo SSI camera system.
+ 
+References:
+ D-4264  MIPL Software Structural Design for the Instrument
+         Calibration of GLL SSI Science Processing.
+ D-tbd   Software Design Document for Instrument Calibration -
+         Cassini ISS
+ 
+
+EXECUTION:
+ 
+         CCDSLOPE <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#inp">INP</A>=LTF.DAT <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#out">OUT</A>=MARK.DAT user-parameters...
+ 
+The input is a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#light">Light</A> Transfer File (LTF) containing statistical data for
+specified areas in the image for each exposure of a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#light">light</A> transfer
+sequence.  The LTF must have been previously initialized via LTGEN and
+loaded with data via MOMGEN.
+ 
+The output is an optional MARK-format tiepoint data set containing the
+centers of all rejected areas.
+ 
+MATHEMATICAL BACKGROUND:
+ 
+For a linear camera system, the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#light">light</A> transfer curve has the following
+form:
+                d = m*e + b
+ 
+where
+        d = output signal (DN)
+        e = incident <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#light">light</A> energy (foot-lambert-milliseconds (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#units">UNITS</A>=LUMINANC) or
+                    picoamp-milliseconds (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#units">UNITS</A>=RADIANCE))
+ 
+and m and b are the slope and offset terms to be determined.
+The incident <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#light">light</A> energy is computed from
+ 
+                e = L*t
+ 
+where
+        L = <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#light">light</A> canon setting (foot-lamberts (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#units">UNITS</A>=LUMINANC) or
+                                 picoamp (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#units">UNITS</A>=RADIANCE))
+        t = exposure time (milliseconds)
+ 
+CCDSLOPE performs a least squares fit to solve for m and b, given data
+points d  acquired at exposure times t .
+        i                             i
+ 
+OPERATION:
+
+CCDSLOPE performs the following steps:
+ 
+  1) Read data from the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#light">Light</A> Transfer File.
+  2) Compute slope and offset for each area.
+  3) Compute mean value for slope and offset and flag all areas
+     deviating by more than 2 sigma from the mean.
+  4) Re-compute the mean value for slope and offset, ignoring all
+     flagged values as specified by the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#reject">REJECT</A> parameter.
+ 
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#light">light</A> transfer curve slope and offset for a given area is determined
+by computing the mean DN and energy at each exposure time, and fitting
+the resulting data points (d ,t ) via least squares.
+                            i  i
+ 
+The dark current frame (EXPO=0.0) is normally included as a data point
+on the curve.  For GLL <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#light">light</A> transfer sequences which contain extended
+exposure mode frames, an adjustment is required to correct for differences
+between the normal and extended exposure dark current.  This correction
+consists of subtracting the extended exposure dark current and adding
+the normal dark current to the mean DN's of all extended exposure frames.
+ 
+If the keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#subdc">SUBDC</A> is specified, the dark current is subtracted from the
+mean DN at each exposure.  If extended exposure frames exist, then the
+extended exposure dark current is subtracted the the mean DN's at these
+exposures.
+ 
+If extended exposure mode frames exist (possible for Galileo data), the
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#extexpo">EXTEXPO</A> parameter must normally be specified to indicate the exposure
+level at which the extended exposures begin.
+ 
+   Example:  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#extexpo">EXTEXPO</A>=7 specifies that the 7th exposure level (above the
+             dark current) begins the extended exposures.
+ 
+However, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#light">light</A>-transfer sequences consisting entirely of extend-exposure
+frames should be input as if they were normal exposures, i.e. the extended-
+exposure dark-current should be inserted in place of the normal dark-current
+and the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#extexpo">EXTEXPO</A> parameter should not be used.
+ 
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#offsets">OFFSETS</A> parameter is used to specify a shutter-offset file (as generated
+by program CCDRECIP) containing the shutter-offset for each line or sample
+of the image (800 values for GLL or 1024 for Cassini).  These shutter-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#offsets">offsets</A>
+are used to correct for differences between the actual and commanded
+exposures.  If the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#offsets">OFFSETS</A> parameter is not specified, then a mean shutter
+offset is used (see <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#mofset">MOFSET</A> parameter).
+ 
+Note:  The shutter-offset file supplied must contain one and only one
+entry for each line or sample of the image data.  The 800 entries in
+Galileo's line-dependent shutter-offset file correspond to the 800 lines
+of a Galileo image.  The 1024 entries in the Cassini sample-dependent
+shutter-offset file correspond to the 1024 samples of a Cassini image.
+ 
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#mofset">MOFSET</A> parameter may be used to specify a mean shutter-offset.  If
+line- or sample-dependent shutter-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#offsets">offsets</A> are input via the OFFSETS
+parameter, then the mean shutter-offset is computed by averaging these
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#offsets">offsets</A> (overriding the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#mofset">MOFSET</A> parameter).
+ 
+If the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#reject">REJECT</A> parameter is specified (default=1), areas may be rejected
+because of a bad value for the slope (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#reject">REJECT</A>=1), offset (REJECT=2),
+or either (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#reject">REJECT</A>=3).  If REJECT=0, no area rejection is performed.
+ 
+If the keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#deltax">DELTAX</A> is specified, the above steps are repeated
+after adjusting the energy levels so that the resulting curve
+passes through the origin.  This is accomplished by adding the
+ratio OFFSET/SLOPE to each energy term.
+ 
+CCDSLOPE prints <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#out">out</A> the following:
+ 
+  1) Slope and offset for each area specified.
+  2) Summary of all areas flagged for bad slope or offset.
+  3) A <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#table">table</A> listing mean DN vs input <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#light">light</A> energy for 6 regions.
+  4) A global value for the slope and offset, computed by combining
+     the data for all the good areas (and performing a fit.
+ 
+If an output file is specified, then the centers of all flagged values
+as specified by the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#reject">REJECT</A> parameter are stored in a MARK format data
+set.
+ 
+If a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">PLOT</A> file is specified, a plot of mean DN vs input <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#light">light</A> energy
+is output to the file.  The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A> is generated for the four corners and
+center of the frame, and for the entire frame.
+ 
+The illumination value specified by the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#light">LIGHT</A> parameter is used to convert the
+exposure times (msec) into incident energy (Foot-Lambert-msec (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#units">UNITS</A>=LUMINANC)
+or picoamp (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#units">UNITS</A>=RADIANCE)).  The illumination value of for this <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#light">Light</A> 
+Transfer File may be defaulted such that it is read from the label of the 
+file (for Cassini).  Parameter input will always override the value in the 
+label.
+ 
+If an output file is specified for the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#table">TABLE</A> parameter, an ASCII file of
+tab-delimitted text is output.  This file will contain a tabular list of the
+data contained in the plots.  For each of 6 areas (Upper left, Upper right,
+Lower left, Lower right, Center and Whole frame), the following values are
+tabulated for all exposure levels present in the LT file:
+ 
+ Mean DN, DN computed from derived Slope and Offset, Energy
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">PLOT</A> OUTPUTS
+
+    The other type of output come from the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">PLOT</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plotfmt">PLOTFMT</A> parameters.
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">PLOT</A> allows the user to display data from 5 areas on the CCD on an x,y
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A> using the gnuplot package after exiting the program. PLOT produces
+a file of gnuplot commands contained in a file having a .gpi file extension.
+Another file with an .asc extension is create containing columns of data
+that are displayed by the gpi file.
+
+   The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plotfmt">PLOTFMT</A> parameter allows the user to generate a postscript file of
+the output for use in documentation by choosing <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plotfmt">PLOTFMT</A>=EPS. The default
+is to generate a gnuplot interactive display.
+
+  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">PLOT</A> NAMING CONVENTIONS
+
+  The user should enter only the parent file name without an extension
+  for the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">PLOT</A> parameter.  The program will supply the extensions.
+
+  For example, if the user has an input file of indata.dat and  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">PLOT</A>=outplot
+  then for the interactive <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A> the following files are produced:
+
+     outplot.gpi
+     indata.dat.asc
+
+  The first file is the gnuplot instruction file and the second is the
+  data file used by gnuplot.      
+
+  If the user wanted an encapsulate postscript file with <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plotfmt">PLOTFMT</A>=eps
+  then the following files are produced:
+
+     outplot.eps.gpi
+     indata.dat.asc
+
+  Remember entering the following command gives the eps file, outplot.eps
+
+  ush gnuplot outplot.eps.gpi
+
+  If you move the gpi file to another directory, you must also move the
+  input data file, indata.dat.asc to the same directory.
+
+  Note that the gpi file produced by this program has the name of the
+  input file embedded in the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A> command inside the gpi file, e.g..
+
+  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A>  'indata.dat.asc' u  1: 9 t .......
+
+
+USING GNUPLOT
+
+
+  INTERACTIVE:
+
+    This program uses the gnuplot package for its plots. Gnuplot is a
+  separate package from Vicar and is not actually invoked inside this
+  program.  Instead this program creates a template of gnuplot commands
+  which are written <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#out">out</A> as a separate file. The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A> is then viewed after
+  exiting this program. The file has the extension .gpi. You view
+  the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A> by issuing the following command in the vicar shell.
+
+  ush gnuplot output.gpi
+
+  or external to vicar as
+
+  gnuplot output.gpi
+
+    After viewing the data, you close the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A> by clicking the mouse anywhere
+  except on the top bar of the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A>. Clicking on the top bar allows you
+  to move the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A> to any convenient place on the terminal screen.  (While
+  the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A> is displayed you cannot enter any commands to the vicar shell).
+
+  The data to be plotted by gnuplot is read from a separate file, created
+  by this program, which contains columns of data in ascii text.
+  File naming conventions are discussed in the OUTPUT section, but in this
+  case that file extension will be .asc.
+
+  It is possible to keep the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A> alive for comparison purposes by issuing
+  the following command.
+
+  ush gnuplot --persist output.gpi
+
+  (You will be able to enter commamds to the vicar shell after clicking on
+  the mouse on the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A>).
+
+  Note: This program creates 5 output plots per run. You bring up each <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A>
+  panel sequentially. You close each <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A> by clicking the mouse on any
+  portion of the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A>.
+
+
+  HARDCOPY:
+
+  This program also allows you to create a hardcopy encapsulated postscript
+  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A> suitable for publications. This file can be viewed with ghostscript
+  or gimp. The encapsulated postscript file is not created by this program
+  by by the gnuplot program from a gpi file made especially for this purpose.
+  this file has the extension, eps.gpi. You create the hardcopy <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A> via
+  the following command
+
+  ush gnuplot output.eps.gpi
+
+  This creates the eps file output.eps. You can view this file by
+
+  ush gimp output.eps
+
+    DEVELOPER Note:
+
+    This program used to link to the XRT <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A> library -lxrt. Calls to
+  that library were mitigated through a Calcomp conversion library,
+  xrtps located in the p2 subroutine library. With the conversion to
+  gnuplot, neither of these packages are used.
+
+ 
+<A NAME="examples">EXAMPLE:</A>
+ 
+   CCDSLOPE LTF.DAT <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#out">OUT</A>=MRK.DAT <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#offsets">OFFSETS</A>=OFFSETS.DAT <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">PLOT</A>=CCDSLOPE.PLT
+   MARK (PIC,MRK.DAT) A                 !Scribe boxes around bad centers
+ 
+where PIC is one of the flat field frames used in the calibration.
+ 
+HISTORY:
+
+ 1984-10-31 M.E.MORRILL - Initial release
+ 1985-01-17 M.E.MORRILL - Adding mark output for rejected areas
+ 1985-01-27 M.E.MORRILL - Adding iterative loop control
+ 1985-02-18 M.E.MORRILL - Adding sigma tolerance parameter
+ 1985-02-19 M.E.MORRILL - Redefined iteration for extended expo modes.
+ 1986-08-25 G.M.Yagi - Code and documentation clean-up
+ 1987-06-01 G.M.Yagi - Add <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A> of RETICLES
+ 1987-09-25 G.M.Yagi - Fix summation mode plots
+ 1987-11-01 G.M.Yagi - Convert to new CPLT plotting routines
+ 1988-03-03 G.M.Yagi - Change PDF to treat all <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#extexpo">EXTEXPO</A> call.
+ 1991-06    W.P.Lee - Strengthen Level-2 Variable HELP Descriptions (FR #64654) Also, resolve the EMPTY <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">PLOT</A> file problem that LKW encountered
+ 1994-06-25 C.C.Avis - Add tabular output, read Cassini labels for Luminance, change <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#light">LIGHT</A> to LUMINANC, allow for line- or sample-dependent shutter-offset file, add comments
+ 1995-01-23 C.C.Avis - Changed calculation of SIGMAs
+ 1995-01-14 J.R.Yoshimizu - Changed LUMINANC to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#light">LIGHT</A>.  Added <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#units">UNITS</A>
+ 1995-07-24 J.R.Yoshimizu - Look for RADIANCE not LUMINANCE in label.  Changed format of statistics.
+ 1995-08-22 C.C.AVIS - Added tests with noise
+ 1996-01-30 C.C.AVIS - Clarified <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#table">table</A> headers
+ 1997-04-08 T.Huang - Ported from VAX to UNIX to support CASSINI
+ 1999-04-27 GMY - Declared P an integer to avoid compiler err on SGI.
+ 2005-01-28 LWK - Changed & to * in alternate returns, disabled variable use in format statement in subr.GENTBL, for Linux.
+ 2012-11-23 R. J. Bambery - Linux 64-bit, Gnuplot
+ 2013-02-13 R. J. Bambery - Documentation and test updates
+ 2013-07-07 R. J. Bambery - Refine <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A> ranges
+ 2013-07-13 R. J. Bambery - Adjusted eps format to more readable fonts Remove vestiges of debug statments   
+ 2015-08-19 W. L. Bunch - Fixed loop logic bug in DELTX case
+ 
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#inp"><H3>INP</H3></A>
+ STRING COUNT=1
+ The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#light">Light</A> Transfer File.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#out"><H3>OUT</H3></A>
+ STRING--OPTIONAL
+ MARK formated locations
+ of rejected areas.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot"><H3>PLOT</H3></A>
+ STRING--OPTIONAL
+ Specifies output file for
+ DN vs energy <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plotfmt"><H3>PLOTFMT</H3></A>
+ Output <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A> format
+ GNUPLOT or EPS
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#subdc"><H3>SUBDC</H3></A>
+ KEYWORD--OPTIONAL
+ Specifies dark current
+ subtraction from mean DN's.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#extexpo"><H3>EXTEXPO</H3></A>
+ INTEGER--OPTIONAL
+ Specifies extended-exposure
+ level
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#sigtol"><H3>SIGTOL</H3></A>
+ INTEGER--OPTIONAL
+ Specifies Sigma Tolerance
+ level
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#reject"><H3>REJECT</H3></A>
+ INTEGER--OPTIONAL
+ The index for REJECTION
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#mofset"><H3>MOFSET</H3></A>
+ REAL--OPTIONAL
+ Mean shutter offset
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#offsets"><H3>OFFSETS</H3></A>
+ STRING--OPTIONAL
+ Specifies shutter-offset file.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#deltax"><H3>DELTAX</H3></A>
+ KEYWORD--OPTIONAL
+ Specifies whether repetitive
+ adjustment of energy levels is
+ needed to force the LT Curve
+ passing through origin
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#units"><H3>UNITS</H3></A>
+ Specifies whether the
+ illumination values are
+ RADIANCE or LUMINANC
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#light"><H3>LIGHT</H3></A>
+ REAL OPTIONAL
+ Illumination value in
+ Relative Foot-Lamberts
+ or picoamp
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#table"><H3>TABLE</H3></A>
+ Specifies output <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#table">table</A>
+ of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope_level2.html#plot">plot</A> data
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ccdslope.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

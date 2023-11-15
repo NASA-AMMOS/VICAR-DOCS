@@ -1,0 +1,162 @@
+<HTML>
+<HEAD><title>HTML Help for MARSUVWPROJ</title></HEAD>
+<BODY>
+<H1>Help for MARSUVWPROJ</H1>
+<pre>
+PURPOSE:
+
+MARSUVWPROJ projects a surface normal onto an arbitrary plane in space.
+The result is a normalized 3-D vector which is constrained to lie in the plane.
+
+Currently, the plane can only be a vertical plane, aligned with the X-Z
+axes, and then rotated by <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#angle">ANGLE</A> about the +Z axis.  So, a value for ANGLE
+of 0 degrees will project to the X-Z plane, while a value of 90 degrees
+will project to the Y-Z plane.  Other parameters to specify other rotations
+may be added in the future.
+
+The original intent of this program was to deal with the stuck arm joint #1
+on Opportunity (Sep. 08).  By providing the joint #1 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#angle">angle</A> (converted to
+degrees, and note that the stuck <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#angle">angle</A> is negative, meaning the plane rotates
+to the left), it reduces the available degrees of freedom for the surface
+normal.  This helps determine what is reachable with the reduced capability
+of the arm.
+
+However, the program is not mission-specific; it can be used in any situation
+requiring projection of a surface normal.
+
+The input for MARSUVWPROJ is a UVW image such as that created by the MARSUVW
+program, and an <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#angle">angle</A> of rotation (see above).  The UVW file can be a single
+3-band file or three 1-band files; see MARSUVW for details.
+
+The output of MARSUVWPROJ is a single 3-band file of type REAL (a surface
+normal, like the input).  It should support outputting 3 1-band files as
+well, but his has not been implemented.
+
+EXECUTION:
+
+marsuvwproj <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#inp">inp</A>=data.uvw <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#out">out</A>=proj.uvw <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#angle">angle</A>=-6.777289
+where:
+data.uvw is an input 3-band image of type REAL with the U, V, and W components
+of the unit vector for each pixel.
+
+METHOD:
+
+The algorithm to compute the projection is as follows:
+
+* Convert UVW to the frame specified by <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#coord">COORD</A> et al, if necessary.  This should
+be the rover frame for the Opportunity case.
+
+* Construct a rotation quaternion representing a rotation of the specified
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#angle">angle</A> around the +Z axis.  Other rotations may be supported in the future.
+
+* Rotate the UVW vectors by the negative of the rotation quaternion.  This
+aligns the plane with the X-Z plane.
+
+* Zero <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#out">out</A> the Y component of the normal.  This projects it to the X-Z plane.
+
+* Undo the rotation by using the quaternion.
+
+* Normalize the result to get a unit vector.
+
+
+HISTORY:
+09-22-08  Initial version by B. Deen.
+<A NAME="CogProg">COGNIZANT PROGRAMMER: B. Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#inp"><H3>INP</H3></A>
+Input UVW images.
+Must be 1 3-band file
+or (u,v,w) triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#out"><H3>OUT</H3></A>
+Output file.
+Mast be 1 filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#angle"><H3>ANGLE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#angle">Angle</A> of rotation for
+projection plane.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsuvwproj.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

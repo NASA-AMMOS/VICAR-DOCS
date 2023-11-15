@@ -1,0 +1,186 @@
+<HTML>
+<HEAD><title>HTML Help for TOTOPO</title></HEAD>
+<BODY>
+<H1>Help for TOTOPO</H1>
+<pre>
+Converts the tiepoint locations stored in a Mark file and written by
+program TRACKER3 and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#xyz">XYZ</A> coordinates created by program LSTOXYZ to one of:
+1. A topomap.
+2. An orthonormal view of the left image.
+3. An orthonormal view of the right image.
+4. An error map
+
+A topomap is a map of elevation above a surface
+(in this case above the geoid or oblate spheroid).
+In this <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#mode">mode</A> the correlator (tracker3) can be run with a wide grid spacing
+such as : GRID=3 NLW=15 NSW=15.
+
+An orthonormal image is an image viewed from directly above
+(in the planetocentric sense) at every pixel. Orthonormal
+views have no parallax. If you want good resolution on orthonormal
+maps then the correlator (tracker3) should be executed on every pixel,
+ie: parameter GRID=1.
+
+An error map is a map of the miss distance of the two vectors
+in the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#xyz">XYZ</A> solution in program LSTOXYZ.
+
+All output images are REAL.
+
+Example:
+       TOTOPO left,right,points,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#xyz">xyz</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#out">out</A> parameters
+
+  where: 
+         LEFT is the first input image. This is the first input image
+              to program TRACKER. In this case it must be a map projected
+              image.
+         RIGHT is the second input image. This is the second input image
+              to program TRACKER. The second input must also be a map
+              projection preferably the identical projection as the first
+              input image (non-identical projections are OK except that
+              TRACKER will work better if they are identical).
+         POINTS is a MARK file containing the tiepoints written by
+              program tracker.
+              Mark files contain 512 byte records of real*4 data.
+              Coordinates are stored in groups of 4 words in the
+              order left_line,left_sample,right_line,right_sample...
+         <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#xyz">XYZ</A> is a MARK file containing the xyz coordinates written by
+              program LSTOXYZ.
+              Mark files contain 512 byte records of real*4 data.
+              Coordinates are stored in groups of 4 words in the
+              order of either:lat,long,range-<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#radius">radius</A>,error....
+                or
+                              x,y,z,error...
+                  (see keyword <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#xyz">XYZ</A>)
+
+          <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#out">OUT</A> is identical to LEFT but contains one of:
+              1. A topomap.
+              2. An orthonormal view of the left image.
+              3. An orthonormal view of the right image.
+              4. An error map.
+              
+All output images are REAL.
+
+METHOD:
+
+The correct output location for any tiepoint is the lat,long
+computed by program LSTOXYZ. This coordinate is converted 
+to line,sample for the input projection. Then what goes to
+that coordinate depends upon the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#mode">mode</A>:
+
+In the TOPO <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#mode">mode</A> the elevation of the surface above the geoid
+is written to the output.
+
+In the ORTHL or ORTHR modes the original line,samp (from the
+output of TRACKER) point to the input DN value which is to be
+placed into the output.
+
+In the ERROR <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#mode">mode</A> a map of the miss distance of the two vectors
+in the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#xyz">XYZ</A> solution in program LSTOXYZ is written to the output
+after scaling.
+
+LIMITATIONS:
+
+At the moment input & output pictures (not Mark files) 
+cannot each exceed a total number of pixels of 1000 by 1000.
+
+The ORTHR image will have the label of the left (first) input.
+
+OUTPUT UNITS:
+
+  Topomaps are in kilometers (one DN = 1 kilometer) above the
+planet oblate spheroid. Zero DN is at the geoid (zero elevation).
+  The orthonormal images are just geometrically undistorted
+replicas of the first two input images.
+
+<A NAME="examples">EXAMPLE: </A>
+
+         farenc in1
+         farenc in2
+         map3 in1 a
+         map3 in2 b
+         tracker a,b m
+         lstoxyz a,b,m <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#xyz">xyz</A>
+         totopo a,b,m,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#xyz">xyz</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#out">out</A>
+
+! EXAMPLE OF BATCH STEREO RUN:
+!
+! First correct navigation.
+FARENC <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#inp">INP</A>=moon1.img <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#out">OUT</A>=g1.img   'update below=10 dnth=10 activi=45 GEOM=3    area=(3,2,790,790)
+dcl del g1.img;1
+FARENC <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#inp">INP</A>=moon2.img <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#out">OUT</A>=g2.img   'update below=10 dnth=10 activi=35 GEOM=3    area=(3,2,790,790) cluster=(30,10)
+dcl del g2.img;1
+!
+! Next convert the perspective views to IDENTICAL projections.
+map3 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#inp">INP</A>=moon1.img <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#out">OUT</A>=moon1.map    'MERC nl=512 ns=512 sedrsrc=FARE scale=10.     line=256 samp=256 lat=0 long=70.
+map3 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#inp">INP</A>=moon2.img <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#out">OUT</A>=moon2.map    'MERC nl=512 ns=512 sedrsrc=FARE scale=10.     line=256 samp=256 lat=0 long=70.
+!
+! Then collect a dense tiepoint grid (every point).
+tracker <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#inp">inp</A>=(gll1:[jjl320]moon1.map,gll1:[jjl320]moon2.map)     <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#out">out</A>=gll1:[jjl320]tiep.img     nlw=13 nsw=13 grid=1 'fit window=(2,2)     limit=(6,6) look=(2,2)
+!
+! Then convert tiepoints to lat,long,Del-<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#radius">radius</A>,error values.
+lstoxyz <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#inp">inp</A>=(gll1:[jjl320]moon1.map,gll1:[jjl320]moon2.map,        gll1:[jjl320]tiep.img) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#out">out</A>=gll1:[jjl320]<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#xyz">xyz</A>.img        sourcel=FARE sourcer=FARE
+
+! Then create the topomap (meters above the geoid).
+totopo <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#inp">inp</A>=(gll1:[jjl320]moon1.map,gll1:[jjl320]moon2.map,        gll1:[jjl320]tiep.img,        gll1:[jjl320]<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#xyz">xyz</A>.img) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#out">out</A>=gll1:[jjl320]topo.img <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#mode">mode</A>=TOPO
+!
+! Last create left orthonormal view
+totopo <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#inp">inp</A>=(gll1:[jjl320]moon1.map,gll1:[jjl320]moon2.map,        gll1:[jjl320]tiep.img,        gll1:[jjl320]<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#xyz">xyz</A>.img) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#out">out</A>=gll1:[jjl320]orth.img        <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#mode">mode</A>=ORTHL
+
+
+HISTORY
+Written By: J Lorre			feb 91
+<A NAME="CogProg">Cognizant Programmer: J Lorre</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#inp"><H3>INP</H3></A>
+Four inputs:
+#1 is the left image
+#2 is the right image
+#3 is the MARK file.
+#4 is the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#xyz">XYZ</A> file
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#out"><H3>OUT</H3></A>
+Same size as input.
+REAL format.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#mode"><H3>MODE</H3></A>
+This dictates the 
+nature of the output 
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#mode">MODE</A>=TOPO
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#mode">MODE</A>=ORTHL
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#mode">MODE</A>=ORTHR
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#mode">MODE</A>=ERROR
+Default is TOPO.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#debug"><H3>DEBUG</H3></A>
+Prints debugging data.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#xyz"><H3>XYZ</H3></A>
+Specifies the fourth
+input is in <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#xyz">XYZ</A>.
+(X,Y,Z,error)
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#nodata"><H3>NODATA</H3></A>
+DN to initialize output.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#radius"><H3>RADIUS</H3></A>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#radius">Radius</A> of circle
+collecting points.
+should be larger
+than mark grid size.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#minpts"><H3>MINPTS</H3></A>
+Minimum number of points
+within circle to permit
+interpolation.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo_level2.html#maxpass"><H3>MAXPASS</H3></A>
+Number of passes
+through the image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/totopo.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

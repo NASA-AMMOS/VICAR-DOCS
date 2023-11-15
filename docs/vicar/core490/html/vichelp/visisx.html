@@ -1,0 +1,216 @@
+<HTML>
+<HEAD><title>HTML Help for VISISX</title></HEAD>
+<BODY>
+<H1>Help for VISISX</H1>
+<pre>
+PURPOSE:
+
+ VISISX transforms from a Vicar 3-D image file to an ISIS Cube file
+ and vice versa.
+
+EXECUTION:
+
+VISIS2 input output <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A> [suffix-images] [<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#histfile">histfile</A>] [<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#taskname">taskname</A>]
+
+where "input" and "output" are Vicar and ISIS files, in a sequence
+determined by "<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A>", the suffix-images are separate files in Vicar
+but part of the cube in ISIS, and "<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#histfile">histfile</A>" is an optional ascii text 
+file containing an ISIS History object.  If label processing is to be
+done (in TOISIS <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A> only), then "<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#taskname">taskname</A>" must be specified to denote 
+the task from which the history labels are to be taken.
+
+The suffix images are optional.  If they are omitted in TOVICAR <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A>,
+then any suffix data in the ISIS cube will simply be skipped over.  If 
+they are specified in TOISIS <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A>, then the images will be checked for
+consistency of dimensions with the core.  Currently, only backplanes
+are supported in TOISIS <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A>.
+
+Suffix planes / bands:
+
+The Vicar cube file is stored as the Core of the ISIS cube.  The
+suffixes are stored as separate image files in Vicar, but as part of
+the cube in ISIS.  There are three kinds of suffixes: sideplanes,
+backplanes, and bottomplanes.  This terminology comes from applications
+in which two of the three cube dimensions are spatial and one spectral,
+with the two spatial dimensions constituting the "front" view of the
+cube, while the spectral one is the "depth".  For other applications,
+these terms lose their meaning, but are retained here since spatial-
+spectral cubes are the most common types currently used by VICAR.
+Here are their definitions in terms of the storage orders supported
+by VISISX:
+
+Band-Sequential (BSQ) storage order, in which Sample is the most
+rapidly varying dimension, then Line, then Band:
+  Sideplanes are stored at the end of each line.
+  Bottomplanes are stored at the end of the last line of each band.
+  Backplanes are stored at the end of the cube.
+
+Band-Interleaved by Line (BIL) storage order, in which Sample is the 
+most rapidly varying dimension, then Band, then Line:
+  Sideplanes are stored at the end of each line.
+  Backplanes are stored at the end of the last band of each line.
+  Bottomplanes are  stored at the end of the cube.
+
+These are the only storage orders supported by VISISX.
+
+Note that suffix planes are only allowed at the end of their
+corresponding dimension, not at the beginning.
+Not all combinations are supported.  Backplanes are supported
+for all modes, but sideplanes and bottomplanes are only supported
+for BIL format and in TOVICAR <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A> (for Cassini VIMS).  For this
+case, here is the detailed specification of the dimensionalities:
+
+Let the Core of the cube have the dimensions C1, C2, C3 (in order from
+most to least rapid variation), and let the width of the suffix planes
+be S1, S2, S3 (in the order Sideplane, Backplane, Bottomplane), then the
+corresponding image dimensions will be:
+
+Sideplane:   S1, C2, C3.
+Backplane:   C1+S1, S2, C3.
+Bottomplane: C1+S1, C2+S2, S3.
+
+I.e., the "corners" formed by two successive suffix planes are included in
+the second of each sequence.  
+
+Again, note that the above schema is for BIL format only.
+Assumptions and Restrictions:
+
+1. All suffix planes are assumed to be in 4-byte (real or integer) format.
+ (Additionally, VIMS <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#side">side</A>- and bottomplanes are always integers.)
+
+2. Currently, only BSQ and BIL file organizations are supported.
+
+3. The maximum BAND dimension allowed is 500.
+05dec98  --  Written by L.W.Kamp (based on VISIS2).
+
+Changes:
+
+1998-12-04 lwk - original version
+1998-12-09 lwk - added U_NL/S to zvopens in get_recinfo (for Solaris)
+1998-12-16 lwk - added support for BIL files and for SUFFIX planes 
+           (TOVICAR <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A> only, not saved!);  specified "int" for functions 
+           that return values
+1998-12-18 lwk - added <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#host">HOST</A> parameter
+1999-01-18 lwk - fixed <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#host">HOST</A> parameter
+1999-01-22 lwk - fixed CORE_ITEMS in TOISIS <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A> (was broken when BIL added),
+           and CORE_ITEM_TYPE (was VAX-only); added CORE_NAME & CORE_UNIT as 
+           they're required by Unix ISIS
+1999-01-26 lwk - use zvhost for int/realfmt
+1999-01-30 lwk - replaced <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#host">HOST</A> parameter in TOVICAR by search on CORE_ITEM_TYPE
+1999-02-01 lwk - treat NATIVE_TIMEs differently per project (tovicar <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A> only)
+1999-02-02 lwk - added "U_ORG","BSQ" to zvopen in write_object (TOISIS) to fix
+           problem with BIL cubes
+1999-04-22 lwk - skip over the AXIS_NAME item in the specplot part of the label
+           for the case of a NIMS cube
+1999-06-06 lwk - allow for partial subset of labels depending on 'maplabs'
+           flag -- this is designed to allow NIMSSKY cubes to be processed, but
+           ideally each label item should be checked separately
+1999-09-13 lwk - check for ORTHOGRAPHIC alone and replace by OBLIQUE_ORTHO;
+           start search for map keywords at "GROUP = IMAGE_MAP_PROJECTION",
+           since some cubes have RADIUS keywords before MAP_PROJECTION_TYPE
+2000-06-19 lwk - removed objectindex stuff from keyword_value (since we have
+           only 1 object containing labels);  deleted a few residual "NIMS"s
+           and function byte_nibble;  added EAST/WESTERNMOST_LONGITUDEs to
+           ISIS-&gtVICAR <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A>
+2000-06-20 bam - added new keywords FIRST_LINE_SAMPLE, LINE_EXPOSURE_DURATION,
+           START_TIME, and EASTERNMOST/WESTERNMOST LONGITUDE (these replace
+           MINIMUM/MAXIMUM LONGITUDE in the newer files). I have also added a
+           new function for double precision values, get_double_value, and
+           modified the code to accept this new function.  This is necessary
+           for port to LINUX.
+2000-07-11 lwk - fixed bug checking for map labels in ToVic <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A>
+2000-07-18 lwk - checking for Property map labels even if no Task specified
+2002-05-15 lwk - added ISIS 'CYLINDRICAL_EQUAL-AREA'
+2004-04-27 lwk - merged BAM and LWK versions;  increased MAXBANDS to 600;
+           check for fullword int in inverse <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A>;  fixed bug in treatment of 
+           backplanes in write_object
+2004-04-29 lwk - added support for suffix planes in TOVICAR <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A>;  replaced
+           all references to "forward/backward" modes with "toisis/tovicar"
+2004-05-22 lwk - added VIMS keywords: START/STOP_TIME (need special function
+           find_keyword_str to distinguish from NATIVE_TIME), INTERLINE_DELAY,
+           EXPOSURE_DURATION, X/Z_OFFSET
+2004-06-01 lwk - added VIMS keywords SAMPLING_MODE_ID & SCAN_MODE_ID;  fiddled
+           with string delimiters in get_string_value() (again)
+2004-06-15 lwk - changed algorithm for distinguishing NATIVE_TIME and plain
+           TIME, since Cassini has now made both strings
+2004-06-18 lwk - allow backplanes from co-cube in TOISIS <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A>;  changed treatment
+           of the various suffix planes
+2004-06-22 lwk - translate CORE_NAME/UNIT to Vicar items; added BAND_SUFFIX items
+           for display of backplanes in cv
+2004-06-28 lwk - added option to read wavelengths in from user parameter
+2004-07-14 lwk - added <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#fakeproj">FAKEPROJ</A> keyword as a workaround for limited ISIS projections
+2004-07-26 lwk - changed PROJECT_NAME to MISSION_NAME in TOISIS <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A>; fixed code to
+           find SUFFIX_ITEM_TYPE
+2004-09-22 lwk - added more VIMS keywords at CCA's request;  fiddled some more with
+           the code for START_TIME & NATIVE_START_TIME (latter can be with or without
+           quotes!)
+2004-10-12 lwk - enabled fullword integer support in TOVICAR <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A>; added label items
+           BAND_BIN_ORIGINAL_BAND/ORIGBANDS and (in VICAR) WAVUNIT;  read TARGET name
+           in TOISIS <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A>
+2004-10-19 lwk - added CORE_MULTIPLIER input for Radar cubes
+2004-10-21 lwk - get NB from input cube label, not from <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#waves">WAVES</A>! (TOISIS <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A>)
+2004-10-29 lwk - added ISIS special values to CORE & BAND_SUFFIX label items (TOISIS <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A>)
+2004-12-10 lwk - remove hard-coded nbkpln=9;  added FRAME_LINE/SAMP to BAND_SUFFIX items
+           for VIMS
+2005-05-07 lwk - added case of nbkpln=2
+2005-05-08 lwk - write entire Vicar history to PDS History object in TOISIS <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A>
+2005-05-18 lwk - fixed problems with backplanes in BSQ cube in TOISIS <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A>; ensure that
+           co-cube is always BSQ in TOVICAR <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode">mode</A>
+2005-06-01 lwk - fixed bug introduced by last change in calculation of FILE_RECORDS
+2005-10-27 lwk - look for LAT_TYPE as well as LATITUDE_TYPE
+2005-10-28 lwk - added X86 (Linux) hostname support, treat it as AXP.
+2005-10-29 lwk - changed AXP-UNIX to X86-LINUX at RGD's request since that's the only
+           currently officially supported VICAR platform of that flavor
+2017-08-15 wlb - removed DEBUG from imake.
+2018-02-27 wlb - fixed bug - uninitialized variable
+2019-06-14 wlb - IDS-7924 - Cast format args to expected types
+                 IDS-7922 - Initialized some variables
+2019-08-07 wlb IDS-7923 - Replaced some sprintf calls with snprintf.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#inp"><H3>INP</H3></A>
+Input file
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#out"><H3>OUT</H3></A>
+Output file
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#side"><H3>SIDE</H3></A>
+Sideplanes file
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#back"><H3>BACK</H3></A>
+Backplanes file
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#bott"><H3>BOTT</H3></A>
+Bottomplanes file
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#histfile"><H3>HISTFILE</H3></A>
+History object file
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#mode"><H3>MODE</H3></A>
+Specify transformation
+direction
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#host"><H3>HOST</H3></A>
+Specify original <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#host">Host</A>
+(TOVICAR only)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#to_ori"><H3>TO_ORI</H3></A>
+Override default line/samp
+offset direction 
+(TOVICAR only)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#taskname"><H3>TASKNAME</H3></A>
+Name of task with
+history labels
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#taskname"><H3>TASKNAME</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#taskname">TASKNAME</A> can be used to change 
+the task searched for.  
+(See Help <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#taskname">TASKNAME</A>.)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#waves"><H3>WAVES</H3></A>
+Wavelengths (override label
+item)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#fakeproj"><H3>FAKEPROJ</H3></A>
+Fake map projection to fool
+ISIS
+(TOISIS only)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx_level2.html#viclab"><H3>VICLAB</H3></A>
+Add entire VICAR label to
+ISIS History object
+(TOISIS only)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/visisx.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

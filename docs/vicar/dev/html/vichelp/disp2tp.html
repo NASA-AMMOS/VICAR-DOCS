@@ -1,0 +1,124 @@
+<HTML>
+<HEAD><title>HTML Help for DISP2TP</title></HEAD>
+<BODY>
+<H1>Help for DISP2TP</H1>
+<pre>
+PURPOSE
+
+    DISP2TP generates an XML tiepoint file for two images from a disparity map
+
+TAE COMMAND LINE FORMAT
+
+    DISP2TP INP=(dspfiles) OUT=outtie RHS=(rhsfiles) XYZ=(xyzfiles) INPTIE=(inpties) CNT=count
+     
+    where
+
+    dspfiles is one or more input double-band, real-valued VICAR images.
+    rhsfiles is one or more VICAR images suitable for creating a PigFileModel.
+    outtie   is an output XML text file representing a set of tiepoints.
+    xyzfiles is one or more optional input XYZ files mapped to the corresponding dspfile.
+    inptie   is one or more optional input XML tiepoint files used to select tiepoints.
+
+        <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>count is the approximate number of tiepoints to be generated.
+
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>Examples
+      <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>disp2tp sampdisp.img samprhs.img samptie.xml cnt=42
+      <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>disp2tp sampdisp.img samprhs.img samptie.xml sampxyz.img cnt=42 
+      <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>disp2tp sampdisp.img samprhs.img samptie.xml inptie=selectie.tie
+
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>OPERATION
+
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>DISP2TP generates an XML tiepoint file connecting the left and
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>right images from one or more input disparity maps. INP is one or
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>more double-band, real-valued VICAR image disparity maps. OUT
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>is an xml text file representing the set of tiepoints. The output
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>tiepoint file identifies the left and right images using a PIG
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>unique ID. The RHS files must be equal in number to INP, and
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>correspond in order to the INP files. They are used to determine
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>the RHS unique ID for each disparity map. Only the RHS labels are
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>used, so either EDR or RDR files can be used.
+
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>If provided, INPTIE is used to select the tiepoints to generate
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>from a dspfile. Otherwise, CNT is used to generate a line/sample
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>sampling frequency such that approximately CNT tiepoints are
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>generated. The tiepoints are selected with approximately uniform
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>2-d spacing. The linear sampling frequency is approximately
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>sqrt(NL*NS/CNT). However, selected tiepoints are discarded when
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>the disparity value is undefined. Tiepoints also are discarded
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>when an optional XYZ file is provided and the XYZ is undefined.
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>For example, the test cases ask for 100 points but get only 28
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>without an XYZ file, and 21 with an XYZ file. A future
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>enhancement could count the undefined disparity values (and
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>optionally the undefined XYZ values) and scale the requested
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>number of tiepoints to yield a tiepoint set size closer to that
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>requested.
+   
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>If there are less INPTIE files than INP files, then the n INPTIE
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>files will be associated in order with the first n INP files. XYZ
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>files are associated similarly with INP files.
+
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>Following is a minimal example of an XML tiepoint file:
+
+    &<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>lt?xml version="1.0" encoding="UTF-8"?&gt
+    &<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>lttiepoint_file version="1.0"&gt
+    &<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>lttiepoint_set&gt
+      &<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>ltreference_frame name="FIXED" index1="22" /&gt
+      &<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>ltimages&gt
+        &<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>ltimage unique_id="MLG_436644282DSR_S0220000MCAM01813M1" key="0" /&gt
+        &<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>ltimage unique_id="MRG_436644282DSR_S0220000MCAM01813M1" key="1" /&gt
+      &<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>lt/images&gt
+      &<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>lttiepoints&gt
+        &<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>lttie type="0" left_key="0" right_key="1"&gt
+          &<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>ltleft      line="71" samp="491" /&gt
+          &<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>ltprojected line="145.984558" samp="138.428513" /&gt
+          &<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>ltright     line="145.984558" samp="138.428513" /&gt
+          &<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>ltflags quality="1.0" interactive="0" /&gt
+        &<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>lt/tie&gt
+      &<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>lt/tiepoints&gt
+    &<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>lt/tiepoint_set&gt
+
+
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>RESTRICTIONS
+
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>None known.
+
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>WRITTEN BY:            W. L. Bunch
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  W. L. Bunch</A>
+
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>REVISIONS: 
+  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>Thu Sep 25 2014
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>Initial version
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html#inp"><H3>INP</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>One or more disparity
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>images.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html#out"><H3>OUT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>An XML tiepoint file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html#rhs"><H3>RHS</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>Required EDR or RDR
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>type image file(s).
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html#xyz"><H3>XYZ</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>Optional xyz file(s).
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html#inptie"><H3>INPTIE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>Optional XML input
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>tiepoint file(s).
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html#cnt"><H3>CNT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>The number of
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>tiepoints to generate.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html#trad_mode"><H3>TRAD_MODE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>Selects output
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp_level2.html"></A>tiepoint type.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/disp2tp.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

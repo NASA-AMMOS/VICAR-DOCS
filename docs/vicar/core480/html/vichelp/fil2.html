@@ -1,0 +1,133 @@
+<HTML>
+<HEAD><title>HTML Help for FIL2</title></HEAD>
+<BODY>
+<H1>Help for FIL2</H1>
+<pre>
+PURPOSE
+fil2 is a VICAR applications program which calculates filter
+weights from point spread functions, modulation transfer functions,
+and optical transfer functions.  These weights are output in a
+parameter dataset suitable for input to program FILTER, which
+applies the weights in the spatial domain.
+
+fil2 and FILTER are combined in the procedure FILTER2.
+
+EXECUTION
+
+The following is the execution statement format for FILTER2:
+	fil2 PARAMS
+where PARAMS includes parameters that are described in the Tutor mode.
+
+OPERATION:
+
+fil2 distinguishes between symmetrical and asymmetrical OTFs in the
+following way.  There are two accumulation buffers, one for horizontal
+OTFs fed by the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#mtf">MTF</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#hia">HIA</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#psf">PSF</A>, and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#hif">HIF</A> keywords and the other for vertical
+OTFs fed by the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#via">VIA</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#vif">VIF</A> keywords.  When both buffers contain OTFs,
+they are taken in pairs starting with the first entries to those buffers,
+and an asymmetrical two-dimensional OTF is generated from which one set
+of weights is created.  These weights are written to the parameter file 
+along with <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#nlw">NLW</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#nsw">NSW</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#scale">SCALE</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#divide">DIVIDE</A>, and the first <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#range">RANGE</A> data, if any.  The 
+program then returns to the buffers for the next pair, etc., until the
+buffers are exhausted.  If one buffer is exhausted before the other, 
+fil2 will assume that the user wants a symmetrical two-dimensional
+OTF.  Thus, as many weight matrices are created as there are OTFs in the 
+most populated buffer.  
+For one-dimensional weight vectors,  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#nlw">NLW</A> or <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#nsw">NSW</A>  must equal unity.
+The OTFs must, however, be found in the horizontal buffer.
+fil2 uses Fast Fourier Transformations to compute the weights.  For 
+one-dimensional weights, a single transform is used of length greater 
+than the desired weight matrix but within the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#range">range</A> 128 to 1024 elements.  
+For two-dimensional weight matrices, a 64x64 transform is used in all 
+cases regardless of the dimensions.  The transform is constructed from 
+the following equation:
+                   M-1 N-1
+	WT  = 1/N  SUM SUM  OTF  exp(-2#i[Km/M - ln/N] )
+         kl        m=0 n=0     mn
+
+or, in the one-dimensional case
+                   N-1
+	WT  = 1/N  SUM  OTF  exp( -2#i ln/N )
+          l        n=0     n
+
+where    SUM means summation and # is pi.
+
+Interpolation of the one-dimensional OTF's into a two-dimensional
+surface is performed with three different algorithms.  All interpolation
+is performed upon the final OTF, i.e., after any reciprocals have been 
+performed.
+
+SYMMETRICAL MODE ALGORITHM
+	If the symmetrical mode is used (only one OTF buffer), then
+	regardless of the shape of the OTF, the surface is set equal
+	to the amplitude of the OTF at the equivalent frequency position
+	as measured radially outward from the DC term.
+
+ASYMMETRICAL MODE ALGORITHM, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#rect">RECT</A>
+	If the asymmetrical mode is used (both OTF buffers are populated)
+	then the output surface is set equal to the smaller of the two 
+	closest one-dimensional OTF values.
+
+ASYMMETRICAL MODE ALGORITHM
+	If the asymmetrical mode is used and the OTFs are greater than 
+	unity in places, the surface is set equal to a combination of the
+	amplitude of both OTFs at the equivalent radial frequency.  Each
+	amplitude is weighted based on the square of the distance of the
+	point from the horizontal or vertical.
+
+The OTF computed from the raw weights does not necessarily agree with the OTF 
+desired.  fil2 automatically adjusts the central weight and the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#divide">DIVIDE</A>
+parameter so that the resultant OTF is equal to the input OTF at zero 
+frequency.  Adjusting the central weight does not distort the OTF but
+merely displaces it up or down by a constant.  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#divide">DIVIDE</A> parameter mul-
+tiplies the OTF so that there is no amplitude distortion due to scaling
+the weights to large integers.  The formulae are:
+	new central wt = wt sum - old central wt + OTF(0)*64*64
+	<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#divide">DIVIDE</A> = <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#scale">SCALE</A> * 64*64 / abs(largest wt)
+where <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#scale">SCALE</A> is the real-to-integer conversion factor, usually set to 32000.
+
+<A NAME="examples">EXAMPLE:</A>
+
+fil2 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#nlw">NLW</A>=15 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#nsw">NSW</A>=15 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#mtf">MTF</A>=(1.,0.,.4,.2,.1,.5) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#sn">SN</A>=7.0
+
+WRITTEN BY: J. J. Lorre        2 DEC 1974
+CONVERTED TO VAX BY:    Charlie Avis
+MADE PORTABLE FOR UNIX: CRS (CRI) 1-JULY-94 
+<A NAME="CogProg">CURRENT COGNIZANT PROGRAMMER:  L. W. Kamp</A>
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#wtmax"><H3>WTMAX</H3></A>
+Maximum weight value
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#print"><H3>PRINT</H3></A>
+Prints the computed OTF
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#rect"><H3>RECT</H3></A>
+Indicates <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#rect">RECT</A> algorithm
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#divide"><H3>DIVIDE</H3></A>
+Scaling paramater upon output
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#nlw"><H3>NLW</H3></A>
+Size of weight matrix in lines
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#nsw"><H3>NSW</H3></A>
+Size of weight matrix in samples
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#scale"><H3>SCALE</H3></A>
+Defines the linear output scaling
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#mtf"><H3>MTF</H3></A>
+Input pairs of amplitude and freq
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#hia"><H3>HIA</H3></A>
+Horizontal amplitude values
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#hif"><H3>HIF</H3></A>
+Horizontal frequency values
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#via"><H3>VIA</H3></A>
+Vertical amplitude values
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#vif"><H3>VIF</H3></A>
+Vertical frequency values
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#sn"><H3>SN</H3></A>
+Signal-to-noise ratio
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#range"><H3>RANGE</H3></A>
+Dn interval over which weights apply
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2_level2.html#psf"><H3>PSF</H3></A>
+Input point spread function
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/fil2.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

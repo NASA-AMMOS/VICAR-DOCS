@@ -1,0 +1,162 @@
+<HTML>
+<HEAD><title>HTML Help for SIMPLIFY</title></HEAD>
+<BODY>
+<H1>Help for SIMPLIFY</H1>
+<pre>
+ PURPOSE:
+
+SIMPLIFY is a VICAR applications program used to remove high frequency
+information (noise) components from digital images.  It is usually used
+to remove visually distracting detail from classified or stratified images
+such as images derived from the operation of VICAR program FASTCLAS.  Such
+images usually are composed of a number of regions, where each pixel in a
+region has the same DN except possibly for some isolated noise pixels.
+SIMPLIFY changes the DNs of these isolated noise pixels to match the DN of
+the surrounding pixels and writes the resulting image to an output file.
+ EXECUTION:
+
+The DNs for the regions in the input image are assumed to lie in the range
+from 1 to some upper limit specified by the user through the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#nclass">NCLASS</A> parameter.
+No assumptions are made on the DNs of noise pixels.  Pixels with a DN of 0
+are considered to be unclassified (not associated with any region).
+
+In order to determine which DNs to change, SIMPLIFY applies a test to each
+pixel in the input image.  The test involves finding the most frequently
+occurring DN in a square <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#window">window</A> centered around the pixel being tested.
+The exact form of the test depends on the various parameters specified by the
+user, but in order to provide an overview, the test for the case where neither
+the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#replace">REPLACE</A> nor the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#value">VALUE</A> option is used is described below.  Much of the
+description also applies to when <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#replace">REPLACE</A> or <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#value">VALUE</A> is used.  (See under
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#replace">REPLACE</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#value">VALUE</A>.)
+
+For the sake of determining the most frequently occurring DN, only DNs from 1
+to the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#value">value</A> of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#nclass">NCLASS</A> parameter are considered.  In case of a tie in
+determining the most frequent DN, the lowest of the DNs in the tie is used.
+Since the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#window">window</A> is centered around the pixel being tested, we will refer to
+the pixel being tested as the center pixel and will refer to its DN as the
+center DN. When the center DN is nonzero it is changed to the most frequent DN
+if the most frequent DN occurs more times than the center DN and the number of
+times the most frequent DN occurs is greater than or equal to the threshold
+(<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#threshld">THRESHLD</A>) parameter.  (This insures that a nonzero DN is not changed if no DN
+occurs a substantial number of times in the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#window">window</A> or if the center DN occurs
+just as many times as the most frequent DN.)  When the center DN is zero it is
+changed to the most frequent DN if the number of times the most frequent DN
+occurs is greater than or equal to the threshold parameter.  When a DN is
+changed, the change is not included in the subsequent windows. 
+TAE COMMAND LINE FORMAT
+      The following command line formats show the major allowable forms:
+      SIMPLIFY <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#inp">INP</A>=a <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#out">OUT</A>=b <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#size">SIZE</A>=(<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#ns">ns</A>) optional parameters
+      SIMPLIFY <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#inp">INP</A>=a <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#out">OUT</A>=b  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#sl">SL</A>=sl <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#ss">SS</A>=ss <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#nl">NL</A>=nl <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#ns">NS</A>=ns optional parameters
+      SIMPLIFY a b (<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#ns">ns</A>) optional parameters
+      SIMPLIFY a b optional parameters
+
+       Here 'a' represents the input image file name, and
+       'b' represents the output image file name.
+<A NAME="examples">EXAMPLE</A>
+
+      SIMPLIFY <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#out">OUT</A>=B <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#nclass">NCLASS</A>=9 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#threshld">THRESHLD</A>=8 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#window">WINDOW</A>=5 '<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#replace">REPLACE</A>
+
+      In this example a five by five <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#window">window</A> is used.  The most frequent DN
+      must occur at least 8 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#out">out</A> of 25 times in a <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#window">window</A> to be used to <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#replace">replace</A>
+      a center DN.  Unclassified pixels will be replaced where possible.
+
+
+RESTRICTIONS
+1. The input and output images must be byte data.
+ OPERATION:
+
+The operation of SIMPLIFY is similar to the operation of any box-filtering
+routine with the exception that surface smoothing DOES NOT take place.  In a
+pictorial sense, a <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#window">window</A> is passed over each pixel in the input image.  For
+each pixel and its surrounding neighborhood, defined by the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#size">size</A> of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#window">window</A>,
+a histogram is accumulated to identify the most most frequently occurring DN
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#value">value</A>.  When the center DN is nonzero it is changed to the most frequent DN 
+if the most frequent DN occurs more times than the center DN and the number of
+times the most frequent DN occurs is greater than or equal to the threshold 
+parameter.  When the center DN is zero it is changed to the most frequent 
+DN if the number of times the most frequent DN occurs is greater than or 
+equal to the threshold parameter.  
+
+In order to accommodate the edges of the image which normally could not be
+simplified due to edge overlap of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#window">window</A>, the pixels outside the image 
+are considered unclassified (DN=0).  This action eliminates the need for 
+special edge processing feature.
+
+The following <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#window">window</A> operations will demonstrate the operation of SIMPLIFY
+on various windows.
+
+Example 1:  specifying <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#threshld">THRESHLD</A>=4
+
+                    5   5   5                   5   5   5 
+
+            INPUT:  3   2   5          OUTPUT:  3   5   5
+
+                    4   3   3                   4   3   3
+
+Example 2:  specifying <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#threshld">THRESHLD</A>=4
+
+                    5   5   5
+
+            INPUT:  3   2   2          OUTPUT:  no change
+
+                    2   2   2 
+
+Example 3:  specifying <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#threshld">THRESHLD</A>=4 and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#replace">REPLACE</A>
+
+                    0   0   0                   0   0   0
+
+            INPUT:  0   0   0          OUTPUT:  0   2   0
+
+                    2   2   1                   2   2   1
+
+
+ WRITTEN BY:             Steve Pohorsky               1 Dec 1983
+
+<A NAME="CogProg"> COGNIZANT PROGRAMMER:   A. L. Zobrist               14 Sept. 1984</A>
+
+ REVISION:               2                           21 Feb 1982
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#inp"><H3>INP</H3></A>
+Input file name
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#out"><H3>OUT</H3></A>
+Output file name
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#size"><H3>SIZE</H3></A>
+Standard Vicar <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#size">size</A> field:
+  (<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#ns">NS</A>)
+You can enter <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#nl">NL</A>,
+and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#ns">NS</A> together as <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#size">SIZE</A>, OR
+enter the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#nl">NL</A>, and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#ns">NS</A>
+parameters separately.
+By default, the entire input
+image is used if these
+parameters are not entered.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#sl"><H3>SL</H3></A>
+Starting line number
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#ss"><H3>SS</H3></A>
+Starting sample number
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#nl"><H3>NL</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#ns"><H3>NS</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#nclass"><H3>NCLASS</H3></A>
+Largest DN other than noise
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#threshld"><H3>THRESHLD</H3></A>
+Threshold for number of
+occurrences of most frequent
+DN in <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#window">window</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#window"><H3>WINDOW</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#window">Window</A> <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#size">size</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#replace"><H3>REPLACE</H3></A>
+Enter to <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#replace">replace</A>
+unclassified pixels where
+possible.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#value"><H3>VALUE</H3></A>
+DN <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify_level2.html#value">value</A> when only one value
+is to be checked for replacement.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/simplify.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

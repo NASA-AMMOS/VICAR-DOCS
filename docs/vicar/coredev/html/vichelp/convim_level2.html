@@ -1,0 +1,135 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for CONVIM</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim.html">CONVIM</A></H1>
+<A NAME="name"><H3>NAME</H3></A>
+<pre>
+The symbolic <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#name">name</A> of the tape drive from which the data is to 
+be read.  Must be the same <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#name">name</A> used in the TAE MOUNT command.
+
+Example:
+	TAE&gtALLOC MTA0 TAPE
+	TAE&gtMOUNT TAPE
+	TAE&gtCONVIM TAPE A
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+The names of the VICAR2 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#files">files</A> to which the tape data sets are to 
+be written.  There must be at least as many output file names 
+given as input data sets to be read.  Any additional file names
+will be ignored.
+
+Example:  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#files">FILES</A>=(4,5,6) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#out">OUT</A>=(RED,GREEN,BLUE) 
+
+would copy file number 4 to RED, file number 5 to GREEN,
+and file number 6 to BLUE.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="files"><H3>FILES</H3></A><pre>
+Each number indicates the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#files">files</A> to be read from the tape.
+
+For example, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#files">FILES</A>=(4,6,8) would read the fourth, sixth, and eighth
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#files">files</A> from the input tape.  There must be a corresponding number of
+outputs. 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="window"><H3>WINDOW</H3></A><pre>
+A <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#window">window</A> into the input file which is to be written to the output
+file.  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#window">WINDOW</A> is in the standard size field <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#format">format</A>,
+
+	<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#window">WINDOW</A>=(SL,SS,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#nl">NL</A>,NS) where
+
+	SL is the starting line to read for output
+	SS is the starting sample to read for output
+	<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#nl">NL</A> is the number of lines to be written
+	NS is the number of samples to be written.
+
+To default a field in <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#window">WINDOW</A>, it may be left <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#out">out</A> or set to 0.
+For example, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#window">WINDOW</A>=(5,1,0,10) would default the number of lines
+in the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#window">window</A> to the true number of lines in the image.
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#window">WINDOW</A>=(5,5) would default both <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#nl">NL</A> and NS.
+The defaults are
+
+	SL -- 1
+	SS -- 1
+	<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#nl">NL</A> -- Total NL in input
+	NS -- NS from the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#label">label</A> if labeled input, logical record
+              length if unlabeled.  See defaults for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#reclen">RECLEN</A>.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nl"><H3>NL</H3></A><pre>
+Number of lines to be used unconditionally for every image read
+from the tape.  If the actual number of lines is less than <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#nl">NL</A>, 
+only the actual number will be read.  If the actual number is 
+larger than <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#nl">NL</A>, then only NL lines will be read.  
+
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#nl">NL</A>'s primary purpose is to provide an image size for unlabeled images.
+It provides information about the input image only, and does not
+provide a <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#window">window</A> into the input.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="reclen"><H3>RECLEN</H3></A><pre>
+The number of bytes (NOT samples!) per line to be used unconditionally
+as the logical record length of each input file.  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#reclen">RECLEN</A> is used to 
+unblock blocked tapes, not to determine the image size.
+
+The defaults for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#reclen">RECLEN</A> are as follows:
+
+    For a labeled input:  NS from the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#label">label</A>
+
+    For an unlabeled input:  The physical block size on the tape
+
+If the logical record length of the tape is different from the 
+line length of the input image, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#reclen">RECLEN</A> MUST be given in order for 
+the data to come <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#out">out</A> correct.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="format"><H3>FORMAT</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#format">FORMAT</A> is used to specify a pixel format to be used unconditionally
+for every image to be read.  The valid values are:
+
+	BYTE		1 byte unsigned integer
+	HALF		2 byte signed integer
+	FULL		4 byte signed integer
+	REAL		4 byte floating point
+	REAL8		8 byte floating point (Not yet available)
+	COMPLEX		2 4 byte floating points
+
+For labeled inputs, the default <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#format">format</A> is taken from the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#label">label</A>.
+For unlabeled inputs, the default <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#format">format</A> is BYTE.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="label"><H3>LABEL</H3></A><pre>
+The keyword <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#label">LABEL</A> is used to force all input <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#files">files</A> to have image
+labels on output, whether or not they had one on input.  
+
+For unblocked images, if <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#nl">NL</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#reclen">RECLEN</A>, or <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#format">FORMAT</A> are not specified,
+the system information is taken from the block <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/convim_level2.html#format">format</A> of the tape,
+assuming one record per block.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

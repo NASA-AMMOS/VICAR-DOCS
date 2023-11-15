@@ -1,0 +1,83 @@
+<HTML>
+<HEAD><title>HTML Help for FRACGEN</title></HEAD>
+<BODY>
+<H1>Help for FRACGEN</H1>
+<pre>
+PURPOSE:
+
+fracgen generates images which are similar to elevation images of mountainous
+regions using the fractional Brownian motion process.
+
+EXECUTION:
+
+fracgen  fake.img <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#nl">NL</A>=300 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#ns">NS</A>=150  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#format">FORMAT</A>=HALF  	 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#fracdim">FRACDIM</A>=2.30 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#power">POWER</A>=2.0 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#seed">SEED</A>=32161267
+
+This example, which uses all the parameters, generates a 128x128 image that has
+a fractal dimension of 2.30 and starts the random number generator with that
+particular <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#seed">seed</A>.  The fractal dimension parameter governs the roughness of the
+terrain:  try values between 2.0 and 2.5, the default is 2.15.  The elevations
+are raised to the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#power">POWER</A> power.  If the power is greater than one this has the
+effect of smoothing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#out">out</A> the valleys relative to the mountains.  Using a partic-
+ular value for the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#seed">SEED</A> parameter allows the generation of the same terrain.
+If the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#seed">SEED</A> is defaulted, a random value is used for the seed.  
+
+fracgen fake.img
+
+This example will generate a 256x256 image with fractal dimension 2.15.
+
+
+OPERATION:
+
+fracgen basically just filters white noise with a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#power">power</A> law filter.  More
+specifically it generates random phases and random amplitudes, multiplies
+the amplitudes by a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#power">power</A> law ( 1/f**(power),  f is frequency), and FFT's
+them to get the fake elevation image.  The elevations are raised to the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#power">POWER</A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#power">power</A> and are scaled to fit into the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#format">format</A>.  Because an FFT must be
+performed this program can take a large amount of CPU time.
+
+NOTE:
+
+fracgen creates a large (roughly 8000 blocks) temporary scratch file named
+by the user but defaulted to fracgen.scr.  The file is automatically deleted 
+on successful completion of the program.
+
+RESTRICTIONS:
+
+The maximum image size is 4096 in either direction.
+
+Original Programmer:	Frank Evans
+<A NAME="CogProg">Cognizant Programmer:	Frank Evans</A>
+
+Revisions:              Megan O'Shaughnessy, 3-12-1990
+                          Changed destination of temporary scratch file to
+                          V2$SCRATCH.
+
+			George A. Madrid Jr, 6-AUG-1993 
+			  Changed file specification so that it can be set
+			  by the user when running the pdf.  Put in parameter
+			  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#idsnam">IDSNAM</A> to accomplish this. Ported to UNIX.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#out"><H3>OUT</H3></A>
+Output image
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#ns"><H3>NS</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#nl"><H3>NL</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#format"><H3>FORMAT</H3></A>
+The output <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#format">format</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#fracdim"><H3>FRACDIM</H3></A>
+The fractal dimension
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#power"><H3>POWER</H3></A>
+The exponent the elevation
+is raised to.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#seed"><H3>SEED</H3></A>
+The random generator <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#seed">seed</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen_level2.html#idsnam"><H3>IDSNAM</H3></A>
+Name of Intermediate Data Set
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fracgen.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

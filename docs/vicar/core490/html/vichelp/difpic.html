@@ -1,0 +1,224 @@
+<HTML>
+<HEAD><title>HTML Help for DIFPIC</title></HEAD>
+<BODY>
+<H1>Help for DIFPIC</H1>
+<pre>
+ PURPOSE:
+
+Program DIFPIC is used to find the difference between two images.  By default
+DIFPIC only diff the pixels. There are optional arguments to diff VICAR
+property labels, binary headers, and line prefix as well.
+
+ EXECUTION:
+
+The input images may have any VICAR data format: BYTE, HALF, FULL, REAL, DOUB,
+or COMP.  Both input images must have the same format.  The data format is taken
+from the VICAR label of the first input file.  The optional output 
+image has the same data format as the input images.  
+
+Both input images must have the same dimensions, or, if they are of different 
+sizes, the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#size">SIZE</A> parameter must be specified.  If the images are three-dimensional,
+they must be of BSQ or BIL file organization;  BIP files are not supported.
+When an output file is produced, the output DN (data number) for a given line and 
+sample is found by subtracting the DN from the second image from the DN from the 
+first image. The resulting data numbers are then checked for being valid for the 
+data type (byte, halfword, or fullword) of the image and are adjusted if invalid.  
+For byte data, data numbers less than 0 are set to 0 (or are added to 256 if <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#mod">MOD</A> 
+is specified), and data numbers greater than 255 are set to 255. 
+For halfword data, data numbers less than -32768 are set to -32768, and data numbers 
+greater than 32767 are set to 32767. 
+For fullword data, data numbers less than -2147483648 are set to -2147483648, and 
+data numbers greater than 2147483647 are set to 2147483647. 
+For formats REAL, DOUB, and COMP, no checking for floating point overflow or 
+underflow is performed by the program.  Thus it is possible for DIFPIC to terminate 
+with such a floating point error.  If this happens, the user can either run DIFPIC 
+without on output file or divide both input images through by 1.0E5 and run DIFPIC 
+on the results.
+NOTE that program F2 can also be used to compare images, with somewhat greater
+generality and robustness, but that program is not as simple to use and does not
+give as much supplementary information as does DIFPIC.
+When compare VICAR property labels, the program can optionally ignore specified
+properties.
+To compare binary headers and line prefixes, the program looks for FMT mapping
+file to map a BLTYPE to an FMT file for line prefix or binary header. Using
+the FMT file, the program finds a list of fields, which are OBJECTs in the FMT 
+file, to be diff-ed for.
+TAE COMMAND LINE FORMAT
+      The following command line formats show the major allowable forms:
+      difpic <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#inp">INP</A>=(a1,a2) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#out">OUT</A>=b <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#size">SIZE</A>=(<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#ns">ns</A>) optional parameters
+      difpic <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#inp">INP</A>=(a1,a2) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#out">OUT</A>=b  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#sl">SL</A>=sl <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#ss">SS</A>=ss <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#nl">NL</A>=nl <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#ns">NS</A>=ns optional parameters
+      difpic (a1,a2) b (<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#ns">ns</A>) optional parameters
+      difpic (a1,a2) b optional parameters
+      difpic <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#inp">INP</A>=(a1,a2) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#size">SIZE</A>=(<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#ns">ns</A>) optional parameters
+      difpic <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#inp">INP</A>=(a1,a2) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#sl">SL</A>=sl <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#ss">SS</A>=ss <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#nl">NL</A>=nl <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#ns">NS</A>=ns optional parameters
+      difpic (a1,a2) (<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#ns">ns</A>) optional parameters
+      difpic (a1,a2) optional parameters
+      difpic <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#inp">INP</A>=(a1,a2) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#bincmp">bincmp</A>=bincmp <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#lprcmp">lprcmp</A>=lprcmp <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#verbose">verbose</A>=verbose
+      difpic <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#inp">INP</A>=(a1,a2) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#lblcmp">lblcmp</A>=lblcmp ignore_lbls="PRODUCT_CREATION_TIME" <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#verbose">verbose</A>=verbose
+
+       Here 'a1' and 'a2' represent the input image file names, and
+       'b' represents the output image file name.
+<A NAME="examples">EXAMPLES</A>
+
+1.    difpic <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#inp">INP</A>=(A1,A2) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#out">OUT</A>=B '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#mod">MOD</A> 
+
+      In this example the difference between the byte images A1 and A2 is
+      written to the output file B.  Where the DN for image A1 is greater
+      than the DN for image A2, the arithmetic difference is less than 0.
+      The output DN is determined by taking the arithmetic difference modulo
+      256.
+
+2.    difpic <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#inp">INP</A>=(A1,A2) 
+
+      In this example the number of differences (pixels) between the 
+      images A1 and A2 is printed and no output file is produced.
+STATISTICS
+Statistics on the number of differences are displayed by default.  Fuller 
+statistics are produced if an output file is specified.  
+
+Some of the statistics are average values for the differences found by DIFPIC.
+These are computed in floating point and may involve numerous additions and 
+thus may result in slightly different values on different computers.
+
+The value displayed for AVE VAL OF DIFFS includes <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#all">all</A> pixels: those with 
+positive, negative or zero differences.  This is a floating point value based 
+on the real differences between the pixels and not on the value of the output 
+pixel, which might be coerced to the numeric limits for the data type of the 
+pixel.
+ PRECISION: 
+  When an output file is specified, DIFPIC computes the average difference
+as well as the average positive and negative differences.  These are computed
+in a straightforward way, adding up the differences and then dividing by the
+number of differences.  (These computations are intended to be fast but not
+necessarily highly precise.)  To accommodate the large differences that are
+possible in the worst cases, the adding up takes place in single precision
+floating point for <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#all">all</A> data formats except for BYTE and DOUBLE.  If there are a
+large number of differences, this can result in a large number of floating
+point operations and in some cases can result in a noticeable amount of
+round-off error.  The test procedure contains such a case.  Thus the precision
+of the average differences is not guaranteed.  In normal use the variation in 
+these values that can be expected on different MIPS-supported machines should
+not differ by more than 1 in six significant digits.  In contrast, the NUMBER
+OF DIFFERENCES is a precise integer value.
+RESTRICTIONS
+1. The input files must both have the same data format. 
+2. The maximum number of bytes per line is 200000.
+3. BIP file organization is not supported.
+
+ Ported to UNIX by:      Steve Pohorsky               4 Apr 1992
+
+<A NAME="CogProg"> COGNIZANT PROGRAMMER:   Lucas Kamp</A>
+
+ REVISIONS:
+  1991-12    SP PORTED TO RUN ON BOTH UNIX AND VMS.
+  1992-09    SP Made buffer <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#size">size</A> 200000 bytes. Modified to handle 
+                <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#all">all</A> data formats.  CHANGED AVE VALS TO DISPLAY AS FLOAT.
+                CORRECTED "AVE DN OF PIX" TO "AVE VAL OF DIFFS"
+  1993-03    SP Modified to not use -2147483648 to work around Sun compiler.
+                Added ability to handle 3D files if <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#size">SIZE</A> field defaulted
+                and no output file specified.
+  1994-07    SP Allowed format="WORD" as alternative to HALF.
+  2003-08    lwk removed restrictions on <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#nb">NB</A>, added <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#sb">SB</A> parameter
+  2003-11    lwk added checks on <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#size">size</A>/format of input files
+  2011-09    rrp converted difpic to be a regular subroutine and not
+                 a VICAR main44 subroutine. Modified the subroutine
+		 to accept open input file unit numbers (instead of
+		 opening the input files in the subroutine) and a return
+		 status to indicate 0 if no differences are found or
+		 1 if there are differences. Modiffed DPFPIC* subroutines
+		 to return a status value as indicated above. Added new
+		 parameters to this pdf for controlling the comparison of
+		 labels, binary header, line prefix, for ignoring
+		 label items and binary header fields, and the name of the
+		 binary header fmt file and line prefix fmt files.
+  2020-04-23 WLB Raised MAXBYTESPAR from 300000 to 500000.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#inp"><H3>INP</H3></A>
+Input file names
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#out"><H3>OUT</H3></A>
+Output file name (optional)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#retval"><H3>RETVAL</H3></A>
+The result of difpic as a number
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#size"><H3>SIZE</H3></A>
+Standard Vicar <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#size">size</A> field:
+  (<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#ns">NS</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#sl"><H3>SL</H3></A>
+Starting line number
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#ss"><H3>SS</H3></A>
+Starting sample number
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#nl"><H3>NL</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#ns"><H3>NS</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#bands"><H3>BANDS</H3></A>
+Standard Vicar <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#bands">Bands</A> field:
+  (<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#sb">SB</A>,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#nb">NB</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#sb"><H3>SB</H3></A>
+Starting band number
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#nb"><H3>NB</H3></A>
+Number of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#bands">bands</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#mod"><H3>MOD</H3></A>
+Specifies for byte images that
+the difference will be taken
+modulo 256.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#verbose"><H3>VERBOSE</H3></A>
+Whether or not output messages 
+should be printed.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#all"><H3>ALL</H3></A>
+Turn on <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#all">all</A> comparisons.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#pixcmp"><H3>PIXCMP</H3></A>
+Indicates if the image content 
+should be compared.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#lblcmp"><H3>LBLCMP</H3></A>
+Indicates if the labels are 
+to be compared.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#hstcmp"><H3>HSTCMP</H3></A>
+Indicates if the history 
+labels should be compared.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#lbl_ignore"><H3>LBL_IGNORE</H3></A>
+List labels that should be 
+ignored when comparing images.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#prop_ignore"><H3>PROP_IGNORE</H3></A>
+List properties that shoule 
+be ignored when comparing 
+images.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#bhfmtmap"><H3>BHFMTMAP</H3></A>
+Input file to specify FMT for 
+a given BLTYPE for binary 
+header.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#lpfmtmap"><H3>LPFMTMAP</H3></A>
+Input file to specify FMT for 
+a given BLTYPE for line prefix.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#bltypes"><H3>BLTYPES</H3></A>
+Overriding <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#bltypes">BLTYPES</A> values for 
+VICAR label.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#lpk_ignore"><H3>LPK_IGNORE</H3></A>
+List of line prefix fields to 
+ignore.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#bhk_ignore"><H3>BHK_IGNORE</H3></A>
+List of binary header fields 
+to ignore.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#bincmp"><H3>BINCMP</H3></A>
+Indicates if the binary 
+header(s) in the input images 
+are to be compared.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#bmfmtfiles"><H3>BMFMTFILES</H3></A>
+Respective name of FMT files for 
+the binary header for the given 
+inputs. 
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#lprfcmp"><H3>LPRFCMP</H3></A>
+Indicates if the line prefixes 
+in the input images are to be 
+compared.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic_level2.html#lpfmtfiles"><H3>LPFMTFILES</H3></A>
+Respective name of FMT files 
+for the line prefix for the 
+given inputs. 
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/difpic.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

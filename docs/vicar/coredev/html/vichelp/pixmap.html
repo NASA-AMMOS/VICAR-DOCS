@@ -1,0 +1,107 @@
+<HTML>
+<HEAD><title>HTML Help for PIXMAP</title></HEAD>
+<BODY>
+<H1>Help for PIXMAP</H1>
+<pre>
+PURPOSE
+
+     PIXMAP converts map coordinates to/from vicar pixel coord-
+     inates in an IBIS file using a GeoTIFF label to define the
+     conversion.  NOTE THAT THE PIXEL COORDINATES WILL BE IN 
+     THE VICAR COORDINATE SYSTEM, NOT IN THE GeoTIFF COORDINATE
+     SYSTEM.  This allows the pixel coordinates to be used for
+     any VICAR operation such as GEOM.
+     
+     The GeoTIFF label relates the pixel coordinate to the map
+     coordinate, but it regards the upper left corner of the 
+     image as (0.0,0.0) or (-0.5,-0.5) depending on the type
+     of image ("area" or "post").  The PIXMAP program will
+     automatically change that in the IBIS file to VICAR pixel
+     referencing which regards the upper left corner as (0.5,0.5).
+     
+     The bottom line is that users will always work with VICAR
+     coordinates except when initially setting up the GeoTIFF
+     label.
+     
+     The user only has to name the IBIS file, the file or VICAR
+     image containing the GeoTIFF label, the columns involved,
+     and the direction of the mapping ('<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/pixmap_level2.html#maptopix">MAPTOPIX</A> or '<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/pixmap_level2.html#pixtomap">PIXTOMAP</A>
+     keywords).  None of the keywords are defaulted except that
+     only one of the directional keywords is used.
+     
+TAE COMMAND LINE FORMAT
+
+     pixmap <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/pixmap_level2.html#inp">INP</A>=(A,B) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/pixmap_level2.html#mapcols">MAPCOLS</A>=(E,N) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/pixmap_level2.html#pixcols">PIXCOLS</A>=(L,S) DIRKEYWORD
+     
+     where
+
+     A           is an IBIS file 
+     B		 is a VICAR image with a GeoTIFF label or a
+                      standalone ascii GeoTIFF label
+     <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/pixmap_level2.html#mapcols">MAPCOLS</A>     are the IBIS file columns (integers) contain-
+                      ing the map coordinates in the same order
+                      as the GeoTIFF label (should be East
+                      coordinate, then north coordinate)
+     <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/pixmap_level2.html#pixcols">PIXCOLS</A>     are the IBIS file columns (integers) contain-
+                      ing the pixel coordinates in the order
+                      line, sample (backwards from GeoTIFF)
+     DIRKEYWORD  is one of the two keywords that tell the 
+                      program which way to map
+OPERATION
+   The GeoTIFF label is accessed and a six coordinate mapping
+   is calculated from the point-scale or matrix representation
+   of the GeoTIFF mapping.  The inverse mapping is calculated
+   for the case of coordinate to pixel conversion.
+   
+   The transformation is adjusted to convert from/to VICAR pixel
+   coordinates as opposed to GeoTIFF pixel coordinates.
+   
+   The transformation is then applied to the input columns of
+   the IBIS file, putting the result in the output columns.
+   
+   All transformations are calculated in double precision, even
+   if the IBIS file is single precision.
+   
+
+TIMING
+
+     Should be able to map millions if IBIS records in less than
+     a minute.
+     
+RESTRICTIONS
+
+   The maximum number of coordinate points is limited by IBIS table
+   size (currently about 10 million?).  Internal to the program,
+   dynamic memory allocation is used.
+
+
+WRITTEN BY:            A. L. Zobrist, 27 August 1999
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  B. A. McGuffie</A>
+
+REVISIONS: 
+Thu Jan  3 2008 wlb switched to USES_ANSI_C AND LIB_CARTO; misc cleanup  
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/pixmap_level2.html#inp"><H3>INP</H3></A>
+Input/output IBIS table and
+GeoTIFF reference
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/pixmap_level2.html#mapcols"><H3>MAPCOLS</H3></A>
+Map columns in IBIS file in
+same order as GeoTIFF
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/pixmap_level2.html#pixcols"><H3>PIXCOLS</H3></A>
+Pixel columns in IBIS file
+in the order (line,samp)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/pixmap_level2.html#maptopix"><H3>MAPTOPIX</H3></A>
+Convert map to pixel
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/pixmap_level2.html#pixtomap"><H3>PIXTOMAP</H3></A>
+Convert pixel to map
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/pixmap_level2.html#ignore"><H3>IGNORE</H3></A>
+Coordinate values to <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/pixmap_level2.html#ignore">ignore</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/pixmap.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/pixmap.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

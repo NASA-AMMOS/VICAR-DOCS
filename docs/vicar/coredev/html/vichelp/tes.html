@@ -1,0 +1,79 @@
+<HTML>
+<HEAD><title>HTML Help for TES</title></HEAD>
+<BODY>
+<H1>Help for TES</H1>
+<pre>
+TES uses the TES algorithm to calculate the emissivity and temperature
+from an input dataset. The input dataset must be in radiance units of
+Watts per square meter per steradian per micrometer.  This is different
+from versions of the program in effect prior to November, 2004.  As a
+consequence, input pixels should be real (floating point) values.
+
+The output has one more band than the input. This extra band contains
+the tes temperature (the last band), the other bands contain the tes 
+emissivity.
+
+Testing
+This program was tested on an artificial 2x2x6 band radiance dataset. 
+
+RESTRICTIONS;
+1. Maximum <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tes_level2.html#size">size</A> of one band of the input is 10,000 values.
+2. Maximum number of bands in the input is 20.
+3. If the input radiance is LE zero (mW/m*m/um/sr) the pixel is considered bad
+   and not processed. Bad pixel emissivities are set to -1 and -2 respectively.
+4. If the emissivity calculated from the regression is LE zero or GE 1.0, the
+   pixel is considered bad and set to -3 and -4 respectively. 
+
+HISTORY
+Written by Simon J. Hook in FORTRAN.
+27 Oct 2004  ...rea...     Modified to accept FULLWORD and REAL input pixels,
+                           and remove the restriction of 20,000 for maximum
+                           input pixel value.
+                           HOT keyword added.
+ 5 Nov 2004  ...rea...     Modified to treat both input and output pixels as
+                           unscaled values.  Output pixels are now real (rather
+                           than scaled integer) values.
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tes_level2.html#inp"><H3>INP</H3></A>
+Input radiance dataset in
+radiance (W/m*m/um/sr)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tes_level2.html#out"><H3>OUT</H3></A>
+Output tes emissivity dataset 
+plus an extra band including the
+tes temperature. 
+Emissivity range: 0.0 to 1.0
+Temperature in degrees Celsius
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tes_level2.html#size"><H3>SIZE</H3></A>
+standard VICAR <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tes_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tes_level2.html#sl"><H3>SL</H3></A>
+starting line
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tes_level2.html#ss"><H3>SS</H3></A>
+starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tes_level2.html#nl"><H3>NL</H3></A>
+number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tes_level2.html#ns"><H3>NS</H3></A>
+number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tes_level2.html#emis"><H3>EMIS</H3></A>
+the assumed emissivity for the
+calculating the normalized 
+temperature. Typically 0.97
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tes_level2.html#wave"><H3>WAVE</H3></A>
+the central wavelength for the 
+input channels, in micrometers.
+(1 value per channel)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tes_level2.html#skyrad"><H3>SKYRAD</H3></A>
+the downwelling sky radiance
+values in mW/m**2/um/sr as 
+output by TIMSCAL2
+(1 value per channel)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tes_level2.html#niter"><H3>NITER</H3></A>
+The number of TES iterations
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tes_level2.html#tesequation"><H3>TESEQUATION</H3></A>
+MASTER or ASTER TES equation
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tes.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tes.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

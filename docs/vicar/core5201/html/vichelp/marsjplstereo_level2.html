@@ -1,0 +1,441 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for MARSJPLSTEREO</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo.html">MARSJPLSTEREO</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+Left and right images of the stereo pair. There must two images for
+input. Technically, the program does not care about the order of the
+images, but the convention places the left image first.  Whichever is
+first will be the reference image, i.e. the disparity map's geometry
+will match the first image, with the map giving coordinates in the second.
+
+A third input is possible for trinocular stereo but has not been tested.
+Use at your own risk.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+Output disparity map.  If one filename is given, a single 2-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#band">band</A> image
+will be created in REAL format, with the first <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#band">band</A> the Line disparity
+and the second <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#band">band</A> the Sample disparity.  If two files are given, they
+will both be single-<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#band">band</A> REAL images, where the first is Line disparity
+and the second is Sample.
+
+In all cases, the value of the pixel is the 1-based coordinate in the
+second input image that matches the location of the pixel in the first
+input image.  See MARSCORR for more file format details.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="navtable"><H3>NAVTABLE</H3></A><pre>
+Corrected navigation filename.
+If marsnav was run on the input images it created a table of corrected
+pointing parameters. If you refer to this table using <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#navtable">NAVTABLE</A> it
+will override the pointing parameters (e.g. azimuth and elevation) in the
+picture labels, giving you a better registered mosaic.
+
+This parameter is usually not very useful for stereo pairs, but is
+included for completeness.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="pyrlevel"><H3>PYRLEVEL</H3></A><pre>
+Pyramid level. Compute disparity at given Pyramid Level. Defaults
+to 0.  The default will almost always be used in MIPL; low-resolution
+results are rarely called for.
+
+Comment from Mark Maimone:
+
+0 is full resolution, 1 is half resolution in each dimension, 2 is
+quarter, etc.  You typically get denser results at smaller resolution
+(since camera calibration issues are less significant), but of course
+the total number of range points typically drops. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="windowsize"><H3>WINDOWSIZE</H3></A><pre>
+Size of the correlation window in pixels. Default : 7. 
+
+Tuning this parameter is an art. Typically, larger values give smooth 
+maps at coarse resolution and not very sensitive to small
+objects. Small values give finer resultion of disparity maps, but may 
+not converge on some pixels. 
+
+Correlation is only attempted if both of the image dimensions are at 
+least 3 times as big as window size.  If that's not the case, the program
+just writes <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#out">out</A> dn=0.0 for all pixels.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mindisp"><H3>MINDISP</H3></A><pre>
+Minimum allowed disparity value. Default : 0.
+
+Disparities less then <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#mindisp">MINDISP</A> will be rejected.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="maxdisp"><H3>MAXDISP</H3></A><pre>
+Maximum disparity value. Default : 63
+
+Disparities larger then <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#maxdisp">MAXDISP</A> will be rejected.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="blobsize"><H3>BLOBSIZE</H3></A><pre>
+Sets minimum Blob Size.  The blob filter removes correlations on noisy
+pixels, such as the sky in the image, by removing regions of connected
+pixels that are smaller than the blob size.  Disparity differences
+between adjacent pixels must be less than 1/4 pixel to be considered
+part of a blob region.
+
+Comment from Mark Maimone. 
+A sanity check is that we eliminate small, standalone blobs from the
+range image.  Leaving the size at -1 means it will be set to some
+fixed ratio of the image size (4%).  I.e., you will never see
+connected regions in the disparity image smaller than 4% of the image,
+unless you reset this value to some number of pixels.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="uncertainty"><H3>UNCERTAINTY</H3></A><pre>
+Enables the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#uncertainty">Uncertainty</A> filter, and sets its value.  Normally this filtering
+is not done.  If <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#uncertainty">UNCERTAINTY</A> is specified, the filter is enabled, with a
+value of the parameter value.
+
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#uncertainty">Uncertainty</A> filter rejects points based on the slope of the correlation
+peak.  This is loosely related to correlation quality.
+
+A value of 256 corresponds to a 1.0 pixel <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#uncertainty">uncertainty</A> in disparity value.
+A value of 128 might be a place to start with this parameter, given some
+comments in the correlator code.  Lower values create a more stringent
+filter; i.e. fewer values survive, which should mean that the remaining
+values are of higher quality.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="percent"><H3>PERCENT</H3></A><pre>
+Since the underlying correlator accepts only byte data, halfword data
+must be scaled to byte internally before correlating.  This is done
+via a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#percent">percent</A> stretch (linear stretch based on histogram analysis).
+
+This parameter specifies the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#percent">percent</A> of pixels to be saturated at
+either end of the DN range.  It is a percentage, so the value ranges
+from 0 to 100 (not 0 to 1).  It defaults to 0.4%, which is very close
+to 1/256.  The binning process during byte conversion will ideally put
+1/256 of the pixels in each bin, so a value of 0.4% treats the end bins
+similar to all of the other bins.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="separate"><H3>SEPARATE</H3></A><pre>
+Normally all input images are lumped together into a single histogram
+for the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#percent">percent</A> stretch calculation (see PERCENT).  Specifying <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#separate">SEPARATE</A>
+causes each image to be stretched independently, based on its own
+histogram only.  This is useful for camera pairs whose overall brightness
+levels aren't matched.  The correlator is rather sensitive to overall
+brightness levels.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="band"><H3>BAND</H3></A><pre>
+The vicar image <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#band">band</A> number for the input images.  Defaults to 1. If the 
+specified <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#band">band</A> is bigger than the number of band in the image, the 1st band
+will be processed. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="separation"><H3>SEPARATION</H3></A><pre>
+Set maximum Euclidean <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#separation">separation</A> for trinocular stereo. DEFAULT = 0.2
+
+Not used for binocular stereo. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="threshold"><H3>THRESHOLD</H3></A><pre>
+Set <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#uncertainty">uncertainty</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#threshold">threshold</A>. DEFAULT = 1.0; Range = [0:255]
+
+Set maximum Pixel <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#threshold">Threshold</A> for merge. 
+
+Not used for binocular stereo. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="config_path"><H3>CONFIG_PATH</H3></A><pre>
+A colon-separated list of directories in which to look for configuration
+and calibration files.  Environment variables are allowed in the list
+(and may themselves contain colon-separated lists).  The directories are
+searched in order for each config/cal file when it is loaded.  This allows
+multiple projectes to be supported simultaneously, and allows the user to
+override any given config/cal file.  Note that the directory structure below
+the directories specified in this path must match what the project expects.
+For example, Mars 98 expects flat fields to be in a subdirectory named
+"flat_fields" while Mars Pathfinder expects them to be directly in the
+directory specified by the path (i.e. no intermediate subdirectories).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="match_method"><H3>MATCH_METHOD</H3></A><pre>
+Specifies a method for pointing corrections.
+
+Loose method matchs with pointing parameters of the image.
+Tight method matchs with unique id of the image.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="match_tol"><H3>MATCH_TOL</H3></A><pre>
+Tolerance value for matching pointing parameters in the pointing corrections file.
+Used if <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#match_method">MATCH_METHOD</A>=LOOSE
+Default value is pretty arbitrary, though seems to work well so far....
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="point_method"><H3>POINT_METHOD</H3></A><pre>
+Specifies a mission-specific pointing method to use.  Normally this
+parameter is not used, in which case the "default" pointing methods
+are used.  Some missions may have special, or alternate, pointing
+methods available, which are indicated by this string (for example,
+backlash models, using arm joint angles instead of x/y/z/az/el, etc).
+A substring search is used, so multiple methods (where that makes sense)
+can be specified by separating the keywords with commas.
+
+Note that nav files created using one pointing method will most likely
+not be compatible with a mosaic created using a different pointing method.
+
+The methods available vary per mission, but some methods available at
+the time of this writing are:
+
+BACKLASH : Mars 98 SSI only.  Selects a backlash pointing model,
+which adjusts the telemetered azimuth and elevation values based on
+knowledge of the camera's mechanical backlash and the direction the
+motor was travelling when the image was taken.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nosite"><H3>NOSITE</H3></A><pre>
+This parameter is not useful for MARSJPLSTEREO but is inherited with the
+PIG library.  See e.g. MARSMAP for a description if necessary.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="data_set_name"><H3>DATA_SET_NAME</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#data_set_name">DATA_SET_NAME</A> typically identifies the instrument that acquired the
+data, the target of that instrument, and the processing level of the data.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#data_set_name">DATA_SET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="data_set_id"><H3>DATA_SET_ID</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#data_set_id">DATA_SET_ID</A> value for a given data set or product is constructed
+according to flight project naming conventions.  In most cases the
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#data_set_id">DATA_SET_ID</A> is an abbreviation of the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#data_set_name">DATA_SET_NAME</A>.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#data_set_id">DATA_SET_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="release_id"><H3>RELEASE_ID</H3></A><pre>
+When a data set is released incrementally, such as every three months during
+a mission, the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#release_id">RELEASE_ID</A> is updated each time part of the data set is released.
+For each mission(or host id if multiple spacecrafts), the first release of a data
+set should have a value of "0001".
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#release_id">RELEASE_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="product_id"><H3>PRODUCT_ID</H3></A><pre>
+Specifies a permanent, unique identifier assigned to a data product by
+its producer. Most commonly, it is the filename minus the extension.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#product_id">PRODUCT_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="producer_id"><H3>PRODUCER_ID</H3></A><pre>
+Specifies the unique identifier of an entity associated with the
+production of a data set. This value is copied to the output label,
+property IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#producer_id">PRODUCER_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="producer_inst"><H3>PRODUCER_INST</H3></A><pre>
+Specifies the identity of a university, research center, NASA center or other
+institution associated with the production of a data set.
+This value is copied to the output label, property IDENTIFICATION, keyword
+PRODUCER_INSTITUTION_NAME.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="target_name"><H3>TARGET_NAME</H3></A><pre>
+Specifies a target.  The target may be a planet, satelite, ring, region, feature,
+asteroid or comet.  This value is copied to the output label, property
+IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#target_name">TARGET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="target_type"><H3>TARGET_TYPE</H3></A><pre>
+Specifies the type of a named target. This value is copied to the output
+label, property IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#target_name">TARGET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rsf"><H3>RSF</H3></A><pre>
+Rover State File.  This is a list of filenames to load containing
+Rover State information.  These files contain position and orientation
+information for a rover (or other mobile spacecraft) at various sites.
+They are in XML format.  See the "Rover Motion Counter (RMC) Master File SIS"
+for details on these files.
+
+Rover State Files have a priority order.  The files listed first have
+the highest priority.
+
+Environment variables may be used in the list.
+
+For MER, if a directory is specified, then that directory is searched for
+RMC Master files and any found are loaded.  The directory structure and
+filename convention is covered in the RMC SIS.  The directory specified
+is the one containing "master", so if &ltdir&gt is the name specified in the
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#rsf">RSF</A> parameter, the following files will be searched for:
+
+&ltdir&gt/master/<mission>_Master.svf
+&ltdir&gt/master/<mission>_Site_<n>_Master.rvf
+
+The name of each file loaded is printed to the stdout log for reference.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="debug_rsf"><H3>DEBUG_RSF</H3></A><pre>
+If enabled, this causes the internal database of RMC locations to be
+printed <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#out">out</A> to the stdout log.  This is after the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsjplstereo_level2.html#rsf">RSF</A> files have been
+loaded and the coordinate systems read from the input label(s).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord"><H3>COORD</H3></A><pre>
+This parameter is not useful for MARSJPLSTEREO but is inherited with the
+PIG library.  See e.g. MARSMAP for a description if necessary.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord_index"><H3>COORD_INDEX</H3></A><pre>
+This parameter is not useful for MARSJPLSTEREO but is inherited with the
+PIG library.  See e.g. MARSMAP for a description if necessary.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="fixed_site"><H3>FIXED_SITE</H3></A><pre>
+This parameter is not useful for MARSJPLSTEREO but is inherited with the
+PIG library.  See e.g. MARSMAP for a description if necessary.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="solution_id"><H3>SOLUTION_ID</H3></A><pre>
+Specifies which solution ID to use for pointng corrections.
+
+There are potentially many different definitions for the same coordinate
+system.  These are identified via a unique Solution ID.  If this parameter
+is given, only the specified solution's definition is searched for.
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

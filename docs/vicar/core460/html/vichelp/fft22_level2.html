@@ -1,0 +1,163 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for FFT22</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22.html">FFT22</A></H1>
+<A NAME="mode"><H3>MODE</H3></A>
+<pre>
+This parameter specifies the type of transform that is to be performed:
+
+FORWARD specifies that a forward transform is desired, from image space
+to transform space.  This is the default if the input <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#format">format</A> is not 
+complex.
+
+INVERSE specifies that an inverse transform is desired, from transform
+space to image space.  This is the default if the input <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#format">format</A> is complex.
+
+Note that it is permissible to specify FORWARD with complex input, but
+not to specify INVERSE with non-complex input:  the FFT must always be
+in complex <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#format">format</A>.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="format"><H3>FORMAT</H3></A><pre>
+Keyword parameter, valid: BYTE, HALF, FULL, REAL, or COMP.
+
+This parameter specifies the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#format">format</A> of the data in the output image file
+in the case of an inverse transform.  It is ignored in forward transform
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#mode">mode</A>, because Vicar2 discourages overriding the input label.
+
+Default = BYTE.
+
+Note that the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#format">format</A> of the FFT may never be specified, as it is always
+COMP (complex).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="inp"><H3>INP</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#inp">INP</A> specifies the input picture for a forward transform, or the 
+transform dataset for an inverse transform.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#out">OUT</A> specifies the output transform dataset for a forward transform, 
+or the output image for an inverse transform.
+
+The output FFT of an image with <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#nl">NL</A> lines and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#ns">NS</A> samples will be
+of COMPLEX <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#format">format</A>, with <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#ns">NS</A> lines and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#nl">NL</A> samples.  I.e., it is 
+transposed with respect to the input.  This is done to speed up 
+processing.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="size"><H3>SIZE</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#size">SIZE</A> is a standard VICAR size field:
+
+ (starting line, starting sample, number of lines, number of samples)
+
+This specifies the subimage of the input image to be processed.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ss"><H3>SS</H3></A><pre>
+Starting sample.  See Help <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#size">SIZE</A>.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sl"><H3>SL</H3></A><pre>
+Starting line.  See Help <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#size">SIZE</A>.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ns"><H3>NS</H3></A><pre>
+Number of samples.  See Help <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#size">SIZE</A>.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nl"><H3>NL</H3></A><pre>
+Number of lines.  See Help <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#size">SIZE</A>.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="scratch"><H3>SCRATCH</H3></A><pre>
+This specifies a disk file that is used by the program to store
+data during intermediate steps of the processing.  It is only
+required when both of the following conditions are met:
+ 
+   (a) the image buffer required by the program is larger than
+      the buffer <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#size">size</A> specified by the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#bufpow">BUFPOW</A> parameter. The image
+      buffer <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#size">size</A> required is N*N complex numbers, where N is the
+      smallest power of 2 that equals or exceeds both <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#nl">NL</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#ns">NS</A>,
+      i.e., 8*N*N bytes; and,
+
+   (b) the output file is not large enough to be used for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#scratch">scratch</A>
+      storage.  This will be true if its <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#format">format</A> is not complex, and
+      also if the number of lines of the output is less than the
+      number of samples.
+
+The default <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#bufpow">BUFPOW</A> (18) is sufficient to contain a 128*128 image.
+However, note that a 64*256 image, say, requires a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#scratch">scratch</A> file,
+since it is the larger of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#nl">NL</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#ns">NS</A> that determines the buffer <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#size">size</A>.
+
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#scratch">scratch</A> file will be deleted at the end of the execution of "fft22"
+by the program.
+
+The default for this parameter is a file in the standard MIPL <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#scratch">scratch</A>
+directory.  The user may specify a different location for any reason
+(e.g., if that disk is full, or not available).  If this parameter is
+specified for a case in which it is not required, it is ignored.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="bufpow"><H3>BUFPOW</H3></A><pre>
+This determines the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#size">size</A> of the buffer that the program uses to 
+transpose the FFT.  Since this buffer <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#size">size</A> (in bytes) is always a power
+of 2, this parameter specifies the power of 2 which equals the buffer
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#size">size</A>:  BUF_SIZE = 2 ** <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#bufpow">BUFPOW</A>.
+
+Since the FFT will be transposed, this buffer must be able to hold
+at least two lines of N complex numbers, where N is the larger of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#ns">NS</A>
+and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#nl">NL</A>, hence:
+                BUF_SIZE &gt= 2 * 8 * N,
+ or:
+                               2
+                <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#bufpow">BUFPOW</A> &gt= 4 + log(N).
+The above conditions must be met for the program to run at all.
+
+Furthermore, the entire operation can be done in memory if
+BUF_SIZE &gt= 8*N*N, or <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#bufpow">BUFPOW</A> >= 3+logN.  This will speed processing,
+assuming that the memory is available and that paging is not a
+problem.
+The user will not in general need to specify this parameter, but it
+is provided for the following contingencies:
+
+ (a) to allow improved performance, since increasing the buffer <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#size">size</A>
+    will cut down on the amount of I/O done in the program, but can
+    increase paging if a large working set is not available;
+ 
+ (b) to obviate the need for a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fft22_level2.html#scratch">scratch</A> file (see parameter SCRATCH);
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

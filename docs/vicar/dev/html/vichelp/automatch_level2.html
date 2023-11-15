@@ -1,0 +1,222 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for AUTOMATCH</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/automatch.html">AUTOMATCH</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+All inputs are IBIS tabular files.
+
+First input= <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/automatch_level2.html#sedr">SEDR</A>.INT produced by program IBISNAV
+  The first column contains the FDS times if the frames to mosaic.
+
+Second input= OVER.INT produced by program MOSPLOT.
+  Columns 1 and 2 contain the frame overlap numbers.
+  Frame pairs are selected from the overlap numbers only.
+
+A geom correction file can be entered as the third input
+if the images are in image space (un geometrically corrected).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+The output IBIS tabular file.
+nine columns output:
+col1=first frame number of a pair
+col2=second frame number of a pair
+col3=first frame tiepoint line
+col4=first frame tiepoint sample
+col5=second frame tiepoint line
+col6=second frame tiepoint sample
+col7=1
+col8=1
+col9=1
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="project"><H3>PROJECT</H3></A><pre>
+Specifies the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/automatch_level2.html#project">project</A> . This is required if
+the images are un-geometrically corrected
+and the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/automatch_level2.html#project">project</A> is GLL.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="camera"><H3>CAMERA</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/automatch_level2.html#camera">Camera</A> serial number.
+Used in reading geoma correction parameters if 
+nominals are to be used.
+Ignored for GLL.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="object"><H3>OBJECT</H3></A><pre>
+Causes images to be considered geometrically corrected.
+The geoma file will be ignored if present.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="pfilter"><H3>PFILTER</H3></A><pre>
+The power of the FFT high pass
+power law filter. Default is no power filter.
+default is: <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/automatch_level2.html#pfilter">pfilter</A>=0.0 real
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="phase"><H3>PHASE</H3></A><pre>
+Degree of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/automatch_level2.html#phase">phase</A> correlation:
+0 for normal correlation. ( Default ).
+1 for <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/automatch_level2.html#phase">phase</A> correlation
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="offmax"><H3>OFFMAX</H3></A><pre>
+How far off center, correlation
+peak is allowed (0 to 1). If the peak is more than
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/automatch_level2.html#offmax">OFFMAX</A>*window/2 pixels from the center it is rejected.
+Default is 0.8
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="func"><H3>FUNC</H3></A><pre>
+Pixel function before correlation is performed..
+The options are: LOG or EXP.
+DEfault is no funtion performed.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="redo"><H3>REDO</H3></A><pre>
+Keyword for redo mode. Valid responses are:
+REDO or NOREDO. The default is REDO.
+Redo specifies that if the first correlation for
+an area has an offset of less than the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/automatch_level2.html#offmax">OFFMAX</A> limit
+but greater than zero the correlation is rerun
+beginning at the new location.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ntpts"><H3>NTPTS</H3></A><pre>
+The number of tiepoints to collect per pair.
+This initial set will be edited (see TOLERANCE) until only
+good points remain. Fewer than 4 good points invalidates
+this image pair.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="toleranc"><H3>TOLERANC</H3></A><pre>
+The largest permitted tiepoint residual.
+All the tiepoints are fitted to a polynomial model of the
+form:
+y1=Ax+By+C   x1=Dx+Ey+F
+Points which disagree with the model by over <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/automatch_level2.html#toleranc">TOLERANC</A>
+pixels will be rejected (one point rejected per fitting pass)
+until all are within <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/automatch_level2.html#toleranc">TOLERANC</A>. If fewer than 4 points
+remain the pair is rejected.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="print"><H3>PRINT</H3></A><pre>
+'NOPRINT to turn off terminal output
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="dir"><H3>DIR</H3></A><pre>
+Optional parameter required only if the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/automatch_level2.html#filename">FILENAME</A> parameter
+is NOT specified. 
+Specifies the directory name where all the input files for the
+mosaic reside. (obsolete)
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="filename"><H3>FILENAME</H3></A><pre>
+Optional parameter required only if the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/automatch_level2.html#dir">DIR</A> keyword is not
+specified.
+Specifies a file name which contains the names of all the
+images to be included in the mosaic, one name per record.
+This file is created by the user with a text editor.
+For example, if the first 2 pictures are called 
+scx1:[jjl059]1234567.img and mipldisk:[mipl.gll]venus.img 
+the first two records of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/automatch_level2.html#filename">FILENAME</A> would contain:
+
+scx1:[jjl059]1234567.img
+mipldisk:[mipl.gll]venus.img 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="noprint"><H3>NOPRINT</H3></A><pre>
+To suppress printout 
+about each tiepoint 
+displayed at the terminal
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="corr"><H3>CORR</H3></A><pre>
+Specifies the correlation size.
+Is not supported now.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="subpix"><H3>SUBPIX</H3></A><pre>
+Specifies sub-pixel correlation.
+Not tested or supported.
+
+!NOSEDR option currently not supported for testing
+!.VARIABLE NOSEDR
+!Limits reading of the 
+!navigation file.
+!Is not supported now.
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

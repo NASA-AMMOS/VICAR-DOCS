@@ -1,0 +1,175 @@
+<HTML>
+<HEAD><title>HTML Help for TIMSCAL2OLD</title></HEAD>
+<BODY>
+<H1>Help for TIMSCAL2OLD</H1>
+<pre>
+PURPOSE:
+
+   TIMSCAL2OLD is the version of TIMSCAL2 if use prior to January 19, 1996.
+It differs from the subsequent version of TIMSCAL2 in that it uses MODTRAN1,
+rather than MODTRAN3.
+   TIMSCAL2OLD is a program which calibrates TIMS data to ground radiance, 
+ground temperature, or emittance. The input is TIMS data which have already 
+been calibrated to instrument radiance (in watts/...) with the program TIMSCAL.
+The output is a band interleaved by line (BIL) data set of all six bands in two 
+byte integer.
+
+EXECUTION:
+
+   The following is the execution statement format for TIMSCAL2OLD:
+
+	TIMSCAL2OLD INP=PIX OUT=CALPIX PARAMS
+
+   where INP, OUT, and PARAMS are parameters discussed in their res-
+pective parameter sections. 
+
+
+
+OPERATION:
+
+   TIMSCAL2OLD takes as input the output dataset of TIMSCAL (IRAD mode, WATTS
+units). It uses LOWTRAN7 or MODTRAN (user selectable) to compute the 
+atmospheric path radiance, transmittance, and ground reflected atmospheric 
+radiance. These values are convolved with the TIMS instrument functions and 
+the instrument perceived radiances to obtain either ground radiance, ground 
+temperature, or emittance.  The formula used to compute ground radiance is:
+
+        IRAD = [GRAD + (1.0-e)*L   ]*Trans + L
+                                sky           path
+
+To compute emittance, one channel is assumed to have a constant (user specified)
+emittance. The temperature of each pixel is computed, based upon this 
+assupmtion. For this temperature, the blackbody radiance in each TIMS bandpass 
+is computed. The emittance is the ratio of the computed ground radiance to the
+blackbody radiance of that band.
+   The units output for radiance images are in milliwatts/m**2/um/sr. The units 
+output for temperature images are in hundredths of degrees Centigrade. Units 
+output for emissivity are dimensionless, but scaled by 10,000. Output is in 
+halfword (two byte signed integer) format. 
+
+
+WRITTEN BY:  J. H. REIMER    1982
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Ron Alley</A>
+
+REVISION: 4,  January 22, 1996
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#inp"><H3>INP</H3></A>
+TIMS calibrated image (IRAD)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#out"><H3>OUT</H3></A>
+Output data set of all six bands
+of calibrated TIMS data.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#size"><H3>SIZE</H3></A>
+The standard  VICAR2 output size
+field.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#sl"><H3>SL</H3></A>
+Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#ss"><H3>SS</H3></A>
+Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#nl"><H3>NL</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#ns"><H3>NS</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#org"><H3>ORG</H3></A>
+Organization of output dataset
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#calmode"><H3>CALMODE</H3></A>
+This keyword selects the type
+of decalibatrion to be performed
+Valid: GRAD, GTEM, BTEM, EMIS
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#amodel"><H3>AMODEL</H3></A>
+Selects the model for which the
+atmospheric corrections will
+be performed via LOWTRAN/MODTRAN
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#atemp"><H3>ATEMP</H3></A>
+Selects atmospheric temperature
+and pressure profiles, if 
+different form that defaulted
+with AMODEL.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#ahumid"><H3>AHUMID</H3></A>
+Selects the atmospheric water
+vapor model, if different from
+that defaulted with AMODEL.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#aozone"><H3>AOZONE</H3></A>
+Selects the ozone model, if
+different from that defaulted
+with AMODEL.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#height"><H3>HEIGHT</H3></A>
+Aircraft altitude (km above MSL)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#datum"><H3>DATUM</H3></A>
+Surface elevation (km above MSL)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#nlayers"><H3>NLAYERS</H3></A>
+The number of atmospheric lay-
+ers in the radiosonde data
+(if used).
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#altitude"><H3>ALTITUDE</H3></A>
+The altitudes of each of the
+atmospheric layers given in
+the radiosonde data. (km.)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#pressure"><H3>PRESSURE</H3></A>
+The atmospheric pressures of
+each of the atmospheric lay-
+ers given in the radiosonde
+data. (mb.)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#temp"><H3>TEMP</H3></A>
+The temperatures of the at-
+mospheric layers given in
+the radiosonde data. (deg C)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#water"><H3>WATER</H3></A>
+The water profile in terms
+of the parameter WTYPE, for
+each layer in the radiosonde
+data.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#wtype"><H3>WTYPE</H3></A>
+The units in which H2OS are
+given.  The three types are
+relative humidity (RH), dew-
+point (DP), and density (DE)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#waterfac"><H3>WATERFAC</H3></A>
+Varies the moisture profile
+by the factor specified
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#o3fac"><H3>O3FAC</H3></A>
+Varies the ozone profile by
+the factor specified
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#co2fac"><H3>CO2FAC</H3></A>
+Varies the carbon dioxide
+profile by the factor specified
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#so2fac"><H3>SO2FAC</H3></A>
+Varies the sulfur dioxide
+profile by the factor specified
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#ch4fac"><H3>CH4FAC</H3></A>
+Varies the methane profile by
+the factor specified
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#o2fac"><H3>O2FAC</H3></A>
+Varies the oxygen profile by
+the factor specified
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#e"><H3>E</H3></A>
+The emissivity assumed for
+each band. (Only the REFCHAN
+band is used in the EMIS mode)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#refchan"><H3>REFCHAN</H3></A>
+(For EMIS only)
+The channel to be used as the
+reference channel. Valid: (1:6)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#date"><H3>DATE</H3></A>
+Date of data acquisition. Used
+to override the date in the
+VICAR label (yymmdd)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#lowfile"><H3>LOWFILE</H3></A>
+Dataset name for LOWTRAN/MODTRAN
+output report file.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#lowtab"><H3>LOWTAB</H3></A>
+Dataset name for LOWTRAN/MODTRAN
+output tabular file.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#atmodel"><H3>ATMODEL</H3></A>
+Atmospheric model to be used
+(LOWTRAN or MODTRAN)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old_level2.html#shift"><H3>SHIFT</H3></A>
+Spectral shift of filter 
+functions (Nanometers)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/timscal2old.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

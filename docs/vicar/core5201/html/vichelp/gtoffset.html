@@ -1,0 +1,71 @@
+<HTML>
+<HEAD><title>HTML Help for GTOFFSET</title></HEAD>
+<BODY>
+<H1>Help for GTOFFSET</H1>
+<pre>
+PURPOSE
+     GTOFFSET reads the GeoTIFF labels of two images and prints the 
+     offset of the second (in line,sample) relative to the first.
+     These values can be used in programs such as FASTMOS or FEATHERV
+     to perform image mosaicking.
+     
+     THE PROCEDURE DOES NOT CHECK THE MAPPINGS FOR CONSISTENCY.  THE
+     TWO IMAGES MUST HAVE A CONSISTENT MAPPING (SAME PROJECTION, ZONE,
+     STANDARD PARALLELS, SCALE, ETC.).  ONLY THE OFFSET CAN VARY.
+     
+     The user can name an ibis table for the result to be in.  The
+     values will be double precision in columns (5,6).
+     
+     THE RESULTS ARE THE RELATIVE OFFSETS OF THE TWO IMAGES.  WHEN
+     MOSAICKING, IF THE FIRST IMAGE IS PLACED AT (1,1) THEN THE 
+     RELATIVE OFFSETS PLUS ONE MUST BE USED FOR THE MOSAIC/OFFSET OF
+     THE SECOND IMAGE.  THESE ARE PRINTED IN COLUMNS 7 AND 8.
+     
+CALL
+     gtoffset INPUT1 INPUT2
+  WHERE:
+     INPUT1   is the first input data set (must have a GeoTIFF label).
+     INPUT2   is the second input data set (must have a GeoTIFF label).
+       
+OPERATION
+
+Pixel (0,0) of the second image is converted to a geographic coordinate
+using the second image geotiff label and the routine PIXMAP.  Then the
+coordinate is converted to pixel again using PIXMAP but using the
+geotiff label of the first image.  The result is the offset of the
+second image.  The result is printed.
+
+PERFORMANCE
+
+Less than a second.
+Restrictions
+------------
+
+The input images must have GeoTIFF labels.
+The mappings of the two images must differ only
+by offset.
+
+History: 
+
+Original Programmer: A. L. Zobrist, 07 Jul, 2000
+<A NAME="CogProg">Current Cognizant Programmer: B. A. McGuffie</A>
+
+2022-06-27 B. Crocco afids to opensource
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/gtoffset_level2.html#in1"><H3>IN1</H3></A>
+First image with GeoTIFF label
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/gtoffset_level2.html#in2"><H3>IN2</H3></A>
+Second image with GeoTIFF label
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/gtoffset_level2.html#ibistab"><H3>IBISTAB</H3></A>
+Optional IBIS table with offset
+in columns (5,6) of record 1; 
+also the offset relative (1,1)
+in columns (7,8)
+.END
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/gtoffset.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/gtoffset.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

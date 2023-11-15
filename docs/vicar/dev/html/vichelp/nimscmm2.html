@@ -1,0 +1,536 @@
+<HTML>
+<HEAD><title>HTML Help for NIMSCMM2</title></HEAD>
+<BODY>
+<H1>Help for NIMSCMM2</H1>
+<pre>
+PURPOSE & METHOD
+----------------
+
+ NIMSCMM2 creates a NIMS Merged Mosaic (MM) or "cube file" from one or
+ more GLL <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#phase">Phase</A>-2 EDR files, in a non-interactive (batch) mode.  It is
+ the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#phase">Phase</A>-2 version of NIMSCMM, which includes all the products of the
+ Main Mission and later stages at Jupiter, but does not include the
+ earlier phases: Venus, Earth-1, Earth-2, Gaspra and Ida.  Processing
+ of data for the latter phases requires program NIMSCMM, which is no
+ longer supported.
+
+ In addition to the cube, a "cocube" containing supplementary (mainly
+ geometrical) information is produced, see parameter COCUBE.  
+
+ The output DNs are computed by binning the input pixels, computing
+ the weighted mean in case of overlap.  (The weights are saved in a
+ weights file, see parameter WTFIL).  There are two binning algorithms,
+ nearest-neighbour and footprint, see parameter BIN.  A discussion of
+ the weighting algorithm is given under HELP WTFIL.
+EXECUTION
+---------
+ The command line syntax for NIMSCMM2 is:
+
+ NIMSCMM2 EDR CUBE TARGET PROJ [optional parameters]
+
+ The following is a list of the required parameters:
+
+ EDR specifies up to 25 input EDR files.
+
+ CUBE specifies the name of the primary output file containing the NIMS
+ cube.
+
+ TARGET specifies the name of the astronomical body being observed.
+
+ PROJ specifies the desired map projection.  Valid projections are
+ Mercator, Simple Cylindrical, Normal Cylindrical, Sinusoidal, Lambert,
+ (Polar) Stereographic, (Polar) Orthographic, and Perspective (or "Point
+ Of View").
+
+ All other parameters are formally optional.  However, in practice, in
+ order to generate a projected cube, the following will be required:
+ - PCKERNEL or AACSFILE
+ - SPKERNEL
+ - CALFILE
+ - DARKFILE
+ - DBMFILE (if the observation is in the booms)
+ - IKERNEL (for a few cases where the default is not optimal).
+
+ How to determine and obtain these files is described under Tutor in the
+ Help section for the individual parameters.  In general, a good starting
+ point is to examine the parameters that were used in the cube that was
+ delivered to PDS by the MIPL Systematic Processing facility.  These can
+ be found (as of 19 June 2008) at the following on-line URL:
+ http://www-pdsimage.jpl.nasa.gov/resources/onlineData.html
+ (Under "Sorted by Mission", click on "NIMS CUBEs".)  When you find the
+ cube of interest, the History portion of the headers gives the files used
+ to generate that cube.
+
+ An example of a typical cube generation run of NIMSCMM2 under the current
+ MIPL configuration is given at the end of the test procedure tstnimscmm2.pdf.
+ Special Pixel Values
+
+ NIMSCMM2 uses a scheme borrowed from the ISIS system to flag pixels
+ with unusual circumstances.  These pixels are assigned values at the
+ extreme low end of the numerical range of the data format used by the
+ cube.  For integer data, this is not a problem, as long as the
+ platform on which the program runs supports the two-byte integer
+ format assumed by NIMSCMM2.  However, for floating-point data, the
+ values used for these special pixels are platform-dependent, which
+ violates the VICAR rule that its files be readable on any supported
+ platform.  In particular, a cube generated on a platform using IEEE
+ floating-point format (Sun, HP, Mac, PC, X86/Linux) will not be
+ readable (at least as far as the special values are concerned) on
+ one using the VAX format (Alpha, VAX), and vice versa.  Although
+ this is an undesirable situation, it is tolerated because currently
+ the best 3-D cube display software exists in the ISIS system (CV
+ on Unix, QL3 on VAX/VMS).  Note that program VISIS2 is required to
+ convert a VICAR NIMS cube to ISIS format.
+ The following cases are flagged by special values in ISIS:
+
+Minimum valid:  this is the minimum value which is considered a valid
+ data item;  anything smaller is considered to be a special pixel,
+ which is in some way invalid.  (Note that not all the values in the
+ special-pixel range are actually in use, as gaps have  been left 
+ intentionally for possible future use.)
+
+Null:  this signifies that no valid data exist at this point.
+
+High Instrument Saturation:  the instrument's signal was at the top
+ end of its scale, so the signal is not a reliable measure of the
+ quantity being detected, but only a lower limit to it.  For NIMS,
+ this is 1023 DN.
+
+Low Instrument Saturation:  the instrument's signal was at the bottom
+ end of its scale.  For NIMS, this is 0 DN;  however, since it is not 
+ possible for NIMS to observe a valid 0 DN because of the dark offset 
+ added to the signal (0 DN means missing data), this value is not used
+ by this program (but is included in this text for completeness).
+
+High Representation Saturation:  the signal would exceed the top end of 
+ the range of the data format used to represent it, i.e., 32767 for 
+ halfword integer and of the order of 10^38 for floating-point.
+
+Low Representation Saturation:  the signal would fall below the bottom 
+ end of the range of the data format used to represent it, i.e., -32768 
+ for halfword integer and of the order of -10^38 for floating-point.
+
+ Since it is impossible for NIMS data to achieve the Representation
+ Saturation values, these will never be encountered in NIMS cubes, and
+ are not supported by this program.
+ The following values are used for the data types supported by this 
+ program:
+
+			VAX floating-	IEEE floating-
+		Integer	   point	  point
+
+Min.Valid:	-32752     FFEFFFFF	  FF7FFFFA
+
+Null:		-32768     FFFFFFFF	  FF7FFFFB
+
+High Ins.Sat:	-32765     FFFCFFFF	  FF7FFFFE
+
+Low Ins.Sat:	-32766     FFFDFFFF	  FF7FFFFD
+
+ The floating-point values are defined by bit strings, hence are given
+ in hex in the above table.  The actual values are of the order of
+ -1.7014e38 for VAX and -3.4028e38 for IEEE.
+
+INITIAL VERSION: L. W. Kamp, 5-Dec-1994
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER: W. L. Bunch</A>
+
+REVISIONS:
+  2015-02-24 WLB Removed VMS support. Added enable/disable-log to
+                 tstnimscmm2.pdf. Fixed 64-bit bugs. Added missing headers.
+  2019-06-14 WLB IDS-7924 - Fixed erroneous format directives.
+  2019-08-01 WLB IDS-7923 - Replaced sprintf calls with zvnsprintf. Misc -Wall cleanup.
+                 There remain 291 incompatible pointer type warnings and 39
+		 implicit function definitions.
+  2019-09-06 WLB IDS-7922 - Initialized some variables.
+  2020-03-19 WLB IDS-8260 - Changed input buffer type for obscuration map from LOGICAL to INTEGER. Enhanced unit test.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#edr"><H3>EDR</H3></A>
+1-25 input EDR files
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#cube"><H3>CUBE</H3></A>
+output Cube file
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#outtype"><H3>OUTTYPE</H3></A>
+"G-cube", "Tube", or
+"P-Tube" output?
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#outorg"><H3>OUTORG</H3></A>
+Cube is BSQ/BIL/BIP
+TEMPORARILY DISABLED
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#cocube"><H3>COCUBE</H3></A>
+output Geometry cocube
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#asc_cal"><H3>ASC_CAL</H3></A>
+are CALFILE and DARKFILE
+in ascii or binary format?
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#calfile"><H3>CALFILE</H3></A>
+calibration file(s)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#pshift"><H3>PSHIFT</H3></A>
+grating correction
+(override CALFILE)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#ainfl"><H3>AINFL</H3></A>
+grating step inflation
+correction
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#darkfile"><H3>DARKFILE</H3></A>
+dark file(s)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#solfile"><H3>SOLFILE</H3></A>
+solar flux file
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#dbmfile"><H3>DBMFILE</H3></A>
+deboom file
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#dspkfile"><H3>DSPKFILE</H3></A>
+despike file
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#target"><H3>TARGET</H3></A>
+Name of the planet or 
+satellite.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#delrad"><H3>DELRAD</H3></A>
+Atmospheric height
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#phase"><H3>PHASE</H3></A>
+Mission <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#phase">phase</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#obsname"><H3>OBSNAME</H3></A>
+Observation name
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#obsext"><H3>OBSEXT</H3></A>
+Observation extension
+(A,B,C,...)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#mos_num"><H3>MOS_NUM</H3></A>
+Mosaic id. number
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#obsnote"><H3>OBSNOTE</H3></A>
+Observation description
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#suppnote"><H3>SUPPNOTE</H3></A>
+Supplement to OBSNOTE
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#prodnote"><H3>PRODNOTE</H3></A>
+Product description
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#prodid"><H3>PRODID</H3></A>
+Product ID (= cube name)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#initials"><H3>INITIALS</H3></A>
+Used in generating
+product ID (= cube name)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#old_ver"><H3>OLD_VER</H3></A>
+use old version of
+code?
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#caltype"><H3>CALTYPE</H3></A>
+Type of calibration
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#radscal"><H3>RADSCAL</H3></A>
+Controls radiance scaling
+if CALTYPE=RAD (0=none)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#darktype"><H3>DARKTYPE</H3></A>
+Type of dark interpolation
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#drkthrsh"><H3>DRKTHRSH</H3></A>
+Cutoff factor (above dark
+value)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#photfunc"><H3>PHOTFUNC</H3></A>
+Photometric function used
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#photcut"><H3>PHOTCUT</H3></A>
+Photometric correction 
+cutoff wavelength
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#minn_exp"><H3>MINN_EXP</H3></A>
+Parameter for Minnaert
+photometric function
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#inccut"><H3>INCCUT</H3></A>
+Cutoff incidence angle
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#emicut"><H3>EMICUT</H3></A>
+Cutoff incidence angle
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#proj"><H3>PROJ</H3></A>
+Map projection.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#tielat"><H3>TIELAT</H3></A>
+Special latitude point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#tielon"><H3>TIELON</H3></A>
+Special longitude point.
+(WEST, except EAST for Venus)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#tieline"><H3>TIELINE</H3></A>
+Line of special point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#tiesamp"><H3>TIESAMP</H3></A>
+Sample of special point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#north"><H3>NORTH</H3></A>
+Output North angle (for ORTHO
+or PERSPECTIVE)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#parallel"><H3>PARALLEL</H3></A>
+Latitudes of standard parallels.
+(Lambert projection only.)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#refsclk"><H3>REFSCLK</H3></A>
+Reference SCLK 
+(100*RIM+MOD91)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#refmp"><H3>REFMP</H3></A>
+MP for REFSCLK
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#oaxis"><H3>OAXIS</H3></A>
+Optical axis Line,Sample
+(POV/PERSPECT only)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#olatlon"><H3>OLATLON</H3></A>
+Optical axis Latitude/Longitude
+(POV/PERSPECT only)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#recenter"><H3>RECENTER</H3></A>
+Re-center Optical Axis?
+(POV/PERSPECT only)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#pdist"><H3>PDIST</H3></A>
+S/C-Planet distance
+(POV/PERSPECT only)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#radfact"><H3>RADFACT</H3></A>
+Radius expansion factor for 
+off-planet pixels
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#radii"><H3>RADII</H3></A>
+Allows user override of body 
+radii in SPICE kernels:
+Semi-Major Equatorial,
+Semi-Minor Equatorial,
+Polar
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#scale"><H3>SCALE</H3></A>
+Number of kilometers each pixel
+represents (if POV: factor for
+nominal scale)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#outsiz"><H3>OUTSIZ</H3></A>
+(NL,NS) in the output image
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#lat_type"><H3>LAT_TYPE</H3></A>
+Planetographic/centric lat's?
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#fill"><H3>FILL</H3></A>
+Fill in sparse data?
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#filpar"><H3>FILPAR</H3></A>
+(Fill dimension, number of valid
+points) -- only if FILL.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#saturatd"><H3>SATURATD</H3></A>
+How to treat saturated DNs
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#satthrsh"><H3>SATTHRSH</H3></A>
+threshold weight to flag
+saturated DN
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#lo_sat"><H3>LO_SAT</H3></A>
+recognize thresholded DNs as
+low_instrument_saturation?
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#sclk"><H3>SCLK</H3></A>
+list of SCLK intervals for cube 
+data
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#goffset"><H3>GOFFSET</H3></A>
+Grating offset
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#gstart"><H3>GSTART</H3></A>
+Grating start
+(if HRS incomplete)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#gain"><H3>GAIN</H3></A>
+Gain state
+(if HRS incomplete)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#chopper"><H3>CHOPPER</H3></A>
+Chopper mode
+(if HRS incomplete)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#insmode"><H3>INSMODE</H3></A>
+Instrument mode
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#nohkp"><H3>NOHKP</H3></A>
+ignore housekeeping data
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#mirromit"><H3>MIRROMIT</H3></A>
+discard mirror positions
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#ins_temp"><H3>INS_TEMP</H3></A>
+instrument temperatures
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#nlgp"><H3>NLGP</H3></A>
+# logical grating positions
+(SAFE/FIXED modes if NOHKP)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#stopslid"><H3>STOPSLID</H3></A>
+Mode if Stop & Slide
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#bin"><H3>BIN</H3></A>
+binning algorithm to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#overlap"><H3>OVERLAP</H3></A>
+what to do with overlapping
+output pixels
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#thresh"><H3>THRESH</H3></A>
+threshold weight to use DN
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#maxdstor"><H3>MAXDSTOR</H3></A>
+maximum distortion in
+footprint
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#fpngrid"><H3>FPNGRID</H3></A>
+footprint grid density
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#hbinsize"><H3>HBINSIZE</H3></A>
+size of histogram bin
+(Fixed mode G-cube only)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#hbinstep"><H3>HBINSTEP</H3></A>
+# of DNs per histogram
+bin (if hbinsize&gt0)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#histcrit"><H3>HISTCRIT</H3></A>
+criterion to evaluate
+histogram (if hbinsize&gt0)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#slew_tol"><H3>SLEW_TOL</H3></A>
+max. slew rate
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#twisttol"><H3>TWISTTOL</H3></A>
+max. twist change
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#cextrap"><H3>CEXTRAP</H3></A>
+extrapolate C-matrices?
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#csource"><H3>CSOURCE</H3></A>
+source of pointing angles
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#pckernel"><H3>PCKERNEL</H3></A>
+SPICE Platform C-kernel
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#rckernel"><H3>RCKERNEL</H3></A>
+SPICE Rotor C-kernel
+(if Deboom option on)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#spkernel"><H3>SPKERNEL</H3></A>
+SPICE SP-kernel
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#pconstnt"><H3>PCONSTNT</H3></A>
+SPICE Planet constants kernel
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#ikernel"><H3>IKERNEL</H3></A>
+NIMS Instrument Kernel
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#dpoint"><H3>DPOINT</H3></A>
+(RA,Dec) pointing correction
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#dpt_sclk"><H3>DPT_SCLK</H3></A>
+SCLK range for DPOINT
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#wamp"><H3>WAMP</H3></A>
+wobble amplitude
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#wfreq"><H3>WFREQ</H3></A>
+wobble frequency
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#wphase"><H3>WPHASE</H3></A>
+wobble <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#phase">phase</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#wcone"><H3>WCONE</H3></A>
+Cone estimate for wobble
+(only if Predict pointing)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#epherr"><H3>EPHERR</H3></A>
+time offset to simulate 
+ephemeris error
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#mirdel"><H3>MIRDEL</H3></A>
+Mirror asymmetry offset
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#wtfil"><H3>WTFIL</H3></A>
+name of weights file 
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#sdfil"><H3>SDFIL</H3></A>
+name of optional std.dev.
+cube
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#sdgeo"><H3>SDGEO</H3></A>
+Cocube band index for std.dev.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#sdband"><H3>SDBAND</H3></A>
+DN band index for std.dev.
+(default=NB/2)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#outdets"><H3>OUTDETS</H3></A>
+Detectors to ouput
+(default=all)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#skipdet"><H3>SKIPDET</H3></A>
+Detector(s) to skip
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#nskip_gp"><H3>NSKIP_GP</H3></A>
+skip all but every 
+Nth GP
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#outband"><H3>OUTBAND</H3></A>
+Wavelength index
+(default=all)
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#b_e_mp"><H3>B_E_MP</H3></A>
+Begin/End MP
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#comp_chk"><H3>COMP_CHK</H3></A>
+check compression
+status flag?
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#catalog"><H3>CATALOG</H3></A>
+Update catalog?
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#oldcal"><H3>OLDCAL</H3></A>
+old CAL file wavelengths
+[test parameter ONLY]
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#test"><H3>TEST</H3></A>
+Debug/test parameter
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#catsrv"><H3>CATSRV</H3></A>
+Server for Sybase
+catalog
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#catdb"><H3>CATDB</H3></A>
+Database for Sybase
+catalog
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#catusr"><H3>CATUSR</H3></A>
+UserID for Sybase
+catalog
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2_level2.html#catpw"><H3>CATPW</H3></A>
+Password for Sybase
+catalog
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/nimscmm2.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

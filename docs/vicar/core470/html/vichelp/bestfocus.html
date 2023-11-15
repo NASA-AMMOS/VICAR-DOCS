@@ -1,0 +1,75 @@
+<HTML>
+<HEAD><title>HTML Help for BESTFOCUS</title></HEAD>
+<BODY>
+<H1>Help for BESTFOCUS</H1>
+<pre>
+Purpose: To combine a set of images taken of a 3-d object
+         at progressively different focus positions and create:
+1. A single best focus image.
+2. A relative depth map (topo or DTM).
+
+Usage: bestfocus in=p1,p2,p3,...pn <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/bestfocus_level2.html#out">out</A>=focus,topo parameters
+where:
+
+p1...pn are input images with incremental changes in focus. The object
+must be a 3-d target.
+
+'focus' is a composite image made from the best focus locations of 
+all the input images. Same format as input.
+
+'topo' is a scaled relative depth map or topo map (dtm map). See the
+"scale" parameter for scaling. Without scaling the topo image values
+range from 1 to nin where nin is the number of input images.
+Format is REAL.
+ 
+Restrictions:
+The focus must monotonically increase (or decrease) in the order of the
+input images.
+
+
+
+METHOD:
+Bestfocus computes the local standard deviation in a moving box <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/bestfocus_level2.html#nlw">nlw</A>
+lines by <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/bestfocus_level2.html#nsw">nsw</A> samples across all input images. It then computes a
+curve of standard deviation versus image input number at each pixel.
+The image with the highest standard deviation is nearest the best focus
+and this image is selected for the "focus" image at this pixel.
+The peak of the curve is determined by quadratic fitting to the highest
+point and it's two lower neighbors. This number from 1 to nin (the
+number of input images) is then scaled by the "scale" parameter and
+written to the "topo" image. output=topo*scale1+scale2 (see scale
+defaults). The "<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/bestfocus_level2.html#inverse">inverse</A>" parameter can complement topo before scaling.
+If the highest standard deviation image is 1 or nin then no quadratic
+fit is made and the result will be 1 or nin respectively. Quadratic fitting
+results in non integer topo values but the limit will always be between
+1.0 and real(nin).
+Note a low pass median filter will improve the "topo" image.
+
+HISTORY:
+2-2004  J Lorre. 
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Jean Lorre</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/bestfocus_level2.html#inp"><H3>INP</H3></A>
+3-10 inputs
+
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/bestfocus_level2.html#out"><H3>OUT</H3></A>
+1. best focus
+2. topo map (REAL)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/bestfocus_level2.html#inverse"><H3>INVERSE</H3></A>
+Complement topomap
+
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/bestfocus_level2.html#nlw"><H3>NLW</H3></A>
+Filter height, Odd #.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/bestfocus_level2.html#nsw"><H3>NSW</H3></A>
+Filter width, Odd #
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/bestfocus.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/bestfocus.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

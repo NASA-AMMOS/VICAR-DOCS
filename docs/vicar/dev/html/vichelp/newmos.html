@@ -1,0 +1,274 @@
+<HTML>
+<HEAD><title>HTML Help for NEWMOS</title></HEAD>
+<BODY>
+<H1>Help for NEWMOS</H1>
+<pre>
+ PURPOSE:
+
+ NEWMOS is a VICAR application program which is able to mosaic up to
+ thirty pictures.  If the frames have been map- projected using VICAR
+ program MAP3, then NEWMOS can automatically determine the required
+ <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#size">size</A> of the output image and the offsets of all the input images.
+
+ EXECUTION:
+   There are two ways to call newmos. The simplest mosaics or averages
+   all of the inputs:
+
+        NEWMOS  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#inp">INP</A>=(inputs...)  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#out">OUT</A>=output  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#size">SIZE</A>  PARAM
+
+   The second mode includes an additional set of mask images:
+
+        MASKMOS <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#inp">INP</A>=(inputs...)  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#out">OUT</A>=(outputs...)
+        NEWMOS  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#inp">INP</A>=(inputs...,outputs...)  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#out">OUT</A>=output  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#size">SIZE</A>  PARAM
+
+ OPERATION:
+
+ NEWMOS calculates where each input picture is to be replaced in the 
+ output frame from the offset parameters. The program takes each line
+ of the output picture and determines which input frames have lines
+ which map to this line in the output. The program scans along these
+ input lines from left to the right and right to the left using the 
+ edge detection parameters to find the left and right extents of
+ valid picture data in each of the inputs. The data between these
+ points whose DN are greater than <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#thresh">THRESH</A>, N1 are copied to the output.
+
+ There are three methods of weighting the input images:
+
+Default method:
+
+ In reverse input data set order with an earlier input overlaying
+ a subsequent input much as a person mosaicking prints by hand
+ will put one print on top of another (with IN1 on top). 
+ No weighting is performed.
+ In this method ALL THE INPUT IMAGES ARE MOSAICKED which is NOT the case
+ for the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#smooth">SMOOTH</A> option.
+
+Average method:  (<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#aver">AVER</A> keyword)
+ 
+ All the images which overlap are averaged to produce the output. 
+ Weighting is performed based upon the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#weight">WEIGHT</A> keyword.
+ DNout=sum(DNin*WEIGHTin)/sum(WEIGHTin).
+ In this method ALL THE INPUT IMAGES ARE MOSAICKED which is NOT the case
+ for the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#smooth">SMOOTH</A> option.
+
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#smooth">Smooth</A> method:  (SMOOTH keyword)
+
+ Only THE FIRST HALF OF THE INPUT IMAGES ARE MOSAICKED. The second half 
+ are masks which control the weighting for the first half. The masks
+ can be generated automatically with the MASKMOS program. There is
+ a 1:1 correspondence between images such that for M inputs image
+ M/2+1 is the mask for image 1, image M/2+2 is the mask for image 2, etc.
+ The output DN value is the sum of overlapping frames weighted by their
+ mask values at that point including the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#weight">WEIGHT</A> keyword.
+ DNout=sum(DNin*MASKin*WEIGHTin)/sum(MASKin*WEIGHTin).
+ Note that the MAP3 labels must be present for the masks too.
+
+In general:
+
+ All data
+ in an input picture which lies outside of the output frame are
+ ignored.  If from the offset parameters and the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#size">size</A> field any
+ input has been determined to lie entirely outside the output 
+ frame, a warning is printed and that frame is discarded. If
+ no input data has been provided to cover a particular pixel
+ in the output, the program will set that output pixel to DCLEVEL.
+
+ NEWMOS can compute the output image <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#size">size</A> and the offsets of the input
+ images automatically, if the inputs have been map-projected using
+ MAP3.  This option is invoked by the keyword <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#adapt">ADAPT</A>.
+
+ 
+ PROGRAM HISTORY:
+
+ WRITTEN BY: Joel Mosher        March, 12 1976
+ CONVERTED TO VAX BY:  Florance Moss   Feburary, 1 1984
+ CONVERTED TO VICAR2 BY:  L.W.Kamp,    27 Oct. 1985
+<A NAME="CogProg"> COGNIZANT PROGRAMMER:  L. W. Kamp</A>
+ REVISIONS:
+  18 AUG 03  ntt  Enabled 3D image capability.
+  02 FEB 99  rrp/hbm Modified newmos to work with upto 80 input images.
+                  The current solaris system only supports a maximum
+                  of 64 input files so newmos was modified to close
+                  unnecessary files or close file if a max of 45 have
+                  been reached.
+  04 Jun 98  rrp  Removed implicit variables from main44. Declared RLCP and
+                  RSCP as real*8. Also changed loop parameter in OFFSET from
+                  mp_max_keywd_length to mp_number_of_keywords. Prevented
+                  the use of tlat vector in any test other then CHICK.
+                  Updated the call to xvparm for <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#weight">weight</A> to have maxcnt of
+                  60 and not 1. Initialized all variables to avoid unexpected
+                  program behavior.
+  10 Jul 95  crs (CRI) made portable for UNIX
+  1  mar 93  jjl  New <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#smooth">smooth</A> option.
+  22 Feb 93  LWK  Fixed <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#aver">AVER</A> (when no <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#smooth">SMOOTH</A>) bug
+  20 Feb 93  LWK  Use TRANV vice CONVEV for Simple Cylindrical because of
+                  RECTPATCH problem when ADD360 has been used
+  11 Dec 92  LWK  Call CONVEV instead of TRANV in order to support PERSPECTIVE
+  16 Oct 92  LWK  Enabled map codes 10-16 (but NO special code added to
+                  handle these -- use at your own risk!);  revised <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#smooth">SMOOTH</A>
+		  algorithm to ignore regions where &gt2 images overlap
+  20 Nov 91  LWK  Removed <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#nomin">NOMIN</A> code from Simple Cylindrical (not needed as
+                   TRANV does not truncate). Also added 1 to SAMP for Mercator.
+  13 Nov 91  LWK  Used <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#nomin">NOMIN</A> to suppress call to TRANV, in order to allow 
+                   range beyond (0,360) for Cylindrical
+  ???        JRY  Added parameter <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#smooth">SMOOTH</A>
+  07 Aug 89  GMY  Fix integer overflow when averaging pixels
+  22 Feb 88  SP   COMPLETED CHANGE OF 87-12-8.  ADDED 1 TO SAMP FOR 
+                      NORMAL CYLINDRICAL.
+  22 Feb 88  SP   CORRECTED MAP LABEL INFO FOR OUTPUT FILE.
+  22 Feb 88  SP   ADDED <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#nomin">NOMIN</A> KEYWORD TO ALLOW MORE THAN 360 DEGREES
+                      OF LONGITUDE FOR CERTAIN PROJECTIONS.  
+  11 Dec 87  SP   CORRECTED SUBR. OFFSET TO USE TRANV IF LAT AND LONG
+                      IN <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#map2">MAP2</A> LABEL ARE VARIABLE.
+  08 Dec 87  LWK  FIXED PROBLEM WITH HALFWORD DATA:  SINCE ALL WORK
+                      IS DONE IN HALFWORD, REMOVE ALL REFERENCE TO BYTES!
+  30 Oct 87  LWK  INITIALIZE 'WORK' ARRAY FOR SEARCV2, REMOVED TBUF STUFF
+  11 Oct 87  LWK  FIXED BUGS READING IMAGE WITH LSTART&lt0, & IN <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#adapt">ADAPT</A>
+  27 Mar 87  SP   FIXED PROBLEM WHERE INPUT IMAGES WERE ALL OFFSET 1 PIXEL
+                      TO THE RIGHT OF CORRECT POSITION.
+  15 Jan 87  LWK  FIXED BUG IN SUBR. <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#adapt">ADAPT</A>
+  26 Mar 86  LWK  FIXED ISWTCH BUG IN SUBR.OFFSET
+  27 Oct 85  LWK  CONVERTED PARAMETER PROCESSING TO VICAR2 
+                      (REQUIRED BECAUSE NI&gt10)
+  15 Oct 85  LWK  FINISHED VICAR2 CONVERSION (I/O ONLY) 
+                      INCREASE # INPUT FILES TO 30
+  26 Sep 85  HBD  CONVERTED I/O TO VICAR2
+  24 Jan 84  FFM  CONVERT TO VAX
+  Joel Mosher changes:
+     10/8/75 FIX BUG IN WRITEING LABEL INTO PIX DATA
+     10/16/75 PUT IN INCREMENT IN EDGE SEARCH
+     10/30/75 FIX BUG IN BCDBIN(NOSAMP CONFUSED WOTH NOLINE)
+     12/12/75 OS VERSION SET ALL VARIABLES TO ZERO
+     1/26/76 FIX BUG IN INITIALIZING NSI
+     1/26/76 PUT IN ERROR MESSAGE FOR NUMBER OF OFFSETS VS INPUTS
+     6/2/76 FIX BUG IN ALLOCATION OF BUFFER SPACE
+     1/29/78 PUT IN LABEL SEARCHING FOR OFFSETS
+     1/30/78 LET SYSTEM ALLOCATE OUTPUT ALTERNATE BUFFER
+     2/7/78 FIXED NIBBLE MISTAKE ,<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#lnib">LNIB</A>&<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#rnib">RNIB</A> REVERSED
+     2/7/78 PUT IN <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#thresh">THRESH</A> TEST FOR OUTPUT BUFFER
+     2/7/78 CHANGED THRESHOLDING
+     2/19/78 PUT IN <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#map2">MAP2</A> LABEL UPDATE
+     2/20/78 PUT IN PICTURE COMPATABILITY CHECKING
+     3/26/78 PUT IN AVERAGING OPTION
+     8/9/78 OVERLAID
+     8/14/78 FIXED HALFWORD WRITE BUG
+     12/31/78 PUT IN JUPITER <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#radius">RADIUS</A>
+     2/10/79 PUT IN CYLINDRICAL PROJECTION
+     5/27/80 FIXED BUG IN OVERRIDE OF RADII
+     12/28/80 USE 77 LABEL <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#format">FORMAT</A> TO GET <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#nl">NL</A> AND <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#ns">NS</A>
+     12/29/80 CHANGE ALL CLOSES FROM 0 TO 1 TO BACKSPACE POSSIBLE
+             TAPE INPUT DATA SETS
+     4/19/81 PUT IN NORMAL CYLINDRICAL PROJECTION
+     7/17/81 CHANGE RADII OF JUPITERS SATELLITES
+     11/25/81 READ <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#format">FORMAT</A> PARAMTER IN SYSTEM LABEL AGAIN
+     12/23/81 FIX ERROR IN HALF/BYTE SWITCH
+     6/20/82 FIX WRAPAROUND PROBLEM IN <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#adapt">ADAPT</A> SUBROUTINE
+     12/23/82 PUT IN FIX TO GIVE <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#scp">SCP</A> LESS THAN 1 CIRCUMFERENCE
+     2/20/83 FIX WRAPAROUND PROBLEM IN <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#adapt">ADAPT</A> AGAIN
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#inp"><H3>INP</H3></A>
+  input VICAR labelled files
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#out"><H3>OUT</H3></A>
+  output VICAR labelled file
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#size"><H3>SIZE</H3></A>
+  standard VICAR <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#sl"><H3>SL</H3></A>
+  starting line of the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#size">SIZE</A>
+  field
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#ss"><H3>SS</H3></A>
+  starting sample of the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#size">size</A>
+  field
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#sb"><H3>SB</H3></A>
+  starting band of the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#size">size</A>
+  field
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#nl"><H3>NL</H3></A>
+  number of lines of the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#size">size</A> 
+  field
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#ns"><H3>NS</H3></A>
+  number of samples of the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#size">size</A>
+  field.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#nb"><H3>NB</H3></A>
+  number of bands of the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#size">size</A>
+  field.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#pixl"><H3>PIXL</H3></A>
+  locations of the common point
+  in the input files
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#lcp"><H3>LCP</H3></A>
+  the line of the common point
+  in <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#out">OUT</A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#scp"><H3>SCP</H3></A>
+  the sample of the common point
+  in <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#out">OUT</A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#thresh"><H3>THRESH</H3></A>
+  the lower DN used in finding
+  the input's edge
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#lthresh"><H3>LTHRESH</H3></A>
+  left threshold DN value
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#rthresh"><H3>RTHRESH</H3></A>
+  right threshold DN value
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#ethresh"><H3>ETHRESH</H3></A>
+  both the left and right
+  thresholds
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#nseq"><H3>NSEQ</H3></A>
+  the number of consecutive
+  elements &gt= THRE
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#lseq"><H3>LSEQ</H3></A>
+  the number of consecutive
+  elements &gt= LTHR 
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#rseq"><H3>RSEQ</H3></A>
+  the number of consecutive
+  elements &gt= RTHR
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#adapt"><H3>ADAPT</H3></A>
+ Common points and output image
+ <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#size">size</A> are computed automatically.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#nomin"><H3>NOMIN</H3></A>
+ Used to prevent minimizing the
+ output number of samples.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#nibb"><H3>NIBB</H3></A>
+  the number of edge pixels to
+  be nibbled
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#lnib"><H3>LNIB</H3></A>
+  the number of left edge pixels
+  to be nibbled
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#rnib"><H3>RNIB</H3></A>
+  the number of right edge 
+  pixeles to be nibbled
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#dclev"><H3>DCLEV</H3></A>
+  the background DN value
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#incr"><H3>INCR</H3></A>
+  sample increment to find
+  an edge
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#format"><H3>FORMAT</H3></A>
+  output file data <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#format">format</A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#aver"><H3>AVER</H3></A>
+  average the DN in the output
+  overlapping area
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#map2"><H3>MAP2</H3></A>
+  indicates all inputs have <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#map2">MAP2</A>
+  labels.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#radius"><H3>RADIUS</H3></A>
+  specifies the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#radius">radius</A> of the
+  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#target">target</A> planet.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#req"><H3>REQ</H3></A>
+  specifies the equatorial
+  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#radius">radius</A> of the body.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#rpol"><H3>RPOL</H3></A>
+  specifies the polar <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#radius">radius</A> of
+  the body.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#target"><H3>TARGET</H3></A>
+  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#target">Target</A> body.
+  Valid: MOON,MCRY,IO,J1,
+  EURO,J2,GANY,J3,CALL,J4.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#smooth"><H3>SMOOTH</H3></A>
+  the overlapping area is
+  weighted in its calculation
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#weight"><H3>WEIGHT</H3></A>
+  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos_level2.html#weight">Weight</A> for each input.
+  Defaults to 1.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/newmos.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

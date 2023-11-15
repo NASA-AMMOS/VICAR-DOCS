@@ -1,0 +1,109 @@
+<HTML>
+<HEAD><title>HTML Help for DETSTAT</title></HEAD>
+<BODY>
+<H1>Help for DETSTAT</H1>
+<pre>
+PURPOSE
+ An application program which outputs statistical images
+ of the input image by measuring the variance of the 
+ of the neighboring pixels.
+
+EXECUTION:
+
+  DETSTAT IN <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/detstat_level2.html#out">OUT</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/detstat_level2.html#mode">MODE</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/detstat_level2.html#win">WIN</A>
+where
+  IN is the input image (BYTE, HALF, FULL, REAL, DOUB),
+  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/detstat_level2.html#out">OUT</A> is one of 4 possible output images (always REAL),
+  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/detstat_level2.html#mode">MODE</A> is one of the three options discussed below
+  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/detstat_level2.html#win">WIN</A> is the size of the window around the center pixel to
+   perform the calculations.
+
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/detstat_level2.html#win">WIN</A> must be an odd number, &gt= 3, and is always square,
+default=5.
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/detstat_level2.html#mode">MODE</A> has the following valid values: 1, 2, 3, or 4,
+Default=1.
+
+OPERATION:
+
+Detstat derives a statistical relationship of a pixel
+to its neighbors. The 4 statistical relationships supported
+are:
+
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/detstat_level2.html#mode">MODE</A>=1 The center pixel is subtracted from all of its
+    neighbors in the window. The absolute value of those 
+    differences are then averaged.
+
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/detstat_level2.html#mode">MODE</A>=2 The window is averaged without the center pixel.
+
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/detstat_level2.html#mode">MODE</A>=3 The window is averaged, then subtracted from the
+    pixel and that value is squared.
+
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/detstat_level2.html#mode">MODE</A>=4 The center pixel is subtracted from all of its
+    neighbors in the window. The differences are then
+    averaged. (Will give negative values.)
+
+The edge pixels are only averaged with internal pixels.
+Thus, the window size is reduced at the image boundaries.
+
+Internally, all data read in in DOUB format, no matter
+what input format is. Output is always REAL.
+
+PROGRAM HISTORY:
+
+Written by: Peter Kim,  June, 2010
+<A NAME="CogProg">Cognizant Programmer: Peter Kim</A>
+
+REVSIONS:
+  2010-06-25 Peter Kim - Initial release
+  2011-04-14 Peter Kim - Change include path
+  2011-04-14 Ray Bambery - Add <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/detstat_level2.html#mode">mode</A>=4, improved documentation
+  2011-05-02 Ray Bambery - Fix warning messages from gcc 4.4 compiler
+  2015-11-24 Walt Bunch - Migrated to MIPL 
+  2017-08-03 Walt Bunch - Removed DEBUG from imake.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/detstat_level2.html#inp"><H3>INP</H3></A>
+ Input image file
+ All formats supported
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/detstat_level2.html#out"><H3>OUT</H3></A>
+ Output image file
+ (Always REAL)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/detstat_level2.html#mode"><H3>MODE</H3></A>
+ Stat <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/detstat_level2.html#mode">mode</A>
+ 1 for abs value of 
+ sum of difference
+ between center and
+ it's neighbors
+ 2 for sum of difference
+ between mean and
+ the neighbors,
+ excluding the center
+ 3 for variance
+ excluding the center
+ 4 for value of 
+ sum of difference
+ between center and
+ it's neighbors
+ (Default=1)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/detstat_level2.html#win"><H3>WIN</H3></A>
+ window size
+ Must be odd.
+ (Default=5)
+.END
+
+
+
+
+
+
+
+
+
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/detstat.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/detstat.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

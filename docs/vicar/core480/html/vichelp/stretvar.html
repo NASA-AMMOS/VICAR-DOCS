@@ -1,0 +1,97 @@
+<HTML>
+<HEAD><title>HTML Help for STRETVAR</title></HEAD>
+<BODY>
+<H1>Help for STRETVAR</H1>
+<pre>
+PURPOSE:
+
+stretvar perform a linear stretch such that the low and high stretch
+limits vary as a function of line number.  The stretch limits are
+specified by the user for a number of discrete lines via the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar_level2.html#table">TABLE</A>
+parameter.  The stretch limits for each line between those specified
+are computed by interpolation.
+
+This program is useful in cases where the picture contrast varies
+systematically for the top to the bottom of the image.
+
+EXECUTION:
+
+	stretvar IN <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar_level2.html#out">OUT</A>              <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar_level2.html#table">TABLE</A>=(LINE1,ILOW1,OLOW1,IHIGH1,OHIGH1,                    LINE2,ILOW2,OLOW2,IHIGH2,OHIGH2,                                   . . .
+                                  . . .
+		   LINEn,ILOWn,OLOWn,IHIGHn,OHIGHn)
+
+ All values in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar_level2.html#table">TABLE</A> parameter are integers.  The values are
+ entered in sets of five, where LINEj specifies the line number and
+ ILOWj, OLOWj, IHIGHj, OHIGHj specify the low and high stretch limits
+ for the input and output images such that:
+
+		ILOWj maps to OLOWj
+            and IHIGHj maps to OHIGHj
+
+ The lines must be specified in ascending order.  LINE1 must be the
+ first line of the image (i.e. LINE1=1) and LINEn must be the last line
+ of the image.  The stretch limits may be explicitly specified for a
+ maximum of 50 lines.  Note that TAE also restricts command line
+ length to 2048 characters.
+
+ Note that although stretvar will accept a <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar_level2.html#size">size</A> field specification,
+ <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar_level2.html#sl">SL</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar_level2.html#ss">SS</A> are ignored.
+
+OPERATION:
+
+ For the specified lines L1,L2,...,Ln, stretvar performs a linear stretch
+ as specified by the low and high stretch limits for the input and output
+ images.  Let IDN and ODN represent the input and output DN values for
+ a given pixel.  Then
+			     (OHIGH - OLOW)
+		ODN = OLOW + -------------- X (IDN - ILOW)
+			     (IHIGH - ILOW)
+
+ For every line L between Lj and Lj+1 the low and high stretch limits
+ are computed by linear interpolation:
+
+			       ILOWj+1 - ILOWj
+		ILOW = ILOWj + --------------- X (L - Lj)
+				  Lj+1 - Lj
+ 
+<A NAME="examples">EXAMPLE:</A>
+
+	stretvar <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar_level2.html#out">OUT</A>=B <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar_level2.html#table">TABLE</A>=(1,0,0,255,255,  			          100,127,0,128,255)
+ 
+ 	The input image A is assumed to contain 100 lines.  The applied
+        stretch will gradually increase in severity, with no contrast
+        change for the first line of the image, and separation into two
+	grey levels for the last line.
+
+ WRITTEN BY:  B. Gokhman, 10 March 1983
+<A NAME="CogProg"> COGNIZANT PROGRAMMER:  G.M. Yagi</A>
+
+ PROGRAM HISTORY:
+  29 MAR    1994...CRI...MSTP S/W CONVERSION (VICAR PORTING)
+  28 AUG    1986...G.M.Yagi...............Fix bug in call to MVE
+  26 AUG    1986...G.W.Garneau............Convert to VICAR2
+   6 SEP    1983...A.S.M..................VICAR1 conversion
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar_level2.html#inp"><H3>INP</H3></A>
+STRING - Input image file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar_level2.html#out"><H3>OUT</H3></A>
+STRING - Output image file
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar_level2.html#size"><H3>SIZE</H3></A>
+INTEGER - Standard VICAR <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar_level2.html#sl"><H3>SL</H3></A>
+INTEGER - Starting line (ignored)
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar_level2.html#ss"><H3>SS</H3></A>
+INTEGER - Starting sample (ignored)
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar_level2.html#nl"><H3>NL</H3></A>
+INTEGER - Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar_level2.html#ns"><H3>NS</H3></A>
+INTEGER - Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar_level2.html#table"><H3>TABLE</H3></A>
+INTEGER - <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar_level2.html#table">Table</A> specifications
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/stretvar.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

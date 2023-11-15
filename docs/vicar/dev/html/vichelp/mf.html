@@ -1,0 +1,167 @@
+<HTML>
+<HEAD><title>HTML Help for MF</title></HEAD>
+<BODY>
+<H1>Help for MF</H1>
+<pre>
+PURPOSE
+
+     MF   allows   the  user  to  create  FORTRAN or C -like 
+     expressions to perform general mathematical operations on 
+     one  or more IBIS/graphics file columns.   The  expressions 
+     are  written as a parameter string.   The parameter  is 
+     interpreted  to determine the input and output  columns 
+     and   operations  to  be  performed.    The   variables 
+     representing  a data column are written as keywords  to 
+     allow  the user flexibility in writing the  expression.  
+     The functions available are:  SQRT, ALOG, ALOG10, AINT, 
+     SIN,  COS TAN,  ASIN,  ACOS,  ATAN,  ATAN2, ABS, MIN or 
+     AMIN1,  MAX  or  AMAX1,  and MOD or  AMOD,  along  with 
+     standard binary operations +,  -,  *,  /, **, and logic 
+     operations,   .AND.,   .OR.,   .XOR.,  and  .NOT.   All 
+     operations operate as in FORTRAN IV and C.   A  special 
+     feature   allows   for   the  calculation   of   column 
+     statistics.
+
+TAE COMMAND LINE FORMAT
+
+     MF <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#inp">INP</A>=int PARAMS
+
+     where
+
+     int                 is a random access file.  Since it
+                         is used for both input and  output, 
+                         no output file is specified.
+
+     PARAMS              is   a  standard  VICAR   parameter 
+                         field.
+
+    The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#gr1dim">GR1DIM</A> specifies the (Graphics-1) Dimension.
+
+    The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#zeroes">ZEROES</A> parameters specifies whether to process rows
+    with all <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#zeroes">zeroes</A>. The permitted options are: SKIP and
+    INCLUDE. INCLUDE is the default.
+
+    The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#code">CODE</A> parameter will show the pseudo instructions for
+    math and logic functions. The nmenomics are the same
+    as for the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#code">CODE</A> parameter for mf but have different
+    operands. No pseudo instructions are generated for
+    column opearations.
+
+METHOD
+
+     MF performs arithmetic operations on an interface file.  
+     The  program  uses  two  library  routines KNUTH  and 
+     XKNUTH,   to   compile  and  interpret   FORTRAN or C  like 
+     expressions  entered by the parameters in an expression 
+     such as:
+
+                     C35 = (100*C34)/C4
+
+     In this expression,  C34 and C4 are the input  columns.  
+     KNUTH    compiles   the   expression   into    machine 
+     instructions.   The  expression is applied to the input 
+     column in XKNUTH to produce the output column, C35. For
+     compatibility with program GF, the variable names X5,
+     etc, may be used in place of C5, etc.
+
+
+RESTRICTIONS
+
+     Maximum number of columns in one execution is 50.
+<A NAME="examples">EXAMPLE</A>
+
+     MF <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#inp">INP</A>=FILE.INT <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#function">FUNCTION</A>=("C5 = C2/C3+100+SQRT(C2)")
+
+     In this example,  C2 is divided by C3 and added to  100 
+     plus the square root of C2.   The results are placed in 
+     C5.  Further examples of allowable functions follow:
+
+                <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#function">FUNCTION</A>=("C5 = !(C3  || C2)")
+
+     logical   operations  are  performed  bitwise  on   the 
+     operands. The  logical values T and F are converted to 1.  and 0. 
+     for storage in column C5
+
+                <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#function">FUNCTION</A>=("X5 = X3.LE.INDEX")
+
+     Column 5 is 1.0 if column 3 has a value &lt its row value (INDEX).
+     
+                <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#function">FUNCTION</A>=("X5 = POLY * 2")
+
+     the operator POLY returns the current polygon number,
+     where polygons are delimited by rows of all zero values.
+
+                <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#function">FUNCTION</A>=("C5 = #MEAN(C3)")
+
+     In this example, the mean of column 3 is calculated and 
+     that  value is placed in every row entry in  column  5.  
+     This  operation  is different than the  arithmetic  and 
+     logic operations given earlier because it operates on a 
+     vertical  column instead of horizontally across a  row.  
+     These  operations  cannot  be  used  in  an  arithmetic 
+     expression  such as C5 = #MEAN(C3)*10.   The  allowable 
+     column operations are:
+
+                       C2 = #MEAN(C4)
+                       C2 = #SIGMA(C4)
+                       C2 = #MIN(C4)
+                       C2 = #MAX(C4)
+                       C2 = #FIRST(C4)
+                       C2 = #SUM(C4)
+                       C2 = #RSUM(C4) (running sum)
+                       C2 = #RDIFF(C4) (running diff)
+					   
+	See the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#function">FUNCTION</A> help for more examples.
+
+Original Programmer:  A. L. Zobrist, 15 December 1976
+
+Revisions:
+  1987-01-05 E.J. Barragy -  fixed bug in sci. not. conversion that
+             mistook '.E'  for a '.EQ.' logical operation
+  1987-06-06 E.J. Barragy - fixed to convert to upper case before
+             parsing and compiling the functions
+             also changed CVSCIN to do Sci. Not. conversion
+             for a more general case
+  1994-01-05 N. D. Ritter - Ported to Unix, with IBIS-2 library calls.    
+  1994-10-18 N. D. Ritter - Graphics Functions
+  2007-10-18 R. J. Bambery - Add <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#code">CODE</A> parameter
+             to show symbolic dump like mf3 and f2.
+  2008-03-24 R. J. Bambery - Fixes for ANSI_C compiler in Linux 
+  2008-03-24 R. J. Bambery - fixed error in arg 3 in IBISColumnWrite
+             call
+  2008-03-28 R. J. Bambery - fixed xknuth call (prototype in 
+             cartoVicarProtos.h was wrong),  added check for
+             columns and rows in input file. added check for
+             <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#function">function</A> columns exceeding those in input file
+             (required some reorganization of logical flow)
+  2009-12-02 R. J. Bambery - made compatible with 64-bit linux
+             removed cartoVicarProtos.h (Makefile.mf)
+  2010-01-28 R. J. Bambery - Made compatible with 64-bit afids Build 793
+             Linux, MacOSX (both Intel/PowerPC)
+  2010-08-12 R. J. Bambery - got rid of warning:
+             /usr/local/afids/include/vicmain_c:63: warning: <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#function">function</A> declaration isn't a prototype
+             #include "vicmain_c" to #include "vicmain_c.h"
+  2011-05-05 R. J. Bambery - Removed all warning messages generated from gcc 4.4.4
+             Build 1009
+  2012-11-15 L.W.Kamp - added data types to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#function">function</A> declarations for compatibilty
+             with ANSI C on Solaris.
+  2019-09-06 W. L. Bunch - IDS-7922 - Initialized some variables. Cleaned up -Wall warnings.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#inp"><H3>INP</H3></A>
+Input IBIS interface file
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#function"><H3>FUNCTION</H3></A>
+Specifies <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#function">function</A> and columns
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#gr1dim"><H3>GR1DIM</H3></A>
+Dimension (Graphics-1 only)
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#zeroes"><H3>ZEROES</H3></A>
+Process rows with all <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#zeroes">zeroes</A>?
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#code"><H3>CODE</H3></A>
+Set 1 to see pseudo <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf_level2.html#code">code</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mf.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

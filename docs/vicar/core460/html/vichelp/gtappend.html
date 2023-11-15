@@ -1,0 +1,104 @@
+<HTML>
+<HEAD><title>HTML Help for GTAPPEND</title></HEAD>
+<BODY>
+<H1>Help for GTAPPEND</H1>
+<pre>
+PURPOSE:
+gtappend combines up to 48 datasets into a single dataset with append format.
+This is equivalent to concatenating the input images in a top to bottom
+fashion.  The program works like VICAR routine APPEND if there are no
+GeoTIFF labels.  If there are, the GeoTIFF labels of the inputs are read
+for any of several mistakes:
+
+1.  any differences in mapping
+2.  a difference in scale
+3.  a difference in image rotation with respect to North
+4.  an error of offset, the images must butt together geographically
+    exactly as they are concatenated in the image sense.
+    
+If any of these errors occur, the program aborts with an appropriate
+error message.
+
+A correct GeoTIFF label is attached to the output (it will be a copy
+of the first (topmost) input since its offset is (1,1) in the VICAR
+pixel referencing system.
+
+If a <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/gtappend_level2.html#size">SIZE</A> parameter is used, it applies to all of the input images.
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/gtappend_level2.html#size">SIZE</A> parameter is not allowed in GeoTIFF label cases.
+
+EXECUTION:
+
+Example
+
+gtappend <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/gtappend_level2.html#inp">INP</A>=(A,B,C) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/gtappend_level2.html#out">OUT</A>=D  will put images A, B, and C top-to-bottom
+to form D.
+
+OPERATION:
+gtappend combines datasets in the following manner:
+
+First, the data sets are checked for GeoTIFF labels, and if they are
+present, a number of conditions must be satisfied or the program
+aborts:
+
+1.  any differences in mapping
+2.  a difference in scale
+3.  a difference in image rotation with respect to North
+4.  an error of offset, the images must butt together geographically
+    exactly as they are concatenated in the image sense.
+5.  if the first image has a GeoTIFF label then all must have one
+
+The first input is read and copied to output (modified by <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/gtappend_level2.html#size">SIZE</A> if given).
+Then the second image is read and copying to the output continues.  If
+any of the images have a different <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/gtappend_level2.html#ns">NS</A>, or a different pixel <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/gtappend_level2.html#size">size</A>, the
+program abortw with an error message.
+
+The program uses dynamic allocation of buffers in the C programming
+language, so truly colossal images can be combined (for example, an
+output image of 30 x 10,000,000) would not be a problem.
+
+ TIMING: 
+
+As fast as VICAR can read and write the lines.  
+
+ ORIGINAL PROGRAMMER:    A. Zobrist          29 Oct 1999
+<A NAME="CogProg"> COGNIZANT PROGRAMMER:   Barbara McGuffie    29 Oct 1999</A>
+ 
+ REVISION HISTORY
+  1999-10-29 AZ  Initial version
+  2007-12-29 WLB Switched to USES_ANSI_C AND LIB_CARTO; misc cleanup
+  2015-09-10 WLB Fixed headers for MIPL build
+  2016-01-13 WLB Replaced printfs with zifmessages
+  
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/gtappend_level2.html#inp"><H3>INP</H3></A>
+STRING - Input image files
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/gtappend_level2.html#out"><H3>OUT</H3></A>
+STRING - Output image file
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/gtappend_level2.html#size"><H3>SIZE</H3></A>
+INTEGER - Region of input files
+to be concatenated
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/gtappend_level2.html#sl"><H3>SL</H3></A>
+INTEGER - Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/gtappend_level2.html#ss"><H3>SS</H3></A>
+INTEGER - Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/gtappend_level2.html#nl"><H3>NL</H3></A>
+INTEGER - Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/gtappend_level2.html#ns"><H3>NS</H3></A>
+INTEGER - Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/gtappend_level2.html#toler"><H3>TOLER</H3></A>
+REAL - Error allowed in GeoTIFF
+labels (unit is pixels)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/gtappend_level2.html#mapck"><H3>MAPCK</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/gtappend_level2.html#mapck">MAPCK</A> - Will do GeoTIFF map
+check (default)
+NOMAPCK - Turns off GeoTIFF
+map check
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/gtappend_level2.html#overlap1"><H3>OVERLAP1</H3></A>
+Use if images overlap one
+pixel, as in DMA DTED
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/gtappend.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/gtappend.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

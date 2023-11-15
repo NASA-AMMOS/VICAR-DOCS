@@ -1,0 +1,370 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+
+<title>GetOptLong</title>
+<meta name="date" content="2018-06-21">
+<link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../../../script.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+var methods = {"i0":10};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
+var altColor = "altColor";
+var rowColor = "rowColor";
+var tableTab = "tableTab";
+var activeTableTab = "activeTableTab";
+</script>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+
+<div class="topNav"><a name="navbar.top">
+
+</a>
+<div class="skipNav"><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/utils/#skip.navbar.top" title="Skip navigation links">Skip navigation links</a></div>
+<a name="navbar.top.firstrow">
+
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../../overview-summary.html">Overview</a></li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/utils/package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/utils/package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+<li><a href="../../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../../../jpl/mipl/mdms/utils/GetOpt.html" title="class in jpl.mipl.mdms.utils"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../../jpl/mipl/mdms/utils/ImportKey.html" title="class in jpl.mipl.mdms.utils"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../../../index.html?jpl/mipl/mdms/utils/GetOptLong.html" target="_top">Frames</a></li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/utils/GetOptLong.html" target="_top">No&nbsp;Frames</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_top">
+<li><a href="../../../../allclasses-noframe.html">All&nbsp;Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript">
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>Summary:&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/utils/#fields.inherited.from.class.jpl.mipl.mdms.utils.GetOpt">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/utils/#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/utils/#method.summary">Method</a></li>
+</ul>
+<ul class="subNavList">
+<li>Detail:&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/utils/#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/utils/#method.detail">Method</a></li>
+</ul>
+</div>
+<a name="skip.navbar.top">
+
+</a></div>
+
+
+<div class="header">
+<div class="subTitle">jpl.mipl.mdms.utils</div>
+<h2 title="Class GetOptLong" class="title">Class GetOptLong</h2>
+</div>
+<div class="contentContainer">
+<ul class="inheritance">
+<li>java.lang.Object</li>
+<li>
+<ul class="inheritance">
+<li><a href="../../../../jpl/mipl/mdms/utils/GetOpt.html" title="class in jpl.mipl.mdms.utils">jpl.mipl.mdms.utils.GetOpt</a></li>
+<li>
+<ul class="inheritance">
+<li>jpl.mipl.mdms.utils.GetOptLong</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<hr>
+<br>
+<pre>public class <span class="typeNameLabel">GetOptLong</span>
+extends <a href="../../../../jpl/mipl/mdms/utils/GetOpt.html" title="class in jpl.mipl.mdms.utils">GetOpt</a></pre>
+<div class="block">This is an extended implementation of the standard UNIX 'get_opt' function.
+ That provides application programs with long keyword argument commandline
+ input format as follow:
+ 
+ <pre>
+ 
+   jdbq -help -username &lt;username&gt;-password &lt;password&gt;
+   -server &lt;server&gt;-database &lt;database&gt;-command &lt;command&gt;
+  
+ </pre>
+ 
+ <p>
+ Programming example:
+ 
+ <pre>
+ GetOptLong opt = new GetOptLong(args,
+       &quot;help|username:password:server:database:command:&quot;);
+ String str = null;
+ while ((str = opt.nextArg()) != null) {
+    if (str.equals(&quot;help&quot;))
+       this.printUsage();
+    else if (str.equals(&quot;username&quot;))
+       username = opt.getArgValue();
+    else if (str.equals(&quot;password&quot;))
+       password = opt.getArgValue();
+    else if (str.equals(&quot;server&quot;))
+       server = opt.getArgValue();
+    else if (str.equals(&quot;database&quot;))
+       database = opt.getArgValue();
+    else if (str.equals(&quot;command&quot;))
+       command = opt.getArgValue();
+    else
+       System.out.println(&quot;Error&quot;);
+ }
+ </pre></div>
+<dl>
+<dt><span class="simpleTagLabel">Version:</span></dt>
+<dd>$Id: GetOptLong.java,v 1.7 2004/11/15 22:51:12 txh Exp $</dd>
+<dt><span class="simpleTagLabel">Author:</span></dt>
+<dd>T. Huang, {Thomas.Huang@jpl.nasa.gov}</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="summary">
+<ul class="blockList">
+<li class="blockList">
+
+<ul class="blockList">
+<li class="blockList"><a name="field.summary">
+
+</a>
+<h3>Field Summary</h3>
+<ul class="blockList">
+<li class="blockList"><a name="fields.inherited.from.class.jpl.mipl.mdms.utils.GetOpt">
+
+</a>
+<h3>Fields inherited from class&nbsp;jpl.mipl.mdms.utils.<a href="../../../../jpl/mipl/mdms/utils/GetOpt.html" title="class in jpl.mipl.mdms.utils">GetOpt</a></h3>
+<code><a href="../../../../jpl/mipl/mdms/utils/GetOpt.html#Z:Z_argTable">_argTable</a>, <a href="../../../../jpl/mipl/mdms/utils/GetOpt.html#Z:Z_ignoreCase">_ignoreCase</a></code></li>
+</ul>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="constructor.summary">
+
+</a>
+<h3>Constructor Summary</h3>
+<table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructor Summary table, listing constructors, and an explanation">
+<caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colOne" scope="col">Constructor and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/mdms/utils/GetOptLong.html#GetOptLong-java.lang.String:A-java.lang.String-">GetOptLong</a></span>(java.lang.String[]&nbsp;args,
+          java.lang.String&nbsp;optstring)</code>
+<div class="block">Constructor with argument case sensitive and default argument prefix (e.g.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/mdms/utils/GetOptLong.html#GetOptLong-java.lang.String:A-java.lang.String-boolean-java.lang.String-">GetOptLong</a></span>(java.lang.String[]&nbsp;args,
+          java.lang.String&nbsp;optstring,
+          boolean&nbsp;ignoreCase,
+          java.lang.String&nbsp;prefix)</code>
+<div class="block">Constructor.</div>
+</td>
+</tr>
+</table>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="method.summary">
+
+</a>
+<h3>Method Summary</h3>
+<table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Method Summary table, listing methods, and an explanation">
+<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/utils/show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/utils/show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Method and Description</th>
+</tr>
+<tr id="i0" class="altColor">
+<td class="colFirst"><code>protected void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/mdms/utils/GetOptLong.html#Z:Z_init-java.lang.String-">_init</a></span>(java.lang.String&nbsp;optstring)</code>
+<div class="block">Override parent method to initialize the internal option arugment data
+ structure.</div>
+</td>
+</tr>
+</table>
+<ul class="blockList">
+<li class="blockList"><a name="methods.inherited.from.class.jpl.mipl.mdms.utils.GetOpt">
+
+</a>
+<h3>Methods inherited from class&nbsp;jpl.mipl.mdms.utils.<a href="../../../../jpl/mipl/mdms/utils/GetOpt.html" title="class in jpl.mipl.mdms.utils">GetOpt</a></h3>
+<code><a href="../../../../jpl/mipl/mdms/utils/GetOpt.html#getArgValue--">getArgValue</a>, <a href="../../../../jpl/mipl/mdms/utils/GetOpt.html#nextArg--">nextArg</a>, <a href="../../../../jpl/mipl/mdms/utils/GetOpt.html#rewind--">rewind</a></code></li>
+</ul>
+<ul class="blockList">
+<li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
+
+</a>
+<h3>Methods inherited from class&nbsp;java.lang.Object</h3>
+<code>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="details">
+<ul class="blockList">
+<li class="blockList">
+
+<ul class="blockList">
+<li class="blockList"><a name="constructor.detail">
+
+</a>
+<h3>Constructor Detail</h3>
+<a name="GetOptLong-java.lang.String:A-java.lang.String-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>GetOptLong</h4>
+<pre>public&nbsp;GetOptLong(java.lang.String[]&nbsp;args,
+                  java.lang.String&nbsp;optstring)</pre>
+<div class="block">Constructor with argument case sensitive and default argument prefix (e.g.
+ the '-' in argument "-u").</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>args</code> - the input argument array.</dd>
+<dd><code>optstring</code> - the input options string. A colon in the string means
+           that the previous string is an option that it expects an
+           argumentand and a '|' in the string means that the previous
+           string does not require any arguments. (e.g.
+           "help|username:password:")</dd>
+</dl>
+</li>
+</ul>
+<a name="GetOptLong-java.lang.String:A-java.lang.String-boolean-java.lang.String-">
+
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>GetOptLong</h4>
+<pre>public&nbsp;GetOptLong(java.lang.String[]&nbsp;args,
+                  java.lang.String&nbsp;optstring,
+                  boolean&nbsp;ignoreCase,
+                  java.lang.String&nbsp;prefix)</pre>
+<div class="block">Constructor.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>args</code> - the input argument array.</dd>
+<dd><code>optstring</code> - the input options string. A colon in the string means
+           that the previous string is an option that it expects an
+           argument and a '|' in the string means that the previous string
+           does not require any arguments. (e.g. "help|username:password:")</dd>
+<dd><code>ignoreCase</code> - the flag to determin argument case sensitivity.</dd>
+<dd><code>prefix</code> - the prefix string</dd>
+</dl>
+</li>
+</ul>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="method.detail">
+
+</a>
+<h3>Method Detail</h3>
+<a name="Z:Z_init-java.lang.String-">
+
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>_init</h4>
+<pre>protected&nbsp;void&nbsp;_init(java.lang.String&nbsp;optstring)</pre>
+<div class="block">Override parent method to initialize the internal option arugment data
+ structure.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="../../../../jpl/mipl/mdms/utils/GetOpt.html#Z:Z_init-java.lang.String-">_init</a></code>&nbsp;in class&nbsp;<code><a href="../../../../jpl/mipl/mdms/utils/GetOpt.html" title="class in jpl.mipl.mdms.utils">GetOpt</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>optstring</code> - the options string (e.g. "help|username:password:")</dd>
+</dl>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+<div class="bottomNav"><a name="navbar.bottom">
+
+</a>
+<div class="skipNav"><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/utils/#skip.navbar.bottom" title="Skip navigation links">Skip navigation links</a></div>
+<a name="navbar.bottom.firstrow">
+
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../../overview-summary.html">Overview</a></li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/utils/package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/utils/package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+<li><a href="../../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../../../jpl/mipl/mdms/utils/GetOpt.html" title="class in jpl.mipl.mdms.utils"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../../jpl/mipl/mdms/utils/ImportKey.html" title="class in jpl.mipl.mdms.utils"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../../../index.html?jpl/mipl/mdms/utils/GetOptLong.html" target="_top">Frames</a></li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/utils/GetOptLong.html" target="_top">No&nbsp;Frames</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_bottom">
+<li><a href="../../../../allclasses-noframe.html">All&nbsp;Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript">
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>Summary:&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/utils/#fields.inherited.from.class.jpl.mipl.mdms.utils.GetOpt">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/utils/#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/utils/#method.summary">Method</a></li>
+</ul>
+<ul class="subNavList">
+<li>Detail:&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/utils/#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mdms/utils/#method.detail">Method</a></li>
+</ul>
+</div>
+<a name="skip.navbar.bottom">
+
+</a></div>
+
+</body>
+</html>

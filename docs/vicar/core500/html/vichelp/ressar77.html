@@ -1,0 +1,107 @@
+<HTML>
+<HEAD><title>HTML Help for RESSAR77</title></HEAD>
+<BODY>
+<H1>Help for RESSAR77</H1>
+<pre>
+PURPOSE:  RESSAR77 is a VICAR applications program which removes the reseau,
+fiducial marks, and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#camera">camera</A> blemishes from Voyager images.  The program may also
+be used to remove small circular areas as specified by the user.
+
+EXECUTION:
+
+    RESSAR77  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#inp">INP</A>=(PIC,RES,BLM)  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#out">OUT</A>=OPIC  user-parameters
+where
+    PIC is the input image.  PIC must be an 800x800 geometrically uncorrected
+        Voyager image in either byte or halfword (16-bit integer) format.  The
+        entire image must be processed (i.e. the VICAR <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#size">size</A> field is ignored).
+    RES is a record containing the reseau locations for PIC.  RES may be created
+	by program RESLOC (see example below).
+    BLM is an optional Blemish Location File.  BLM contains the location and
+        <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#size">size</A> of each blemish for the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#camera">camera</A> used to acquire the input image.
+        Blemish files may be created using program BLEMFIX.  If specified, the
+        <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#camera">camera</A> blemishes are also removed.
+    OPIC is the output image.  OPIC is identical to the input image, except that
+        all reseau marks, fiducial marks, and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#camera">camera</A> blemishes have been
+        removed.  (Note, however, that keywords <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#keeprese">KEEPRESE</A> or <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#keepfidu">KEEPFIDU</A> may be
+        used to suppress the removal of the reseau and/or fiducial marks).
+OPERATION:
+
+Each object (reseau mark, fiducial mark, or blemish) is removed by interpolating
+over the pixels on its boundary.
+
+The line-sample location of each reseau mark is obtained from the input reseau
+record.  The exact position of each fiducial mark and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#camera">camera</A> blemish is deter-
+mined by its known offset from specific reseau marks.  Consequently, the input
+reseau record is also used to calculate the position of each fiducial mark and
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#camera">camera</A> blemish.
+
+Reseau marks and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#camera">camera</A> blemishes are treated as circular areas.  All reseau
+marks are assumed to be the same <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#size">size</A>, as specified by the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#radius">RADIUS</A> parameter
+(default=5 pixels).  The Blemish Location File contains the following data for
+each <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#camera">camera</A> blemish: 1) reference reseau mark number, 2) line-sample offsets
+from reseau mark, and 3) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#radius">radius</A>.
+
+Fiducial marks are the dark rectangular marks appearing in the four corners of
+the image.  Each fiducial mark is 13 pixels wide and 55-65 pixels long.
+
+Because line 1 of all VGR images generally contains data that is either
+saturated or noisy, this line is ignored and allowed to pass untouched.
+
+A special problem arises with those reseau marks which lie near the center of
+each fiducial mark.  In order to avoid using pixels in the fiducial mark when
+deleting the reseau via interpolation, the fiducial mark removed before
+processing neighboring reseau marks.  Samples within a distance of 7 pixels of
+these reseau mark are not used in the interpolation.  If KEEPFIDUcial is
+specified, the above mentioned reseau marks will not be deleted.
+
+<A NAME="examples">EXAMPLE:</A>
+
+    DCL  ASSIGN  UD2:[CCA314.VGR2]BLEMLOC.WA  BLEM	!Point to blemish file
+    RESLOC  (PIC,UD4:[CCA314.VGR]RESN.FIL)  RES		!Locate the reseau
+    RESSAR77  (PIC,RES,BLEM)  OPIC
+
+PROGRAM HISTORY:
+
+WRITTEN BY: Gary Yagi      Aug. 27, 1980
+<A NAME="CogProg">COGNIZANT PROGRAMMER: Gary Yagi, Aug 89</A>
+REVISION:
+ 1980-08-27 GMY - Initial release
+ 1981-01-13 CCA - Implement 3rd input for blem removal
+ 1983-04-14 CCA - Converted to vax
+ 1986-10-23 JRS - Converted to VICAR2 param I/O.  Image I/O already converted.
+ 1986-10-29 SP  - Corrected handling of defaults for <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#camera">camera</A> and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#centers">centers</A>.
+ 1987-03-27 SP  - Removed statement that changed ns incorrectly for halfword images.  Changed loop control from NLINE .GT. NS+NLIC TO NLINE .GT. NL+NLIC
+ 1989-01-09 SP  - Changed to remove circles & blemishes even if reseaux are to be kept.  Prevent extrapolation limits going beyond edge of image for fiducials.
+ 1989-06-16 GMY - Handle new format of blemish files created by BLEMFIX. Rewrite help file.
+ 1989-08-05 GMY - Increase maximum number of blemishes to 1000.
+ 2002-10-10 GMY - Port to Linux (RESSAR77_LINUX)
+ 2020-02-25 WLB - IDS-8247 - initialized some variables.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#inp"><H3>INP</H3></A>
+Required string: Input image,
+reseau record, and (optional)
+Blemish Location File.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#out"><H3>OUT</H3></A>
+Required string: OUTPUT image
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#size"><H3>SIZE</H3></A>
+VICAR <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#size">size</A> field (ignored)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#dbug"><H3>DBUG</H3></A>
+Optional keyword: Enables diagnostic messages
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#radius"><H3>RADIUS</H3></A>
+Optional real value: <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#radius">Radius</A> of reseau mark
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#camera"><H3>CAMERA</H3></A>
+Optional integer: <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#camera">Camera</A> serial number of input frame
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#keeprese"><H3>KEEPRESE</H3></A>
+Optional keyword: Suppresses removal of reseau
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#keepfidu"><H3>KEEPFIDU</H3></A>
+Optional keyword: Suppresses removal of fiducial marks
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#centers"><H3>CENTERS</H3></A>
+Optional real values: 3 to 18 real numbers (in multiples of 3), specifying the
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77_level2.html#centers">centers</A> and radii of circles to be removed.  
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/ressar77.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

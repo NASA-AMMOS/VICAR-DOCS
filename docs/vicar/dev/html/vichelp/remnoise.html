@@ -1,0 +1,68 @@
+<HTML>
+<HEAD><title>HTML Help for REMNOISE</title></HEAD>
+<BODY>
+<H1>Help for REMNOISE</H1>
+<pre>
+PURPOSE:
+Remnoise removes small artifacts, like bit errors, from images.
+At low error rates it performs the same as ADESPIKE. Performance is superior
+to ADESPIKE at bit error rates over one in 500.
+
+EXECUTION:
+remnoise <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#inp">inp</A>=image <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#out">out</A>=cleaned <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#tol">tol</A>=30.0
+
+Note:
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#tol">TOL</A> parameter is somewhat sensitive to bit error rate and very sensitive to
+the image itself. To tune it take a typical image of interest without noise
+and run the following test with RATE=the expected bit error rate:
+
+addnoise <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#inp">inp</A>=image <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#out">out</A>=a.img gain=30 rate=100
+remnoise <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#inp">inp</A>=a.img <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#out">out</A>=b.img <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#tol">tol</A>=10 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#factor">factor</A>=.5
+f2 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#inp">inp</A>=(image,b.img) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#out">out</A>=c.img function="in1-in2+100"
+hist <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#inp">inp</A>=c.img 'nohist
+
+repeatedly changing <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#tol">TOL</A> each time until the standard deviation listed by hist is 
+a minimum.
+
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#factor">FACTOR</A> parameter is insensitive to bit error rate.
+
+METHOD:
+1. A 3 by 3 pixel box is centered on each pixel of dn J.
+2. A median is computed taking each consecutive 3 pixels going around the box.
+   This makes 8 median values I.
+   I1 I2 I3
+   I4    I5
+   I6 I7 I8
+3. A surface is interpolated using I1-I8
+   The model is: M=sum(I/R)/sum(1/R) where R is the distance of I from the
+   center (1 or 1.414).
+4. An activity measure A is computed from:
+   A=(|I1-I8|+|I3-I6|+|I2-I7|+|I4-I5|)/4
+5. If abs(J-M) &gt <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#tol">TOL</A>+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#factor">FACTOR</A>*A then  J=M
+
+HISTORY:
+1-1-99  J Lorre. 
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Jean Lorre</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#inp"><H3>INP</H3></A>
+1. Input image.
+2. Standard deviation 
+   image (optional).
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#out"><H3>OUT</H3></A>
+output image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#tol"><H3>TOL</H3></A>
+Fixed noise threshold.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#factor"><H3>FACTOR</H3></A>
+Scaling <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise_level2.html#factor">factor</A> for
+the activity measure.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/remnoise.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

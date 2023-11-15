@@ -1,0 +1,143 @@
+<HTML>
+<HEAD><title>HTML Help for FFTMAGIC</title></HEAD>
+<BODY>
+<H1>Help for FFTMAGIC</H1>
+<pre>
+PURPOSE:
+fftmagic provides an iterative method for obtaining either the phase from the
+amplitude or the amplitude from the phase of a Fourier transform.  The
+technique is controversial and may not work for all images. 
+
+ 
+EXECUTION:
+
+Examples
+
+fftmagic <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#inp">INP</A>=(EST,REF) <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#out">OUT</A>=PIC 
+
+This command will read estimate picture EST and reference picture REF as byte
+data (default), and create an output picture, PIC, also in byte format, whose
+Fourier transform will correspond in amplitude (default) to that of REF.
+Up to 100 iterations will be performed (default), and negative pixels on odd
+iterations will be multiplied by -0.5 (the negative default of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#beta">BETA</A>).
+
+fftmagic <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#inp">INP</A>=(EST,REF) <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#out">OUT</A>=PIC  'OUTINTEG 'PHASE
+
+This command is similar, except that the output picture will be in
+in integer format, as specified by the OUTINTEG command, instead
+of the default, which is to match the format of the input pictures; other
+output format specifications include OUTREAL, OUTBYTE, and OUTHALF.  Finally,
+the output picture's Fourier transform will be matched in PHASE to that of
+the reference picture (REF), instead of matching amplitude as in the example
+above.  The omitted keywords are INPFMT, <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#outfmt">OUTFMT</A>, and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#mode">MODE</A>, respectively.
+
+fftmagic <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#inp">INP</A>=(EST,REF) <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#out">OUT</A>=PIC <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#iter">ITER</A>=200 '<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#print">PRINT</A>  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#beta">BETA</A>=0.75
+
+This command will again read the input pictures in byte format, but will this
+time perform up to 200 iterations.  Normally, the program will iterate until no
+pixels have changed, or 100 loops have been made; in this case, the program
+will use up to 200 iterations.  The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#print">PRINT</A> option specified above causes the
+number of pixels changed and the sum of the negative pixels to be printed at
+each iteration.  Finally, negative pixels will be multiplied by -<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#beta">BETA</A> = -0.75
+instead of the default -0.5.
+
+fftmagic <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#inp">INP</A>=(EST,REF) <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#out">OUT</A>=PIC <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#psf">PSF</A>=(1,100,20,40)
+
+This command demonstrates the use of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#psf">PSF</A> keyword.  PSF specifies the
+(line, sample, radius) triplets needed to describe point spread functions in 
+the REF image.  These triplets are preceded by the number of triplets to be
+used; in this case, there is one point spread function, centered at line 100,
+sample 20, and with a radius of 40.  Additional triplets can follow as
+necessary.  When <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#psf">PSF</A> is specified, each center position is re-centered at the
+max DN value in each circular area and the sum of the pixels less background
+(determined from the border points) is computed for the values within each
+circle.  The, for each iteration, all of the points inside each circle are
+set to the mean DN plus the sum of the DN's as previously computed.  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#psf">PSF</A> acts
+as an additional boundary condition for stellar-type point spread functions.
+
+
+Notes and Restrictions
+
+1) Both FFT's must reside in core together.  Together they take NxNx8 bytes if
+   N is the picture dimension.
+2) (Timing restriction belonging here will be inserted when VAX benchmarks
+   have been run.)  (Was:  For 64x64 pictures each iteration consumes about
+   4 seconds.)
+
+
+OPERATION:
+fftmagic computes and stores in core the FFT's of the initial estimate picture
+and the reference picture.  It then forces the amplitude or phase of the 
+estimate to match that of the reference.  The inverse FFT is taken and all
+negative DN's are multiplied by -<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#beta">BETA</A> (as specified by the BETA keyword) on the
+odd iterations and by 0 on the even iterations.  If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#psf">PSF</A> has been specified, 
+then star images are also set to delta functions.
+
+
+	       EST             REF
+		|		|
+		|		|
+		V		V
+             FFT(EST)       FFT(REF)
+		 \             /
+		  \           /
+		   \         /
+		    \       /
+		     \     /
+		      \   /
+			V
+		     MATCH &lt------------------------------ 		     PHASE OR				  |
+		     AMPLITUDE				  |
+			|				  |
+			|				  ^
+			V			   RESET NEGATIVES
+		     FFT**-1 (EST) -----------&gt RESET <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#psf">PSF</A>'S
+
+
+
+
+
+
+REFERENCE:
+Fienup, J.R., Optical Society of America, Optics Letters, Volume 3, No. 1.
+
+
+WRITTEN BY:  J. J. Lorre, 25 October 1979
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  A. S. Mazer</A>
+REVISION:  New
+
+MADE PORTABLE FOR UNIX: CRI     03-OCT-94
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#inp"><H3>INP</H3></A>
+STRING - Estimate and reference pictures
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#out"><H3>OUT</H3></A>
+STRING - Output picture
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#size"><H3>SIZE</H3></A>
+INTEGER - Standard VICAR <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#sl"><H3>SL</H3></A>
+INTEGER - Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#ss"><H3>SS</H3></A>
+INTEGER - Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#ns"><H3>NS</H3></A>
+INTEGER - Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#nl"><H3>NL</H3></A>
+INTEGER - Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#outfmt"><H3>OUTFMT</H3></A>
+KEYWORD - Output data format (OUTBYTE, OUTHALF, OUTINTEG, OUTREAL)
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#mode"><H3>MODE</H3></A>
+KEYWORD - Selects phase boundary condition (AMPLITUDE, PHASE)
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#iter"><H3>ITER</H3></A>
+INTEGER - Number of iterations allowed
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#print"><H3>PRINT</H3></A>
+KEYWORD - Program status trace (<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#print">PRINT</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#beta"><H3>BETA</H3></A>
+REAL - Negative-pixel factor
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic_level2.html#psf"><H3>PSF</H3></A>
+INTEGER - Spec for point-spread functions
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fftmagic.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

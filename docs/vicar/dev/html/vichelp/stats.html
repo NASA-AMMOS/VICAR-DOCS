@@ -1,0 +1,270 @@
+<HTML>
+<HEAD><title>HTML Help for STATS</title></HEAD>
+<BODY>
+<H1>Help for STATS</H1>
+<pre>
+PURPOSE:  stats computes the statistics of specified training areas on
+ multi-spectral data.  The output consists of page printer output, a
+ statistics data set compatible with the multispectral classifier
+ FASTCLAS, and (optionally) an image containing the scribed training
+ areas.  Input multispectral data must be in separate VICAR data sets or
+ in <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#mss">MSS</A> format.  Refer to the help for program MSS.
+EXECUTION:
+The following is the execution statement format for stats:
+	stats <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#inp">INP</A> <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#out">OUT</A> PARAMS
+where <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#inp">INP</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#out">OUT</A>, PARAMS are parameters discussed in their respective
+parameter sections.
+ The training areas for the classes may be specified either in rectangular
+or vertices format.  stats no longer allows some training fields in a given
+training area to be in vertices format and some to be in rectangular
+format.  Rectangular format is the default and is thus not 
+specified explicitly.   The RECT parameter (which was present in the IBM
+version of stats), for expliciltly specifying rectangular format, is no
+longer used.  The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#vert">VERT</A> parameter is used to list any and every class using the
+vertices format. 
+  The training area for the class is composed of one or more training fields.
+Each training field is a closed region of the image.  The format must be 
+the same for all fields within a class.  In rectangular format the training 
+fields are defined by starting line, starting sample, number of lines,
+and number of samples.
+  In vertices format, only the vertices (line number and sample number) of an
+irregular area need be stated.  
+<A NAME="examples">EXAMPLES</A>
+
+1.    stats <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#inp">INP</A>=(A, B, C, D)   <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#out">OUT</A>=ST  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#hist">HIST</A>=0 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#spec">SPEC</A>=0 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#exclude">EXCLUDE</A>=0 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#vert">VERT</A>=2              <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class1">CLASS1</A>=( 50,60,20,20  85,100,10,15 )                                   <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class2">CLASS2</A>=( 125,50  140,60  150,40  130,30  125,50 )
+
+In this example four spectral bands are input in separate VICAR images.
+Histograms and spectral plots of all four bands and both classes are
+produced.  Any pixel with a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#dn">DN</A> of 0 is excluded from the statistics.
+The class 1 statistics come from two rectangular training fields.  The 
+class 2 statistics come from an irregular training field.
+
+2.    stats <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#inp">INP</A>=MS <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#out">OUT</A>=(ST,SC) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#mss">MSS</A>=5  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#spec">SPEC</A>=0 '<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#noprint">NOPRINT</A> <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#scribe">SCRIBE</A>=2 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#vert">VERT</A>=1                  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class1">CLASS1</A>=( 25,20  35,30  40,50  55,30  30,15  25,20                                   85,40 100,55  70,55  85,40 )                                      <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class2">CLASS2</A>=( 200,100,20,30 )                                                   <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class3">CLASS3</A>=( 150,140,5,10 )
+
+In this example five spectral bands are input in <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#mss">MSS</A> format (in one file).
+Statistics are computed on all five bands.  Spectral plots of all five bands 
+and all three classes are produced, but all other printer (terminal) output is
+suppressed.  The second spectral <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#band">band</A> (in this case, extracted from the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#mss">MSS</A>
+format input) is copied to the second output file and scribed with the training
+areas.  Class 1 statistics are gathered from two irregular training fields.
+Classes 2 and three both have one rectangular training field.
+3.  The last example is the test procedure for stats.  This is
+    a complete example that could be run by the user and that 
+    demonstrates uses of the possible parameters.
+
+     gen gen1 nl=128 ns=128
+     gen gen2 nl=128 ns=128 sinc=2 linc=2
+     gen gen3 nl=128 ns=128 sinc=4 linc=4
+     !
+     !  First tests will check standard image format files
+     !
+     ! Copy first <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#band">band</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#scribe">scribe</A> training areas on this image
+     stats (gen1,gen2,gen3) (stat1,stat2) '<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#noprint">noprint</A>       <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class1">class1</A>=(1,1,32,32) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class2">class2</A>=(96,1,32,32) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class3">class3</A>=(96,96,32,32)       <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class4">class4</A>=(1,96,32,32)
+     ! Print Histograms for the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#dn">DN</A> values in each training area
+     stats (gen1,gen2,gen3) stat1 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#hist">hist</A>=0       <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class1">class1</A>=(1,1,32,32) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class2">class2</A>=(96,1,32,32) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class3">class3</A>=(96,96,32,32)       <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class4">class4</A>=(1,96,32,32)
+     ! Print Spectral Plot for all bands and classes
+     stats (gen1,gen2,gen3) stat1 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#spec">spec</A>=0       <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class1">class1</A>=(1,1,32,32) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class2">class2</A>=(96,1,32,32) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class3">class3</A>=(96,96,32,32)       <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class4">class4</A>=(1,96,32,32)
+     ! Try <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#out">out</A> Vertice format
+     stats (gen1,gen2,gen3) stat1 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#hist">hist</A>=0 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#vert">vert</A>=5       <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class1">class1</A>=(1,1,32,32) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class2">class2</A>=(96,1,32,32) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class3">class3</A>=(96,96,32,32)       <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class4">class4</A>=(1,96,32,32) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class5">class5</A>=(48,48,48,70,70,48,48,48)
+     !
+     !  Now check <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#mss">MSS</A> format images
+     !
+     al <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#mss">mss</A> 128 384
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#mss">mss</A> (gen1,gen2,gen3) mss (1,1,128,128)
+     ! Copy second <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#band">band</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#scribe">scribe</A> training areas on this image
+     stats <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#mss">mss</A> (stat1,stat2) mss=3 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#scribe">scribe</A>=2       <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class1">class1</A>=(1,1,32,32) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class2">class2</A>=(96,1,32,32) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class3">class3</A>=(96,96,32,32)       <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class4">class4</A>=(1,96,32,32)
+     ! Gather stats for first and third bands
+     stats <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#mss">mss</A> stat1 mss=3 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#band">band</A>=(1,3) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#hist">hist</A>=0 '<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#noprint">noprint</A>       <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class1">class1</A>=(1,1,32,32) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class2">class2</A>=(96,1,32,32) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class3">class3</A>=(96,96,32,32)       <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class4">class4</A>=(1,96,32,32)
+     ! Print spectral plots for second and third <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#band">band</A> for first and fourth class
+     stats <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#mss">mss</A> stat1 mss=3 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#splot">splot</A>=(1,4) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#spec">spec</A>=(2,3)       <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class1">class1</A>=(1,1,32,32) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class2">class2</A>=(96,1,32,32) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class3">class3</A>=(96,96,32,32)       <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class4">class4</A>=(1,96,32,32)
+     ! Try <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#out">out</A> Vertice format
+     stats <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#mss">mss</A> (stat1,stat2) mss=3 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#vert">vert</A>=5       <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class1">class1</A>=(1,1,32,32) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class2">class2</A>=(96,1,32,32) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class3">class3</A>=(96,96,32,32)       <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class4">class4</A>=(1,96,32,32) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class5">class5</A>=(48,48,48,70,70,48,48,48)
+OPERATION:  If the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#scribe">scribe</A> option is requested, stats begins by copying
+ the specified input picture to the secondary output data set.  Then the first
+ training area parameters are the processed and the training area is
+ read from all input bands.  Statistics on this area are compiled and the
+ area is scribed on the scribed picture.  After compiling statistics for
+ all training fields for a given class, the statistics are written on the
+ output statistics data set.  The record number on which they were written is
+ the class number of that class.  The record contains the
+ means, the number of pixels, and the covariance matrix for that class.  The
+ record length is a function of the number of spectral bands used.  The
+ maximum record length is 372 bytes which corresponds to 12 spectral bands.
+ Maximum number of records is 50 since class numbers must range from 1 to
+ 50.  If desired, histograms of each training class in each <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#band">band</A> are
+ printed.   Spectral plots of the spectral signatures
+ can also be printed.  The '<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#exclude">EXCLUDE</A>' option allows the user to specify
+ certain DNs for which statistics are ignored.  This is useful, for
+ instance, if the training areas lie at the edge of a skewed picture.  To
+ prevent statistics from including pixels in the background skew,
+ '<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#exclude">EXCLUDE</A>,0' could be specified.
+      Page printer output includes the training areas for the class,
+ means, and standard deviations for each <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#band">band</A>, and the covariance matrix.
+ The covariance matrix is simply the covariance taken between all combina-
+ tions of spectral <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#band">band</A> pairs.  The keyword <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#noprint">NOPRINT</A> supresses the page
+ printer option.
+RESTRICTIONS:  stats can handle up to 12 spectral bands in <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#mss">MSS</A> format or
+ in separate data set format, and compute statistics on 50 training
+ classes.  The maximum <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#size">size</A> for any training field is 600 lines by 600
+ samples.  The input files must have byte data format.
+      Histograms and scribing must be performed in separate executions.
+ If both are specified then the histograms will be deleted.
+WRITTEN BY: J. D. Addington               30 September 1974
+
+CONVERTED TO VAX BY:  A. J. Runkle	  22 Dec. 1983
+
+<A NAME="CogProg">CURRENT COGNIZANT PROGRAMMER: Steve Pohorsky</A>
+
+MADE PORTABLE FOR UNIX: CRI               31 OCT 1994
+
+
+TIMING:  Execution time depends on the number and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#size">size</A> of the training
+ areas and the number of spectral bands.  Typical running time is between
+ 1 and 2 minutes.
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#inp"><H3>INP</H3></A>
+STRING - Contains the input data
+set name(s)
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#out"><H3>OUT</H3></A>
+STRING - Contains output data   
+set name(s)
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#size"><H3>SIZE</H3></A>
+Standard Vicar <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#size">size</A> field 
+(Not used - can be defaulted).
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#mss"><H3>MSS</H3></A>
+Specifies the number of spectral
+bands in <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#mss">MSS</A> format.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#band"><H3>BAND</H3></A>
+Denotes that bands in <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#mss">MSS</A> format
+to be used as input.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#scribe"><H3>SCRIBE</H3></A>
+Denotes which input <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#band">band</A> is to
+be copied to output  data set.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#dn"><H3>DN</H3></A>
+Specifies the outline <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#dn">DN</A> value.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#hist"><H3>HIST</H3></A>
+Denotes the bands for which
+histograms will be printed.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#spec"><H3>SPEC</H3></A>
+Denotes which spectral plots are
+to be printed.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#splot"><H3>SPLOT</H3></A>
+Specifies the limits  of 
+spectral plots for classes.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#exclude"><H3>EXCLUDE</H3></A>
+Ignore pixels with given <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#dn">DN</A>
+values.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#noprint"><H3>NOPRINT</H3></A>
+Specifies whether training area
+information is to be printed.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#vert"><H3>VERT</H3></A>
+Specifies the training
+areas that are in vertex format.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class"><H3>CLASS</H3></A>
+Dummy argument do NOT use.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#classx"><H3>CLASSX</H3></A>
+Dummy arguement do NOT use.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class1"><H3>CLASS1</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class2"><H3>CLASS2</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class3"><H3>CLASS3</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class4"><H3>CLASS4</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class5"><H3>CLASS5</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class6"><H3>CLASS6</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class7"><H3>CLASS7</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class8"><H3>CLASS8</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class9"><H3>CLASS9</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class10"><H3>CLASS10</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class11"><H3>CLASS11</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class12"><H3>CLASS12</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class13"><H3>CLASS13</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class14"><H3>CLASS14</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class15"><H3>CLASS15</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class16"><H3>CLASS16</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class17"><H3>CLASS17</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class18"><H3>CLASS18</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class19"><H3>CLASS19</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class20"><H3>CLASS20</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class21"><H3>CLASS21</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class23"><H3>CLASS23</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class24"><H3>CLASS24</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class25"><H3>CLASS25</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class26"><H3>CLASS26</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class27"><H3>CLASS27</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class28"><H3>CLASS28</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class29"><H3>CLASS29</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class30"><H3>CLASS30</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class31"><H3>CLASS31</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class32"><H3>CLASS32</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class33"><H3>CLASS33</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class34"><H3>CLASS34</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class35"><H3>CLASS35</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class36"><H3>CLASS36</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class37"><H3>CLASS37</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class38"><H3>CLASS38</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class39"><H3>CLASS39</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class40"><H3>CLASS40</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class41"><H3>CLASS41</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class42"><H3>CLASS42</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class43"><H3>CLASS43</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class44"><H3>CLASS44</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class45"><H3>CLASS45</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class46"><H3>CLASS46</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class47"><H3>CLASS47</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class48"><H3>CLASS48</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class49"><H3>CLASS49</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats_level2.html#class50"><H3>CLASS50</H3></A>
+Training area coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/stats.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

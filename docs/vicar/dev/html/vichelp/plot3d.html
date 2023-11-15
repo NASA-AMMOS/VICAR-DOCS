@@ -1,0 +1,269 @@
+<HTML>
+<HEAD><title>HTML Help for PLOT3D</title></HEAD>
+<BODY>
+<H1>Help for PLOT3D</H1>
+<pre>
+PURPOSE
+
+    "plot3d" plots 3-D IBIS graphics-1 files in true 2-D perspective
+using the gnuplot plotting software. 
+
+
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">PLOT</A> OUTPUTS
+
+    The other type of output come from the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">PLOT</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plotfmt">PLOTFMT</A> parameters.
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">PLOT</A> allows the user to display data from 5 areas on the CCD on an x,y
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> using the gnuplot package after exiting the program. PLOT produces
+a file of gnuplot commands contained in a file having a .gpi file extension.
+Another file with an .asc extension is create containing columns of data
+that are displayed by the gpi file.
+
+   The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plotfmt">PLOTFMT</A> parameter allows the user to generate a postscript file of
+the output for use in documentation by choosing <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plotfmt">PLOTFMT</A>=EPS. The default
+is to generate a gnuplot interactive display.
+
+
+  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">PLOT</A> NAMING CONVENTIONS
+
+  The user should enter only the parent file name without an extension
+  for the PLOTOUT parameter.  The program will supply the extensions.
+
+  For example, if the user has an input file of indata.dat and  PLOTOUT=outplot
+  then for the interactive <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> the following files are produced:
+
+     outplot.gpi
+     indata.dat.asc
+
+  The first file is the gnuplot instruction file and the second is the
+  data file used by gnuplot.
+
+  If the user wanted an encapsulate postscript file with <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plotfmt">PLOTFMT</A>=eps
+  then the following files are produced:
+
+     outplot.eps.gpi
+     indata.dat.asc
+
+  Remember entering the following command gives the eps file, outplot.eps
+
+  ush gnuplot outplot.eps.gpi
+
+  If you move the gpi file to another directory, you must also move the
+  input data file, indata.dat.asc to the same directory.
+
+  Note that the gpi file produced by this program has the name of the
+  input file embedded in the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> command inside the gpi file, e.g..
+  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A>  'indata.dat.asc' u  1: 9 t .......
+
+
+USING GNUPLOT
+
+
+  INTERACTIVE:
+
+    This program uses the gnuplot package for its plots. Gnuplot is a
+  separate package from Vicar and is not actually invoked inside this
+  program.  Instead this program creates a template of gnuplot commands
+  which are written out as a separate file. The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> is then viewed after
+  exiting this program. The file has the extension .gpi. You view
+  the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> by issuing the following command in the vicar shell.
+
+  ush gnuplot output.gpi
+
+  or external to vicar as
+
+  gnuplot output.gpi
+
+   After viewing the data, you close the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> by clicking the mouse anywhere
+  except on the top bar of the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A>. Clicking on the top bar allows you
+  to move the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> to any convenient place on the terminal screen.  (While
+  the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> is displayed you cannot enter any commands to the vicar shell).
+
+  The data to be plotted by gnuplot is read from a separate file, created
+  by this program, which contains columns of data in ascii text.
+  File naming conventions are discussed in the OUTPUT section, but in this
+  case that file extension will be .asc.
+
+  It is possible to keep the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> alive for comparison purposes by issuing
+  the following command.
+
+  ush gnuplot --persist output.gpi
+  (You will be able to enter commamds to the vicar shell after clicking on
+  the mouse on the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A>).
+
+
+  HARDCOPY:
+
+  This program also allows you to create a hardcopy encapsulated postscript
+  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> suitable for publications. This file can be viewed with ghostscript
+  or gimp. The encapsulated postscript file is not created by this program
+  by by the gnuplot program from a gpi file made especially for this purpose.
+  this file has the extension, eps.gpi. You create the hardcopy <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> via
+  the following command
+
+  ush gnuplot output.eps.gpi
+
+  This creates the eps file output.eps. You can view this file by
+
+  ush gimp output.eps
+
+   2-D PERSPECTIVE PLOTS OF 3-D DATA
+
+   The previous plotting package required the user to input the
+   perspective viewing angles and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#distance">distance</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#elev">ELEV</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#azimuth">AZIMUTH</A> and DISTANCE.
+   The viewing angles are with repect to an observer at some
+   <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#distance">DISTANCE</A> looking back toward the coordinate system <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#origin">origin</A>.
+   These angles are the trig complement of the coordinate system
+   angles, phi (<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#elev">ELEV</A>) and theta (<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#azimuth">AZIMUTH</A>). Phi is the angle above
+   or below X-Y plane and theta the angle clockwise from Y <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#axis">axis</A>
+   (usually called North in mapping systems).
+
+   If the chosen perspective wasn't pleasing then the user kept
+   entering appropriate angles or <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#distance">distance</A> until it became so.
+
+   Gnuplot does not have this limitation. If you <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> a 3-D data
+   set the user can rotate the viewing angles or change distances
+   with appropriate mouse commands on the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> panel. The lower 
+   left hand portion of the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> panel is updated with the new 
+   angles and position:
+
+   
+   view:  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#elev">elev</A>,  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#azimuth">azimuth</A>   <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#scale">scale</A>: 1.0000  1.0000
+
+   The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#scale">scale</A> values are the scale of the X-Y plane and the Z-<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#axis">axis</A>.
+
+   The original angles and distances are in the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#title">title</A> of the
+   <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A>.
+ 
+   When you have the desirable view then there is a problem
+   with saving the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> that didn't exist with the old xrt
+   plotting package. The updated angles and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#distance">distance</A> are
+   not available to vicar.
+
+   The purpose of plot3d originally was to create a 3-D object
+   in an IBIS-1 graphics file, then find a perspective and then
+   convert that graphics file into a new graphics file. The
+   older program had all the mathematical operations to do that
+   perspective rendering that is part of gnuplot.
+
+   So plot3d cannot do that function. 
+
+   A new program perspec was created for that purpose.
+
+   Once you have chosen the desired view you must record the
+   four values at the bottom of the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> panel and enter them
+   into program perspect using the input file as for plot3d. This
+   will create the output perspective that formerly was done
+   by the old plot3d program.
+
+   The vicar program pltgraf is and alternate way to view the
+   IBIS-1 graphics format. 
+
+    DEVELOPER Note:
+
+    This program used to link to the XRT <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> library -lxrt. Calls to
+  that library were mitigated through a Calcomp conversion library,
+  xrtps located in the p2 subroutine library. With the conversion to
+  gnuplot, neither of these packages are used.
+
+
+EXECUTION
+
+Examples:
+
+A standard autoscaling 3-D <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A>:
+plot3d  THREE.GRA  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plotsize">PLOTSIZE</A>=6.0 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#elev">ELEV</A>=30 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#azimuth">AZIMUTH</A>=135 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#distance">DISTANCE</A>=200 
+
+To <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> a file in (line,sample,Z) format and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#scale">scale</A> the Z value down:
+plot3d  THREE.GRA  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#dataform">DATAFORM</A>=LSZ <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plotsize">PLOTSIZE</A>=3 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#zscale">ZSCALE</A>=100
+
+To <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> a 3-D <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#axis">axis</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#title">title</A>:
+plot3d  THREE.GRA  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plotsize">PLOTSIZE</A>=6.0 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#elev">ELEV</A>=30 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#azimuth">AZIMUTH</A>=135  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#axis">AXIS</A>=10  			'NOBOX <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#title">TITLE</A>='THREE D <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">PLOT</A>'
+
+For manual scaling:
+plot3d  THREE.GRA  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#scale">SCALE</A>=10 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plotoffs">PLOTOFFS</A>=(4.5,6)
+
+For 2-D file output:
+plot3d  THREE.GRA  TWO.GRA  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#zscale">ZSCALE</A>=10  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#origin">ORIGIN</A>=(100,100,10)
+
+For the default <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A>:
+plot3d  THREE.GRA  
+
+
+
+Original Programmer:	Frank Evans	January 1987
+
+<A NAME="CogProg">Cognizant Programmer:	Michael Tschudi	June 1987</A>
+
+Revision History:
+
+    10-July-95 - Randy Schenk (CRI) - Ported to Unix
+     7 Feb 2013 - Ray Bambery - Updated to Linux 64-bit, gnuplot
+    13 Feb 2013 - Ray Bambery - Updated documentation 
+    10 Jul 2013 - Ray Bambery - Consistent file naming conventions
+    13 Jul 2013 - Ray Bambery - Adjusted eps format to more readable fonts
+                                Remove vestiges of debug statements
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#inp"><H3>INP</H3></A>
+IBIS 3-D graphics file name.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#out"><H3>OUT</H3></A>
+Optional 2-D IBIS graphics file.
+No <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> produced if output file.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot"><H3>PLOT</H3></A>
+Output <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">Plot</A> file name.
+Default="plot3d"
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plotfmt"><H3>PLOTFMT</H3></A>
+ Output <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> format
+ GNUPLOT or EPS
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#elev"><H3>ELEV</H3></A>
+Observer elevation angle
+in degrees above horizon.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#azimuth"><H3>AZIMUTH</H3></A>
+Observer azimuthial angle
+in degrees east of north.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#distance"><H3>DISTANCE</H3></A>
+Observer <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#distance">distance</A> from <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#origin">origin</A>
+(in same units as graphics).
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#origin"><H3>ORIGIN</H3></A>
+The view <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#origin">origin</A> (observer looks
+toward <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#origin">origin</A>) in same format
+as 3-D graphics file.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plotsize"><H3>PLOTSIZE</H3></A>
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> size in inches.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#zscale"><H3>ZSCALE</H3></A>
+Divisor to convert <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#scale">scale</A> of
+Z values into X,Y units.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#scale"><H3>SCALE</H3></A>
+Specify for manual scaling.
+Divisor to convert graphics
+file units to inches on <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plotoffs"><H3>PLOTOFFS</H3></A>
+Only used for manual scaling.
+Offset of view <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#origin">origin</A> (X,Y) 
+from <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#origin">origin</A> (in inches).
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#dataform"><H3>DATAFORM</H3></A>
+3-D data format:
+XYZ for (X,Y,Z)
+YXZ for (Y,X,Z)
+LSZ for (line,sample,Z)
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#title"><H3>TITLE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#title">Title</A> for top of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#axis"><H3>AXIS</H3></A>
+3-D <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#axis">axis</A> plotted if specified.
+Length of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#axis">axis</A> in units of
+graphics file.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#parmplot"><H3>PARMPLOT</H3></A>
+Keyword to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> parameter
+values on <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#boxplot"><H3>BOXPLOT</H3></A>
+Keyword to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#plot">plot</A> box
+around plotted data.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#pen"><H3>PEN</H3></A>
+Width of plotting <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d_level2.html#pen">pen</A> to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/plot3d.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

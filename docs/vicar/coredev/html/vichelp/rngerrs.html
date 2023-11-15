@@ -1,0 +1,73 @@
+<HTML>
+<HEAD><title>HTML Help for RNGERRS</title></HEAD>
+<BODY>
+<H1>Help for RNGERRS</H1>
+<pre>
+PURPOSE: Determine relative accuracy of outputs from program rng.
+
+EXECUTION:
+
+  rng <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#inp">inp</A>=(x,y) out=tran <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#disparity">disparity</A>=(dx,dy)
+  rngerrs <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#inp">inp</A>=(x,y) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#disparity">disparity</A>=(dx,dy) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#pseudox">pseudox</A>=z <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#diff">diff</A>=diff <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#q">q</A>=q <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#nq">nq</A>=nq
+
+The stereo pair (x,y) is input to rng, which computes the horizontal
+and vertical disparities (dx,dy) of the right image y relative to the left
+image x.  rngerrs uses these disparities to distort the right image into a
+pseudo-image.  Differences between the left and pseudo-left image are then
+measured by correlating over local areas (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#q">q</A>) and differencing of the two
+images (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#diff">diff</A>).
+
+OPERATION:
+
+The pseudo-left image z is computed as follows:
+
+	z(i,j) = y(i+dx(i,j),j+dy(i,j))
+
+where (i,j) are the (sample,line) image coordinates.  Since the coordinates
+(i+dx(i,j),j+dy(i,j) is generally not at an integral pixel position, bilinear
+interpolation is used to compute the value of y at that location.
+
+The difference image <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#diff">diff</A> is simply:
+
+	<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#diff">diff</A>(i,j) = x(i,j) = z(i,j)
+
+The correlation quality image <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#q">q</A> is computed by matching a <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#nlw">nlw</A> x <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#nsw">nsw</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#area">area</A>
+surrounding each pixel location x(i,j) and z(i,j).  See <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#nlw">NLW</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#nsw">NSW</A> parameters.
+
+	<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#q">q</A>(i,j) = correlation coefficient for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#area">area</A> surrounding (i,j)
+
+There are gaps in the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#disparity">disparity</A> map (dx,dy).  All pixel locations where the
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#disparity">disparity</A> was not measured is flagged as dx(i,j)=-999 and dy(i,j)=-999.
+Whenever such a pixel is encountered during <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#area">area</A> matching, that pixel is
+ignored during the match.  A count of all the valid pixels in the correlation
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#area">area</A> is output to image <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#nq">nq</A>:
+
+	0 &lt <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#nq">nq</A>(i,j) < <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#nlw">nlw</A>*<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#nsw">nsw</A>
+
+If program rng has succeeded in computing the disparities, the pseudo-left
+image should match the left image, except for differences in intensity
+between the images.  The correlation quality is a measure of how well rng
+has succeeded at each pixel location.  The mean value of <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#q">q</A> is computed and
+printed for a specified <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#area">area</A> of the image (see AREA parameter).
+
+HISTORY:
+
+Written by: Gary Yagi, Feb 6, 2007
+<A NAME="CogProg">Cognizant programmer: Gary Yagi</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#inp"><H3>INP</H3></A>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#inp">inp</A>=(left,right)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#out"><H3>OUT</H3></A>
+correlation coefficients
+  out=<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#q">q</A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#area"><H3>AREA</H3></A>
+define <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#area">area</A> for stats
+  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs_level2.html#area">area</A>=(sl,ss,el,es)
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rngerrs.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

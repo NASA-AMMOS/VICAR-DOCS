@@ -1,0 +1,422 @@
+<HTML>
+<HEAD><title>HTML Help for INTERLOC</title></HEAD>
+<BODY>
+<H1>Help for INTERLOC</H1>
+<pre>
+PURPOSE:
+
+Program "interloc" is a special purpose VICAR applications program used in the
+camera calibration process.  "interloc" operates on an input image containing
+horizontal and vertical grid lines.  "interloc" roughly locates the grid line
+intersections in the input image.  This is similar to what program "gridloca"
+does.  ("gridloca" is not currently implemented on the VAX.) "interloc" is
+faster than "gridloca", though, and "interloc" also has an interactive
+capability which makes it more convenient to use.  It is presently capable of
+operating on byte data only. 
+EXECUTION:
+
+"interloc" has two modes of operation, interactive and batch.
+ 
+   1. Interactive Mode - Interactive mode is used if the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#int">INT</A> parameter is 
+         entered on the TAE command line.  For interactive mode, a display 
+         device with a trackball needs to be allocated before "interloc" is
+         run.  Once interactive mode is selected, parameters can be entered 
+         interactively when the parameter prompt (from subroutine IPARAM) is 
+         present.  
+
+         Program "interloc" has several interactive parameters.  Most of the 
+         parameters can be entered interactively when the parameter prompt (from
+         subroutine IPARAM) is present.  Some of the parameters can also be 
+         entered initially as part of the TAE command line.  The parameters 
+         that can be entered on the TAE command line are <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#int">INT</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nh">NH</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nv">NV</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hori">HORI</A>, and 
+         <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vert">VERT</A>.  As many commands may be entered on one line as will fit, and a 
+         command specification may be continued on more than one input line 
+         using TAE line continuation.  When all processing of the entered 
+         commands is complete, the message 'interloc READY' will be displayed 
+         on the user's terminal.  Further processing of any command line is 
+         cancelled if an error is found, and a new command line is requested 
+         from the user.  If cursor locations are to be specified (as for 
+         <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#htrack">HTRACK</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vtrack">VTRACK</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hsearch">HSEARCH</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vsearch">VSEARCH</A>, and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#fix">FIX</A>), the message 'Position 
+         cursor and press &ltRETURN&gt' will appear on the user's terminal.  The 
+         user then presses the RETURN key on the terminal when the cursor is 
+         positioned correctly.
+
+	Note: To position the cursor click on the arrow icon in the lower
+	<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#right">right</A> hand corner of the display window.  This will cause the cursor
+	to be displayed in the upper <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#left">left</A> corner.  Clicking on an area in
+	the display window will position the cursor there.
+
+   2. Batch Mode - Batch mode is used if the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#int">INT</A> parameter is not entered.  
+         Batch mode can be used in a batch job or in an interactive session.  
+         In batch mode the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nh">NH</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nv">NV</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hori">HORI</A>, and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vert">VERT</A> parameters are required.  The 
+         interactive parameters are not used. In batch mode the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#go">GO</A> parameter is 
+         not used since in batch mode "interloc" is set <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#up">up</A> to perform the 
+         routines for the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#go">GO</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#print">PRINT</A>, and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#exit">EXIT</A> parameters when it comes to the 
+         end of the parameter list. 
+INPUT:
+
+In "interloc" the input image contains horizontal and vertical grid rulings.
+The rulings are distinguished by having a lower DN than the background of the
+image.  (See also the documentation from the IBM for program "gridloca".)  
+
+When operating in interactive mode, it is important for the user to keep in 
+mind that "interloc" implicitly numbers horizontal grid rulings from top (1) to 
+bottom (n) and vertical grid rulings from <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#left">left</A> (1) to <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#right">right</A> (m).  The user must 
+follow this convention when using the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#htrack">HTRACK</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vtrack">VTRACK</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hsearch">HSEARCH</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vsearch">VSEARCH</A>, and 
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#fix">FIX</A> parameters. 
+
+OUTPUT:
+
+"interloc" has three output files.  The first output file is the diagnostic 
+output file.  This file is the same as the input image except that the 
+successive pixels encountered as "interloc" follows along the grid rulings are
+given a DN of 255.  This file is not generated in interactive mode until 
+(unless) the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#go">GO</A> command is executed.
+
+The second output file is the mark data set containing the coordinates of the
+grid intersections.  This file is in VICAR format and has one line containing
+2*<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nh">NH</A>*<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nv">NV</A> REAL*4 words (see NH and NV parameters).  The coordinates are 
+line-sample pairs.
+
+The third output file is an intermediate (work) file with <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#size">size</A> <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nh">NH</A> lines by
+NSI halfword samples.
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#size">SIZE</A>:
+
+In "interloc" the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#size">SIZE</A> parameter is ignored in both modes.
+
+PARAMETERS:
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#inp">INP</A> - Input image file name
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#out">OUT</A> - Output diagnostic image file, MARK data set file, and work file names.
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#size">SIZE</A> - (Not used.)
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nl">NL</A> - (Not used.)
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#ns">NS</A> - (Not used.)
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#int">INT</A> - Selects interactive mode. (keyword)
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nh">NH</A> - Number of horizontal grid rulings.  NH is a required parameter.  NH must 
+       be a positive integer.
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nv">NV</A> - Number of vertical grid rulings.  NV is a required parameter.  NV must 
+       be a positive integer.
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hori">HORI</A> - Starting line and sample coordinates of horizontal grid rulings.  The 
+         coordinates are entered as (line,sample) pairs, one after another.  
+         The coordinates should be entered in increasing line coordinate value.
+         In batch mode the coordinates must be specified this way.  In 
+         interactive mode, coordinates can be specified this way or by 
+         positioning the cursor for the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#htrack">HTRACK</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hsearch">HSEARCH</A>, or <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#track">TRACK</A> parameters.
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vert">VERT</A> - Starting line and sample coordinates of vertical grid rulings.  The 
+         coordinates are entered as (line,sample) pairs, one after another.  
+         The coordinates should be entered in increasing sample coordinate 
+         value.  In batch mode the coordinates must be specified this way.  In 
+         interactive mode, coordinates can be specified this way or by 
+         positioning the cursor for the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vtrack">VTRACK</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vsearch">VSEARCH</A>, or <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#track">TRACK</A> parameters.
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#track">TRACK</A> - Specifies that coordinates of all horizontal or all vertical grid 
+          rulings will be input by positioning cursor with a trackball.  Valid 
+          values for <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#track">TRACK</A> are <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#htrack">HTRACK</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vtrack">VTRACK</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hsearch">HSEARCH</A>, and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vsearch">VSEARCH</A>.  The 
+          starting coordinates of horizontal grid rulings can be entered using
+          <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#htrack">HTRACK</A> or <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hsearch">HSEARCH</A>.  The starting coordinates of vertical grid rulings 
+          can be entered using <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vtrack">VTRACK</A> or <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vsearch">VSEARCH</A>.  If <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#htrack">HTRACK</A>, VTRACK, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hsearch">HSEARCH</A>, 
+          or <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vsearch">VSEARCH</A> is specified as keyword values, "interloc" will prompt the 
+          user <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nh">NH</A> times in succession for horizontal grid rulings or <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nv">NV</A> times 
+          for vertical grid rulings.  If <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#htrack">HTRACK</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vtrack">VTRACK</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hsearch">HSEARCH</A>, or <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vsearch">VSEARCH</A> is 
+          followed by a single numeric value, then "interloc" will ask the
+          cursor to be positioned  for a single grid ruling, (the grid ruling 
+          corresponding to the number entered).  If <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#htrack">HTRACK</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vtrack">VTRACK</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hsearch">HSEARCH</A>, or 
+          <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vsearch">VSEARCH</A> is followed by two numeric values, say n1 and n2, then 
+          "interloc" will ask the cursor to be positioned in succession for
+          grid rulings n1 through n2.  (This is useful if the entire grid image 
+          cannot be displayed at one time.)   When a cursor position has been 
+          accepted by "interloc", a small box marking the position will appear
+          on the display. (keyword)
+
+          The syntax for the case of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#htrack">HTRACK</A> would be:
+
+          '<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#htrack">HTRACK</A>              to specify all <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nh">NH</A> horizontal grid rulings.
+           <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#htrack">HTRACK</A> = n1         to specify horizontal grid ruling n1.
+           <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#htrack">HTRACK</A> = (n1,n2)    to specify <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nh">NH</A> horizontal grid rulings n1 
+                               through n2.
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#htrack">HTRACK</A> - Specifies that coordinates of select horizontal grid rulings will be 
+           input by positioning cursor with a trackball.  Enter a single number
+           for one grid ruling or two numbers for a range of grid rulings.
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vtrack">VTRACK</A> - Specifies that coordinates of select vertical grid rulings will be 
+           input by positioning cursor with a trackball.  Enter a single number 
+           for one grid ruling or two numbers for a range of grid rulings. 
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hsearch">HSEARCH</A> - Same as <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#htrack">HTRACK</A> except cursor will be initially positioned by 
+            program.
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vsearch">VSEARCH</A> - Same as <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vtrack">VTRACK</A> except cursor will be initially positioned by 
+            program.
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#disp">DISP</A> - Displays input image or diagnostic output image (see <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#go">GO</A> parameter) on 
+         display device. If the image is too large to display in its entirety, 
+         a portion within the 'display window' is displayed. (See <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#home">HOME</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#up">UP</A>, 
+         <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#down">DOWN</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#right">RIGHT</A>, <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#left">LEFT</A>.)  (keyword)
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#home">HOME</A> - Moves display window to the upper <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#left">left</A> corner of image. (keyword)
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#up">UP</A> - Moves display window up by one screen length (512 lines). (keyword)
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#down">DOWN</A> - Moves display window down by one screen length (512 lines). (keyword)
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#left">LEFT</A> - Moves display window to the left by one screen width (512 samples).
+         (keyword)
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#right">RIGHT</A> - Moves display window to the right by one screen width (512 samples).
+          (keyword)
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#print">PRINT</A> - Prints the grid intersection coordinates on the user's terminal. 
+          (keyword)
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#go">GO</A> - Causes program to find grid intersections.  GO sets <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#up">up</A> for the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#disp">DISP</A> 
+       command to display the diagnostic output image so the user can make 
+       corrections if necessary.  (See the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#fix">FIX</A> command.)  (keyword)
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#fix">FIX</A> - Specifies that select grid intersections will be determined by 
+        positioning the cursor with trackball.  The user specifies the 
+        horizontal and vertical grid ruling numbers whose intersection(s) is to 
+        be FIXed as values for the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#fix">FIX</A> parameter.  The user may enter the 
+        number of the horizontal grid ruling followed by the number of the 
+        vertical grid ruling (two values for one intersection) or a range of 
+        the horizontal grid rulings followed by a range of vertical grid rulings
+        (four values for a range of intersections).   When a range of 
+        intersections is specified, the program accepts coordinates for each 
+        intersection on a specified horizontal grid ruling before moving on to 
+        the next horizontal ruling.  This command can be used to correct 
+        intersections not properly found by the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#go">GO</A> command, or may be used to 
+        manually specify the intersections without using the intersection 
+        finding algorithm at all.
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#retry">RETRY</A> - Resets "interloc" to allow grid ruling coordinates to be changed
+          and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#go">GO</A> command to be respecified. (keyword)
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#exit">EXIT</A> - Used to end a run of "interloc". (keyword)
+
+  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#test">TEST</A> - TEST=(l,s) Parameter for testing. Causes "interloc" to use (l,s) as
+         the line and sample image coordinates instead of the current cursor 
+         position.  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#test">TEST</A> values are in terms of image coordinates.
+TAE COMMAND LINE FORMAT:
+
+The following command line formats show the major allowable forms:
+
+   interloc <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#inp">INP</A>=a <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#out">OUT</A>=(d,m,w) parameters
+   interloc a (d,m,w) parameters
+
+     where a = input image file name
+           d = diagnostic output image file name
+           m = mark data set file name
+           w = work file name
+<A NAME="examples">EXAMPLES:</A>
+
+1. interloc <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#inp">INP</A>=a <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#out">OUT</A>=(d,mark,work) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nh">NH</A>=2 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nv">NV</A>=3 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hori">HORI</A>=(100,10, 200,10)        <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vert">VERT</A>=(10,150, 10,250, 10,350)
+
+   In this example "interloc" operates in batch mode to find the intersections
+   of two horizontal grid rulings and three vertical grid rulings.  The 
+   starting points of the rulings are identified by the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hori">HORI</A> and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vert">VERT</A> values.
+2. interloc <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#inp">INP</A>=a <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#out">OUT</A>=(d,mark,work) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nh">NH</A>=2 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nv">NV</A>=3 '<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#int">INT</A>
+          
+      '<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hsearch">HSEARCH</A>
+            
+
+      '<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vsearch">VSEARCH</A>
+         
+
+
+      '<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#go">GO</A>
+          
+      '<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#print">PRINT</A>
+          
+      '<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#exit">EXIT</A>
+          
+   In this example "interloc" operates in interactive mode to find the 
+   intersections of two horizontal grid rulings and three vertical grid 
+   rulings.  The starting points of the rulings are specified by cursor
+   positions.  For the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hsearch">HSEARCH</A> and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vsearch">VSEARCH</A> parameters, "interloc" searches
+   for the next grid ruling and provides an initial positioning of the cursor 
+   to the next ruling.  Note that since no value is specified with <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hsearch">HSEARCH</A>
+   and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vsearch">VSEARCH</A>, "interloc" prompts <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nh">NH</A> times for vertical rulings and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nv">NV</A> times
+   for vertical rulings.  (See Help for <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#track">TRACK</A>.)   The user can adjust 
+   the cursor position if desired before pressing the RETURN key.  
+   "interloc" then records the cursor position    and advances the cursor
+   for the next grid ruling.  The <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#go">GO</A> command causes the    intersections
+   to be located.  The <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#print">PRINT</A> command displays the intersection   
+   locations.  The <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#exit">EXIT</A> command causes the mark data set to be written and
+   completes the execution. 
+OPERATION:
+
+The job of "interloc" is to produce a set of rough grid intersection locations
+in a "mark" format data set.  The user specifies the starting coordinates for
+each horizontal and vertical grid ruling at the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#left">left</A> or top of the ruling.
+Then "interloc" "follows" the course of the grid lines across and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#down">down</A> the
+image using the following algorithm:
+
+   For each horizontal ruling all pixels to the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#left">left</A> of the starting point
+   on the same line are considered to be part of the grid ruling.  Then
+   "interloc" moves across the image one pixel at a time, and at each
+   successive sample coordinate decides which of the three pixels is the
+   darkest (has the lowest DN):   P(L-1,S), P(L,S), P(L+1,S).
+   This darkest pixel becomes the next pixel in the grid ruling, and the 
+   algorithm continues from there.
+
+   When all horizontal rulings have been "followed", the very same thing is
+   done for each vertical ruling, moving from top to bottom instead of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#left">left</A> to
+   <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#right">right</A>.  When a vertical ruling crosses a horizontal ruling, the 
+   coordinates of the intersection are recorded for printing and for output
+   to the MARK data set.
+
+Program "interloc" uses dynamic memory allocation (using subroutine "stacka")
+to avoid imposing restrictions on the image <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#size">size</A>.  
+RESTRICTIONS:
+
+1. The input image must be byte data.
+2. The maximum number of horizontal grid rulings is 600.
+   If the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hori">HORI</A> parameter is used, the maximum is 300 rulings due to the
+   maximum count for <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hori">HORI</A>.
+3. The maximum number of vertical grid rulings is 600.
+   If the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vert">VERT</A> parameter is used, the maximum is 300 rulings due to the
+   maximum count for <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vert">VERT</A>.
+WRITTEN BY:             Steve Pohorsky              30 Jan 1985
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:   Steve Pohorsky              30 Jan 1985</A>
+
+REVISION:               3                            4 Aug 1987
+Made portable for UNIX ... V. Unruh ... (CRI) (May  8, 1995)
+Put grid <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#size">size</A> into output label ...RRD... 7-97 
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#inp"><H3>INP</H3></A>
+Input image file name
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#out"><H3>OUT</H3></A>
+Output diagnostic image file,
+MARK data set file,
+and work file names.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#size"><H3>SIZE</H3></A>
+(Not used.)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nl"><H3>NL</H3></A>
+(Not used.)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#ns"><H3>NS</H3></A>
+(Not used.)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#int"><H3>INT</H3></A>
+Selects interactive mode.
+ (keyword)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nh"><H3>NH</H3></A>
+Number of horizontal grid 
+rulings.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#nv"><H3>NV</H3></A>
+Number of vertical grid 
+rulings.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hori"><H3>HORI</H3></A>
+Starting line and sample 
+coordinates of horizontal
+grid rulings.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vert"><H3>VERT</H3></A>
+Starting line and sample 
+coordinates of vertical
+grid rulings.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#track"><H3>TRACK</H3></A>
+Specifies that coordinates
+of all horizontal or all
+vertical grid rulings will be
+input by positioning cursor
+with a trackball.  Valid values
+for <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#track">TRACK</A> are  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#htrack">HTRACK</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vtrack">VTRACK</A>,
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hsearch">HSEARCH</A>, and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vsearch">VSEARCH</A>.
+ (keyword)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#htrack"><H3>HTRACK</H3></A>
+Specifies that coordinates
+of select horizontal grid 
+rulings will be input by 
+positioning cursor
+with a trackball.  Enter a
+single number for one grid
+ruling or two numbers for a
+range of grid rulings.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vtrack"><H3>VTRACK</H3></A>
+Specifies that coordinates
+of select vertical grid 
+rulings will be input by 
+positioning cursor
+with a trackball.  Enter a
+single number for one grid
+ruling or two numbers for a
+range of grid rulings.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#hsearch"><H3>HSEARCH</H3></A>
+Same as <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#htrack">HTRACK</A> except cursor
+will be initially positioned
+by program.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vsearch"><H3>VSEARCH</H3></A>
+Same as <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#vtrack">VTRACK</A> except cursor
+will be initially positioned
+by program.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#disp"><H3>DISP</H3></A>
+Displays input image or 
+diagnostic output image (see <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#go">GO</A>
+parameter) on display device.
+ (keyword)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#home"><H3>HOME</H3></A>
+Moves display window to the 
+upper <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#left">left</A> corner of image.
+ (keyword)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#up"><H3>UP</H3></A>
+Moves display window <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#up">up</A> by
+one screen length (512 lines).
+ (keyword)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#down"><H3>DOWN</H3></A>
+Moves display window <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#down">down</A> by
+one screen length (512 lines).
+ (keyword)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#left"><H3>LEFT</H3></A>
+Moves display window to the 
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#left">left</A> by one screen width (512
+samples).
+ (keyword)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#right"><H3>RIGHT</H3></A>
+Moves display window to the 
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#right">right</A> by one screen width (512
+samples).
+ (keyword)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#print"><H3>PRINT</H3></A>
+Prints the grid intersection
+coordinates on the user's
+terminal.
+ (keyword)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#go"><H3>GO</H3></A>
+Causes program to find grid 
+intersections.
+ (keyword)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#fix"><H3>FIX</H3></A>
+Specifies that select grid
+intersections will be determined
+by positioning the cursor with
+trackball.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#retry"><H3>RETRY</H3></A>
+Resets "interloc" to allow grid
+ruling coordinates to be changed
+and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#go">GO</A> command to be 
+respecified.
+ (keyword)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#exit"><H3>EXIT</H3></A>
+Used to end a run of "interloc".
+ (keyword)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#test"><H3>TEST</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc_level2.html#test">TEST</A>=(l,s)
+Parameter for testing.
+Causes "interloc" to use (l,s)
+as the line and sample image
+coordinates instead of
+the current cursor position.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/interloc.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

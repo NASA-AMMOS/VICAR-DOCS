@@ -1,0 +1,108 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for SEBASSTE</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/sebasste.html">SEBASSTE</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+The input file should be a 128 band SEBASS file of radiance data (preferably
+ground radiance).  The units should be milliWatts per square meter per
+steradian par micrometer, which are the units output by the program SEBASSCAL.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+The first output will be the emissivity image.  It will be a 128 channel file
+of halfword data.  The pixels are scaled by a factor of 10,000.  That is, an
+emissivity of 1.0 is given the value 10000; an emissivity of 0.915 becomes
+9150, etc.
+The second output will be the kinetic temperature image.  It will be a single
+channel file of halfword data.  The pixels will be in units of degrees 
+Celsius scaled by a factor of 100.  That is, a temperature of 9.87 deg C
+is given the value 987; a temperature of -15.35 becomes -1535.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="size"><H3>SIZE</H3></A><pre>
+The standard VICAR output size field.   Default will calibrate
+the entire data set.
+	Example: SIZE = (1,1,200,128)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sl"><H3>SL</H3></A><pre>
+Starting line (same as SIZE(1)).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ss"><H3>SS</H3></A><pre>
+Starting sample (same as SIZE(2)).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nl"><H3>NL</H3></A><pre>
+Number of lines (same as SIZE(3)).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ns"><H3>NS</H3></A><pre>
+Number of samples (same as SIZE(4)).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="key"><H3>KEY</H3></A><pre>
+SEBASSTE calculates temperature and emissivity in the following manner: 
+First, the brightness temperature for each of the 128 channels of the pixel
+is calculated. These 128 temperatures are sorted from high to low and the
+channel of the KEY'th highest temperature is assigned an emissivity of the
+value of EMIS.  Using this emissivity, the kinetic temperature is calculated.
+Using this kinetic temperature, the emissivities of the remaining channels
+are calculated.
+     Therefore, KEY represents the number of channels that pierce the
+greybody curve envelope that is draped over the radiance spectrum. Noise
+free input should be run with KEY=1, and the value of KEY should be raised
+as the amount of overall noise or number of noisy channels increases.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="emis"><H3>EMIS</H3></A><pre>
+SEBASSTE calculates temperature and emissivity in the following manner: 
+First, the brightness temperature for each of the 128 channels of the pixel
+is calculated. These 128 temperatures are sorted from high to low and the
+channel of the KEY'th highest temperature is assigned an emissivity of the
+value of EMIS.  Using this emissivity, the kinetic temperature is calculated.
+Using this kinetic temperature, the emissivities of the remaining channels
+are calculated.
+     Therefore, EMIS represents the expected peak of the emissivity in the
+pixel's true (noise free) spectrum.  The output spectrum will in fact have
+KEY-1 spectral emissivities higher than EMIS, but these are regarded as
+high due to noise.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="date"><H3>DATE</H3></A><pre>
+This is the date the data were acquired, in the format yyyymmdd (e.g.
+19970922 for September 22, 1997).  It is used to determine which
+wavelength calibration to use.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

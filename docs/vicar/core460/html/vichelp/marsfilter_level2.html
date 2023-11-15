@@ -1,0 +1,314 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for MARSFILTER</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter.html">MARSFILTER</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+Input files contain the XYZ coordinates. If three filenames are given,
+they all should be single band files each containing X, Y and Z values
+in that order.  If only one filename is given, it should be a 3-band
+file with bands in (X,Y,Z) order.
+
+The input files are in REAL (float) format.
+
+If -NO_XYZ is given, then the input need not be an XYZ file, but can in
+fact be any image with PIG-compatible labels (from which a camera model
+can be derived).  The Volume filters are disabled, however.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+Output file containing the mask.
+
+The output file is in BYTE format, with 255 representing a point inside a
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#filter">filter</A> element, and 0 for points outside..
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="extra_filter"><H3>EXTRA_FILTER</H3></A><pre>
+Input XML file containing an extra <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#filter">filter</A>, typically one specific to this
+input file.  It is loaded in addition to the common <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#filter">filter</A> of the FILTER
+parameter, and the resulting masks are merged.
+
+This is used by MSL, where the extra <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#filter">filter</A> is a filter tailored to the
+specific image's kinematic state by the MSLFILTER program.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="filter"><H3>FILTER</H3></A><pre>
+Input XML file containing the common <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#filter">filter</A> description to use.
+
+If this parameter is not specified, an attempt is made to automatically find
+the file based on <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#config_path">CONFIG_PATH</A>.  See the main help text for a description of
+the algorithm.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="params"><H3>PARAMS</H3></A><pre>
+Numeric parameters for use with some filters.  For example, the optional
+"rotate" element of the volume shapes can add a value from <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#params">PARAMS</A> to the
+rotation angle.  Note that indexing of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#params">PARAMS</A> starts at 1 (0 meaning no
+value), so the first element of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#params">PARAMS</A> would correspond to add_angle="1" in
+the XML file.
+
+The use of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#params">PARAMS</A>, and the interpretation of each value, dependends on the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#filter">filter</A> in use.  The filter file should describe which, if any, parameters are
+used.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="horizon"><H3>HORIZON</H3></A><pre>
+Override for the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#horizon">horizon</A> mask elevation, in degrees.  The file must contain
+a &lthorizon&gt entry or this parameter will be ignored.  The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#horizon">horizon</A> mask can be
+effectively disabled by providing an elevation greater than 90.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="print"><H3>PRINT</H3></A><pre>
+This parameter causes all the filters to be printed to stdout (including
+the results of projecting polygons to image space).  It can be useful for
+debugging.  By default, this is off (which is a change as of 2012/03/22;
+before printing was always on).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="use_xyz"><H3>USE_XYZ</H3></A><pre>
+If -NO_XYZ is specified, then the input file need not be an XYZ image, but
+rather any image with a PIG-compatible label.  The capability to do Volume
+masks is turned off in this case.  This can be useful in situations where
+volume masks are not important (such as MSL) and it is desired to get a mask
+for a non-stereo image.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rmc"><H3>RMC</H3></A><pre>
+Specifies whether or not to enable <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#rmc">RMC</A> checking in the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#filter">filter</A> mask file.
+Checking is on by default.  If -NO_RMC is on, checking is disabled, as if
+there were no rmcX attributes in the mask file.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="config_path"><H3>CONFIG_PATH</H3></A><pre>
+A colon-separated list of directories in which to look for configuration
+and calibration files.  Environment variables are allowed in the list
+(and may themselves contain colon-separated lists).  The directories are
+searched in order for each config/cal file when it is loaded.  This allows
+multiple projects to be supported simultaneously, and allows the user to
+override any given config/cal file.  Note that the directory structure below
+the directories specified in this path must match what the project expects.
+For example, Mars 98 expects flat fields to be in a subdirectory named
+"flat_fields" while Mars Pathfinder expects them to be directly in the
+directory specified by the path (i.e. no intermediate subdirectories).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="point_method"><H3>POINT_METHOD</H3></A><pre>
+Specifies a mission-specific pointing method to use.  Normally this
+parameter is not used, in which case the "default" pointing methods
+are used.  Some missions may have special, or alternate, pointing
+methods available, which are indicated by this string (for example,
+backlash models, using arm joint angles instead of x/y/z/az/el, etc).
+A substring search is used, so multiple methods (where that makes sense)
+can be specified by separating the keywords with commas.
+
+Note that nav files created using one pointing method will most likely
+not be compatible with a mosaic created using a different pointing method.
+
+The methods available vary per mission, but some methods available at
+the time of this writing are:
+
+BACKLASH : Mars 98 SSI only.  Selects a backlash pointing model,
+which adjusts the telemetered azimuth and elevation values based on
+knowledge of the camera's mechanical backlash and the direction the
+motor was travelling when the image was taken.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nosite"><H3>NOSITE</H3></A><pre>
+Disables all label-derived parameters to the Site mechanism which underlies
+coordinate systems.  This forces all sites to be identical, with all rotations
+and offsets set the same.  In the case of MPF or Mars 98, this disables
+the lander quaternion and offset (sets them to identity and 0, respectively).
+This option should not be used with images taken from different vantage
+points (e.g. the spacecraft moved, or mixing a lander and a rover) or
+invalid results will be obtained.  The use of this option invalidates the
+Fixed coordinate frame; any values reported in the Fixed frame will not
+correctly reflect the orientation of the lander/rover.
+
+Obviously, this option should be rarely used; it is intended for when the
+image labels defining the site are invalid or inconsistent.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rsf"><H3>RSF</H3></A><pre>
+Rover State File.  This is a list of filenames to load containing
+Rover State information.  These files contain position and orientation
+information for a rover (or other mobile spacecraft) at various sites.
+They are in XML format.  See the "Rover Motion Counter (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#rmc">RMC</A>) Master File SIS"
+for details on these files.
+
+Rover State Files have a priority order.  The files listed first have
+the highest priority.
+
+Environment variables may be used in the list.
+
+For MER, if a directory is specified, then that directory is searched for
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#rmc">RMC</A> Master files and any found are loaded.  The directory structure and
+filename convention is covered in the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#rmc">RMC</A> SIS.  The directory specified
+is the one containing "master", so if &ltdir&gt is the name specified in the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#rsf">RSF</A> parameter, the following files will be searched for:
+
+&ltdir&gt/master/<mission>_Master.svf
+&ltdir&gt/master/<mission>_Site_<n>_Master.rvf
+
+The name of each file loaded is printed to the stdout log for reference.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="debug_rsf"><H3>DEBUG_RSF</H3></A><pre>
+If enabled, this causes the internal database of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#rmc">RMC</A> locations to be
+printed <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#out">out</A> to the stdout log.  This is after the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#rsf">RSF</A> files have been
+loaded and the coordinate systems read from the input label(s).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord"><H3>COORD</H3></A><pre>
+The coordinate system to use for the output UVW vectors.  The interpretation
+of the values is dependent on the mission.  Some representative missions are
+listed here:
+
+Fixed - The Fixed frame.  This is the ultimate reference frame
+    (see also <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#fixed_site">FIXED_SITE</A> for rover missions).
+Instrument - (default) The "natural" frame for the instrument 
+    (of the first input image).  MPF: Lander or Rover; M98: MVACS; MER: Rover.
+Site - A major Site frame.  For rover missions, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#coord_index">COORD_INDEX</A> specifies which
+    Site frame to use.  Non-rover missions treat this as Fixed.
+Rover - An instance of the Rover frame.  For rover missions, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#coord_index">COORD_INDEX</A>
+    specifies which instance of the rover frame to use.  Non-rover mission
+    use the spacecraft frame (e.g. Lander for M98).
+Local_Level - An instance of a Local Level frame.  This is typically
+    coincident with the Rover frame (in XYZ) but oriented toward North
+    like the Site and Fixed frames.  For MER, this is an instance of a
+    Drive index move.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord_index"><H3>COORD_INDEX</H3></A><pre>
+The index specifies which instance of a coordinate system to use.  It is
+currently applicable only to rover-based missions, but could have other
+uses.  The index is equivalent to the Rover Motion Counter (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#rmc">RMC</A>) for MER
+and FIDO.
+
+For MER/FIDO, there are many Site frames.  Each is numbered with a single
+index.  For Site Frames, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#coord_index">coord_index</A> specifies which to use.  Likewise,
+there are many Local_Level and Rover frames, corresponding to values of
+the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#rmc">RMC</A>.  The multiple instances of this frame are selected by <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#coord_index">COORD_INDEX</A>.
+
+Generally <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#coord_index">COORD_INDEX</A> defaults sensibly so you don't usually need to
+specify it.  It will default to the instance used by the first input.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="fixed_site"><H3>FIXED_SITE</H3></A><pre>
+Specifies which major Site is the "Fixed" Site for this run.
+
+Historically, MPF and M98 had a single "Surface Fixed" frame which never
+moved, and which all other coordinate system frames were referenced to.
+With the advent of long-range rovers (such as MER and FIDO), that became
+insufficient.  The rover traverses far enough that errors in knowledge of
+coordinate system offset and orientation become unacceptable.
+
+For this reason, a system of major Sites was introduced.  Periodically
+during the mission, a Site frame is declared.  This then becomes the
+reference frame for all activities until the next Site is declared.
+References are kept local, and errors don't propogate across Sites.
+
+However, if images from more than one Site are combined together, the
+Site's must be placed relative to each other.  Therefore a single reference
+frame is still needed to combine different sites.
+
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#fixed_site">FIXED_SITE</A> parameter controls which of the major Site frames is
+the reference ("fixed") site for this program run.  This fixed frame
+can vary in different program runs, but is constant throughout one
+execution.
+
+If not specified, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#fixed_site">FIXED_SITE</A> defaults to the minimum Site number (i.e.
+lowest numbered, or earliest chronologically) used in all input images.
+Normally this default is sufficient; rarely must <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#fixed_site">FIXED_SITE</A> be specified.
+
+One or more Rover State Files must usually be specified in order to combine
+image from more than one Site.  These describe the relationship between
+sites.  See the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#rsf">RSF</A> parameter.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="solution_id"><H3>SOLUTION_ID</H3></A><pre>
+Specifies which solution ID to use when specifying the coordinate system.
+
+There are potentially many different definitions for the same coordinate
+system.  These are identified via a unique Solution ID.  If this parameter
+is given, only the specified solution's definition is searched for.  Without
+it, the "best" available solution is chosen.
+
+It is extremely rare that this parameter should be needed.  The default
+will be sufficient in almost every case.
+
+Note that the current MER implementation requires that a value for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsfilter_level2.html#coord_index">COORD_INDEX</A>
+also be provided, in order for this parameter to take effect.
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

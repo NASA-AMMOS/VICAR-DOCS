@@ -1,0 +1,137 @@
+<HTML>
+<HEAD><title>HTML Help for IBISLSQ9</title></HEAD>
+<BODY>
+<H1>Help for IBISLSQ9</H1>
+<pre>
+PURPOSE
+
+   "ibislsq9" performs least squares fits on data in an IBIS interface
+(tabular) file.  The solutions and/or residuals can be placed in 
+specified columns of the file.  The solutions can also be output
+to the terminal.  Multiple fits can be done on different parts of
+one file.  A threshold can also be specified so that the program
+will repeatedly perform least sqares fitting while throwing <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#out">out</A>
+outliers until all the residuals are under the defined  threshold.  
+It first performs a "global" least squares fitting by using all
+a grouped dataset.  (Datasets are grouped by the values in <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#concol">CONCOL</A>.)
+For all datapoints that have residuals greater than the threshold,
+it will obtain 10% of the closest datapoints and perform a "local"
+least squares fitting.  If the local residual is still greater than
+the threshold then the datapoint is thrown away.  If not, it is
+kept.
+
+If more than 1 dependent column is specified, the outlier will
+be determined by the distance function
+
+    "sqrt(residual(x1)^2 + residual(x2)^2 + ... + residual(xn)^2)"
+
+EXECUTION
+
+     ibislsq9 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#inp">INP</A>=DATA.INT <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#out">OUT</A>=DATAOUT <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#indcol">INDCOL</A>=(1,2,3) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#depcol">DEPCOL</A>=4
+             <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#concol">CONCOL</A>=7 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#rescol">RESCOL</A>=8  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#coeffcol">COEFFCOL</A>=(21,22,23) DEPCOL2=5
+             RESCOL2=8 COEFFCOL2=(24,25,26) '<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#noprint">NOPRINT</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#thresh">THRESH</A>=2.0
+
+     ibislsq9 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#inp">INP</A>=DATA.INT <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#out">OUT</A>=DATAOUT <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#indcol">INDCOL</A>=(1,2,3)                <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#depcol">DEPCOL</A>=(4, 5) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#concol">CONCOL</A>=7 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#rescol">RESCOL</A>=(8, 9)                <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#coeffcol">COEFFCOL</A>=(21, 22, 23, 24, 25, 26) '<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#noprint">NOPRINT</A>                <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#thresh">THRESH</A>=2.0
+
+
+    This example shows the use of all of the parameters.  The input
+file, DATA.INT, is an IBIS interface file and the output file
+is also an IBIS interface file.  The data for the independent
+variables are in columns (1,2,3), and the data for the dependent 
+variables are in column 4 and 5.  The control column 7 is used for
+multiple fits to be done in one run.  The data points are grouped by
+their control numbers and least square fits are performed by each
+control grouped points.  The control numbers DO NOT need to be
+grouped together... meaning you can have control number 1.0 then 2.0
+then 1.0 and it will still group all the 1.0s together.  If no control
+column is specified then one fit is done on the whole file.  
+
+    The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#coeffcol">COEFFCOL</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#rescol">RESCOL</A> parameters specify in which columns,
+of the input file, the results will be put.  If either
+or both are not specified then they will not be output.  There must be
+as many coefficient columns as there are independent columns and these
+match the sequence of the independent variable columns.  In the
+example above, coefficient columns 21, 22, and 23 correspond to
+dependent dataset in column 4 and coefficient columns 24, 25, and 
+26 correspond to dependent dataset in column 5.  The residual column
+can be used to easily calculate the deviation of the data points from
+the fitted line. Normally the solution for each set is printed to the 
+terminal, but this can be turned off with the '<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#noprint">NOPRINT</A> keyword.  
+
+    The length of each set should, of course, be longer than the
+number of independent variables (columns).  If it is not then the
+least squares fit will not be called and values of -999.0 will be
+put <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#out">out</A> for the solution.  If some columns of the independent data
+are dependent then the error MATRIX RANK TOO SMALL be be printed,
+and -999.0's will be put <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#out">out</A> for the solution.  If there is no
+solution then zeros will be put <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#out">out</A> for the residuals.
+
+<A NAME="examples">EXAMPLES</A>
+
+   Suppose that columns 1 and 2 contain points (x,y) in a plane 
+   and  column  7 contains a function  f(x,y).   The  following 
+   sequence  will perform a quadratic least squares fit  h(x,y) 
+   and place the residuals in column 8.
+
+   mf <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#inp">INP</A>=A FUNCTION=("C3=C1*C1","C4=C2*C2","C5=C1*C2","C6=1")
+   ibislsq9 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#out">OUT</A>=B <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#indcol">INDCOL</A>=(1,2,3,4,5,6) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#depcol">DEPCOL</A>=7 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#rescol">RESCOL</A>=8
+
+   Suppose that you want the program to throw <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#out">out</A> outliers
+   that have a global and local residual of above 2.0:
+
+   ibislsq9 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#out">OUT</A>=B <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#indcol">INDCOL</A>=(1,2,3,4,5,6) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#depcol">DEPCOL</A>=7 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#rescol">RESCOL</A>=8
+      <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#thresh">THRESH</A>=2.0
+
+   Suppose now that columns 1, 2, and 3 represent the independent
+   variables, columns 4 and 5 represent x' and y' respectively,
+   column 7 represents the control column, 8 and 9 represents
+   the residual columns for x' and y' respectively, columns 10,
+   11, 12 represents the coefficients to the solution to x',
+   and columns 16, 17, 18 represents the coefficients to
+   y'.  Suppose also that we would like the solution to have the
+   maximum residual for any data point to be below 2.0 and
+   we want to not print the solution to the screen.  The
+   following command performs this task:
+
+   ibislsq9 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#inp">inp</A>=a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#out">out</A>=b <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#indcol">indcol</A>=(1,2,3) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#depcol">depcol</A>=(4,5)        colcol=7 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#rescol">rescol</A>=(8,9) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#coeffcol">coeffcol</A>=(10,11,12,16,17,18)        <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#thresh">thresh</A>=2.0 '<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#noprint">NOPRINT</A>
+
+RESTRICTIONS
+
+The maximum number of independent columns (variables) is 20.
+
+Original Programmers: P. Kim, A. L. Zobrist 24 Nov 2008
+<A NAME="CogProg">Current Cognizant Programmer: P. Kim, 24 Nov 2008</A>
+
+REVISIONS
+2022-08-10 B. Crocco afids to opensource (untested)
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#inps"><H3>INPS</H3></A>
+ Input IBIS interface file
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#out"><H3>OUT</H3></A>
+ Output IBIS interface file
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#indcol"><H3>INDCOL</H3></A>
+ Independent variable columns
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#depcol"><H3>DEPCOL</H3></A>
+ Dependent variable column
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#coeffcol"><H3>COEFFCOL</H3></A>
+ Optional columns to place
+ coefficients of the solution
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#rescol"><H3>RESCOL</H3></A>
+ Residuals column
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#concol"><H3>CONCOL</H3></A>
+ Control column
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#wghtcol"><H3>WGHTCOL</H3></A>
+ Weight column
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#noprint"><H3>NOPRINT</H3></A>
+ Keyword to suppress printout
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9_level2.html#thresh"><H3>THRESH</H3></A>
+ Threshold value for maximum
+ residual value.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibislsq9.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

@@ -1,0 +1,238 @@
+<HTML>
+<HEAD><title>HTML Help for AUTOMATCH</title></HEAD>
+<BODY>
+<H1>Help for AUTOMATCH</H1>
+<pre>
+PURPOSE
+  AUTOMATCH is a program which automatically acquires tiepoints from
+sets of images for the purpose of producing mosaics.
+To obtain a more global view of the entire mosaicking process
+you should look at the procedures in r3lib called:
+MANUAL2.COM for Voyager, and MANUAL4.COM for Galileo. 
+AUTOMATCH replaces MANMATCH in these procedures.
+
+  Automatch is designed to generate tiepoints from sets of images which 
+have been generated in a "burst" of frames where the scale & rotation
+do not differ much between images. Provision is built into 
+the program to compensate for differences between images by projecting
+the correlation areas before correlation. This is limited however
+to scale ranges of at most 2:1 and modest rotations which will
+not confuse the overlap area algorithm. Automatch will NOT
+work well on cases containing the limb.
+
+EXECUTION
+
+For VGR:
+   AUTOMATCH  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#inp">inp</A>=(<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#sedr">sedr</A>.int,over.int,geoma.cor)  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#out">out</A>=match.int                     <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#project">project</A>=VGR-1 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#filename">filename</A>=LISTOFFILES
+
+For GLL:
+   automatch <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#inp">inp</A>=(jupsedr.int,jupover.int) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#out">out</A>=jupmatch.int           <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#filename">filename</A>=LISTOFFILES <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#project">project</A>=GLL
+
+USAGE:
+AUTOMATCH is an batch program which has in the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#sedr">SEDR</A>.INT file
+the FDS or SCET times of all of the frames to inspect along
+with all the navigation for these images.. 
+You must create this file using the program IBISNAV
+
+AUTOMATCH can obtain the names (and thus the locations) of all the
+input files in one of two ways:
+
+(recommended)
+1. By the user specifying the parameter <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#filename">FILENAME</A> which points to
+   a file created by a text editor and which contains the full
+   file names of each input picture in the order of priority, one
+   name per record. This is the same file used in IBISNAV.
+   So, if the first 2 pictures are called scx1:[jjl059]1234567.img
+   and mipldisk:[mipl.gll]venus.img the first two records of
+   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#filename">FILENAME</A> would contain:
+
+   scx1:[jjl059]1234567.img
+   mipldisk:[mipl.gll]venus.img
+
+(obsolete)
+2. By building each file name by appending to the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#dir">DIR</A> keyword
+   the integer contained in column 1 of the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#sedr">SEDR</A>.INT file followed
+   by .IMG. You must in this mode name the input pictures
+   accordingly. 
+   For Voyager, column 1 is the FDS times thus the frames must be
+   named the same as their FDS times; ie: 7654321.img is the file
+   name of the image with fds time 7654321. 
+   For Galileo the FDS times are just 1,2,3,4.. so the file names are
+   1.img   2.img etc.
+   So, if <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#dir">DIR</A>=scx1:[jjl059] and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#sedr">SEDR</A>.INT has fds time 1234567 in column
+   one then the built-up name would be:  scx1:[jjl059]1234567.img
+
+The second input file 
+contains the overlap frame pairs to present to the user.
+This file is created by program MOSPLOT.
+
+First input= <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#sedr">SEDR</A>.INT produced by program IBISNAV
+Second input= OVER.INT produced by program MOSPLOT
+
+Automatch will perform the following steps:
+
+For each overlap pair:
+1. Compute the overlap area in the right image by projecting the
+   4 corners of the left image into the right image using the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#sedr">SEDR</A>.
+2. Select the correlation size to fit in the overlap area.
+3. Select a row or column (whichever is the longest) through the
+   overlap area and select a number of candidate tiepoint locations
+   in the right image.
+4. Compute the corresponding tiepoint positions in the left image
+   using the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#sedr">SEDR</A>.
+5. Perform correlations.
+6. Fit a 1st order polynomial to the tiepoints.
+7. Iteratively reject all points (one at a time) exceeding a threshold
+   pixel tolerance.
+8. Select the 2 remaining points the furthest apart.
+9. Place these in the output.
+
+NOTE: 
+
+The output file is the same as the file written by MANMATCH. So
+if AUTOMATCH cannot process a certain number of overlap pairs you
+can input the AUTOMATCH output into MANMATCH as the last input file
+and go to the pairs in question to acquire points manually.
+
+Be sure to inspect footprint plots of your mosaic generated by
+MOSPLOT and to edit the overlap file with EDIBIS to delete 
+extraneous & redundant overlaps to save time and later confusion.
+
+At the moment automatch can accept up to 256 image pairs.
+
+FILE STRUCTURE:
+  The tiepoints file is an IBIS format tabular file. It consists
+of 512 byte records where each column of data is written as
+sequential records until exhausted. The next column begins at the
+start of the next record etc. Record #1 contains the number of points
+per column. All data is real*4 binary.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#inp"><H3>INP</H3></A>
+All inputs are IBIS tabular files.
+
+First input= <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#sedr">SEDR</A>.INT produced
+ by program IBISNAV
+Second input= OVER.INT produced
+ by program MOSPLOT
+Third input=geoma parameters
+(optional).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#out"><H3>OUT</H3></A>
+The output IBIS tabular file.
+nine columns output:
+col1=first frame number of a pair
+col2=second frame number of a pair
+col3=first frame tiepoint line
+col4=first frame tiepoint sample
+col5=second frame tiepoint line
+col6=second frame tiepoint sample
+col7=1
+col8=1
+col9=1
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#project"><H3>PROJECT</H3></A>
+Batch parameter !
+Specifies  the 
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#project">project</A>. 
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#camera"><H3>CAMERA</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#camera">Camera</A> serial no.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#object"><H3>OBJECT</H3></A>
+Causes images to be 
+considered geometrically
+corrected.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#pfilter"><H3>PFILTER</H3></A>
+The power of the FFT high pass
+power law filter. Default 
+is no power filter.
+default is: <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#pfilter">pfilter</A>=0.0 real
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#phase"><H3>PHASE</H3></A>
+Degree of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#phase">phase</A> correlation:
+0 for normal correlation. ( Default ).
+1 for <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#phase">phase</A> correlation
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#offmax"><H3>OFFMAX</H3></A>
+How far off center, correlation
+peak is allowed (0 to 1). 
+If the peak is more than
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#offmax">OFFMAX</A>*window/2 pixels from 
+the center it is rejected.
+Default is 0.8
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#func"><H3>FUNC</H3></A>
+Pixel function before 
+correlation is performed..
+The options are: LOG or EXP.
+DEfault is no funtion performed.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#redo"><H3>REDO</H3></A>
+Keyword for redo mode. 
+Valid responses are:
+REDO or NOREDO. 
+The default is REDO.
+Redo specifies that if 
+the first correlation for
+an area has an offset of 
+less than the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#offmax">OFFMAX</A> limit
+but greater than zero 
+the correlation is rerun
+beginning at the new location.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#ntpts"><H3>NTPTS</H3></A>
+The number of 
+tiepoints to collect
+per pair.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#toleranc"><H3>TOLERANC</H3></A>
+The largest
+permitted tiepoint
+residual.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#print"><H3>PRINT</H3></A>
+'NOPRINT to turn off 
+terminal output
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#dir"><H3>DIR</H3></A>
+Specifies the directory 
+name where all the 
+input files for the
+mosaic reside.
+(obsolete)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#filename"><H3>FILENAME</H3></A>
+Specifies a file name 
+which contains the 
+names of all the
+images to be included 
+in the mosaic
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#noprint"><H3>NOPRINT</H3></A>
+To suppress printout 
+about each tiepoint 
+displayed at the terminal
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#corr"><H3>CORR</H3></A>
+Specifies the correlation size.
+Is not supported now.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch_level2.html#subpix"><H3>SUBPIX</H3></A>
+Specifies sub-pixel correlation.
+Not tested or supported.
+
+!NOSEDR option currently not supported for testing.
+!.VARIABLE NOSEDR
+!Limits reading of the 
+!navigation file.
+!Is not supported now.
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/automatch.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

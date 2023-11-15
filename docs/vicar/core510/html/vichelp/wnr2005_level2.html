@@ -1,0 +1,120 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for WNR2005</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/wnr2005.html">WNR2005</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+The input files to WIENER are:
+
+1. The fourier transform of the image to be restored, in the format
+  produced by programs FFT22 or FT2 or FFT2005.
+
+2. The optical transfer function (OTF) of the degraded image, i.e.,
+  the fourier transform of the point spread function (PSF).  This may
+  be obtained using program PSF.
+
+3. Optionally, the fourier transform of the desired output point
+  spread function.  Normally one desires a delta function for this,
+  and this input is not specified.
+
+4. Optionally, a real input image of S/N can be given as the last input.
+  It is then used in place of the S/N constant input on a per pixel basis.
+  The number of inputs can be from two to four.  If this input is given,
+  then the keyword '<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/wnr2005_level2.html#snrimg">SNRIMG</A> must be used.
+  
+All input files must be of COMPLEX (except NSR real) format and of the
+same size.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+The output file is the restored fourier transform.  The corresponding
+image may be produced using program FFT2 or FFT2005 in inverse mode.
+
+The output file will be of the same size as the input.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sn"><H3>SN</H3></A><pre>
+This parameter specified the signal-to-noise ratio to be used in the
+restoration. Noisy images should have values like 5. Clean images
+should have values like 30.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="option"><H3>OPTION</H3></A><pre>
+The program options:
+ VALID=("direct","wiener","ratio","amplitude")  DEFAULT="wiener"
+
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/wnr2005_level2.html#option">option</A>=wiener (the default)
+WIENER applies the Wiener noise additive restoration model on a point
+by point basis:
+ 
+        <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/wnr2005_level2.html#out">OUT</A>(i,j) = IN(i,j) * W(i,j)
+ 
+                        OTF"(i,j)
+        W(i,j) = -----------------------
+                 |OTF(i,j)|**2 + 1/<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/wnr2005_level2.html#sn">SN</A>**2
+ 
+        OTF is normalized by dividing by the dc term.
+ 
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/wnr2005_level2.html#option">option</A>=direct
+Wiener applies the OTF directly to the input:
+ 
+        <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/wnr2005_level2.html#out">OUT</A>(i,j)= IN(i,j) * OTF(i,j)
+ 
+        OTF is normalized by dividing by the dc term.
+ 
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/wnr2005_level2.html#option">option</A>=ratio
+Wiener constructs a transfer function from both inputs:
+In this mode OTF is a focused image and IN is a blurred image.
+ 
+                        X"(i,j)
+        <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/wnr2005_level2.html#out">OUT</A>(i,j) = -----------------------
+                   |X(i,j)|**2 + 1/<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/wnr2005_level2.html#sn">SN</A>**2
+ 
+        X(i,j)= IN(i,j)/OTF(i,j)
+ 
+        IN and OTF are normalized by their dc terms
+ 
+        Notice that no corrected image is produced. What you get is the
+        fft of the restoring kernel. You may load a small piece into FILTER
+        to restore the original image. If you use all of it you'll just
+        reproduce OTF.
+ 
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/wnr2005_level2.html#option">option</A>=amplitude
+Wiener constructs a transfer function from both inputs:
+In this mode OTF is a focused image and IN is a blurred image.
+ 
+        <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/wnr2005_level2.html#out">OUT</A>(i,j)= IN(i,j) * W(i,j)
+ 
+                        X(i,j)
+        W(i,j) = -----------------------
+                 |X(i,j)|**2 + 1/<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/wnr2005_level2.html#sn">SN</A>**2
+ 
+        X(i,j)= | IN(i,j) | / | OTF(i,j) +.00001 |
+ 
+        IN and OTF are normalized by their dc terms.
+ 
+        Notice that W is real and symmetric so the convolving kernel will
+        also be symmetric. This function cannot correct for phase.
+ 
+where IN and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/wnr2005_level2.html#out">OUT</A> are the fourier transforms before and after restoration
+respectively, W is the Wiener filter, OTF is the optical transfer function
+(the fourier transform of the point spread function), OTF" is the complex
+conjugate of OTF, and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/wnr2005_level2.html#sn">SN</A> is the signal-to-noise ratio.
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

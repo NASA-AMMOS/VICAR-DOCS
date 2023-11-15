@@ -1,0 +1,142 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for MASTEREMIS</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/masteremis.html">MASTEREMIS</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+The first input dataset shall contain the upwelling radiance at surface data 
+for the ten MASTER TIR channels (Channels 41 to 50), in units of Watts 
+per sqare meter per steradian per micrometer.  Normally, this is the output 
+dataset from MASTERTIR. 
+
+The second file should be the MASTER TIR temperature to radiance lookup 
+table for the spectral response calibration that is in effect for the date
+of data acquisition.  These files are typically located in the directory 
+
+          $V2TOP/luts
+
+and have names of the form
+
+         lut.master.rad.YEAR.MON
+
+The third file should be the MASTER TIR radiance to temperature lookup 
+table for the spectral response calibration that is in effect for the date
+of data acquisition.  These files are typically located in the directory 
+
+          $V2TOP/luts
+
+and have names of the form
+
+         lut.master.temp.YEAR.MON
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+     The first output dataset is a halfword image of all ten bands of MASTER
+TIR emittance data, scaled such that an emittance of 1.0 is 10,000 DN.
+     The second output dataset is a halfword temperature image, where each DN
+corresponds to 0.01 degree Celsius. 0 DN corresponds to 0 degrees C.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="size"><H3>SIZE</H3></A><pre>
+The standard VICAR2 output size field.   Default will calibrate
+the entire data set.
+	Example: SIZE = (1,1,200,500)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sl"><H3>SL</H3></A><pre>
+Starting line (same as SIZE(1)).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ss"><H3>SS</H3></A><pre>
+Starting sample (same as SIZE(2)).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nl"><H3>NL</H3></A><pre>
+Number of lines (same as SIZE(3)).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ns"><H3>NS</H3></A><pre>
+Number of samples (same as SIZE(4)).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="refchan"><H3>REFCHAN</H3></A><pre>
+In the REFCHAN mode, this is the channel which is set to the value given
+by the parameter EMIS.  In the BBFIT mode, this parameter is ignored. The
+user may specify either the MASTER channel number (41 through 50), or the
+input file band number (1 through 10).
+		Example: REFCHAN = 5
+                     or, REFCHAN = 45
+(both have the same result.)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="fitchan"><H3>FITCHAN</H3></A><pre>
+In the BBFIT or 8CHANFIT mode, the Nth highest evissivity is assigned the 
+value given by the parameter EMIS.  The FITCHAN parameter defines N.  That
+is, for the default (FITCHAN=1), the highest emissivity is assigned the value
+of EMIS.  If FITCHAN were set to 3, then the third highest emissivity would 
+be set to EMIS.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="emis"><H3>EMIS</H3></A><pre>
+     In the REFCHAN mode, the spectral emittance of the reference channel is
+set to a constant value, given by this parameter.
+     In the BBFIT or 8CHANFIT mode, spectral emittances are computed so that 
+the maximum of the emittance values is equal to the value of EMIS.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mode"><H3>MODE</H3></A><pre>
+    Three algorithms (MODEs) have presently been implemented. The first method,
+called REFCHAN, sets a specified reference channel to a specified constant
+emittance value. The default sets Channel 50 to 0.95. The temperature is 
+computed based upon the radiance and given emittance of the reference channel,
+then the other nine spectral emittances are computed, using this temperature.
+    The second method, called BBFIT, assumes that the highest spectral
+emittance is at a user-specified level (default = 0.95). It then computes the
+highest temperature consistent with this assumption, and the ten spectral
+emittances that are consistent with the computed temperature.
+    The third method, called 8CHANFIT, is the same as BBFIT, except that
+Bands 41 and 50 are not used when searching for the channel to set to the
+specified emittance.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="org"><H3>ORG</H3></A><pre>
+ORG specifies the organizational format of the first (emissivity) output 
+dataset. BIL (the default) and BSQ are supported.  
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

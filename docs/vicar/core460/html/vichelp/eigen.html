@@ -1,0 +1,148 @@
+<HTML>
+<HEAD><title>HTML Help for EIGEN</title></HEAD>
+<BODY>
+<H1>Help for EIGEN</H1>
+<pre>
+PURPOSE:
+        EIGEN will compute the principal component (aka the eigenvector or
+Karhunen-Loeve) transformation <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#matrix">matrix</A> of up to 300 input channels.
+The covariance (and, optionally, correlation) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#matrix">matrix</A>, the transformation
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#matrix">matrix</A> of eigen-vectors, and the eigen-values are printed, unless the user
+requests otherwise.  If an output is provided, the principal component 
+transformation is applied to the input image.
+
+THEORY:
+
+        The measure of inter-dimensional correlation in the multi-variate
+system is usually defined by the covariance <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#matrix">matrix</A> of the multi-variate
+data.  The linear transformation that diagonalizes the covariance <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#matrix">matrix</A>
+can also be applied to the original data and produce a multi-variate
+system with an inter-dimensional correlation of zero, i.e.; completely
+uncorrelated multi-variate data.  The linear transformation that
+accomplishes this is the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#matrix">matrix</A> of eigen-vectors or characteristic vectors.
+
+        A common application of this transformation is to reduce the
+dimensionality of a multi-variate system.  The objective is to summarize
+most of the variance, or information content, in a system with a
+lessor number of 'artificial' variates, i.e.; principal components.
+Effectively, by uncorrelating the system, we are compressing most of the
+information into a system with lower dimensionality.
+
+        Assume an n-variate system ( n channels of data ).  Let K be the
+n x n covariance <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#matrix">matrix</A> of this data and A be the matrix of eigen-vectors
+of K.  Associated with each eigen-vector A(j) there is an eigen-value or
+characteristic root, e(j).
+
+        Let A(j) = (a(1j),a(2j),...,a(nj)) be the eigen-vector corresponding
+        to the jth largest eigen-value.
+
+        Let X = (x(1),x(2),...,x(n)) be the n-variate observation
+        ( n-dimensional pixel ).
+
+        Then the jth principal component is: v(j) = A(j)  X = a(ij)x(i)
+
+NOTE:  The jth eigen-value is actually the variance in the jth
+principal component dimension.  Therefore, the eigen-values are useful
+as a measure the information content that can be expected in the output
+pictures.
+
+OPERATION:
+
+The input image is first statistically sampled, using the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#inc">INC</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#area">AREA</A>, 
+parameters to select the sampling grid and region(s) of interest. The
+user may choose to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#exclude">exclude</A> all pixels that have a specified (by the 
+parameter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#exclude">EXCLUDE</A>) value in all input channels.  The channel by channel 
+means and variances are computed, as well as the interchannel covariance 
+(optionally, correlation) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#matrix">matrix</A>.
+
+From the calculated <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#matrix">matrix</A>, the related eigenvalues and eigenvectors are
+computed. The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#matrix">matrix</A> of these eigenvectors is often called the principal
+component rotation <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#matrix">matrix</A>.
+
+A "stretching vector" (or Normalization vector) is formed by taking the
+reciprocal of the square root of each element of the eigenvalue vector,
+and multiplying it by the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#sigma">SIGMA</A> parameter. This has the effect of 
+rescaling the output pixels in such a way that the standard deviation
+of each output channel is equal to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#sigma">SIGMA</A>.
+
+Next, an offset value is computed for each output component. The offset
+is seleceted to force the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#mean">mean</A> pixel value in each output channel to be
+equal to the target value specified by the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#mean">MEAN</A> parameter.
+
+Finally, if an output dataset has been provided, this transformation is
+applied to the input dataset, and written to the output dataset.
+
+The user may select a subset of the input bands to process, by using the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#usebands">USEBANDS</A> parameter.  Similarly, the user may save or use a subset of the
+principal components, by using the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#output_pcs">OUTPUT_PCS</A> parameter.
+
+WRTTEN BY:   John Addington
+             Ron Alley
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER: Ron Alley</A>
+
+REVISION:        8 December  2003    REA   Rewritten, adapted from
+                                           DESTRETCH, XFORM, and EIGENVEC
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#inp"><H3>INP</H3></A>
+input dataset
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#out"><H3>OUT</H3></A>
+(Optional) output dataset
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#size"><H3>SIZE</H3></A>
+The standard Vicar <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#size">size</A>
+ field (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#ns">ns</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#sl"><H3>SL</H3></A>
+Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#ss"><H3>SS</H3></A>
+Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#nl"><H3>NL</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#ns"><H3>NS</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#matrix"><H3>MATRIX</H3></A>
+Use correlation or
+covariance statistics?
+(Valid: CORR, COV)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#inc"><H3>INC</H3></A>
+Compute statistics from every
+nth line and nth sample
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#usebands"><H3>USEBANDS</H3></A>
+Use only these bands in the
+calculation. (Default is to
+use all bands.)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#output_pcs"><H3>OUTPUT_PCS</H3></A>
+Restrict the output to the
+following principal components.
+(Default is to output all
+components.)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#area"><H3>AREA</H3></A>
+The subareas to be used to
+compute statistics. Up to 50
+regions (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#ns">NS</A>) may be
+entered. Default is to use
+the entire image.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#mean"><H3>MEAN</H3></A>
+Desired image <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#mean">mean</A> for each
+output channel.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#sigma"><H3>SIGMA</H3></A>
+Desired image standard deviation
+for each output channel.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#exclude"><H3>EXCLUDE</H3></A>
+Pixels with this DN in all
+bands will be excluded from
+all computations.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#print"><H3>PRINT</H3></A>
+Determines the detail of the
+printed information output
+(Valid: ALL, SUMMARY, NOPRINT)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#xform_parms"><H3>XFORM_PARMS</H3></A>
+The name for the parameter
+dataset to hold the
+transformation <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen_level2.html#matrix">matrix</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/eigen.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

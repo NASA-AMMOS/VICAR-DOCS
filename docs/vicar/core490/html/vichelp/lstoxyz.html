@@ -1,0 +1,149 @@
+<HTML>
+<HEAD><title>HTML Help for LSTOXYZ</title></HEAD>
+<BODY>
+<H1>Help for LSTOXYZ</H1>
+<pre>
+Converts the tiepoint locations stored in a Mark file and written by
+program TRACKER either to:
+
+ X,Y,Z,Error   coordinates in the planet reference frame
+or
+ Lat,Long,Range-radius,error   coordinates on the planet
+
+and writes them into another Mark file. The Mark file can be converted
+into a topomap by program TOTOPO.
+
+This program does ranging on two flight project images with 
+high quality navigation and generates <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/lstoxyz_level2.html#xyz">XYZ</A> coordinates in Km.
+in the planet reference frame. It is a member of the MIPL
+stereo program suite.
+
+If you have no camera models or spice pointing you can use TOPOMAP
+instead to generate relative topography.
+
+Example:
+       LSTOXYZ left,right,points <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/lstoxyz_level2.html#out">out</A> parameters
+
+  where: 
+         LEFT is the first input image. This is the first input image
+              to program TRACKER. In this case it must be a map projected
+              image.
+         RIGHT is the second input image. This is the second input image
+              to program TRACKER. The second input must also be a map
+              projection preferably the identical projection as the first
+              input image (non-identical projections are OK except that
+              TRACKER will work better if they are identical).
+         POINTS is a MARK file containing the tiepoints written by
+              program tracker.
+              Mark files contain 512 byte records of real*4 data.
+              Coordinates are stored in groups of 4 words in the
+              order left_line,left_sample,right_line,right_sample...
+         <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/lstoxyz_level2.html#out">OUT</A> is a Mark file containing either:
+                  The groups of x,y,z,error
+                  values computed by program LSTOXYZ.
+                  (see keyword <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/lstoxyz_level2.html#xyz">XYZ</A>)
+            or
+                  The groups of latitude,longitude,range-radius,error
+                  values computed by program LSTOXYZ.
+                  (the default)
+              Mark files contain 512 byte records of real*4 data.
+              Coordinates are stored in groups of 4 words in the
+              order X,Y,Z,ERROR,X,Y,Z,ERROR...
+                 or LAT,LON,RANGE-RADIUS,ERROR...
+
+Important note to users of the output file:
+There is a 1:1 correspondence between input Mark and output Mark files.
+If an input coordinate is zero then ignore that input and output.
+If an input coordinate is not zero but the output coordinate is
+zero then the input could not be processed for some reason so 
+ignore both input & output for that point. The correspondence
+assures that the input line,samp coordinates match the output <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/lstoxyz_level2.html#xyz">XYZ</A>'s.
+
+Outputs can be zero because:
+1. input was zero.
+2. the mapping transformation placed a point off or behind the planet.
+3. the 3-space vectors were parallel.
+
+METHOD:
+LSTOXYZ performs the following steps:
+1. Gets the transformation for both input projections (line,samp -&gtlat,lon)
+2. Gets the transformation for both object space images(lat,lon-&gtline,samp)
+  For each tiepoint:
+3. Convert line,samp to lat,lon in projection space.
+4. Convert lat,lon to line,samp in original image object space.
+5. Construct two vectors from the spacecraft positions towards
+   those line,samp coordinates in the image plane.
+6. Compute the closest approach point between the two vectors.
+   This is the X,Y,Z value.
+7. The miss distance is the 4th value ERROR.
+
+Note the Spice gives the RS vector (s/c position in planet coords)
+and the OM matrix (rotation of planet to camera coords).
+
+See Manual Of Photogrammetry , Sec Ed, P50.
+
+OUTPUT UNITS:
+
+  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/lstoxyz_level2.html#xyz">XYZ</A> values are in Kilometers in the planet reference frame.
+    Z is the polar spin axis
+    X & Y form the equatorial plane.
+    X pierces the geoid at the prime meridian (0 longitude).
+
+  LAT is in degrees planetocentric.
+  LONG is in degrees West.
+  RANGE-RADIUS is in kilometers. It is the difference between the
+    range from the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/lstoxyz_level2.html#xyz">XYZ</A> point to planet center and the local
+    planetocentric radius of the geoid at that latitude.
+
+  The fourth value (error) is the closest approach point of the
+  two vectors in Km. It is NOT the error in elevation.
+
+<A NAME="examples">EXAMPLE: </A>
+
+         farenc in1
+         farenc in2
+         map3 in1 a
+         map3 in2 b
+         tracker a,b m
+        LSTOXYZ a,b,m <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/lstoxyz_level2.html#xyz">xyz</A> 'XYZ
+
+HISTORY
+Written By: J Lorre			jan 91
+<A NAME="CogProg">Cognizant Programmer: J Lorre</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/lstoxyz_level2.html#inp"><H3>INP</H3></A>
+Three inputs:
+#1 is the left image
+#2 is the right image
+#3 is the MARK file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/lstoxyz_level2.html#out"><H3>OUT</H3></A>
+Mark file output
+containing <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/lstoxyz_level2.html#xyz">xyz</A> coords.
+or lat,lon's
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/lstoxyz_level2.html#sourcel"><H3>SOURCEL</H3></A>
+The source of the 
+SEDR/SPICE for the 
+left image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/lstoxyz_level2.html#sourcer"><H3>SOURCER</H3></A>
+The source of the 
+SEDR/SPICE for the 
+right image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/lstoxyz_level2.html#debug"><H3>DEBUG</H3></A>
+Prints debugging data.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/lstoxyz_level2.html#xyz"><H3>XYZ</H3></A>
+Specifies the output
+will contain  
+(X,Y,Z,error)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/lstoxyz.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/lstoxyz.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

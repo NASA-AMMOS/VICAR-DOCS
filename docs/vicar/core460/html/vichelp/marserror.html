@@ -1,0 +1,351 @@
+<HTML>
+<HEAD><title>HTML Help for MARSERROR</title></HEAD>
+<BODY>
+<H1>Help for MARSERROR</H1>
+<pre>
+PURPOSE:
+Given <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz">XYZ</A> coordinates, disparity map, disparity errors, and perturbations 
+in positions of left (reference) pixels, compute <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A> errors in down-range, 
+cross-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A> 1, and cross range 2 coordinate frame, along with an associated 
+error ellipsoid volumes for each pixel. Compute <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A> errors in x-y-z 
+coordinate frame, along with associated error ellipsoid volumes for each pixel. 
+Compute the magnitude of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A> error for each pixel.
+
+This multimission program supports any mission, instrument, and 
+camera model supported by the Planetary Image Geometry (Pig) software 
+suite.
+
+The inputs for MARSERROR are 
+- left and right stereo pair.  Left and right images may be of different dimensions.
+- a disparity image such as that created by the MARSCORR program.
+  This can be a single 2-band file or two 1-band files.
+- a disparity error image created by the MARSERRDISP program.
+  This can be a single 2-band file or two 1-band files.
+- an <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz">XYZ</A> image such as that created by the MARSXYZ program.
+  This can be a single 3-band file or three 1-band files; 
+  see MARSXYZ for details.
+
+
+EXECUTION:
+
+./MARSERROR <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#inp">INP</A>=\( LEFT RIGHT \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#out">OUT</A>=RANGE_ERROR_VECTOR  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#dispar">DISPAR</A>=DISPARITY  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz">XYZ</A>=XYZ  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#disp_err">DISP_ERR</A>=DISPARITY_ERROR  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#mask">MASK</A>=MASK  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">RANGE</A>=RANGE_VALUES  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_magnt">RNG_ERR_MAGNT</A>=RANGE_ERROR_MAGNITUDE  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_vol">RNG_ERR_VOL</A>=RANGE_ERROR_VOLUME  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err">XYZ_ERR</A>=XYZ_ERROR_VECTOR  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err_vol">XYZ_ERR_VOL</A>=XYZ_ERROR_VOLUME  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_line">DELTA_REF_LINE</A>=LINE_PERTURBATION_IN_REFERENCE  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_samp">DELTA_REF_SAMP</A>=SAMPLE_PERTURBATION_IN_REFERENCE  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_disp_line">DELTA_DISP_LINE</A>=LINE_PERTURBATION_IN_DISPARITY  DELTA_REF_SAMP=SAMPLE_PERTURBATION_IN_DISPARITY  POINT=CM=LABEL
+
+./MARSERROR <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#inp">INP</A>=\( LEFT RIGHT \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#out">OUT</A>=\( DOWN_RANGE_ERROR CROSS1_RANGE_ERROR CROSS2_RANGE_ERROR \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#dispar">DISPAR</A>=(\ LINE_DISPARITY SAMPLE_DISPARITY \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz">XYZ</A>=\( X Y Z \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#disp_err">DISP_ERR</A>=\( DISPARITY_LINE_ERROR DISPARITY_SAMP_ERROR \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#mask">MASK</A>=MASK  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">RANGE</A>=RANGE_VALUES  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_magnt">RNG_ERR_MAGNT</A>=RANGE_ERROR_MAGNITUDE  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_vol">RNG_ERR_VOL</A>=RANGE_ERROR_VOLUME  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err">XYZ_ERR</A>=XYZ_ERROR_VECTOR  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err_vol">XYZ_ERR_VOL</A>=XYZ_ERROR_VOLUME  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_line">DELTA_REF_LINE</A>=LINE_PERTURBATION_IN_REFERENCE  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_samp">DELTA_REF_SAMP</A>=SAMPLE_PERTURBATION_IN_REFERENCE  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_disp_line">DELTA_DISP_LINE</A>=LINE_PERTURBATION_IN_DISPARITY  DELTA_REF_SAMP=SAMPLE_PERTURBATION_IN_DISPARITY  POINT=CM=LABEL
+
+where:
+
+left - input - the left eye image of a stereo pair
+right - input - the corresponding right eye image of a stereo pair
+line_disparity - input - right eye line value computed by marscorr or other
+  correlator.
+sample_disparity - input - the right eye sample value computed by marscorr or other
+  correlator.
+disparity - input - 2-band file containing line_disparity and sample_disparity. 
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz">XYZ</A> - input - 3-band file with the X, Y, and Z values at that pixel in meters.
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_line">delta_ref_line</A>  - specifies line perturbation in reference pixel.
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_samp">delta_ref_samp</A>  - specifies sample perturbation in reference pixel.
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_disp_line">delta_disp_line</A> - specifies line perturbation in disparity.
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_disp_samp">delta_disp_samp</A> - specifies sample perturbation in disparity.
+disparity_error - input - 2-band file containing disparity line and sample errors;
+  computed by marserrdisp
+disparity_line_error - input - disparity line error computed by marserrdisp 
+disparity_samp_error - input - disparity sample error computed by marserrdisp
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#mask">mask</A> - output - 1-band file containing information on pixels 
+  with valid <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz">XYZ</A> coordinates.
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A> - output - 1-band image where each value is a distance between 
+  reference point (by default camera position) and (x,y,z) point.
+range_error_magnitude - output - 1-band file containing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A> error magnitude.
+down_range_error - output - 1-band file containing down-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A> error
+  for each pixel.
+cross1_range_error - output - 1-band file containing cross-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A> 1 error
+  for each pixel.
+cross2_range_error - output - 1-band file containing cross-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A> 2 error
+  for each pixel.
+range_error_vector - output - 3-band file containing 
+  down_range_error, cross1_range_error, and cross2_range_error.
+range_error_volume - output - 1-band file containing volume of error ellipsoid
+  for each pixel in down-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A>/cross-range coordinate frame.
+xyz_error_vector - output - 3-band file containing x-y-z errors.
+xyz_error_volume - output - 1-band file containing volume of error ellipsoid
+  for each pixel in x-y-z coordinate frame.
+
+Any correlation program producing the correct kind of disparity map may
+be used; marscorr is simply an example.
+
+
+<A NAME="examples">EXAMPLES:</A>
+
+***** MSL data: *****
+
+*** With two-band <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#disp_err">disp_err</A> file specified: ***
+
+$MARSLIB/marserror  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#inp">inp</A>=\( /home/yanovsky/marsxyz_data/FLA_406377036RADLF0010000FHAZ02504Z1.IMG /home/yanovsky/marsxyz_data/FRA_406377036RADLF0010000FHAZ02504Z1.IMG \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#out">out</A>=rng_err.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#dispar">dispar</A>=/home/yanovsky/marsxyz_data/FLA_406377036DSPLF0010000FHAZ02504Z1.IMG  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#disp_err">disp_err</A>=/home/yanovsky/marserrdisp1/disperr2.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz">xyz</A>=/home/yanovsky/marserror_v2_2/XYZ.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#mask">mask</A>=mask.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A>=range.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_magnt">rng_err_magnt</A>=rng_err_magnitude.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_vol">rng_err_vol</A>=rng_err_vol.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err">xyz_err</A>=xyz_err.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err_vol">xyz_err_vol</A>=xyz_err_vol.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_line">delta_ref_line</A>=0.1  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_samp">delta_ref_samp</A>=0.1  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_disp_line">delta_disp_line</A>=0.5  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_disp_samp">delta_disp_samp</A>=0.5  point=cm=label
+
+*** No <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#disp_err">disp_err</A> file (default disparity errors are assigned): ***
+
+$MARSLIB/marserror  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#inp">inp</A>=\( /home/yanovsky/marsxyz_data/FLA_406377036RADLF0010000FHAZ02504Z1.IMG /home/yanovsky/marsxyz_data/FRA_406377036RADLF0010000FHAZ02504Z1.IMG \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#out">out</A>=rng_err.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#dispar">dispar</A>=/home/yanovsky/marsxyz_data/FLA_406377036DSPLF0010000FHAZ02504Z1.IMG  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz">xyz</A>=/home/yanovsky/marserror_v2_2/XYZ.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#mask">mask</A>=mask.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A>=range.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_magnt">rng_err_magnt</A>=rng_err_magnitude.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_vol">rng_err_vol</A>=rng_err_vol.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err">xyz_err</A>=xyz_err.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err_vol">xyz_err_vol</A>=xyz_err_vol.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_line">delta_ref_line</A>=0.1  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_samp">delta_ref_samp</A>=0.1  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_disp_line">delta_disp_line</A>=0.5  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_disp_samp">delta_disp_samp</A>=0.5  point=cm=label
+
+$MARSLIB/marserror  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#inp">inp</A>=\( /home/yanovsky/marsxyz_data/FLA_406377036RADLF0010000FHAZ02504Z1.IMG /home/yanovsky/marsxyz_data/FRA_406377036RADLF0010000FHAZ02504Z1.IMG \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#out">out</A>=\( down_range.vic cross1_range.vic cross2_range.vic \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#dispar">dispar</A>=/home/yanovsky/marsxyz_data/FLA_406377036DSPLF0010000FHAZ02504Z1.IMG  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz">xyz</A>=/home/yanovsky/marserror_v2_2/XYZ.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#mask">mask</A>=mask.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A>=range.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_magnt">rng_err_magnt</A>=rng_err_magnitude.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_vol">rng_err_vol</A>=rng_err_vol.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err">xyz_err</A>=\( x_error.vic y_error.vic z_error.vic \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err_vol">xyz_err_vol</A>=xyz_err_vol.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_line">delta_ref_line</A>=0.1  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_samp">delta_ref_samp</A>=0.1  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_disp_line">delta_disp_line</A>=0.5  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_disp_samp">delta_disp_samp</A>=0.5  point=cm=label
+
+$MARSLIB/marserror  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#inp">inp</A>=\( /home/yanovsky/marsxyz_data/FLA_406377036RADLF0010000FHAZ02504Z1.IMG /home/yanovsky/marsxyz_data/FRA_406377036RADLF0010000FHAZ02504Z1.IMG \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#out">out</A>=\( down_range.vic cross1_range.vic cross2_range.vic \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#dispar">dispar</A>=/home/yanovsky/marsxyz_data/FLA_406377036DSPLF0010000FHAZ02504Z1.IMG  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz">xyz</A>=\(x.vic,y.vic,z.vic\)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#mask">mask</A>=mask.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A>=range.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_magnt">rng_err_magnt</A>=rng_err_magnitude.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_vol">rng_err_vol</A>=rng_err_vol.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err">xyz_err</A>=\( x_error.vic,y_error.vic,z_error.vic \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err_vol">xyz_err_vol</A>=xyz_err_vol.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_line">delta_ref_line</A>=0.1  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_samp">delta_ref_samp</A>=0.1  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_disp_line">delta_disp_line</A>=0.5  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_disp_samp">delta_disp_samp</A>=0.5  point=cm=label
+
+
+***** MER data: *****
+
+*** With two-band <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#disp_err">disp_err</A> file specified: ***
+
+$MARSLIB/marserror  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#inp">inp</A>=\( /home/yanovsky/Compression4/l3.IMG /home/yanovsky/Compression4/r3.IMG \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#out">out</A>=rng_err1.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#dispar">dispar</A>=/home/yanovsky/Compression4_other/cor3disp_LeftRight3.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#disp_err">disp_err</A>=/home/yanovsky/marserrdisp_v2/disperr1.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz">xyz</A>=/home/yanovsky/Compression4_other/XYZ_cor3disp_LeftRight3.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#mask">mask</A>=mask1.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A>=range1.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_magnt">rng_err_magnt</A>=rng_err_magnitude1.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_vol">rng_err_vol</A>=rng_err_vol1.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err">xyz_err</A>=xyz_err1.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err_vol">xyz_err_vol</A>=xyz_err_vol1.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_line">delta_ref_line</A>=0.1  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_samp">delta_ref_samp</A>=0.1  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_disp_line">delta_disp_line</A>=0.5  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_disp_samp">delta_disp_samp</A>=0.5  point=cm=label
+
+$MARSLIB/marserror  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#inp">inp</A>=\( /home/yanovsky/Compression4/l3.IMG /home/yanovsky/Compression4/r3.IMG \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#out">out</A>=rng_err1.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#dispar">dispar</A>=/home/yanovsky/Compression4_other/cor3disp_LeftRight3.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#disp_err">disp_err</A>=/home/yanovsky/marserrdisp_v2/disperr1.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz">xyz</A>=/home/yanovsky/Compression4_other/XYZ_cor3disp_LeftRight3.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#mask">mask</A>=mask1.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A>=range1.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_magnt">rng_err_magnt</A>=rng_err_magnitude1.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_vol">rng_err_vol</A>=rng_err_vol1.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err">xyz_err</A>=xyz_err1.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err_vol">xyz_err_vol</A>=xyz_err_vol1.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_line">delta_ref_line</A>=0.0  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_samp">delta_ref_samp</A>=0.0  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_disp_line">delta_disp_line</A>=0.5  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_disp_samp">delta_disp_samp</A>=0.5  point=cm=label
+
+*** No <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#disp_err">disp_err</A> file  (default disparity errors are assigned): ***
+
+$MARSLIB/marserror  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#inp">inp</A>=\( /home/yanovsky/Compression4/l3.IMG /home/yanovsky/Compression4/r3.IMG \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#out">out</A>=rng_err2.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#dispar">dispar</A>=/home/yanovsky/Compression4_other/cor3disp_LeftRight3.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz">xyz</A>=/home/yanovsky/Compression4_other/XYZ_cor3disp_LeftRight3.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#mask">mask</A>=mask2.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A>=range2.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_magnt">rng_err_magnt</A>=rng_err_magnitude2.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_vol">rng_err_vol</A>=rng_err_vol2.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err">xyz_err</A>=xyz_err2.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err_vol">xyz_err_vol</A>=xyz_err_vol2.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_line">delta_ref_line</A>=0.1  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_samp">delta_ref_samp</A>=0.1  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_disp_line">delta_disp_line</A>=0.5  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_disp_samp">delta_disp_samp</A>=0.5  point=cm=label
+
+$MARSLIB/marserror  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#inp">inp</A>=\( /home/yanovsky/Compression4/l3.IMG /home/yanovsky/Compression4/r3.IMG \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#out">out</A>=rng_err2.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#dispar">dispar</A>=/home/yanovsky/Compression4_other/cor3disp_LeftRight3.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz">xyz</A>=/home/yanovsky/Compression4_other/XYZ_cor3disp_LeftRight3.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#mask">mask</A>=mask2.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A>=range2.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_magnt">rng_err_magnt</A>=rng_err_magnitude2.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_vol">rng_err_vol</A>=rng_err_vol2.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err">xyz_err</A>=xyz_err2.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err_vol">xyz_err_vol</A>=xyz_err_vol2.vic  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_line">delta_ref_line</A>=0.0  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_samp">delta_ref_samp</A>=0.0  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_disp_line">delta_disp_line</A>=0.5  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_disp_samp">delta_disp_samp</A>=0.5  point=cm=label
+
+
+
+METHOD:
+MARSERROR computes, for each pixel:
+- <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A> error magnitude;
+- <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A> error vector in down/cross-range coordinate frame (dr-c1-c2 coordinate frame);
+- volume of error ellipsoid in dr-c1-c2 coordinate frame;
+- <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A> error vector in x-y-z coordinate frame;
+- volume of error ellipsoid in x-y-z coordinate frame;
+The program uses input camera models, disparity maps, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz">XYZ</A> coordinates for each pixel,
+and line/sample perturbation values for pixels in left and right images.
+Similar to marsxyz, the program calculates <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz">XYZ</A> values for each perturbed pair
+for each pixel.  The error is found when comparing perturbed <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz">XYZ</A> coordinates with 
+MARSXYZ program's calculated <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz">XYZ</A> points, giving the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A> error vector in x-y-z
+coordinate frame.  The error is projected onto down-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A>, cross-range 1, and 
+cross-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A> 2 axis, resulting in range error in dr-c1-c2 coordinate frame.
+
+Input file contents:
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#inp">INP</A>: left eye view, right eye view
+
+Note that there's no actual requirement that the first input be left or the
+second right.  The two images can be given in any order.  The first image,
+though, is the "master" image; the disparity maps and output files match the
+first image's pixels.  Convention places left first, however.
+
+Also, the actual image pixels are not used from these files; only the label
+information (to get the pointing and thus camera models) are used.
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#dispar">DISPAR</A>: REAL-formatted images giving the line and sample disparity.  Either
+two files may be given (line, sample order), or a single file with two bands. 
+
+The disparities are interpreted as follows:  Each pixel in the disparity
+map corresponds to the same pixel in the first (left) input.  The value of
+the pixel in the disparity map is the line and sample of the point in the
+second (right) image, which matches this location in the first (left).  Note
+that these are standard VICAR 1-based file coordinates.  If both line and
+sample disparity values are 0, the point has no value.
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#disp_err">DISP_ERR</A>: marserrdisp-generated. It consists of either two separate one-band
+  files (disparity line error, disparity sample error), or a single 2-band
+  file.
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz">XYZ</A>:  marsxyz(or similar)-generated. It consists of either three separate 
+  one-band files (x, y, z), or a single 3-band file.  
+  Units of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz">XYZ</A> input file(s) are in meters, in the coordinate system specified 
+  by the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#coord">COORD</A> and COORD_SYS parameters.
+
+Output file contents:
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#out">OUT</A>:  marserror will generate either three separate one-band files 
+  (down-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A>, cross-range1, cross-range2), or a single 3-band file, depending 
+  on the number of filenames given.
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_vol">RNG_ERR_VOL</A>: single-band file with volume of error ellipsoid in
+  dr-c1-c2 coordinate frame, for each pixel.
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#mask">MASK</A>: single-band image file with values equal 100 for pixels containing
+  valid <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz">XYZ</A> coordinates, and values equal 0 for pixels missing XYZ coordinates.
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">RANGE</A>: single-band image where each value is a distance between reference point 
+  (by default camera position) and (x,y,z) point.  This is the same product that 
+  can be generated using marsrange program.
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_magnt">RNG_ERR_MAGNT</A>: single-band image with <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A> error magnitude values.
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err">XYZ_ERR</A>: 3-band file with <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range">range</A> error vector in x-y-z coordinate frame.
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err_vol">XYZ_ERR_VOL</A>: single-band file with volume of error ellipsoid in
+  x-y-z coordinate frame, for each pixel. 
+
+
+
+HISTORY:
+06-07-2012  Initial marserror by I. Yanovsky and B. Deen
+03-01-2013  Added functionality for accepting disparity line and error file
+            as input.  Disparity error file contains pixel-to-pixel estimates 
+            of error and is generated with marserrdisp program.
+            Igor Yanovsky.
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER: I. Yanovsky</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#inp"><H3>INP</H3></A>
+Input images.
+Must be 2.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#out"><H3>OUT</H3></A>
+Output files
+(dr,c1,c2) triplet
+or 1 3-band file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#dispar"><H3>DISPAR</H3></A>
+Disparity map
+input files.
+(l,s) or 1 2-band file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#disp_err"><H3>DISP_ERR</H3></A>
+Input images.
+(line error, sample error)
+or 1 2-band file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz"><H3>XYZ</H3></A>
+Input images.
+Must be 1 3-band file
+or (x,y,z) triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#mask"><H3>MASK</H3></A>
+Output file
+Must be 1 
+single band file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#range"><H3>RANGE</H3></A>
+Output file
+Must be 1 
+single band file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_magnt"><H3>RNG_ERR_MAGNT</H3></A>
+Output file
+Must be 1
+single band file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err"><H3>XYZ_ERR</H3></A>
+Output files
+(x_err,y_err,z_err) triplet
+or 1 3-band file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#xyz_err_vol"><H3>XYZ_ERR_VOL</H3></A>
+Output file
+Must be 1
+single band file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rng_err_vol"><H3>RNG_ERR_VOL</H3></A>
+Output file
+Must be 1
+single band file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_line"><H3>DELTA_REF_LINE</H3></A>
+Specifies line perturbation
+in reference pixel.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_samp_line"><H3>DELTA_SAMP_LINE</H3></A>
+Specifies sample perturbation
+in reference pixel.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_disp_line"><H3>DELTA_DISP_LINE</H3></A>
+Specifies line perturbation
+in disparity.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#delta_ref_line"><H3>DELTA_REF_LINE</H3></A>
+Specifies samp perturbation
+in disparity.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#write_cm"><H3>WRITE_CM</H3></A>
+Writes the camera model
+to the file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#match_method"><H3>MATCH_METHOD</H3></A>
+Specifies a method
+for pointing corrections.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#match_tol"><H3>MATCH_TOL</H3></A>
+Tolerance value for
+matching pointing params
+in pointing corrections file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserror.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

@@ -1,0 +1,138 @@
+<HTML>
+<HEAD><title>HTML Help for SPICE</title></HEAD>
+<BODY>
+<H1>Help for SPICE</H1>
+<pre>
+SPICE lists all the information available on an image from any
+flight project. This includes the SPICE/SEDR and the image labels.
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#program">program</A> also acts as a test for the following subroutines.
+The output of each will be listed under that routines heading:
+GETPLACON
+GETCAMCON
+GETSPICE
+GETPROJ
+GETGEOM
+GETLABCON
+CONVISOS
+
+PARAMETERS:
+
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#spicemode">SPICEMODE</A> specifies whether local or remote SPICE access is to be used.
+If defaulted, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#spicemode">SPICEMODE</A> is set to the value of the logical name (or
+environmental variable) DEFAULTSPICE.
+
+
+PARAMETERS FOR RETRIEVING THE INITIAL CAMERA POINTING:
+
+Initial camera pointing data is first retrieved from predict C kernels or
+from MIPS C kernels.  The following optional parameters permit the user to
+specify where this initial pointing is retrieved:
+
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#ckname">CKNAME</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#ckid">CKID</A> are alternative ways to specify the C kernel from which camera
+pointing is to be retrieved.  For example, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#ckname">CKNAME</A>=FARE or <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#ckid">CKID</A>=M904 specifies
+that the camera pointing should be retrieved from the file MIPS_FARENC.CK.
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#ckid">CKID</A> is the unique kernel ID assigned to each C kernel.  When CKID is
+specified, it overrides the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#ckname">CKNAME</A> parameter.  A complete list
+of kernel IDs is located in the ASCII file assigned the logical name (or
+environmental variable) KERNELDB.
+
+
+PARAMETERS FOR STORING THE IMPROVED CAMERA POINTING:
+
+The following optional parameters are used to store provenance information along
+with the improved (C-Smithed) camera pointing computed by the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#program">program</A>.  This
+provenance information is stored in the (C kernel) segment identifier for the
+camera pointing data.  In cases where there are several versions of camera
+pointing for an image in a given C kernel, this provenance information can
+later be used to retrieve a specific instance of camera pointing from the
+kernel.
+
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#purpose">PURPOSE</A> identifies the purpose for creating the camera pointing.
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#reqnum">REQNUM</A> identifies the request number associated with the camera pointing.
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#cdate">CDATE</A> specifies the date and time the camera pointing was created.
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#groupid">GROUPID</A> identifies the group which created the camera pointing.
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#institute">INSTITUTE</A> identifies the facility which created the camera pointing.
+
+See the level 2 help (via the TAE tutor mode) for further details.
+
+Examples:  'LOCAL <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#ckname">CKNAME</A>=NAIF specifies that SPICE data be retrieved from
+          local kernels using camera pointing from predicts or AACS telemetry.
+          Improved camera pointing will later be stored in the local C kernel
+          specific to this <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#program">program</A>.
+
+           'REMOTE <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#institute">INSTITUTE</A>=DLR <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#userid">USERID</A>=TYR retrieves SPICE data remotely
+          (from MIPS) via the SPICE server.  When improved camera pointing is
+          stored (at MIPS), provenance data regarding the facility (DLR) and
+          user (Thomas Roatsch) who created the data is included.
+ 
+
+<A NAME="examples">EXAMPLE:</A>
+      spice <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#inp">inp</A>=a.img
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#program">PROGRAM</A> HISTORY:
+Written By: J Lorre			1/9/89
+<A NAME="CogProg">Cognizant Programmer: J Lorre</A>
+REVISIONS:
+  25 Jun GMY  Adde call to init_spice (70964)
+  29 Jul OAM  Modified to call getspice2 instead of getspice.
+              Included provenance parameters.DFR.
+  15 Oct OAM  Included the CAMERA parameter to CONVISOS calls.
+              FR 89818. 
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#inp"><H3>INP</H3></A>
+1.The image to analyze
+2.Geom file
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#target"><H3>TARGET</H3></A>
+Optional 12-char string
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#target">Target</A> name (planet,
+  satellite, or asteroid)
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#spicemode"><H3>SPICEMODE</H3></A>
+Optional keyword
+Location of SPICE kernels
+(LOCAL or REMOTE)
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#ckname"><H3>CKNAME</H3></A>
+Optional 4-char string
+C-kernel name
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#ckid"><H3>CKID</H3></A>
+Optional 4-char string
+C-kernel ID
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#userid"><H3>USERID</H3></A>
+Optional 3-char string
+User who created camera pointing
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#groupid"><H3>GROUPID</H3></A>
+Optional 3-char string
+Group which created camera pointing
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#institute"><H3>INSTITUTE</H3></A>
+Optional 4-char string
+Facility which created camera pointing
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#purpose"><H3>PURPOSE</H3></A>
+Optional 4-char string
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#purpose">Purpose</A> for camera pointing
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#program"><H3>PROGRAM</H3></A>
+Optional 6-char string
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#program">Program</A> which created camera pointing
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#spkid"><H3>SPKID</H3></A>
+Optional 4-char string
+SP kernel for created camera pointing
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#reqnum"><H3>REQNUM</H3></A>
+Optional 4-char string
+IPL request number for created camera pointing
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#cdate"><H3>CDATE</H3></A>
+Optional 12-char string
+Date and time camera pointing was created
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#update"><H3>UPDATE</H3></A>
+To <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#update">update</A> the SEDR/SPICE
+with subroutine PUTSPICE
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice_level2.html#destination"><H3>DESTINATION</H3></A>
+The name to be associate 
+with the SEDR/SPICE
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/spice.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

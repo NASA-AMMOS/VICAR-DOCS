@@ -1,0 +1,124 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for CORRELATE1D</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/correlate1d.html">CORRELATE1D</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+Two input images in the order:
+1. Left stereo image.
+2. Right stereo image.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+Two Output disparity images in the order:
+1. Line disparity.
+2. Sample disparity.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nlw"><H3>NLW</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/correlate1d_level2.html#nlw">nlw</A>=  The line length of the template kernel.
+      The template is the area selected from the left image and correlated
+      over the right image search area. 
+      The template is only moved horizontally.
+      Must be an odd integer. 
+      Defaults to 1
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nsw"><H3>NSW</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/correlate1d_level2.html#nsw">nsw</A>=  The sample width of the template kernel. 
+      The template is the area selected from the left image and correlated
+      over the right image search area. Note that the left and right
+      halves of the template are correlated independently. The resulting
+      correlation <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/correlate1d_level2.html#quality">quality</A> is the larger of the two. This means that <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/correlate1d_level2.html#nsw">NSW</A>
+      is only 1/2 of the actual width used.
+      The template is only moved horizontally.
+      Must be an odd integer. 
+      Defaults to 45
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="motion"><H3>MOTION</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/correlate1d_level2.html#motion">motion</A>= The maximum permitted horizontal motion of the template in the 
+        search area from it's initial location in each direction.
+        Thus the search area will be of width <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/correlate1d_level2.html#nsw">nsw</A>+2*smotion.
+        Searching begins from the initial <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/correlate1d_level2.html#offset">offset</A> and skew.
+        Defaults to 10.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="quality"><H3>QUALITY</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/correlate1d_level2.html#quality">quality</A>= The minimum acceptable correlation quality for a point to have
+         in order to be accepted. 
+         0 means no correlation at all.
+         1 means perfect correlation.
+         Defaults to 0.7
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="offset"><H3>OFFSET</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/correlate1d_level2.html#offset">offset</A>= The integer line offset between the 2 input images. 
+        A positive <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/correlate1d_level2.html#offset">offset</A> of n indicate the right search area is to be shifted 
+        down n lines relative to the left template in order to align the two
+        input images.
+        If defaulted, this parameter is computed by the program.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="geom"><H3>GEOM</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/correlate1d_level2.html#geom">geom</A>=M,N
+      <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/correlate1d_level2.html#geom">Geom</A> controls the way the program computes the initial geometric
+      relationship between the 2 input images, resulting in the automatic
+      computation of the vertica <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/correlate1d_level2.html#offset">OFFSET</A> parameter and of a table of
+      horizontal shifts for each image line.
+      M is the maximum permitted vertical <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/correlate1d_level2.html#offset">offset</A> search used to determine the
+      <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/correlate1d_level2.html#offset">OFFSET</A> parameter. The search is limited to +- M lines.
+      N is the template width used to correlate the data at the center of 
+      each image line.
+      The defaults are <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/correlate1d_level2.html#geom">geom</A>=6,120. 
+      The vertical image shift operation is performed only if the 
+      <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/correlate1d_level2.html#offset">OFFSET</A> keyword is defaulted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="thresh"><H3>THRESH</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/correlate1d_level2.html#thresh">thresh</A>= The threshold which determines the permissible disagreement in 
+        horizontal shift between the direct and inverse correlations.
+        Tiepoints with a disagreement of over <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/correlate1d_level2.html#thresh">THRESH</A> are set to zero in the 
+        output images.
+        Note: When <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/correlate1d_level2.html#thresh">thresh</A> gets below about 0.8 then many rejections 
+              occur. This implies that the precision of the algorithm is
+              beginning to be tested rather than the precision of the data.
+        Defaults to 1.0
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

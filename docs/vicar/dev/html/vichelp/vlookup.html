@@ -1,0 +1,142 @@
+<HTML>
+<HEAD><title>HTML Help for VLOOKUP</title></HEAD>
+<BODY>
+<H1>Help for VLOOKUP</H1>
+<pre>
+ PURPOSE:
+
+ VLOOKUP generates output images from input images using data number
+ mappings defined in a multi-channel lookup <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#table">table</A>.  The user can specify 
+ the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#table">table</A> by giving its location (if it is contained in a file) or by
+ naming a standard pseudocolor transformation. 
+
+ This program performs the same function as an older program, LOOKUP; 
+ the difference is that VLOOKUP uses IBIS format <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#table">table</A> files, as does
+ VIDS, whereas LOOKUP uses the special format files created by IDX. 
+ Because the IBIS files can be edited and viewed by other programs,
+ the CHANGE and LIST functions of LOOKUP are not present in VLOOKUP.
+ THE PROGRAM TEMPORARILY (UNTIL VIDS IS FIXED TO GENERATE IBIS2 FORMAT
+ <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#table">TABLE</A> FILES) CANNOT HANDLE LOOKUP TABLE FILES UNLESS THEY ARE GENERATED ON
+ THE VAX.
+ THE PROGRAM HAS BEEN FIXED SO THAT THE <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#table">TABLE</A> PARAMETER FUNCTIONS CORRECTLY.
+
+ EXECUTION:
+
+ In the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#table">table</A> format used by VLOOKUP and VIDS, a lookup table is made up
+ of several independent channels, each of which is a "<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#column">column</A>" in the IBIS
+ tabular format.  Most tables created by VIDS will have one (monochrome) or
+ three (color or pseudocolor) channels.  Each channel defines a mapping or
+ discrete transfer function to be applied to an input image. Some of these
+ channels may be undefined depending on the application. 
+
+ VLOOKUP also supports multi-band images in both input or output.  However,
+ multi-band and single-band images may not be mixed, and only a single
+ multi-band image (each) may be specified for input and output.  I.e., the
+ user may supply 5 input images either as 5 separate files, or as one file
+ with 5 bands -- NOT as one file with 3 bands and two files with one band
+ (or one with 3 bands and one with 2.)
+
+ The current limit on input and output images (or bands) is five.  This
+ can easily be changed by revising one PARAMETER in the program and
+ recompiling.
+
+ All input images must have the same <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#size">size</A>.  All output images will have
+ the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#size">size</A> specified for the SIZE field, or if defaulted, will have the same
+ <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#size">size</A> as the first input image.
+
+ In the most straightforward use of VLOOKUP, the number of input images
+ is equal to the number of output images and the default channel
+ assignments are used.  In this case, the first channel in the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#table">table</A>
+ is used to map the first input image to the first output image, the
+ second channel in the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#table">table</A> is used to map the second input image to 
+ the second output image, and so on.
+
+ The user may select to use different channels (than the default) with
+ the images by using the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#column">COLUMN</A> parameter.  The user may also specify
+ fewer input images than output images.  In this case, the last input
+ image is mapped through the remaining channels to create the appropriate
+ number of output images.  Thus, one input image could be mapped through
+ three independent channels (transfer functions) to three output images.
+ This feature allows simple production of Pseudo Color pictures.
+
+ When the user specifies a lookup <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#table">table</A> in a file, VLOOKUP requires that
+ the file be in the VIDS lookup <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#table">table</A> format, which is an IBIS tabular file
+ made up of a number of columns with 256 entries per <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#column">column</A>, stored in REAL*4
+ format.  See the VIDS documentation for details on the file format.
+ TAE COMMAND LINE FORMAT
+
+ The following command line shows the normal format:
+
+ VLOOKUP <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#inp">INP</A>=(a...) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#out">OUT</A>=(b...) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#lutfile">LUTFILE</A>=c  [optional parameters]
+
+  Here (a...) represents a list of one to five input image file names,
+  (b...) is optional and represents a list of one to five output image
+  file names, and c is an optional lookup <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#table">table</A> file (if omitted, then TABLE
+  must be specified). 
+
+<A NAME="examples">EXAMPLES</A>
+
+1.    VLOOKUP <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#inp">INP</A>=L1 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#out">OUT</A>=L2 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#lutfile">LUTFILE</A>=T1 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#column">COLUMN</A>=3
+
+      In this example, channel 3 of file T1 is used to map
+      image file L1 to image file L2.  
+
+2.    VLOOKUP IN (RED,GREEN,BLUE) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#table">TABLE</A>=3
+
+      In this example, the standard pseudocolor transformation <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#table">table</A> 3 is
+      used to map image file IN to files RED, GREEN, and BLUE.  (The color
+      assignments must be in this order to get results corresponding to what
+      is seen in IDX.)
+
+ RESTRICTIONS
+ 1. The input and output images MUST BE BYTE data.
+ 2. Maximum number of samples is 1000000 per line.
+
+ HISTORY:
+
+  Aug.1989 --RGD-- original VLOOKUP, based on program LOOKUP
+  Oct.1990 --LWK-- cleaned up the program, eliminating all paramters
+		   except USE (renamed <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#column">COLUMN</A>) and PS (renamed <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#table">TABLE</A>);
+		   also enabled multispectral file input.
+  Feb.1993 --SP--- Made portable for UNIX.  Changed max samples to 80000.
+                   The program has been fixed so that the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#table">TABLE</A> parameter 
+                   functions correctly.  Added message for case of a multiband
+                   input and multiple outputs: "Bands beyond the first one are
+                   ignored."  Used IBIS2 calls to access <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#lutfile">LUTFILE</A>.
+
+  Jan.2002 --FS_DLR--- Changed max samples to 1000000.
+
+<A NAME="CogProg"> COGNIZANT PROGRAMMER:  Steven Pohorsky</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#inp"><H3>INP</H3></A>
+Input image file names
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#out"><H3>OUT</H3></A>
+Output image file names
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#size"><H3>SIZE</H3></A>
+Standard Vicar <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#sl"><H3>SL</H3></A>
+Starting line number
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#ss"><H3>SS</H3></A>
+Starting sample number
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#nl"><H3>NL</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#ns"><H3>NS</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#sb"><H3>SB</H3></A>
+Starting band
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#nb"><H3>NB</H3></A>
+Number of bands
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#lutfile"><H3>LUTFILE</H3></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#table"><H3>TABLE</H3></A>
+Number of the pseudocolor
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#table">table</A> in lieu of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#lutfile">LUTFILE</A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#column"><H3>COLUMN</H3></A>
+Nth value is the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup_level2.html#column">column</A> for
+the nth output image.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/vlookup.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

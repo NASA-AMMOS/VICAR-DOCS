@@ -1,0 +1,112 @@
+<HTML>
+<HEAD><title>HTML Help for TIEPARM</title></HEAD>
+<BODY>
+<H1>Help for TIEPARM</H1>
+<pre>
+PURPOSE
+
+    tieparm has two modes, the default <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#mode">mode</A> (TOPARM) and the TOIBIS mode.
+In default <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#mode">mode</A> tieparm takes tiepoints in an IBIS interface (tabular) file
+and outputs them in a parameter dataset form for TIECONM
+and the geometrical correction programs.  Geometrical tiepoints
+(4 values), delta Z (3 values) tiepoints, or geometrical tiepoints with
+delta Zs (5 values) may be transfered.
+    In TOIBIS <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#mode">mode</A>, tieparm converts a <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#tiepoint">tiepoint</A> parameter dataset into an
+IBIS interface (tabular) file.
+EXECUTION
+
+  TOPARM is the default <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#mode">mode</A>.  In default mode, there is an IBIS interface file
+as input and a parameter dataset as output.  
+
+  In  TOIBIS <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#mode">mode</A> there is an input parameter data set specified via the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#parms">PARMS</A> 
+parameter (unless <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#nah">NAH</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#nav">NAV</A>, and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#tiepoint">TIEPOINT</A> are specified on the command line.)
+There is also an output IBIS interface file.  The IBIS interface file is
+specified using the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#out">OUT</A> parameter if a new file is to be written.  It is
+specified using the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#inp">INP</A> parameter if an existing file is to be written into.
+
+tieparm can be used to produce a parameter data set for program MZGEOM.
+This is illustrated in one of the following examples.
+<A NAME="examples"> EXAMPLES: </A>
+
+tieparm <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#inp">INP</A>=TIEPOINTS.INT <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#out">OUT</A>=TIEPOINTS.PDS  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#nah">NAH</A>=20 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#nav">NAV</A>=15 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#cols">COLS</A>=(1,2,5,6)
+
+This example, which uses all of the parameters in default (TOPARM) <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#mode">mode</A>
+will read the tiepoints (new line, new sample, old line, old sample) from
+columns 1, 2, 5, and 6 from the interface file.  The default
+columns are 1, 2, 3, and 4.
+
+
+tieparm <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#inp">INP</A>=TIEPOINTS.INT <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#out">OUT</A>=TIEPOINTS.PDS  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#nah">NAH</A>=12 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#nav">NAV</A>=10 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#cols">COLS</A>=(1,2,4)
+
+This example shows how to transfer DN values tiepoints for TIECONM and
+GEOMZ.  The tiepoints are in the form (line, sample, delta Z).
+tieparm  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#parms">PARMS</A>=TIEM.PAR  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#out">OUT</A>=TIEM.INT <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#ncol">NCOL</A>=7 'TOIBIS
+tieparm  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#parms">PARMS</A>=TIEG.PAR  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#inp">INP</A>=TIEM.INT <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#cols">COLS</A>=(5,6,7) 'TOIBIS
+tieparm  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#inp">INP</A>=TIEM.INT  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#out">OUT</A>=TIEMZ.PAR <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#nah">NAH</A>=1 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#nav">NAV</A>=1 <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#cols">COLS</A>=(1,2,3,4,7) 'TOPARM
+
+In this example tieparm is used to combine a parameter dataset for MGEOM
+(TIEM.PAR) and a parameter dataset for GEOMZ (TIEG.PAR) to produce  a parameter
+dataset for MZGEOM (TIEMZ.PAR).  The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#tiepoint">tiepoint</A> locations in the parameter
+dataset for GEOMZ must match the new line and sample <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#tiepoint">tiepoint</A> locations in the
+parameter dataset for MGEOM. 
+RESTRICTIONS
+
+    The maximum number of tiepoints is 40,000.
+
+
+
+Original Programmer:     Leo Bynum         February 1985
+
+Ported to UNIX by:	 Randy Schenk (CRI) May 1995
+
+<A NAME="CogProg">Cognizant Programmer:    Frank Evans</A>
+
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#inp"><H3>INP</H3></A>
+IBIS interface file name (input)
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#out"><H3>OUT</H3></A>
+Parameter data set name (output)
+or IBIS interface file name for
+TOIBIS <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#mode">mode</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#mode"><H3>MODE</H3></A>
+Enter 'TOPARM to convert an IBIS
+interface file to a parameter
+dataset.  Enter 'TOIBIS to 
+convert a parameter dataset to an
+IBIS interface file.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#cols"><H3>COLS</H3></A>
+Columns of the interface file
+to be used for newline, newsample,
+oldline, and oldsample;
+or line, sample, delta Z;
+or newline, newsample,
+oldline, oldsample, and delta Z.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#ncol"><H3>NCOL</H3></A>
+Number of columns in IBIS 
+interface file (TOIBIS <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#mode">mode</A>).
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#nav"><H3>NAV</H3></A>
+Number of areas vertical.
+Default is 20.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#nah"><H3>NAH</H3></A>
+Number of areas horizontal.
+Default is 20.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#tiepoint"><H3>TIEPOINT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#tiepoint">Tiepoint</A> coordinates.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#parms"><H3>PARMS</H3></A>
+optional parameter file.
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#minl"><H3>MINL</H3></A>
+Dummy parameter
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#maxl"><H3>MAXL</H3></A>
+Dummy parameter
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#mins"><H3>MINS</H3></A>
+Dummy parameter
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm_level2.html#maxs"><H3>MAXS</H3></A>
+Dummy parameter
+
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/tieparm.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

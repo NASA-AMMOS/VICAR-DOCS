@@ -1,0 +1,286 @@
+<HTML>
+<HEAD><title>HTML Help for MARSUVW</title></HEAD>
+<BODY>
+<H1>Help for MARSUVW</H1>
+<pre>
+PURPOSE:
+
+MARSUVW computes a surface normal for each pixel, given an XYZ image as
+input.  This surface normal is a unit vector pointing "<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#out">out</A>" of the surface
+(up, for an in-situ image of the ground).  UVW is a term used to name the
+surface normal unit vector components, to avoid confusion with the XYZ
+coordinates in Cartesian space of the input.  The U component aligns with
+the X axis, V with Y, and W with Z.
+
+The input for MARSUVW is an XYZ image such as that created by the MARSXYZ
+program.  It can be a single 3-band file or three 1-band files; see MARSXYZ
+for details.  The C point of the camera model is also extracted from the input
+image, which is used only to determine which way is "<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#out">out</A>" of the surface.
+
+The output of MARSUVW is either a single 3-band file, or three 1-band files.
+Each band is of type REAL, and the U, V, and W components are in order,
+corresponding to the X, Y, and Z axes respectively.  As with XYZ images,
+the output image may contain holes (missing data), defined by MISSING_CONSTANT.
+There will likely be many more holes than in the input image, since the
+normal algorithm requires a patch around each pixel.
+
+EXECUTION:
+
+marsuvw <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#inp">inp</A>=data.xyz <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#out">out</A>=data.uvw
+where:
+data.xyz is an input 3-band image of type REAL with the X, Y and Z values
+at that pixel in meters (the unit is actually irrelevant).
+data.uvw is an output 3-band image of type REAL the U, V, and W components
+of the unit vector for each pixel.
+
+Any program producing 3D position could be used; marsxyz is simply an example.
+
+METHOD:
+
+MARSUVW computes, for each pixel, the surface normal for the pixel by
+analyzing a patch of neighboring pixels.  First, pixels with X/Y values
+outside the box specified by X/<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#y_center">Y_CENTER</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#box_radius">BOX_RADIUS</A> are rejected and
+no normal is computed.  For the survivors, the neighboring pixels are
+gathered, in a window specified by the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#radius">RADIUS</A> parameter.  The neighbor
+points are then culled by distance in Cartesian space from the pixel in
+question, specified by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#separation">SEPARATION</A>.
+
+If enough points remain (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#min_points">MIN_POINTS</A>), then a best-fit plane is computed.
+The plane fit <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#error">error</A> (defined as the average distance of each point from
+the plane) is compared to the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#error">ERROR</A> parameter.  If the error is too big,
+pixels with individual errors exceeding the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#reject">REJECT</A> ratio (times the average
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#error">error</A>) are removed, the plane is recomputed, and the error checked again.
+The process continues until the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#error">error</A> is acceptable, or until fewer than
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#min_points">MIN_POINTS</A> remains.
+
+After this process, if enough points still remain, then the normal to the
+computed plane is written to the output.
+
+The plane fit is computed by forming a covariance matrix for the locations
+of the candidate points relative to the centroid.  The eigenvectors and
+eigenvalues of the matrix are computed.  The eigenvector corresponding
+to the smallest eigenvalue indicates the direction in which there is the
+least spread of points - i.e. the plane normal.  Some checks on the relative
+magnitudes of the eigenvalues are used, since even a fuzzy blob of points
+is likely to have one eigenvalue smaller than the others.
+
+In order to determine whether the computed normal or its negation are "<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#out">out</A>"
+of the surface, the normal is dotted with the vector from the camera to the
+point.  If the angle is less than 90 degrees (dot product &gt 0), the vector
+is used, otherwise -vector is used.  This is theoretically all that is needed,
+but in practice noise in the XYZ values occasionally creates normals that
+tip slightly away from the camera, when looking nearly edge-on to a distant
+plane (such as near the horizon).  In order to mitigate this effect, a
+threshold is applied to the W (Z) component of the vector.  If the component
+is larger than the threshold, then the negation of the vector is returned.
+This reduces the flipping problem at the expense of not being able to properly
+detect nearly horizontal overhangs.  Since such overhangs are exceedingly
+rare, the threshold test is usually a good thing.  Note that a value &gt 1.0
+will effectively disable the sign flipping.  The flipping is only performed
+if the point is farther away from the camera than <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#flip_dist">FLIP_DIST</A>.
+
+The program can also be run in, for lack of a better name, "<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#slope">slope</A>" mode
+(using -<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#slope">slope</A>).  This mode was originally developed to compute surface
+normals over a rover-sized patch for determining terrain <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#slope">slope</A> (as opposed
+to an arm-sized patch in the original code).  There are three differences in
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#slope">slope</A> mode:
+
+1) The window size (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#radius">RADIUS</A>) is dynamically adjusted based on the range to
+the pixel (range is usually in meters).  Less than 10 is full size, 10-15
+is 75%, 15-20 is 66%, and &gt20 is 50%.  This helps with efficiency over large
+areas.
+
+2) Not every pixel is considered.  Because the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#separation">SEPARATION</A> is much larger for
+the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#slope">slope</A> case, every 2nd, 3rd etc. pixel may be skipped, again for efficiency.
+The distance steps are the same as above: &gt20 uses every pixel, 15-20 uses
+every other pixel, 10-15 uses every third pixel, and &lt10 uses every 4th pixel.
+
+3) There is no <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#reject">REJECT</A> loop.  The normal is computed once, and if the plane
+fit <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#error">error</A> is greater than ERROR, the point is rejected and no normal is
+computed.
+
+It is recommended for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#slope">slope</A> mode that larger values be used for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#radius">RADIUS</A> and
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#separation">SEPARATION</A>, and that a very large value be given for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#box_radius">BOX_RADIUS</A> to effectively
+disable it.
+
+The actual algorithm and core code for marsuvw was developed by Chris Leger
+of Section 348.
+
+Because a certain number of neighboring pixels are needed to compute the
+normal, the output will typically be much sparser than the XYZ input image.
+Reducing the number of neighbors required (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#min_points">MIN_POINTS</A>) can help with the
+sparseness of the image, but the resultant normals are likely to be
+less accurate due to noise.
+
+The output will be expressed in the coordinate system specified by the
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#coord">COORD</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#coord_index">COORD_INDEX</A> parameters.
+
+
+Parallel Processing
+-------------------
+This program has been parallelized using Open MP (OMP), which is built in
+to the g++ compiler.
+
+By default the number of threads used equals the number of cores on the machine
+where the program is being run.  Each image line is assigned to a different
+core, with "dynamic" scheduling to keep the workload for eeach core similar.
+
+Parallel processing can be disabled via the -OMP_OFF keyword.  The number
+of threads can be controlled by setting the OMP_NUM_THREADS environment
+variable before running the program.  There are numerous other OMP variables
+that can be set; see the OMP documentation.  However, the number of threads
+is the only one that is likely to be useful in most cases.
+
+
+HISTORY:
+  2003-04-15 B. Deen - Initial marsuvw based on code from Chris Leger (348).
+  2005-02-17 B. Deen - Merge of marsuvw_slope, and addition of "flip" capability.
+  2015-04-16 B. Deen - Added <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#camera_center">CAMERA_CENTER</A> parameter.
+  2016-06-09 B. Deen - Parallelization of code.
+  2020-05-21 W. Bunch - Replaced sprintf calls; added unit test.
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER: B. Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#inp"><H3>INP</H3></A>
+Input images.
+Must be 1 3-band file
+or (x,y,z) triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#out"><H3>OUT</H3></A>
+Output files.
+Mast be 1 or 3
+filenames (with
+3 or 1 bands each).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#separation"><H3>SEPARATION</H3></A>
+Max distance for points
+to use in plane fit.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#error"><H3>ERROR</H3></A>
+Max plane fit <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#error">error</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#min_points"><H3>MIN_POINTS</H3></A>
+Min # of points in
+the plane fit.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#radius"><H3>RADIUS</H3></A>
+Number of pixels to
+consider around the
+pixel of interest.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#reject"><H3>REJECT</H3></A>
+Sets ratio for rejecting
+points.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#x_center"><H3>X_CENTER</H3></A>
+Center of bounding box.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#y_center"><H3>Y_CENTER</H3></A>
+Center of bounding box.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#box_radius"><H3>BOX_RADIUS</H3></A>
+Half-width of bounding box.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#flip_thresh"><H3>FLIP_THRESH</H3></A>
+Threshold for flipping the
+normal.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#flip_dist"><H3>FLIP_DIST</H3></A>
+Minimum distance for sign
+flipping.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#slope"><H3>SLOPE</H3></A>
+Turns on <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#slope">Slope</A> mode.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#camera_center"><H3>CAMERA_CENTER</H3></A>
+Specifies or overrides
+camera position.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#omp_on"><H3>OMP_ON</H3></A>
+Turns on or off parallel
+processing (default: on)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsuvw.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

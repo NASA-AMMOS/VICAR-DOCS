@@ -1,0 +1,209 @@
+<HTML>
+<HEAD><title>HTML Help for MARSERRDISP</title></HEAD>
+<BODY>
+<H1>Help for MARSERRDISP</H1>
+<pre>
+PURPOSE:
+Compute disparity line and sample errors from inverse scene activity coefficients
+and compression.
+
+The inputs for MARSERRDISP are 
+- left and right stereo pair.  Left and right images may be of different dimensions.
+- Optional: Correlation coefficient image, such as that created by the MARSCOR3 program,
+            is an optional and is currently not used in calculations.
+
+EXECUTION:
+
+./MARSERRDISP  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#inp">INP</A>=\( LEFT RIGHT \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#out">OUT</A>=DISPARITY_ERROR  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#ls_order">LS_ORDER</A>=LEAST_SQ_ORDER  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#disp_unc">DISP_UNC</A>=INV_SCENE_ACTIVITY_COEFF  POINT=CM=LABEL
+
+./MARSERRDISP  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#inp">INP</A>=\( LEFT RIGHT \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#out">OUT</A>=\( DISPARITY_LINE_ERROR DISPARITY_SAMPLE_ERROR \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#ls_order">LS_ORDER</A>=LEAST_SQ_ORDER  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#disp_unc">DISP_UNC</A>=INV_SCENE_ACTIVITY_COEFF  POINT=CM=LABEL
+
+where:
+
+left - input - the left eye image of a stereo pair
+right - input - the corresponding right eye image of a stereo pair
+disparity_error - output - 2-band file containing disparity line and sample errors
+disparity_line_error - output - disparity line error 
+disparity_samp_error - output - disparity sample error
+inv_scene_activity_coeff - output - inverse scene activity coefficient
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#ls_order">ls_order</A> - specifies the order of the least squares fit (model). ls_order = 1 is the only
+           supported choice.
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#corrcoeff">corrcoeff</A> - input - correlation coefficient image computed by marscor3 - currently not used
+
+<A NAME="examples">EXAMPLES:</A>
+
+MER FCAM:
+./MARSERRDISP  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#inp">INP</A>=\( ~/MER_DATA/2F137291704RAL4406P1212L0M1.IMG ~/MER_DATA/2F137291704RAL4406P1212R0M1.IMG \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#out">OUT</A>=DISPERR1.VIC   <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#disp_unc">DISP_UNC</A>=DISP_UNC.VIC  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#wsize">WSIZE</A>=25  POINT=CM=LABEL
+
+MSL test:
+./MARSERRDISP  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#inp">INP</A>=\( ~/MARSXYZ_DATA/FLA_406377036RADLF0010000FHAZ02504Z1.IMG ~/MARSXYZ_DATA/FRA_406377036RADLF0010000FHAZ02504Z1.IMG \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#out">OUT</A>=DISPERR1.VIC  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#disp_unc">DISP_UNC</A>=DISP_UNC.VIC  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#wsize">WSIZE</A>=25  POINT=CM=LABEL
+
+MER NCAM:
+./MARSERRDISP  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#inp">INP</A>=\( ~/COMPRESSION4/L3.IMG ~/COMPRESSION4/R3.IMG \)  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#out">OUT</A>=DISPERR1.VIC  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#disp_unc">DISP_UNC</A>=DISP_UNC.VIC  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#wsize">WSIZE</A>=25  POINT=CM=LABEL
+
+
+METHOD:
+MARSERRDISP computes disparity line and sample errors for each pixel.
+The program calculates inverse scene activity coefficients and uses it together with
+compression rate in order to compute the errors for each pixel.
+Correlation coefficient map is not used.
+
+Linear model (based on least squares fit) is used in order to map given 
+inverse scene activity coefficients to disparity error values. The coefficients 
+for the least squares model were computed using test images in a Matlab program.
+
+Input file contents:
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#inp">INP</A>: left eye view, right eye view
+
+The pixel data from the left image is used in order to calculate inverse 
+scene activity (ISA) coefficients, and hence, the first input should be 
+the left image.  The label information is used to determine the pointing 
+and camera models.  The pixel data from the right image is NOT used.
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#corrcoeff">CORRCOEFF</A>: single-band file, containing correlation coefficients for each
+pixel, and is generated by marscor3 program.  This input is optional, and
+is currently not used for calculations.
+
+Output file contents:
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#out">OUT</A>: marserrdisp will generate either two separate one-band files 
+  (disparity_line_error, disparity_sample_error), or a single 2-band file, depending 
+  on the number of filenames given.
+
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#disp_unc">DISP_UNC</A>: optional output containing inverse scene activity coefficients (ISA).
+  ISA is used in the program to calculate disparity line and sample errors.  
+  Smaller values of ISA suggest the scene has many features.
+  Larger values suggest the scene is flat.
+
+
+
+HISTORY:
+03-01-13  Initial marserrdisp by I. Yanovsky and B. Deen
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER: I. Yanovsky</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#inp"><H3>INP</H3></A>
+Input images.
+Must be 2.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#out"><H3>OUT</H3></A>
+Output files
+(line_err,samp_err) double
+or 1 2-band file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#corrcoeff"><H3>CORRCOEFF</H3></A>
+Input file.
+Currently not used for calculations.
+Must be 1 
+single band file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#disp_unc"><H3>DISP_UNC</H3></A>
+Output file
+Must be 1 
+single band file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#wsize"><H3>WSIZE</H3></A>
+Specifies the window size 
+for calculating <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#disp_unc">DISP_UNC</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#ls_order"><H3>LS_ORDER</H3></A>
+Specifies the order of the 
+least squares model.
+Currently, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#ls_order">LS_ORDER</A> = 1
+is the only valid choice.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#write_cm"><H3>WRITE_CM</H3></A>
+Writes the camera model
+to the file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#match_method"><H3>MATCH_METHOD</H3></A>
+Specifies a method
+for pointing corrections.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#match_tol"><H3>MATCH_TOL</H3></A>
+Tolerance value for
+matching pointing params
+in pointing corrections file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marserrdisp.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

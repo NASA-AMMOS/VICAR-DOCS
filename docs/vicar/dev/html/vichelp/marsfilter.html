@@ -1,0 +1,437 @@
+<HTML>
+<HEAD><title>HTML Help for MARSFILTER</title></HEAD>
+<BODY>
+<H1>Help for MARSFILTER</H1>
+<pre>
+PURPOSE:
+
+MARSFILTER computes a mask for an XYZ image, intdended to remove points
+that are not of interest.  This is normally used to exclude the spacecraft
+(e.g. rover) itself from the generated range data, but can also be used to
+remove artifacts or other problems with the range data.
+
+The input for MARSFILTER is an XYZ image such as that created by the MARSXYZ
+program.  It can be a single 3-band file or three 1-band files; see MARSXYZ
+for details.  The image is converted to Instrument (Rover for MER) coordinates
+internally; the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> data is interpreted in that frame.  (The frame may be
+overridden by <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#coord">COORD</A> et al, but the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> data would also have to change.)
+
+The program also requires a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> description file, which is an XML text
+file describing the filters to be applied.  See below for the file format.
+The program will automatically look for the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> file via <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#config_path">CONFIG_PATH</A>, or
+it can be explicitly specified via <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">FILTER</A>.  Some filters may be modified
+via numeric parameters given in <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#params">PARAMS</A>.
+
+A second <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> file can be specified with <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#extra_filter">EXTRA_FILTER</A>, which is combined
+with the first.  The intent is for the first to be common filters that apply
+to everything, while <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#extra_filter">EXTRA_FILTER</A> is something specific to this image, such
+as what is produced by mslfilter.
+
+The output of MARSFILTER is a single 1-band byte file, where 0 represents
+something not in the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A>, and 255 represents something to be filtered <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#out">out</A>.
+Note that this is reversed from what you might expect at first glance, but
+is intentional: it is easier to see what is being removed from the data this
+way.  Labels are updated in the file, to indicate the type of image (mask),
+the mask <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> filenames, and the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#horizon">horizon</A> value.
+
+EXECUTION:
+
+marsfilter <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#inp">inp</A>=data.xyz <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#out">out</A>=data.mask <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A>=filter.xml
+where:
+data.xyz is an input 3-band image of type REAL with the X, Y and Z values
+    at that pixel in meters (the unit is actually irrelevant).
+data.mask is an output 1-band image of type BYTE containing the mask.
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A>.xml is an optional file containing the filter description.  (A
+    description file is mandatory but the parameter is optional; see below).
+
+Any program producing 3D position could be used; marsxyz is simply an example.
+
+Note: With the -NO_XYZ option, the input need not be an XYZ image, but rather
+can be anything with a PIG-compatible label describing the camera model
+geometry.  However, in this case you lose the capabilty to do Volume masks.
+
+METHOD:
+
+MARSFILTER reads a "<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A>" file or files containing a description of the
+mask to be generated.  While this file is mandatory, the parameter is optional.
+If omitted, MARSFILTER will use the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#config_path">CONFIG_PATH</A> parameter (which is usually
+set to $MARS_CONFIG_PATH) to find the file:
+
+param_files/MER1_rover_filter.xml
+
+where "MER1" is replaced with the host ID (or mission name if only one
+host) found in the XYZ image's label.  Each directory in <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#config_path">CONFIG_PATH</A> is
+searched in turn until the file is found.  An error results if the file is
+not found after the entire path is searched.
+
+A second <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> file can be provided via <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#extra_filter">EXTRA_FILTER</A>; these are combined
+in the output.
+
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> file is then searched for &ltcamera&gt elements that apply to this
+image.  There are two ways to match a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> to the image.  Both can be used
+simultanously; if so, both have to match.
+
+The first is by the camera id ("id" attribute).  This must match the instrument
+name derived from the input label.  An attribute of "any" will match any
+camera (thus disabling this check).  The camera ID check is best when there
+are image-space mask elements, such as for a hazcam.
+
+The second is by <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#rmc">RMC</A>.  Any rmc1, rmc2, ... attributes given in &ltcamera&gt must
+match the corresponding elements in the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#rmc">RMC</A> of the image label.  Attributes
+not listed do not have to match (thus if no attributes are listed, the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#rmc">RMC</A>
+check is disabled).  The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#rmc">RMC</A> check can also be disabled by -NO_RMC.  The intent
+of the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#rmc">RMC</A> check is to allow filters that follow a rover's articulation state,
+such as are produced by the program MSLFILTER.  Those filters that match the
+image's articulation state are used, while others are ignored.
+
+After finding the right &ltcamera&gt elements, the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> entries inside are
+processed one by one, adding each to the mask.
+
+Finally, the completed mask is written to the output file.
+
+
+Types of Filters
+----------------
+
+There are three fundamental types of filters, with potentially several shapes
+available in each type:  IMAGE, PROJECTED, and VOLUME.
+
+Some filters can be modified at runtime (for example, a rotation angle).
+This is accomplished using the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#params">PARAMS</A> parameter.  Numeric parameters are
+supplied here; how they are used is specified by the individual <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A>.
+
+IMAGE Type
+----------
+
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> is a shape in image space.  This becomes a constant area in the
+output regardless of the input.  Note though that this is the "nominal"
+image space, i.e. for MER it's based on a 1024x1024 image.  Any subframing
+or downsampling is applied to these nominal coordinates.
+
+The intent of this <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> type is to remove constant obscurations for fixed
+cameras (or obscurations that move with the camera).  For MER, this is used
+for the underside of the rover deck for the rear hazcams, and the area
+covered by the stowed IDD for the front hazcams.
+
+There is one IMAGE shape available:
+
+POLYGON:  A list of (x,y) coordinates of arbitrary length.  It should be a
+    convex polygon, although the current implementation seems not to care.
+    (The current implementation is slow, so to provide room for later
+    replacement with a faster implementation, the convex polygon constraint
+    should apply).  The polygon is assumed to be closed, i.e. the initial
+    point need not be repeated at the end.
+
+  Shape specified by:
+
+    List of (x,y) vertices in nominal-image space.
+
+
+PROJECTED Type
+--------------
+
+This <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> is a shape in XYZ space.  The shape is projected through the
+image's camera model into image space to greate a polygon, and then that
+polygon is filtered as with the IMAGE-Polygon type (although without
+additional subframe/downsample adjustment, since those are built in to
+the camera models).
+
+The intent of this <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> is to remove items which are fixed in space (in
+the coordinate system used) but which may appear in different parts of the
+image due to articulation of the camera.  This mode is preferred to the
+VOLUME mode when the area behind the shape is completely and statically
+obscured because it removes all points in the area.  If a point in the
+area mis-correlated such that it would be outside of the volume, it would
+still get masked by this <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A>.
+
+For MER, this type is used to model the top of the rover deck as seen by
+the navcam and pancam, and to cut off the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#horizon">horizon</A>.
+
+For MSL, this type is used for almost all filters, via the mission-specific
+program MSLFILTER.  This program looks at the vehicle articulation state
+described in the label and computes a custom set of polygons for use by
+that specific image (or other images at the same articulation state).  This
+obviates the need for Volume spaces, and cuts <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#out">out</A> much less good data, e.g.
+due to modeling the wheel positions rather than taking their maximum possible
+volume.
+
+There are two TRIANGLE shapes available:
+
+POLYGON:  A list of (x,y,z) coordinates forming a closed, convex polygon
+    (see the Image polyon).  Points should all be co-planar.  This works
+    by projecting each point into the image, doing some cropping, and then
+    onverting the result to an Image polygon.  Non-coplanar points could
+    cause unexpected results.
+
+  Shape specified by:
+    List of (x,y) vertices in XYZ space.
+
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#horizon">HORIZON</A>:  Cuts off anything above the given elevation (defined as projecting
+    the pixel through the camera model and looking at the elevation component
+    of that projection).  Note that the elevation is defined in the SITE
+    frame, regardless of the setting of the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#coord">COORD</A> parameter.  The given
+    elevation can be overridden by the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#horizon">HORIZON</A> parameter (but only if the
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#horizon">horizon</A> shape exists in the file).
+
+  Shape specified by:
+    Maximum elevation above which the image is masked.
+
+TRIANGLE:  This is a special case of POLYGON.  It is retained for
+    backwards compatibility, but POLYGON should be used instead for
+    new filters.
+
+VOLUME Type
+-----------
+
+This <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> looks at the XYZ values in the input image, and removes those
+that are within a defined shape in 3-D space.  Unlike the other two, this
+looks at actual XYZ values, so the mask will only have a value if the XYZ
+image has a value at the given point.
+
+The intent of this <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> is to remove objects which are not easily modeled
+by the other two.  For example, MER uses this for two things.  The wheels
+as seen by the hazcams can articulate left/right and up/down.  Since they can
+vary quite a bit in image space, removing them via an image <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> runs the
+risk of throwing <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#out">out</A> too much good data.  The volume <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> captures the
+wheels without hurting the surrounding terrain too much.
+
+The other MER usage is for the superstructure above the rover deck for navcam
+and pancam.  The HGA antenna moves, and the LGA is too close to the camera
+to be accurately modeled in image space.  So, a large cylinder above the rover
+deck removes any points on this superstructure.  Of course, points that
+correlated wrong may not be removed.
+
+The volumes can optionally be rotated arbitrarily in 3-D space, so they do
+not have to align with the coordinate axes.
+
+If the -NO_XYZ option is used, then the Volume types are not available and
+will be silently ignored (a general warning is printed if -NO_XYZ is on).
+
+There are three VOLUME shapes available:
+
+BOX:  A rectangular space aligned with the axes.
+
+  Shape specified by:
+    Min and max extents for each of (x,y,z)
+    Optional rotation
+
+Z_CYLINDER:  A cylinder with its axis parallel to the Z axis.
+
+  Shape specified by:
+    Location of the axis in X and Y
+    Radius of the cylinder
+    Min and max extents of the cylinder in Z (the end caps)
+    Optional rotation
+
+Y_WASHER:  A "washer"-shaped area with its axis parallel to the Y axis.
+    This could also be described as a donut with a rectangular cross-section,
+    or as a cylinder aligned with Y, with a central cylinder removed from the
+    volume.
+
+  Shape specified by:
+    Location of the axis in X and Z
+    Min and max radii of the washer (point must be between them)
+    Min and max extents of the washer in Y (the end caps, or washer faces).
+    Optional rotation
+
+
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">FILTER</A> FILE FORMAT
+------------------
+
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> file is in XML format, and is pretty straightforward.  Rather than
+a formal DTD or Schema, the syntax is described by example below.  Comments
+are used to further explain elements and are not part of the format (although
+they are allowed as per the XML spec).  Ellipses (...) indicate potentially
+repeated items and are not part of the file.  Indents and blank lines are
+not required but are allowed for readability.
+
+&lt?xml version="1.0" encoding="UTF-8"?&gt
+
+&ltmesh_filter host_id="sim2"&gt    
+
+  &ltcamera id="NAVCAM_LEFT"&gt     
+				&lt!-- id="any" will match all instruments --&gt
+
+    &ltimage shape="polygon"&gt
+      &ltvertex x="1.0" y="2.0" /&gt
+      &ltvertex x="2.0" y="3.0" /&gt
+      &ltvertex x="3.0" y="4.0" /&gt
+       ...
+    &lt/image&gt
+
+    &ltprojected shape="triangle"&gt	
+      &ltvertex x="1.0" y="2.0" z="3.0" /&gt
+      &ltvertex x="2.0" y="3.0" z="4.0" /&gt
+      &ltvertex x="3.0" y="4.0" z="5.0" /&gt
+    &lt/projected&gt
+
+    &ltprojected shape="polygon"&gt
+      &ltvertex x="1.0" y="2.0" z="3.0" /&gt
+      &ltvertex x="2.0" y="3.0" z="4.0" /&gt
+      &ltvertex x="3.0" y="4.0" z="5.0" /&gt
+      &ltvertex x="4.0" y="5.0" z="6.0" /&gt
+      ...
+    &lt/projected&gt
+
+    &ltprojected shape="<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#horizon">horizon</A>"&gt
+      &ltmax elevation="-1.0" /&gt
+    &lt/projected&gt
+
+    &ltvolume shape="box"&gt
+      &ltmin x="2.0" y="4.0" z="0.0" /&gt
+      &ltmax x="4.0" y="8.0" z="1.0" /&gt
+      &ltrotate ... /&gt
+    &lt/volume&gt
+
+    &ltvolume shape="z_cylinder"&gt
+      &ltaxis x="1.0" y="2.0" /&gt
+      &ltmin z="3.0" /&gt
+      &ltmax z="4.0" radius="5.0" /&gt
+      &ltrotate ... /&gt
+    &lt/volume&gt
+
+    &ltvolume shape="y_washer"&gt
+      &ltaxis x="1.0" z="2.0" /&gt
+      &ltmin y="3.0" radius="4.0" /&gt
+      &ltmax y="5.0" radius="6.0" /&gt
+      &ltrotate ... /&gt
+    &lt/volume&gt
+
+  &lt/camera&gt
+
+  &ltcamera id="PANCAM_LEFT"&gt                
+    &ltvolume shape="y_washer"&gt
+      &ltaxis x="1.0" z="2.0" /&gt
+      &ltmin y="3.0" radius="4.0" /&gt
+      &ltmax y="5.0" radius="6.0" /&gt
+    &lt/volume&gt
+    ...
+  &lt/camera&gt
+
+  &ltcamera id="any" rmc1="4" rmc2="2" rmc4="10"&gt	
+    ...
+  &lt/camera&gt
+
+  ...
+
+&lt/mesh_filter&gt
+
+Note that &ltprojected shape="triangle"&gt is an old name preserved for backward
+compatibility; the more general &ltprojected shape="polygon"&gt is preferred.
+
+The &ltrotate&gt tag in the three volume elements is optional. If present, it
+specifies how the entire mask volume should be rotated.  The syntax of this
+element is as follows:
+
+&ltrotate x="1.2" y="2.1" z="0.0" axis_x="0.0" axis_y="0.0" axis_z="1.0" angle="10.2" add_angle="1" /&gt
+
+The x, y, and z attributes specify the center of rotation - what point are we
+rotating around.  The axis_x, axis_y, and axis_z attributes represent a unit
+vector describing the axis around which the rotation will take place.  The
+angle attribute specifies how much rotation to apply.  The optional "add_angle"
+attribute specifies which element from the PARAM parameter list will be added
+to the angle (1-based).  This allows the amount of rotation to be adjusted
+at runtime.  Angle, and the value from PARAM if used, are both specified in
+degrees.
+
+Note that the specified <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#horizon">horizon</A> elevation can be overridden by the HORIZON
+parameter.  But the &lthorizon&gt element must be present; i.e. specifying <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#horizon">HORIZON</A>
+without the &lthorizon&gt element does nothing.
+
+
+HISTORY:
+2012-04-27 Added <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#rmc">RMC</A> checking (rgd)
+2012-03-22 Added proj poly, no_xyz, multiple files and camera elements, id=any
+2011-10-26 Added <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#horizon">HORIZON</A> parameter (rgd)
+2004-09-04 Added projected <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#horizon">horizon</A> type (rgd).
+2003-12-08 Initial marsfilter by B. Deen.  Acknowledgement to Chris Leger (348)
+          for simple polygon fill routine.
+<A NAME="CogProg">COGNIZANT PROGRAMMER: B. Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#inp"><H3>INP</H3></A>
+Input images.
+Must be 1 3-band file
+or (x,y,z) triplet, or any
+file with -NO_XYZ.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#out"><H3>OUT</H3></A>
+Output file.
+Must be 1 filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#extra_filter"><H3>EXTRA_FILTER</H3></A>
+Specific <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> file for this
+image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter"><H3>FILTER</H3></A>
+Common <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> file, or blank
+for auto-find.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#params"><H3>PARAMS</H3></A>
+Numeric parameters for use
+by some filters.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#horizon"><H3>HORIZON</H3></A>
+Override for the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#horizon">horizon</A> value.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#print"><H3>PRINT</H3></A>
+Controls printing of the filters
+to stdout.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#numbers"><H3>NUMBERS</H3></A>
+Puts <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#filter">filter</A> <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#numbers">numbers</A> in mask
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#use_xyz"><H3>USE_XYZ</H3></A>
+Allows non-XYZ images to be
+used as input.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#rmc"><H3>RMC</H3></A>
+Turns on or off <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#rmc">RMC</A> checking.
+Defaults to on.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsfilter.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

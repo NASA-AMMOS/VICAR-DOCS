@@ -1,0 +1,260 @@
+<HTML>
+<HEAD><title>HTML Help for QPLOT2</title></HEAD>
+<BODY>
+<H1>Help for QPLOT2</H1>
+<pre>
+PURPOSE:  
+    QPLOT2 plots the DN values along a specified straight line through
+  an image.  It also does spectral plots for multi-channel data. 
+
+OPERATION:
+
+   QPLOT2 operates on single or multiple single-band BSQ imgages in
+   BYTE, HALF, FULL or REAL format. For FULL and REAL formats the DN 
+   ranges are internally limited to -65536 to +65535 DN ranges. It does
+   work for multi-band BSQ (MSS) images.
+
+   Plots for up to 10 input image files are allowed for Single Band images.
+   and up to 50 lines (profiles) for each image is allowed. The straight lines
+   may be oriented in any direction, horizontal, vertical or at a slant.
+
+   Modes are distinguished via the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#process">PROCESS</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#sprocess">SPROCESS</A> parameters. 
+
+   <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#process">PROCESS</A> parameter is used for One band BSQ files
+   <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#sprocess">SPROCESS</A> parameter is used for multiple BSQ files.
+   These parameters are mutually exclusive
+
+    
+PARAMETERS:
+
+  There are two types of parameters:
+
+  (1) Parameters with a single specification:
+        <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#inp">INP</A>         <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#nchan">NCHAN</A>
+        <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#title">TITLE</A>       <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#lotitle">LOTITLE</A>     <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#xtitle">XTITLE</A>
+        <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#ytitle">YTITLE</A>      <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#labelsiz">LABELSIZ</A>    <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#lolabel">LOLABEL</A>
+        <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#norm">NORM</A>        <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#rds">RDS</A>         <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#displace">DISPLACE</A>
+        <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#xlength">XLENGTH</A>     <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#ylength">YLENGTH</A>
+        <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#xscale">XSCALE</A>      <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#yscale">YSCALE</A>
+
+  (2) Parameters which have a specification for each line plotted:
+        <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#process">PROCESS</A>     <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#sprocess">SPROCESS</A>
+        <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#xvalues">XVALUES</A>     <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#yvalues">YVALUES</A>
+
+  The parameter <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#process">PROCESS</A> specifies that one or more lines to be plotted. 
+  Following the keyword, each plot is specified by a set of five numbers.
+  The first value in each quintet specifies the Input Data Set Number and
+  the remaining four values specify the Starting Line, Starting Sample,
+  Ending Line, and Ending Sample. (No Default).
+
+  NOTE:  The line plotted will cover SQRT((EL-SL)**2+(ES-SS)**2) "relative 
+  samples"  along the horizontal axis and will start at "relative sample" 1.
+
+  This version allows plots for BYTE, HALF, FULL or REAL data files.
+  It also allows for mixed filetypes in <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#inp">INP</A> to be plotted on same graph.
+
+  The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#sprocess">SPROCESS</A> parameter for spectral data only uses 2 numbers, the
+  line and sample position of a single point within the MSS formatted image.
+  Up to 20 points can be specified. Thus, it is possible to look at
+  a 20 point straight line in an image or 20 widely separated points.
+
+  You can use <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#process">PROCESS</A> for an MSS image but you will only get a profile
+  on the 1st MSS Band.
+
+  The parameters <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#title">TITLE</A>, <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#xtitle">XTITLE</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#ytitle">YTITLE</A> refer to the usual plot labelling
+  schemes.
+
+  The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#labelsiz">LABELSIZ</A> parameter refers to the font size in points for all the text in the
+  graph. This is suitable for changes of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#xlength">XLENGTH</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#ylength">YLENGTH</A> when different 
+  from the default. Note, the internal font is Ariel and cannot be changed.
+  The label data superimposed on graph is always 9-point Ariel.
+
+  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#xscale">XSCALE</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#yscale">YSCALE</A> are the max size of the X plot values and Y plot values.
+
+  The parameter <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#norm">NORM</A> is used to normalize the DN values to 1. The
+  DN values are ratioed to the max DN of the line. Especially useful
+  when different data formats occur for each input image.
+
+  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#xlength">XLENGTH</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#ylength">YLENGTH</A> tell gnuplot what size the output is in inches
+  at 72 dots/inch. Default is 7 inches wide by 5 inches long,
+  or 648 by 504 pixels.
+
+  The parameter <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#tics">TICS</A> refers to placing crosshatching on the plot along
+  with the axis tic marks which are in units of 10.
+
+  The parameter <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#rds">RDS</A> causes DN values to be scaled by the following equation:
+               OUT=SQRT(IN**2-<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#rds">RDS</A>**2).
+  Where <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#rds">RDS</A> is the value in the RDS parameter.
+ 
+  For plots containing multiple lines, the parameter <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#displace">DISPLACE</A> forces 
+  each line to be displaced successively by the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#displace">DISPLACE</A>=DN on the
+  It does not work on plots containing a single line. 
+
+
+  LOTITILE and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#lolabel">LOLABEL</A> keywords are no longer supported (gnuplot).
+
+  
+NOTES:
+
+  The common plotting routines used in MIPL were removed in this version
+  and converted to gnuplot commands. The Mipl version in 2011 uses the
+  xrt commercial plotting package.
+
+
+OUTPUTS:
+
+  Up to two types of outputs can be produced, interactive plots using 
+  gnuplot and hardcopy plots suitable for publications using gnuplot and ghostscript
+  or gimp.
+
+  The first type of plot is rendered via the creation of a gnuplot instruction, or
+  command file. This is indicated by the file extension of .gpi.  After completion
+  of the qplot2 task this file creates an interactive plot on the desktop, e.g.,
+     ush gnuplot qplot.gpi.
+  This display stays active until mouse-clicked somewhere on the plot panel.
+  The terminal window prompt is inactive until the panel is closed.
+
+  If you wish, you can issue the following gnuplot command to keep the plot on
+  the desktop.
+
+  ush gnuplot -persist gplot.gpi
+
+  Again the terminal prompt is inactive until the plot panel has been mouse-clicked.
+  After the mouse click the panel remains but the terminal prompt is restored. This
+  makes it easy to compare outputs from several qplot2 commands.
+
+  A second output is derived from the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#plotout">PLOTOUT</A> parameter. By default this parameter is
+  set to "NONE" so no hardcopy output is produced.  It can be set to "YES" in which
+  case a file called gplot2.gpi is created. If you issue the command
+
+  ush gnuplot qplot2.gpi 
+ 
+  no interactive plot panel is created but it produces a file qplot.eps. This
+  file can be displayed using ghostscript (the usual unix command is gs).
+
+  gs qplot2.eps
+
+  or gimp, e.g.,
+
+  gimp qplot2.eps
+
+  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#plotout">PLOTOUT</A> can also be given a file name, e.g.,
+  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#plotout">PLOTOUT</A>=fourbands   (not necessary to give file extension) 
+
+  In that case the 2 outputs are produced, fourbands.gpi and fourbands2.gpi.
+  Fourbands.gpi gives the interactive gnuplot panel and the second one, when
+  run, will create fourbands.eps which can be displayed by ghostscript or gimp.
+
+
+RESTRICTIONS:
+
+  (1) Maximum number of lines plotted is 10.
+  (2) Spectral plots require the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#sprocess">SPROCESS</A> parameter.
+  (3) Cannot use <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#process">PROCESS</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#sprocess">SPROCESS</A> parameters simultaneously
+  (4) Spectral plots on multiple files are not supported
+  (5) Maximum of 10 input files
+
+Note:  This program makes use of multiple intermediate data sets.
+  If this program is run under a directory which does not allow the
+  creation of these files either because of disk quotas or protection)
+  the program will die and plot file will not be created.
+
+
+
+HISTORY:
+
+  Original Programmer:  John H. Reimer,  22 Aug. 1982
+<A NAME="CogProg">  Cognizant Programmer:  Ray Bambery   </A>
+
+  Revisions:
+  1985-04-22 John H. Reimer - Converted to Vicar2
+  1995-07-10 C. Randy Schenk (CRI) - Ported to Unix (MSTP S/W Conversion)
+  2011-06-13 Ray Bambery - Converted to use gnuplot, and work
+             under gfortran 4.4.4 on liunx
+  2012-06-05 Ray Bambery - fixed dimensions of x,y in subroutine equiv
+  2012-07-10 Ray Bambery - Renamed qplot2g for delivery to MIPL
+             qplot2 still uses XRT/Graph package, 
+             Removed &lttab&gt in front of continuation
+             lines to make backward compatible with
+             32-bit Linux gfortran 4.2.1, otherwise
+             compatible 64-bit Linux gfortran 4.6.3&lt/tab&gt
+  2012-10-13 Ray Bambery - Renamed back to qplot2, in agreement
+             with Lucas Kamp of mipl. The XRT graph package
+             is to be removed from mipl. XRT was never used by
+             cartlab. Implemented <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#labelsiz">LABELSIZ</A> parameter
+  2013-07-09 Ray Bambery - Fixed truncated plot labeling
+             created unique names for data sets for plots to
+             prevent confusion in long scripts. Added <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#plotfmt">PLOTFMT</A>
+  2013-07-12 Ray Bambery - Adjusted eps format to more readable fonts
+  2013-08-21 Ray Bambery - Fixed grid, notics code in gpi output. Fixed
+             <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#displace">DISPLACE</A> parmeter, Changed mode of placing labels
+             on plots from proportional to character mode. 
+             Added filenames to plot
+  2013-08-28 Ray Bambery - Added <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#nolabel">NOLABEL</A> parameter to inhibit overprinting
+             of VICAR labels on graph (Sometimes way too many labels)
+             It can corrupt the gnuplot script which will give an
+             error like "line 54: invalid expression"
+             on entering the command gnuplot xx.gpi                        
+  2015-08-19 Walt Bunch - Fixed end of line encoding so linux and sun
+                will yield same output.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#inp"><H3>INP</H3></A>
+STRING - Input data set
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#plotout"><H3>PLOTOUT</H3></A>
+STRING - Output file
+name. QPLOT names output file 
+as 'qplot.eps' if "YES" is entered
+NONE means no output.
+filename, Default="NONE"
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#plotfmt"><H3>PLOTFMT</H3></A>
+string - specification
+ of plotter output
+ Gnuplot or eps
+
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#process"><H3>PROCESS</H3></A>
+INTEGER - DSN1,SL1,SS1,EL1,ES1, DSN2,SL2,SS2,EL2,ES2, ...
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#sprocess"><H3>SPROCESS</H3></A>
+INTEGER - LINE1,SAMPLE1, LINE2,SAMPLE2, ...
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#title"><H3>TITLE</H3></A>
+STRING - <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#title">Title</A> of plots.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#lotitle"><H3>LOTITLE</H3></A>
+KEYWORD - Lower position for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#title">title</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#xtitle"><H3>XTITLE</H3></A>
+STRING - X axis <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#title">title</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#ytitle"><H3>YTITLE</H3></A>
+STRING - Y axis <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#title">title</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#labelsiz"><H3>LABELSIZ</H3></A>
+INTEGER - Font Size, in points, of plot text.
+Default=12
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#nolabel"><H3>NOLABEL</H3></A>
+KEYWORD - Inhibit overprinting of VICAR
+    labels on plot
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#lolabel"><H3>LOLABEL</H3></A>
+KEYWORD - Lower position for label.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#tics"><H3>TICS</H3></A>
+KEYWORD - Place crosshatching on plot
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#norm"><H3>NORM</H3></A>
+KEYWORD - Normalizes data to 1.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#rds"><H3>RDS</H3></A>
+REAL - DN scaling factor.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#displace"><H3>DISPLACE</H3></A>
+REAL - Displacement from first line for subsequent lines.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#xlength"><H3>XLENGTH</H3></A>
+REAL - Length of X axis (inches).
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#ylength"><H3>YLENGTH</H3></A>
+REAL - Length of Y axis (inches).
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#xscale"><H3>XSCALE</H3></A>
+REAL - Min & Max of X axis.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#yscale"><H3>YSCALE</H3></A>
+REAL - MIN & Max of Y axis.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#xvalues"><H3>XVALUES</H3></A>
+REAL - X Image Size in inches. 
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2_level2.html#yvalues"><H3>YVALUES</H3></A>
+REAL - Y Image Size in inches.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/qplot2.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

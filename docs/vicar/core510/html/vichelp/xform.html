@@ -1,0 +1,134 @@
+<HTML>
+<HEAD><title>HTML Help for XFORM</title></HEAD>
+<BODY>
+<H1>Help for XFORM</H1>
+<pre>
+ "XFORM" will perform a linear transformation on the input data.
+ The transformation is specified  by a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#matrix">matrix</A> input as a 
+ parameter. If desired, XFORM will scale the output to a user
+ specified <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#range">range</A>, which defaults to the full range of the data 
+ type. (XFORM will now accept a parameter dataset as input)
+
+ EXECUTION:
+
+ XFORM (INP1,INP2,...) (OUT1,OUT2,...) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#size">SIZE</A> PARAMS          or
+ XFORM  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#inp">INP</A>            (OUT1,OUT2,...) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#size">SIZE</A> PARAMS          or
+ XFORM (INP1,INP2,...)  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#out">OUT</A>            <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#size">SIZE</A> PARAMS          or
+ XFORM  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#inp">INP</A>             <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#out">OUT</A>            <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#size">SIZE</A> PARAMS          or
+
+ OPERATION:
+
+ Let each corresponding pixel from the input data sets be
+ represented by a vector x[T] = (x1,x2,...xm)[T], where [T}
+ denotes Transpose. Let A be the parameter <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#matrix">matrix</A> (n * m).
+ Then XFORM computes the product:
+
+ AX = V
+
+ A <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#gain">gain</A> and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#offset">offset</A> are then applied to each component before
+ it is written to the output data set:
+
+ V'(i) = P(i)  + Q(i).V(i)
+
+ Auto-scale mode is the default condition if gains and offsets
+ are not specified using <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#preset">preset</A> or <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#gain">gain</A>/<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#offset">offset</A>.
+ In auto-scale mode, the gains and offsets for each band are
+ calculated by fitting the output histogram to user - specified
+ parameters. This calculation requires a separate pass, which 
+ can double the computation time.
+
+ RESTRICTIONS:
+
+ Currently, the program limits NI and NO to 32 because the relevant
+ arrays are dimensioned to that <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#size">size</A>.
+
+ XFORM WRITTEN BY:  J.D.Addington,  Jan. 1977
+
+ XFORM CONVERTED TO VAX BY:  F.F.Moss, Jan. 1984
+
+ XFORM WRITTEN BY:  L.W.Kamp,  Sept. 1984
+
+ CONVERTED TO VICAR2 BY:  J.H.Reimer, July 1985
+
+ REWRITTEN IGNORING AP COMPATIBILITY: Ron Alley, June 1986
+
+<A NAME="CogProg"> CURRENT COGNIZANT PROGRAMMER:  Ron Alley</A>
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#inp"><H3>INP</H3></A>
+ Input file name(s)
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#out"><H3>OUT</H3></A>
+ Output file name(s)
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#size"><H3>SIZE</H3></A>
+ Standard VICAR <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#matrix"><H3>MATRIX</H3></A>
+ The input <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#matrix">matrix</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#format"><H3>FORMAT</H3></A>
+ Output data <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#format">format</A>.
+ Valid: BYTE, HALF, FULL, REAL.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#mss"><H3>MSS</H3></A>
+ Number of bands in <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#mss">MSS</A> input
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#usebands"><H3>USEBANDS</H3></A>
+ Use only these bands of the
+ multichannel input
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#preset"><H3>PRESET</H3></A>
+ Non auto-scale mode
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#gain"><H3>GAIN</H3></A>
+ Specify the gains for all
+ outputs
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#offset"><H3>OFFSET</H3></A>
+ Specify the offsets for all
+ outputs
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#area"><H3>AREA</H3></A>
+ (PARM FOR AUTO-SCALE MODE)
+ Specify the certain <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#area">area</A>
+ to be sampled
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#inc"><H3>INC</H3></A>
+ (PARM FOR AUTO-SCALE MODE)
+ Line and sample increments
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#linc"><H3>LINC</H3></A>
+ (PARM FOR AUTO-SCALE MODE)
+ Line increments
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#sinc"><H3>SINC</H3></A>
+ (PARM FOR AUTO-SCALE MODE)
+ Sample increments
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#percent"><H3>PERCENT</H3></A>
+ (PARM FOR AUTO-SCALE MODE)
+ <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#percent">Percent</A> saturation in
+ output histogram
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#lpercent"><H3>LPERCENT</H3></A>
+ (PARM FOR AUTO-SCALE MODE)
+ <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#percent">Percent</A> saturation at the
+ lower end in output histogram
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#hpercent"><H3>HPERCENT</H3></A>
+ (PARM FOR AUTO-SCALE MODE)
+ <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#percent">Percent</A> saturation at the
+ higher end in output histogram
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#spread"><H3>SPREAD</H3></A>
+ (PARM FOR AUTO-SCALE MODE)
+ Specify the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#spread">spread</A> in output
+ histogram
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#firm"><H3>FIRM</H3></A>
+ Causes output to be firmly
+ clipped to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#range">range</A> specified
+ by <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#spread">SPREAD</A> and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#center">CENTER</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#center"><H3>CENTER</H3></A>
+ (PARM FOR AUTO-SCALE MODE)
+ Specify the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#center">center</A> in output
+ histogram
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#exclude"><H3>EXCLUDE</H3></A>
+ (PARM FOR AUTO-SCALE MODE)
+ Ignore this input DN
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#histsize"><H3>HISTSIZE</H3></A>
+(PARM FOR AUTO-SCALE MODE)
+Number of histogram bins per
+output band
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform_level2.html#range"><H3>RANGE</H3></A>
+(PARM FOR AUTO-SCALE MODE)
+Value of first and last
+histogram bins.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/xform.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

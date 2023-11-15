@@ -1,0 +1,453 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+
+<title>CoordSystem</title>
+<meta name="date" content="2018-06-21">
+<link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../../../script.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
+var altColor = "altColor";
+var rowColor = "rowColor";
+var tableTab = "tableTab";
+var activeTableTab = "activeTableTab";
+</script>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+
+<div class="topNav"><a name="navbar.top">
+
+</a>
+<div class="skipNav"><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mica/pig/#skip.navbar.top" title="Skip navigation links">Skip navigation links</a></div>
+<a name="navbar.top.firstrow">
+
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../../overview-summary.html">Overview</a></li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mica/pig/package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mica/pig/package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+<li><a href="../../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../../../jpl/mipl/mica/pig/CameraModel.html" title="class in jpl.mipl.mica.pig"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../../jpl/mipl/mica/pig/FileModel.html" title="class in jpl.mipl.mica.pig"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../../../index.html?jpl/mipl/mica/pig/CoordSystem.html" target="_top">Frames</a></li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mica/pig/CoordSystem.html" target="_top">No&nbsp;Frames</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_top">
+<li><a href="../../../../allclasses-noframe.html">All&nbsp;Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript">
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>Summary:&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mica/pig/#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mica/pig/#method.summary">Method</a></li>
+</ul>
+<ul class="subNavList">
+<li>Detail:&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mica/pig/#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mica/pig/#method.detail">Method</a></li>
+</ul>
+</div>
+<a name="skip.navbar.top">
+
+</a></div>
+
+
+<div class="header">
+<div class="subTitle">jpl.mipl.mica.pig</div>
+<h2 title="Class CoordSystem" class="title">Class CoordSystem</h2>
+</div>
+<div class="contentContainer">
+<ul class="inheritance">
+<li>java.lang.Object</li>
+<li>
+<ul class="inheritance">
+<li>jpl.mipl.mica.pig.CoordSystem</li>
+</ul>
+</li>
+</ul>
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<hr>
+<br>
+<pre>public class <span class="typeNameLabel">CoordSystem</span>
+extends java.lang.Object</pre>
+<div class="block">Defines a coordinate system.  CS's are defined by three identifiers:
+ Mission, Frame, and Site.  Mission is MPF, M98, etc. and basically
+ reflects the subclass.  The mission defines what allowable Frames
+ there are.  Frame is the definition of a coordinate system, for example
+ Surface Fixed, Local Level, Lander, MVACS (m98 only), etc.  Site is
+ a pointer to a (shared) object that defines mission-specific parameters
+ for each unique location (if the coordinate system moves due to spacecraft
+ or rover motion, that would be a different site).
+ <p>
+ Each frame is referenced back to a single Fixed coordinate system for
+ that mission.  For MPF this is called Mars Fixed and for M98 it is
+ Surface Fixed.  This Fixed coordinate system has the property that
+ features on the body of interest do not move.  For orbiters this might
+ be a body-center-fixed CS which is easily translated into lat/lon.  The
+ Fixed frame is used to transform between various other frames, which may
+ vary over time (different sites).  Note that orbiters might very well have
+ a new site for each image (or even every line for a pushbroom scanner).
+ <p>
+ Transformation between missions is not implemented now, but could be done
+ by relating the two base Fixed coordinate systems to each other using
+ some uber-alles coordinate system (e.g. lat/lon of each landing site).
+ Such parameters would most likely be in Config files, not in indvidual
+ image labels, due to their global nature.
+ <p>
+ Transformation between frames is normally done by transforming to the
+ common Fixed frame, then back into the destination frame.  This may be
+ short-circuited in some common cases for efficiency (e.g. M98 MVACS <->
+ Lander transformations when the site is the same; it's just a sign change
+ and offset).  Note that even these would have to go through the Fixed
+ frame if they are at different sites, because the relative orientations
+ would no longer be the same.
+ <p>
+ Mission and frame ID's are strings, but are converted internally to ints
+ for ease of comparison.  These ints are mission-dependent.
+ <p>
+ CS objects, like sites, are shared as much as possible.  The create
+ functions search a static global table of CS objects, and return an existing
+ object if the mission, frame, and site match.  This ensures that items
+ which should be in the same coordinate system, are all using the same
+ parameters.
+ <p>
+ CS subclasses must not cache data obtained from the Site object.  The
+ Site may change at any time (in the future, Sites will probably be attached
+ to PointingModel's so they can be nav'd as well as individual image
+ pointing).  It is up to the mission-specific Site subclass to compute and
+ cache any commonly used items whenever the Site parameters change.
+ <p>
+ CS object support conversions of three quantities:  Point, Vector, and
+ az/el.  Vectors are simply rotated as necessar; there is no origin (they
+ are just an orientation, typically they are unit vectors but this is not
+ required).  Points are rotated as well, but are translated too based on
+ the offsets between the CS's (they are a vector from the CS origin to
+ the given physical point, or equivalently, cooridnates of a point in the
+ CS).  Az/el angles are simply a convenience to avoid having to go to/from
+ a vector all the time.
+ <p>
+ Note that EVERY time az/el is converted to/from an orientation vector,
+ the corresponding CS routines MUST BE USED!  The reason is that most CS's
+ define positive elevation as toward the +Z axis (e.g. M98 Fixed, LL,
+ MVACS) while others define it as toward the -Z axis (e.g. MPF all, M98
+ Lander) (this mostly happens when +Z points down).  The CS objects take
+ this into account.  Plus, is it possible for some CS's to use the
+ equivalent of West longitude while others use East.
+ <p>
+ Note that az/el are always measured in radians.
+ <p><hr>
+ NOTE: This object is a proxy object for a C++ implementation. The C++ implementation
+ is part of the NASA/JPL Planetary Image Geometry (PIG) library. This object holds 
+ a pointer to an underlying C++ PIG object and makes its methods available to Java.
+ For information on how to create and use PIG objects in Java, see the jpl.mipl.mica.pig package 
+ information. For more information on the PIG library and other related JPL software, see 
+ <a HREF="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mica/pig/">MIPS</a>.
+ <p>
+ This proxy is different from other mica proxy objects. The under lying c++
+ impl is difficult to work with. To make this work with Surface models the
+ initialize method DOES NOT stuff a c++ address into the java variable.
+ If you create a surface model and call SurfaceModel.getCoordSystem you will
+ get a valid (both java and c++ are init'ed) proxy.
+ <hr><p></div>
+</li>
+</ul>
+</div>
+<div class="summary">
+<ul class="blockList">
+<li class="blockList">
+
+<ul class="blockList">
+<li class="blockList"><a name="constructor.summary">
+
+</a>
+<h3>Constructor Summary</h3>
+<table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructor Summary table, listing constructors, and an explanation">
+<caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colOne" scope="col">Constructor and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/mica/pig/CoordSystem.html#CoordSystem--">CoordSystem</a></span>()</code>
+<div class="block">Constructor.</div>
+</td>
+</tr>
+</table>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="method.summary">
+
+</a>
+<h3>Method Summary</h3>
+<table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Method Summary table, listing methods, and an explanation">
+<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mica/pig/show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mica/pig/show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Method and Description</th>
+</tr>
+<tr id="i0" class="altColor">
+<td class="colFirst"><code><a href="../../../../jpl/mipl/mica/pig/PigVector.html" title="class in jpl.mipl.mica.pig">PigVector</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/mica/pig/CoordSystem.html#constructVector-double-double-">constructVector</a></span>(double&nbsp;az,
+               double&nbsp;el)</code>
+<div class="block">Returns a new PigVector oriented to this coordinate system and pointing in the 
+ direction specified by the azimuth and elevation.</div>
+</td>
+</tr>
+<tr id="i1" class="rowColor">
+<td class="colFirst"><code>double</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/mica/pig/CoordSystem.html#getAz-jpl.mipl.mica.pig.PigVector-">getAz</a></span>(<a href="../../../../jpl/mipl/mica/pig/PigVector.html" title="class in jpl.mipl.mica.pig">PigVector</a>&nbsp;v)</code>
+<div class="block">Convert azimuth from a unit vector.</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/mica/pig/CoordSystem.html#getAzimuthDirection--">getAzimuthDirection</a></span>()</code>
+<div class="block">Returns 1 if azimuth is CW as viewed from +elevation or -1 if it is CCW.</div>
+</td>
+</tr>
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code>double</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/mica/pig/CoordSystem.html#getEl-jpl.mipl.mica.pig.PigVector-">getEl</a></span>(<a href="../../../../jpl/mipl/mica/pig/PigVector.html" title="class in jpl.mipl.mica.pig">PigVector</a>&nbsp;v)</code>
+<div class="block">Convert elevation from a unit vector.</div>
+</td>
+</tr>
+<tr id="i4" class="altColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../jpl/mipl/mica/pig/CoordSystem.html#getElevationDirection--">getElevationDirection</a></span>()</code>
+<div class="block">Returns 1 if elevation is towards +z, or -1 if it is towards -z.</div>
+</td>
+</tr>
+</table>
+<ul class="blockList">
+<li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
+
+</a>
+<h3>Methods inherited from class&nbsp;java.lang.Object</h3>
+<code>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="details">
+<ul class="blockList">
+<li class="blockList">
+
+<ul class="blockList">
+<li class="blockList"><a name="constructor.detail">
+
+</a>
+<h3>Constructor Detail</h3>
+<a name="CoordSystem--">
+
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>CoordSystem</h4>
+<pre>public&nbsp;CoordSystem()</pre>
+<div class="block">Constructor. Attempts to initialize a C++ implementation object. If it cannot, it will 
+ abort the Java Virtual Machine.</div>
+</li>
+</ul>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="method.detail">
+
+</a>
+<h3>Method Detail</h3>
+<a name="getElevationDirection--">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getElevationDirection</h4>
+<pre>public&nbsp;int&nbsp;getElevationDirection()
+                          throws java.lang.IllegalArgumentException,
+                                 java.lang.NoSuchFieldError</pre>
+<div class="block">Returns 1 if elevation is towards +z, or -1 if it is towards -z. Alternatively,
+ 1 means if you sit on the origin with your head in +elevation, az
+ will increase left to right.  For CS's following the right-hand-rule
+ for azimuth, an el direction of +1 matches an az direction of -1,
+ and vice-versa, so the base class defines it based on the el direction.
+ <p></div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.IllegalArgumentException</code> - The native implementation returned a bad value.</dd>
+<dd><code>java.lang.NoSuchFieldError</code> - The native implementation accessed a field that is missing.</dd>
+</dl>
+</li>
+</ul>
+<a name="getAzimuthDirection--">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getAzimuthDirection</h4>
+<pre>public&nbsp;int&nbsp;getAzimuthDirection()
+                        throws java.lang.IllegalArgumentException,
+                               java.lang.NoSuchFieldError</pre>
+<div class="block">Returns 1 if azimuth is CW as viewed from +elevation or -1 if it is CCW. Alternatively,
+ 1 means if you sit on the origin with your head in +elevation, az
+ will increase left to right.  For CS's following the right-hand-rule
+ for azimuth, an el direction of +1 matches an az direction of -1,
+ and vice-versa, so the base class defines it based on the el direction.
+ <p></div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.IllegalArgumentException</code> - The native implementation returned a bad value.</dd>
+<dd><code>java.lang.NoSuchFieldError</code> - The native implementation accessed a field that is missing.</dd>
+</dl>
+</li>
+</ul>
+<a name="constructVector-double-double-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>constructVector</h4>
+<pre>public&nbsp;<a href="../../../../jpl/mipl/mica/pig/PigVector.html" title="class in jpl.mipl.mica.pig">PigVector</a>&nbsp;constructVector(double&nbsp;az,
+                                 double&nbsp;el)
+                          throws java.lang.IllegalArgumentException,
+                                 java.lang.NoSuchFieldError</pre>
+<div class="block">Returns a new PigVector oriented to this coordinate system and pointing in the 
+ direction specified by the azimuth and elevation. Angles must be measured in radians.
+ <p></div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.IllegalArgumentException</code> - The native implementation returned a bad value.</dd>
+<dd><code>java.lang.NoSuchFieldError</code> - The native implementation accessed a field that is missing.</dd>
+</dl>
+</li>
+</ul>
+<a name="getAz-jpl.mipl.mica.pig.PigVector-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getAz</h4>
+<pre>public&nbsp;double&nbsp;getAz(<a href="../../../../jpl/mipl/mica/pig/PigVector.html" title="class in jpl.mipl.mica.pig">PigVector</a>&nbsp;v)
+             throws java.lang.IllegalArgumentException,
+                    java.lang.NoSuchFieldError</pre>
+<div class="block">Convert azimuth from a unit vector. Base class assumes elevation matches
+ +z direction. For CS's following the right-hand-rule
+ for azimuth, an el direction of +1 matches an az direction of -1,
+ and vice-versa, so the base class defines it based on the el direction.
+ <p></div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.IllegalArgumentException</code> - The native implementation returned a bad value.</dd>
+<dd><code>java.lang.NoSuchFieldError</code> - The native implementation accessed a field that is missing.</dd>
+</dl>
+</li>
+</ul>
+<a name="getEl-jpl.mipl.mica.pig.PigVector-">
+
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>getEl</h4>
+<pre>public&nbsp;double&nbsp;getEl(<a href="../../../../jpl/mipl/mica/pig/PigVector.html" title="class in jpl.mipl.mica.pig">PigVector</a>&nbsp;v)
+             throws java.lang.IllegalArgumentException,
+                    java.lang.NoSuchFieldError</pre>
+<div class="block">Convert elevation from a unit vector. Base class assumes elevation matches
+ +z direction. For CS's following the right-hand-rule
+ for azimuth, an el direction of +1 matches an az direction of -1,
+ and vice-versa, so the base class defines it based on the el direction.
+ <p></div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.IllegalArgumentException</code> - The native implementation returned a bad value.</dd>
+<dd><code>java.lang.NoSuchFieldError</code> - The native implementation accessed a field that is missing.</dd>
+</dl>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+<div class="bottomNav"><a name="navbar.bottom">
+
+</a>
+<div class="skipNav"><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mica/pig/#skip.navbar.bottom" title="Skip navigation links">Skip navigation links</a></div>
+<a name="navbar.bottom.firstrow">
+
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../../overview-summary.html">Overview</a></li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mica/pig/package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mica/pig/package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+<li><a href="../../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../../../jpl/mipl/mica/pig/CameraModel.html" title="class in jpl.mipl.mica.pig"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../../jpl/mipl/mica/pig/FileModel.html" title="class in jpl.mipl.mica.pig"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../../../index.html?jpl/mipl/mica/pig/CoordSystem.html" target="_top">Frames</a></li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mica/pig/CoordSystem.html" target="_top">No&nbsp;Frames</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_bottom">
+<li><a href="../../../../allclasses-noframe.html">All&nbsp;Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript">
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>Summary:&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mica/pig/#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mica/pig/#method.summary">Method</a></li>
+</ul>
+<ul class="subNavList">
+<li>Detail:&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mica/pig/#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/mica/pig/#method.detail">Method</a></li>
+</ul>
+</div>
+<a name="skip.navbar.bottom">
+
+</a></div>
+
+</body>
+</html>

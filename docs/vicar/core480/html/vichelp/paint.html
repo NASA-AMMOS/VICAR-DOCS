@@ -1,0 +1,200 @@
+<HTML>
+<HEAD><title>HTML Help for PAINT</title></HEAD>
+<BODY>
+<H1>Help for PAINT</H1>
+<pre>
+PURPOSE:
+
+Program "paint" takes an image that is divided into regions and
+'paints' each region of the image a different color.  The regions
+of the input image are defined in terms of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">border</A> (or boundary)
+pixels.  A <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">border</A> pixel is a pixel whose data number is greater
+than or equal to the value specified for the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">BORDER</A> parameter.
+(See under <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">BORDER</A> parameter.)  A region is defined as a connected
+set of non-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">border</A> pixels that is bounded by border pixels.  In
+the 'painted' image produced by "paint", the regions are numbered
+consecutively beginning with 1, and all pixels in a given region
+are assigned (as their data numbers) the number of that region.
+ EXECUTION:
+
+Commonly, the input image will be made up of sinuous lines of 
+(<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">border</A>) pixels against a background of pixels with zero data numbers.
+The lines divide the image into polygon-shaped regions.  The program,
+however, does not impose requirements upon the arrangements and the
+precise values of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">border</A> and non-border pixels.  Non-border pixels
+may have any value less than the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">BORDER</A> parameter.  Although
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">border</A> pixels usually form continuous curves, isolated border
+pixels are allowed. Regions may have irregular shapes.  Depending on
+the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#zedge">ZEDGE</A> parameter, connected sets of non-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">border</A> pixels that are
+bounded in part by the edges of the image may or may not be considered
+to be regions.  The input image may either be byte or halfword data.
+In the output image the regions are numbered sequentially in the order
+that the program encounters them as it reads (in order) the lines
+of the file, scanning them from left to right. The maximum number of 
+regions the program can handle is limited by the number of different 
+data number values that can be represented in the data format of the input
+image ie. 254 regions for byte data and 65534 regions for halfword data.)  
+Byte-data images with more than 254 regions should be run with the parameter 
+'HALF specified to produce a halfword output image.  Images in halfword 
+format with more than 32767 regions will have their regions numbered 
+sequentially from 1 to 32767 and then sequentially increasing from -32768. 
+(This is sequentially in terms of unsigned 16-bit format.)
+
+When the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#pborder">PBORDER</A> option is used, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">border</A> points are assigned the
+data number of a neighboring region provided one exists. (See
+under <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#pborder">PBORDER</A>.)  If the PBORDER option is not used, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">border</A> points
+will be assigned a data number of 255 for byte images, 32767 for
+halfword images with less than 32767 regions, and 65535 (= -1 in
+signed format) for halfword images with at least 32767 regions.
+
+"paint" uses a halfword-format work file in its algorithm for identifying
+and numbering the regions. In the work file the regions are numbered in a
+preliminary way.  In certain cases portions of a region may be assigned
+different numbers. (The program may find that two 'preliminary'
+regions are actually connected several lines beneath where the regions
+are first encountered by the program.)  Since the number of
+preliminary regions is also limited to 65534, this can in effect
+reduce the number of regions the program can handle for halfword
+images.
+
+TAE COMMAND LINE FORMAT
+      The following command line formats show the major allowable forms:
+      paint <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#inp">INP</A>=a <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#out">OUT</A>=(b,w) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#size">SIZE</A>=(<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#ns">ns</A>) optional parameters
+      paint <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#inp">INP</A>=a <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#out">OUT</A>=(b,w) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#sl">SL</A>=sl <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#ss">SS</A>=ss <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#nl">NL</A>=nl <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#ns">NS</A>=ns optional parameters
+      paint a (b,w) (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#ns">ns</A>) optional parameters
+      paint a (b,w) optional parameters
+
+       Here 'a' represents the input image file name,
+       'b' represents the output image file name, and 
+       'w' represents the work file name.
+<A NAME="examples">EXAMPLES</A>
+
+ 1.   paint <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#inp">INP</A>=P1 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#out">OUT</A>=(P2,WRK) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#size">SIZE</A>=(1,1,100,100) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">BORDER</A>=128
+
+      In this example a byte-data image is painted.  Since WRK
+      is halfword, it has twice the number of samples.
+
+
+ 2.   paint A (B,WK) 'HALF <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">BORDER</A>=200 '<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#zedge">ZEDGE</A> '<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#pborder">PBORDER</A>
+
+      In this example, file A is the input, file B is the output, and
+      file WK is the work file.  The output and workfiles are halfword.  
+      The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">border</A> consists of pixels with a value greater than or equal
+      to 200. Boundary polygons are zeroed by the keyword <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#zedge">ZEDGE</A>, and
+      the keyword <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#pborder">PBORDER</A> assigns boundary pixels to the nearest 
+      non-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">border</A> polygon.
+
+RESTRICTIONS
+1. The input and output images must be byte data.
+2. Maximum number of pixels is 64000 per line.  The TAE/VICAR executive
+   may impose further <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#size">size</A> limitations.
+3. Maximum number of regions is 254 for byte output data and 65534 for
+   halfword data.
+4. Maximum number of preliminary regions is 65534.
+ OPERATION:
+
+"paint" is an important step in the process of image polygon overlay.  The 
+"paint" program assigns region numbers sequentially to non-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">border</A> pixels,
+line by line, using the connectivity algorithm to the pixel above and to
+the left.  This algorithm has two possible cases which will cause pixels
+to be temporarily mis-assigned.  Case 1 occurs when the first
+point in a line for a particular region has a <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">border</A> point immediately
+above it and the point is part of a previously encountered region.
+In this case the algorithm at first assigns a new region number to the
+pixel.  Case 2 occurs when a the intersection of a region with a line is 
+a set of two or more strings of pixels.  In this case the algorithm at first
+might assign different region numbers to each string. 
+
+In the first case mis-assigned regions are corrected as soon as a non-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">border</A>
+pixel is encountered above the pixel being processed.  In this case the program
+moves backwards correcting each pixel up to the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">border</A>.  In the second case
+strings are connected using the table JOIN to link sections of the region
+together.  This is done in a second step which picks the final value for each
+region while maintaining the reference to the original value through the
+table so that the values of the differrent strings in the same region are
+the same.
+The following diagrams illustrate the two cases in which the program must
+correct for mis-assignments. (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">Border</A> points are denoted by the letter X.)
+
+
+  XXXXXXX                              XXXXXXXXXXXX
+  XXX2222                              X222XXXX333X
+  X333333                              X2222222222X
+ 
+   corrected to                 Table JOIN prior to correction:
+                                             JOIN(1) = 1
+  XXXXXXX                                    JOIN(2) = 3
+  XXX2222                                    JOIN(3) = 2
+  X222222                                    JOIN(4) = 4
+
+ Example of Case 1                     Example of Case 2
+
+
+In the final step of "paint", final values are assigned for both non-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">border</A>
+and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">border</A> pixels.  If <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#pborder">PBORDER</A> is specified, border pixels are assigned
+the value of the closest non-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">border</A> pixel.  The search is made in a spiral
+from the original pixel.  The direction of the spiral is randomly determined.
+
+ ORIGINAL PROGRAMMER:   A. Zobrist		1975
+
+<A NAME="CogProg"> COGNIZANT PROGRAMMER:   Barbara McGuffie       4/1986</A>
+
+ DOCUMENTATION WRITTEN BY:             Steve Pohorsky               
+ REVISION:               1      
+ REVISION:               2      AMS (CRI) Mar. 6 1995   Made portable for UNIX
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#inp"><H3>INP</H3></A>
+Input file name
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#out"><H3>OUT</H3></A>
+Output file name followed
+by work file name
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#size"><H3>SIZE</H3></A>
+Standard Vicar <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#size">size</A> field:
+  (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#ns">NS</A>)
+You can enter <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#nl">NL</A>,
+and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#ns">NS</A> together as <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#size">SIZE</A>, OR
+enter the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#nl">NL</A>, and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#ns">NS</A>
+parameters separately.
+By default, the entire input
+image is used if these
+parameters are not entered.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#sl"><H3>SL</H3></A>
+Starting line number
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#ss"><H3>SS</H3></A>
+Starting sample number
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#nl"><H3>NL</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#ns"><H3>NS</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#oformat"><H3>OFORMAT</H3></A>
+The output image data 
+format: either 
+BYTE or HALF.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border"><H3>BORDER</H3></A>
+Data number value used to
+define <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">border</A> pixels.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#pborder"><H3>PBORDER</H3></A>
+Specify to have <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">border</A>
+pixels in the output image
+be assigned the same value
+as a neighboring region.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#thresh"><H3>THRESH</H3></A>
+Threshold number. Specifies
+that all regions containing
+fewer pixels than the threshold
+number will be changed into
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#border">border</A> pixels.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#zedge"><H3>ZEDGE</H3></A>
+Specify if areas along the
+edge of the image are not to be
+counted as regions and are to
+be assigned zero data numbers.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#debug"><H3>DEBUG</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint_level2.html#debug">Debug</A> switch.
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/paint.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

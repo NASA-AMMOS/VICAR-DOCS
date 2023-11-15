@@ -1,0 +1,118 @@
+<HTML>
+<HEAD><title>HTML Help for MARSMASK</title></HEAD>
+<BODY>
+<H1>Help for MARSMASK</H1>
+<pre>
+PURPOSE:
+Apply the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#mask">mask</A> to the image.
+
+This is a multimission program. 
+It supports any mission.
+
+
+EXECUTION:
+marsmask <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#inp">inp</A>=inputi_image <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#out">out</A>=input_masked_image <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#mask">mask</A>=mask_image
+
+
+METHOD:
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#mask">Mask</A> consists of zero and non-zero data.  For each pixel in the mask that 
+is non-zero, the corresponding pixel in the input image is assigned DN of zero.
+Inversion of this process is supported as well via <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#invert">INVERT</A> parameter.
+If number of bands in the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#mask">mask</A> file is not the same as in input file,
+only first band of the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#mask">mask</A> is used and applied to all bands of the input.
+The rest of the bands of the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#mask">mask</A> will be ignored in that case.  
+
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#inp">INP</A>: Image to be masked.  All data type formats are supported.
+
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#mask">MASK</A>: BYTE-formatted image. If the mask is single banded, same mask will
+be applied to all bands of the input image.  If the number of bands of the
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#mask">mask</A> matches number of bands of the input image, then the mask will be
+applied on per-band basis.
+
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#out">OUT</A>:  Masked-out input image.
+
+By default, the output <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#label">label</A> is derived from the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#mask">mask</A> image.  That's because
+the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#mask">mask</A> is generally made from the same input file, so using it means the
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#mask">mask</A> program (marsfilter or marsdispcompare) is included in the history <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#label">label</A>.
+However, if the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#mask">mask</A> does not have a proper <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#label">label</A>, or is otherwise
+inappropriate, -IMAGE will cause the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#label">label</A> to be derived from the input image
+instead.
+
+If -<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#corr">CORR</A> is set, the image is a correlation image, so the
+CORRELATION_PIXEL_COUNT <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#label">label</A> will be set with the number of non-zero pixels
+in the output.  This is not the same as the number of non-masked pixels in
+the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#mask">mask</A>, as the input might be zero even where the mask lets data through.
+In addition, the CORRELATION_AVERAGE_SCALE is transferred from the image
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#label">label</A> to the output, even if -IMAGE is not specified.  While the average
+scale may not be accurate any more due to masking, it is only an estimate
+to start with.
+
+
+HISTORY:
+Sep. 11    ozp	Initial Implementation 
+2019-04-23 rgd	Added -<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#corr">CORR</A> option
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER: Oleg Pariser </A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#inp"><H3>INP</H3></A>
+Input image.
+Must be 1.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#out"><H3>OUT</H3></A>
+Output file
+Must be 1.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#mask"><H3>MASK</H3></A>
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#mask">mask</A> to apply. 
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#invert"><H3>INVERT</H3></A>
+Whether to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#invert">invert</A> the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#mask">mask</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#label"><H3>LABEL</H3></A>
+Which <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#label">label</A> to apply to output
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsmask.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

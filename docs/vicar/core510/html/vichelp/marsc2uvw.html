@@ -1,0 +1,192 @@
+<HTML>
+<HEAD><title>HTML Help for MARSC2UVW</title></HEAD>
+<BODY>
+<H1>Help for MARSC2UVW</H1>
+<pre>
+PURPOSE:
+Creates a surface normal (UVW) map given a correlator coefficients
+file (as output by marscor3) as well as the disparity map and input stereo
+files.
+
+This program supports any mission, instrument, and camera model supported by
+the Planetary Image Geometry (Pig) software suite.
+
+The UVW coordinates are in a coordinate system defined by the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#coord">COORD</A> and
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#coord_index">COORD_INDEX</A> parameters.  In keeping with marsuvw, This defaults to the
+instrument frame (typically ROVER or LANDER frame).
+
+EXECUTION:
+marscor3 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#inp">inp</A>=(left,right) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#out">out</A>=disparity coef_out=<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#coef">coef</A> ...
+marsc2uvw <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#inp">inp</A>=(left,right) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#out">out</A>=uvw <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#dispar">dispar</A>=disparity <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#coef">coef</A>=coef
+where:
+left is the left eye image of a stereo pair
+right is the corresponding right eye image of a stereo pair
+uvw is the output UVW file
+disparity is the disparity file as output from marscor3
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#coef">coef</A> is the coefficients file as output from marscor3
+
+
+METHOD:
+Marsc2uvw works by doing the following for each pixel:
+
+1) Determine the corresponding R-side pixel using the disparity map.
+
+2) Project the L and R pixel coordinates through the camera model and
+determine the XYZ location.  This is the tail of the vectors.
+
+3) Move the coordinate up in line by the amount in <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#dist_line">DIST_LINE</A> (i.e. subtract
+the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#dist_line">DIST_LINE</A> value).  This creates a 2-D vector in image space.
+
+4) Use the perspective transform specified by the coefficients to determine
+the corresponding point in the R site.
+
+5) Project those points into XYZ space.  That, along with the tail defined
+above, establishes a vector in 3D space corresponding to the 2D vector.
+
+6) Do the same thing except move the coordinate to the left in sample by
+the amount in <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#dist_samp">DIST_SAMP</A> (by subtracting DIST_SAMP).  Transform and project
+into XYZ, this along with the common tail establishes a second vector in 3D
+space.
+
+7) Take the cross product of the two 3D vectors.  The (normalized) result is
+the normal to the plane established by the two vectors.  Since those vectors
+lie in the plane defined by the perspective transform, this result is the
+final UVW value.
+
+FILES
+
+The input left and right files are used only for their labels (to find the
+camera model).  The pixel values are not used.
+
+The output file is normally a single 3-band output file.  However, separate
+u,v,w files can be supplied.
+
+The disparity file is usually a 2-band file in (line,sample) order where the
+value at each pixel is the 1-based coordiante of the matching pixel in the
+"right" file (see marscor3).  However, separate line and sample disparity files
+can be supplied.
+
+The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#coef">coef</A> file is a 6-band floating point file containing the a,b,d,e,g,h
+components of the perspective transform (c and f are the constant terms, which
+come from the disparity file).
+
+The transform is:
+
+x' = a*x + b*y + c + g*x*y
+y' = d*x + e*y + f + h*x*y
+
+
+HISTORY:
+2014-09-26 rgd	Initial version.
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Bob Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#inp"><H3>INP</H3></A>
+Input images.
+Must be 2.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#out"><H3>OUT</H3></A>
+Output UVW file
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#dispar"><H3>DISPAR</H3></A>
+Disparity map input file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#coef"><H3>COEF</H3></A>
+Coefficients input file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#dist_line"><H3>DIST_LINE</H3></A>
+Distance to perturb vector,
+in line direction
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#dist_samp"><H3>DIST_SAMP</H3></A>
+Distance to perturb vector,
+in sample direction
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#match_method"><H3>MATCH_METHOD</H3></A>
+Specifies a method
+for pointing corrections.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#match_tol"><H3>MATCH_TOL</H3></A>
+Tolerance value for
+matching pointing params
+in pointing corrections file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsc2uvw.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

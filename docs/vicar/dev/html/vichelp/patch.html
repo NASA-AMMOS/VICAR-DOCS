@@ -1,0 +1,337 @@
+<HTML>
+<HEAD><title>HTML Help for PATCH</title></HEAD>
+<BODY>
+<H1>Help for PATCH</H1>
+<pre>
+PURPOSE:
+PATCH uses radiometric data to derive probable range in parts of an image 
+that lack good stereophotometric data ("holes"). It takes XYZ and RAD data,
+returning XYZ data with dense depth. Areas that previously had XYZ data are
+typically not changed much, if at all.
+
+EXECUTION:
+patch <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#inp">INP</A>=\(xyz_data.IMG rad_data.IMG\) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#out">OUT</A>=patched_xyz.IMG
+where:
+xyz_data.IMG is an input 3-band image of type REAL with the X,Y and Z values
+at that pixel in meters.  
+rad_data.IMG is an input 1 band image of type REAL with the radiometric 
+brightness at each pixel, ie, an image.
+patched_xyz.IMG is the output 3-band image in the same format.  
+
+
+BACKGROUND:
+
+Stereophotoclinometry depends on there being sufficiently high contrast 
+between adjacent features at the local pixel scale. In practice this means that, 
+for an image with about 1 mrad per pixel, the landscape must have substantial
+entropy at the mm scale 1m away, and the 10cm scale 100m away. Fortunately,
+weathered rocks have fractal shape properties so this method is quite reliable
+on rocky surfaces. Unfortunately, sand is both low-entropy and self-similar
+across a wide range of scales. That is, the noise power spectrum is weighted
+towards low spatial frequencies, which is to say that stereo correlation is 
+noisy at best, erroneous at norm, and non-existent at worst. 
+
+Sand is also not always avoidable for rover navigation, so a method for patching
+the point cloud is desired.
+
+Photoclinometry steps up.
+
+Photoclinometry, or "shape from shading" is a way of recovering range information
+even (or especially) in the absense of stereo-correlatable features in the landscape.
+
+It must be emphasized that photoclinometric solutions are not "unique" in the 
+same sense that stereocorrelation solutions can be. The very existence of graphic 
+art and programmable computer displays demonstrate that the properties of matter
+permit infinite ways to create an illusion of depth. Even humans, with highly 
+developed stereo and image processing neural circuitry, can be predictably fooled
+by a wide variety of optical illusions, to say nothing of forced perspective,
+optical mirages, and featureless terrain. An extreme example can exist on the Antarctic
+ice sheet where fata morgana and a total lack of trees can lead to hilarious levels of
+disorientation, such as mistaking a pocket knife for a skidoo or a mountain,
+or vice versa.
+
+With this in mind, photoclinometric solutions represent a "best guess", as 
+encapsulated by a multivariate "energy function" to be minimized over a very
+high dimensionality parameter space. This energy function encodes our "prior" or
+innate knowledge about the environment, which fulfills the dual purpose of both
+drastically reducing the allowable space of solutions, and navigating that
+reduced space to a good local, if not global, optimum. 
+
+As an example, such prior assumptions could include:
+- Sand has a relatively uniform albedo, so radiance variations are due to angles.
+- A scene is lit by a combination of direct sunlight, sky glow, and surface scatter.
+- Sand's physical properties preclude slopes beyond a certain steepness, or tunnels.
+- The surface of a planet is at least C0 continuous.
+- The pixel-scale slope of a given surface is related to its position relative to
+  surrounding pixels.
+- Where it exists, stereo data will be pretty good, or at least have rigorously 
+  bounded error.
+
+The energy function is composed of a series of sub functions that measure
+fitness on these and potentially other priors, then combine them with respect to 
+carefully tuned weighting parameters.
+
+The relative value of the weights can alter the outcome, and this gives some measure 
+of how robust a given solution might be. 
+
+
+METHOD:
+
+The method is based loosely on Jiang et al. 2016. 
+http://dx.doi.org/10.1016/j.isprsjprs.2017.06.010
+
+Substantial modifications are made to account for the oblique nature of the 
+navcam images. A comprehensive discussion follows:
+
+Equations 1-3 discuss how Jiang et al. develop their radiance model to account for sky glow, 
+scattering, and other factors. PATCH greatly simplifies this radiance model but could,
+in principle, add the complexity back in later if it was desired. In my experiments
+it was not necessary to do so. Furthermore, while it is tempting to add complexity to the 
+radiance estimation system, such complexity more often delivers the capability to fool
+a human evaluator rather than actually delivering physical insight. Forcing the optimizer
+to work with an unphysically simple radiance model, in some sense, makes errors obvious
+enough to notice, understand, and account for.
+
+Equation 4 describes the "image irradiance equation" which is the basis of the method.
+The modeled reflectance has to match the observed image.
+
+Equation 5 is inconsistent with later expressions - it may be corrected by adding a
+square to the last parenthetical term, thus ensuring that this component of the energy
+function is also positive definite.
+
+Equation 6's method does not work in the oblique case as these discrete gradient 
+convolution kernels require an evenly spaced x-y grid to be valid. Instead, PATCH
+calculates the normal vector for each point using an inbuilt VICAR function. In 
+prototype (python) PATCH computed normals by taking cross products of pointcloud 
+translation vectors and combining them with weights equal to the inverse of their
+lengths to account for, and compensate for, much greater baselines and thus error in 
+the direction of depth.
+
+There is a compact analytic bijective function between representations of the surface 
+in terms of some Cartesian unit normal vector and discrete x and y gradients. This can 
+be used to convert a normal vector to a gradient and back, though in the final implementation
+all computations were expressed vectorially.
+
+Equations 7-10 give prescriptions for updating the independent slope functions (p and q) in 
+terms of derivatives. Jiang et al. was able to use a partly analytic expression due to the 
+compact representation of their energy function. In the oblique, 3D case, this is cumbersome 
+at best and is more vulnerable to certain forms of numerical instability due to the widely 
+varying ranges within one image. In PATCH, these derivatives are calculated by perturbing the 
+variable (such as one component of a normal vector field) and recalculating the energy function.
+
+Equations 11-12 exploits the Gauss-Seidel method to find the energy-minimizing range surface
+of Equation 5's associated Euler-Lagrange equation. I investigated PATCH/oblique variations of 
+this approach in exhaustive depth and found them to be both cumbersome and intractably prone
+to numerical instability. These instabilities typically manifest as the development of some 
+"spike" or line-of-sight oriented delta function that grows. PATCH incorporates an 
+energy-penalty term for this sort of unphysical noise, but there is no neat way to 
+add this to the Euler-Lagrange equation. Instead, PATCH uses the same perturbative approach 
+described above. Unlike the normal vector field, however, range is locally continuous and 
+thus a global perturbation in range does not result in useful gradients. That is, shifting 
+range by a few millimeters is equivalent to repositioning the camera by a few millimeters,
+resulting in no difference to the resulting image. I experimented with different approaches
+and patterns of perturbations, including using random noise and iterating a few times. 
+PATCH currently uses an alternating set of horizontal and vertical pixel-scale stripes as this
+approach gives predictable gradients and minimizes instability.
+
+Equation 13 solves beta (the global albedo parameter) in closed form. Herein lies a big hack
+in all photoclinometric solvers. As far as I know, there is no rigorous way to uniquely
+recover albedo information from a single image. There are, broadly, two approaches. 
+
+The first is to allow the albedo of each pixel to vary freely, or within certain bounds, 
+as yet another free parameter to be solved for globally. Very quickly one finds the 
+optimizer painting the landscape with the desired scene without deriving any depth information.
+This is unsatisfactory, though of course permitted by the laws of nature and exploited 
+in photography and LCD displays every day!
+
+The second is to process the image to "assign" an albedo to the various parts of the image
+to begin with, then use the beta parameter to globally tweak the overall level of lighting. 
+There are complex ways to guess the albedo of rocky surfaces, such as picking the brightest 
+pixel in a given region as representative of what other adjacent pixels would look like 
+under better light. Such approaches are both error prone, lossy, and not needed for PATCH.
+PATCH exists to solve depth for sand, and sand has a mostly uniform albedo. Therefore, PATCH
+simply segments the image by whether or not stereo correlation has failed. The albedo
+of the sand is statistically estimated and applied to the sand segment. Ditto the rocks.
+For particularly pathological images with the sky in the wrong place, this method may fail 
+but it doesn't matter all that much since the global beta parameter can tweak this value 
+for regions that the energy function is sensitive to. 
+
+At the end of the day, very few of Jiang et al.'s equations are used in any recognizable form.
+
+So...
+
+How does the algorithm work?
+
+1) Load the xyz point cloud, and the image, and geometric info.
+2) Produce the  mask, identifying which parts of the image lack stereo data. 
+   In general this also includes the margin where the stereo images don't overlap.
+3) Patch the patches by fitting the landscape to a plane.
+4) Segment the image into sand, rocks using the mask, and thus create an "albedo"
+   image.
+5) Initialize energy function parameters and history.
+6) Iterate initial patch by performing energy gradient descent for each parameter.
+7) Track and print progress.
+8) Return optimized patch.
+
+As implemented, PATCH has a couple of dozen helper functions called from within
+the main() routine.
+
+There are three substantial non-trivialities to the program.
+- Generate the initial condition.
+- Generate images from pointcloud data.
+- Optimize with stability and convergence.
+
+The initial condition is generated by fitting a plane to the inverse range array.
+Inverting the range removes the problem of overfitting to distant points with 
+high ranges and low relevance. It also turns a hyperbolic function into a 
+linear one. This plane fit is fully implemented in PATCH, using Kramer's method
+to solve the fit.
+
+Image generation is performed by combining the albedo prior with a radiance function.
+Radiance is calculated geometrically from surface normal vectors uvw, and 
+geometric information about the location of the sun and the camera. This is
+substantially less sophisticated than, say, the Unity graphics engine. 
+Normal vectors uvw are calculated from xyz using the xyz_to_uvw.h subroutine, 
+which may or may not work well for this purpose.
+
+Stability is highly non-trivial. Jiang et al.'s original method called for 
+simultaneous solving of range and gradient vectors using the Euler-Lagrange
+formalism. While non-trivial, it is possible to generalize this method for the 
+fully 3D case using normal vectors instead of gradients. It does, however, lead
+to insurmountable numerical instabilities due to occlusions and spikes, no matter
+how aggressively they are filtered. Therefore, I opted to include the dislocation
+between range and the surface normal vectors as part of the energy function to be 
+minimized, then vary each. Because these are all locally defined, a global delta
+range does not actually help find the local gradient. Therefore, a set of four 
+high spatial frequency (pin striped!) perturbations are used sequentially. This
+introduces noise but that noise converges away in the long run.
+
+The algorithm employs a number of parameters, not all of which are currently able
+to be set at the command line. A good number of these parameters are carefully
+tuned and probably shouldn't be changed.
+
+TESTING:
+
+Run ./patch <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#inp">INP</A>=\(NLB_577089270XYZLF0691828NCAM00379M1.IMG NLB_577089270RADLF0691828NCAM00379M1.IMG\) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#out">OUT</A>=patched_xyz.IMG
+
+Generating the initial condition takes about a minute while gaps are filled with a good surface guess.
+
+Then the "big loop" starts. Global energy starts at about 2.5 and reduces to about 
+0.02 after ~30 steps. As this optimization runs more and more detail is adduced by
+matching the radiance model to the actual image. For coarse accuracy, fewer steps 
+are needed.
+
+Suggestions for refinements are included in the .cc file. In particular, the radiance
+model is very very basic and could get additional bells and whistles. Image segmentation
+and albedo estimation can also be tweaked depending on requirements.
+
+After copious debugging etc it turns <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#out">out</A> the c++ version is no faster than the numpy-
+accelerated Python implementation. Shucks. 
+
+
+HISTORY:
+2020-07-24 rgd	Initial version
+2020-09-24 Updated to include specific differences to prior implementation
+<A NAME="CogProg">COGNIZANT PROGRAMMER: Casey Handmer</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#inp"><H3>INP</H3></A>
+Input images.
+Must be 1 3-band file
+plus 1 1-band radiance file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#out"><H3>OUT</H3></A>
+Output files
+Will be 1 3-band file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Nav file for pointing
+correction.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#origin"><H3>ORIGIN</H3></A>
+Override of 3D Point
+from which to compute 
+range.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#cast"><H3>CAST</H3></A>
+How to reconstruct the XYZ.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/patch.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

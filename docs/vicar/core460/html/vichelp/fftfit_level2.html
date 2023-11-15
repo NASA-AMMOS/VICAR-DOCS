@@ -1,0 +1,100 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for FFTFIT</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit.html">FFTFIT</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#inp">INP</A> specifies the complex Fourier transform and the image picture used to 
+modify the transform, in that order.  The Fourier transform must have been
+created by "fft2" or "fft22".
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#out">OUT</A> specifies the name of the modified Fourier transform.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mode"><H3>MODE</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#mode">MODE</A>=MULT (or 'MULT) selects the multiplication mode of "fftfit".  The
+default is the amplitude matching <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#mode">mode</A>. 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="line"><H3>LINE</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#line">LINE</A> specifies the line number in the input image which corresponds to 
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#line">line</A> one (the DC line) in FT.  The default is NL/2+1 where NL is the 
+number of lines in FT.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sample"><H3>SAMPLE</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#sample">SAMPLE</A> specifies the sample number in the input image which corresponds with
+column one (the DC column) in FT.  The default is NPIX/2+1 where NPIX is
+one eighth the number of samples in FT.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="find"><H3>FIND</H3></A><pre>
+'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#find">FIND</A> will compute the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#line">LINE</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#sample">SAMPLE</A> parameter values from the input image by
+locating the position of the largest DN value.  If more than one pixel has the
+maximum DN value, the centroid of all maximum DN values is selected. Default is
+to the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#line">LINE</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#sample">SAMPLE</A> defaults. 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="scale"><H3>SCALE</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#scale">SCALE</A> specifies the scaling factor applied to the input image before
+processing. 
+    In the multiplicative <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#mode">mode</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#scale">SCALE</A> (by default) equals one divided by the
+mean DN value measured within the sampling area specified by the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#set">SET</A> keyword or
+its defaults; in the matching <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#mode">mode</A>, where FTOUT is made proportional to the
+input picture, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#scale">SCALE</A> equals A-bar divided by the mean DN value, where A-bar is
+a similarly-determined reference amplitude in FT. 
+    The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#scale">SCALE</A> keyword allows the user to bypass all of these calculations and
+explicitly specify the scaling factor to be used.  All other parameters in this
+example are allowed to default. 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="set"><H3>SET</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#set">SET</A> directs the program to calculate the scaling value <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#scale">SCALE</A> from an area
+defined by the integer values, 3 and 5 in this example, in both PIX and FT.
+A-bar is obtained from the mean amplitude in the shaded area bounded by 
+N3 and N4 in the upper left quadrant to FT (see figure).
+
+		N3	N4		NPIX=NS/8
+	+-------+-------+----------------------- 	|DC	|///////|			|DC
+	|	|///////|			|
+      N3+-------+///////|			|
+	|///////////////|			|	matrix of 
+	|///////////////|			|	complex FFT values
+      N4+---------------+			|
+	|					|
+	|					|
+	|					|
+	|					|
+	|					|
+      NL+---------------------------------------          DC					 DC
+
+The mean DC value is computed from the corresponding area in PIX starting at 
+(<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#line">LINE</A>,<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#sample">SAMPLE</A>) rather than at (1,1) as in FT.  Default is <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/fftfit_level2.html#set">SET</A>=(2,3).
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

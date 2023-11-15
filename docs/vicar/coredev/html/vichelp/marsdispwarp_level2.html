@@ -1,0 +1,233 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for MARSDISPWARP</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsdispwarp.html">MARSDISPWARP</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+Input right image and (optional) left image.  Can be any format (except
+complex).  Providing the left (second) image is highly recommended, to get
+the camera models in the output label correct (see the main help).
+
+The image data and the bulk of the label is taken from the first image.
+It is the non-reference image (by convention, "right") used in the correlation
+process.  So if the disparity map goes L-&gtR, the input files are (R, L).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+Output warped image.  Image will match the geometry of the reference ("left")
+image given to the correlator.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="disp"><H3>DISP</H3></A><pre>
+Input disparity image.  See the correlator programs for a description of
+the format.  Must be a single 2-<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsdispwarp_level2.html#band">band</A> file.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="band"><H3>BAND</H3></A><pre>
+The input file <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsdispwarp_level2.html#band">band</A> number to use, if a single band is desired.  The default
+if not specified is to process all bands.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="disp_pyramid"><H3>DISP_PYRAMID</H3></A><pre>
+Pyramid level of disparity.  Matches PYRAMID in marsjplstereo and
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsdispwarp_level2.html#disp_pyramid">DISP_PYRAMID</A> in marscor3.  0 means the disparity image is full size,
+1 means half size, 2 means quarter size, etc.  See the main help, and
+also <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsdispwarp_level2.html#disp_zoom">DISP_ZOOM</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="pixel_count"><H3>PIXEL_COUNT</H3></A><pre>
+If enabled, the number of non-zero pixels will be writen <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsdispwarp_level2.html#out">out</A> to
+CORRELATION_PIXEL_COUNT in the DERIVED_IMAGE_PARMS label.  For multiband
+images, the count is incremented if any of the bands are non-zero (so
+100% coverage would be <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsdispwarp_level2.html#nl">NL</A>*<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsdispwarp_level2.html#ns">NS</A>, not NL*NS*NB).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="disp_zoom"><H3>DISP_ZOOM</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsdispwarp_level2.html#zoom">Zoom</A> factor for disparity.  Combined with <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsdispwarp_level2.html#disp_pyramid">DISP_PYRAMID</A> via multiplication,
+thus final <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A> is (2^<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsdispwarp_level2.html#disp_pyramid">DISP_PYRAMID</A>)*<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsdispwarp_level2.html#disp_zoom">DISP_ZOOM</A>).  Allows for disparity
+zooms other than powers of 2.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="zoom"><H3>ZOOM</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsdispwarp_level2.html#zoom">Zoom</A> factor for the output image.  Creates an image bigger or smaller than
+what it "naturally" would be given the inputs.  See the main help.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="interp"><H3>INTERP</H3></A><pre>
+Turns on or off interpolation in the image.  Interpolation is on by default,
+and should be used with normal images.  With the advent of nonzero <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsdispwarp_level2.html#interp">interp</A>,
+interpolation should normally be used, unless warping an image of discrete
+values, such as a classification map or status flag <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsdispwarp_level2.html#band">band</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="disp_interp"><H3>DISP_INTERP</H3></A><pre>
+Turns on or off interpolation in the disparity map.  Disparity interpolation
+is on by default, and should normally be used.  It allows zooms and disparity
+zooms to occur without blockiness, but can also be affected by noise in the
+disparity map.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nonzero_interp"><H3>NONZERO_INTERP</H3></A><pre>
+Turns on or off nonzero interpolation of the pixels.  See the main help for
+a description of this algorithm.  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsdispwarp_level2.html#interp">Interp</A> must also be on for this to have any
+effect.  The default is on.  Nonzero <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsdispwarp_level2.html#interp">interp</A> is always on for the input
+disparity map (unless <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsdispwarp_level2.html#disp_interp">disp_interp</A> is entirely off).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ref_not_zoomed"><H3>REF_NOT_ZOOMED</H3></A><pre>
+Specifies that the reference image has NOT been zoomed by the disparity <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsdispwarp_level2.html#zoom">zoom</A>.
+Useful in certain situations involving chanining of warps through multiple
+disparity maps.  See the main help.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sl"><H3>SL</H3></A><pre>
+Starting line for output.  Specified relative to the "natural" size of the
+output (as if this parameter were not given).  Defaults to 1 (no window).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ss"><H3>SS</H3></A><pre>
+Starting sample for output.  Specified relative to the "natural" size of the
+output (as if this parameter were not given).  Defaults to 1 (no window).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nl"><H3>NL</H3></A><pre>
+Number of lines for output.  Specified relative to the "natural" size of the
+output (as if this parameter were not given).  Defaults to full natural size.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ns"><H3>NS</H3></A><pre>
+Number of samples for output.  Specified relative to the "natural" size of the
+output (as if this parameter were not given).  Defaults to full natural size.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="navtable"><H3>NAVTABLE</H3></A><pre>
+Corrected navigation filename.
+If marsnav was run on the input images it created a table of corrected
+pointing parameters. If you refer to this table using <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsdispwarp_level2.html#navtable">NAVTABLE</A> it
+will override the pointing parameters (e.g. azimuth and elevation) in the
+picture labels, giving you a better registered mosaic.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="config_path"><H3>CONFIG_PATH</H3></A><pre>
+A colon-separated list of directories in which to look for configuration
+and calibration files.  Environment variables are allowed in the list
+(and may themselves contain colon-separated lists).  The directories are
+searched in order for each config/cal file when it is loaded.  This allows
+multiple projectes to be supported simultaneously, and allows the user to
+override any given config/cal file.  Note that the directory structure below
+the directories specified in this path must match what the project expects.
+For example, Mars 98 expects flat fields to be in a subdirectory named
+"flat_fields" while Mars Pathfinder expects them to be directly in the
+directory specified by the path (i.e. no intermediate subdirectories).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="point_method"><H3>POINT_METHOD</H3></A><pre>
+Specifies a mission-specific pointing method to use.  Normally this
+parameter is not used, in which case the "default" pointing methods
+are used.  Some missions may have special, or alternate, pointing
+methods available, which are indicated by this string (for example,
+backlash models, using arm joint angles instead of x/y/z/az/el, etc).
+A substring search is used, so multiple methods (where that makes sense)
+can be specified by separating the keywords with commas.
+
+Note that nav files created using one pointing method will most likely
+not be compatible with a mosaic created using a different pointing method.
+
+Also used for general but uncommonly used parameters in the PIG library.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nosite"><H3>NOSITE</H3></A><pre>
+Disables all label-derived parameters to the Site mechanism which underlies
+coordinate systems.  This forces all sites to be identical, with all rotations
+and offsets set the same.  In the case of MPF or Mars 98, this disables
+the lander quaternion and offset (sets them to identity and 0, respectively).
+This option should not be used with images taken from different vantage
+points (e.g. the spacecraft moved, or mixing a lander and a rover) or
+invalid results will be obtained.  The use of this option invalidates the
+Fixed coordinate frame; any values reported in the Fixed frame will not
+correctly reflect the orientation of the lander/rover.
+
+Obviously, this option should be rarely used; it is intended for when the
+image labels defining the site are invalid or inconsistent.
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

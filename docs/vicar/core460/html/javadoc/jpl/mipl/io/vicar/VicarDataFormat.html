@@ -1,0 +1,808 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+
+<title>VicarDataFormat</title>
+<meta name="date" content="2017-06-27">
+<link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<script type="text/javascript">
+</script>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+
+<div class="topNav"><a name="navbar_top">
+
+</a><a href="/VICAR-DOCS/vicar/core460/html/javadoc/././././././././././././././././jpl/mipl/io/vicar/#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow">
+
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../../overview-summary.html">Overview</a></li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/././././././././././././././././jpl/mipl/io/vicar/package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/././././././././././././././././jpl/mipl/io/vicar/package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+<li><a href="../../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../../../jpl/mipl/io/vicar/VicarBinaryLinePrefix.html" title="class in jpl.mipl.io.vicar"><span class="strong">Prev Class</span></a></li>
+<li><a href="../../../../jpl/mipl/io/vicar/VicarDataInputDIWrapper.html" title="class in jpl.mipl.io.vicar"><span class="strong">Next Class</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../../../index.html?jpl/mipl/io/vicar/VicarDataFormat.html" target="_top">Frames</a></li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/././././././././././././././././jpl/mipl/io/vicar/VicarDataFormat.html" target="_top">No Frames</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_top">
+<li><a href="../../../../allclasses-noframe.html">All Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript">
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>Summary:&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/././././././././././././././././jpl/mipl/io/vicar/#field_summary">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/././././././././././././././././jpl/mipl/io/vicar/#constructor_summary">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/././././././././././././././././jpl/mipl/io/vicar/#method_summary">Method</a></li>
+</ul>
+<ul class="subNavList">
+<li>Detail:&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/././././././././././././././././jpl/mipl/io/vicar/#field_detail">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/././././././././././././././././jpl/mipl/io/vicar/#constructor_detail">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/././././././././././././././././jpl/mipl/io/vicar/#method_detail">Method</a></li>
+</ul>
+</div>
+<a name="skip-navbar_top">
+
+</a></div>
+
+
+<div class="header">
+<div class="subTitle">jpl.mipl.io.vicar</div>
+<h2 title="Class VicarDataFormat" class="title">Class VicarDataFormat</h2>
+</div>
+<div class="contentContainer">
+<ul class="inheritance">
+<li>java.lang.Object</li>
+<li>
+<ul class="inheritance">
+<li>jpl.mipl.io.vicar.VicarDataFormat</li>
+</ul>
+</li>
+</ul>
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<hr>
+<br>
+<pre>public class <span class="strong">VicarDataFormat</span>
+extends java.lang.Object</pre>
+<div class="block">This class handles all aspects of data in different host representation.
+ It "knows" the data formats for each host type, and has factory methods
+ for creating filter streams that translate pixels between Java internal
+ representations, and the format required for a particular host.
+ <p>
+ The supported integer data representations are: <ul>
+ <li> HIGH - high byte first.  Used by Java, Sun, SGI, etc.
+ <li> LOW - low byte first.  Used by Alpha and Intel architectures.
+ </ul><p>
+ The supported floating-point data representations are: <ul>
+ <li> IEEE - IEEE floating-point format, high byte first. Java, Sun, SGI, etc
+ <li> RIEEE - Reverse IEEE (low byte first).  Intel and Alpha Unix.
+ <li> VAX - VMS D/F floating point formats.
+ </ul><p>
+ Both integer and floating-point types may alternatively be specified using
+ the strings NATIVE or LOCAL, which are equivalent.  Both mean to use the
+ "native" host representation for the machine on which you are running, which
+ for Java is always HIGH/IEEE.  If you Set using one of these, you'll Get
+ either HIGH or IEEE, never NATIVE or LOCAL.
+ <p>
+ The supported data types are: <ul>
+ <li> BYTE - 8-bit unsigned data (Java byte, interpreted as unsigned)
+ <li> HALF - 16-bit signed data (Java short)
+ <li> FULL - 32-bit signed data (Java int)
+ <li> REAL - 32-bit floating point data (Java float)
+ <li> DOUB - 64-bit floating point data (Java double)
+ <li> COMP - Complex data (two consecutive REAL's)
+ <li> USHORT - 16-bit unsigned data (Java short, interpreted as unsigned) - not legal for VICAR but other formats use it.
+ </ul><p>
+ Valid host types are: <ul>
+ <li> JAVA
+ <li> SUN-SOLR
+ <li> SGI
+ <li> X86-LINUX
+ <li> HP-700
+ <li> VAX-VMS
+ <li> AXP-VMS
+ <li> AXP-UNIX
+ <li> AXP-LINUX
+ <li> SUN-3
+ <li> SUN-4
+ <li> X86-SOLR
+ <li> ALLIANT
+ <li> DECSTATN
+ <li> MAC-AUX
+ <li> MAC-MPW
+ <li> TEK
+ <li> NATIVE
+ <li> LOCAL
+ </ul> <p></div>
+</li>
+</ul>
+</div>
+<div class="summary">
+<ul class="blockList">
+<li class="blockList">
+
+<ul class="blockList">
+<li class="blockList"><a name="field_summary">
+
+</a>
+<h3>Field Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Field Summary table, listing fields, and an explanation">
+<caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Field and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected static java.lang.String[][]</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#_hostTable">_hostTable</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected java.lang.String</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#_hostTypeString">_hostTypeString</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected int</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#_intFmtCode">_intFmtCode</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected java.lang.String</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#_intFmtString">_intFmtString</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected int</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#_realFmtCode">_realFmtCode</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected java.lang.String</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#_realFmtString">_realFmtString</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static int</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#INT_FMT_HIGH">INT_FMT_HIGH</a></strong></code>
+<div class="block">indicates that for integers, the high byte is first</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static int</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#INT_FMT_LOW">INT_FMT_LOW</a></strong></code>
+<div class="block">indicates that for integers, the low byte is first</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static int</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#REAL_FMT_IEEE">REAL_FMT_IEEE</a></strong></code>
+<div class="block">indicates that the IEEE format is used to represent reals</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static int</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#REAL_FMT_RIEEE">REAL_FMT_RIEEE</a></strong></code>
+<div class="block">indicates that the reverse IEEE format is used to represent reals</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static int</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#REAL_FMT_VAX">REAL_FMT_VAX</a></strong></code>
+<div class="block">indicates that the VMS D/F format is used to represent reals</div>
+</td>
+</tr>
+</table>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="constructor_summary">
+
+</a>
+<h3>Constructor Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructor Summary table, listing constructors, and an explanation">
+<caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colOne" scope="col">Constructor and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colOne"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#VicarDataFormat(java.lang.String)">VicarDataFormat</a></strong>(java.lang.String&nbsp;hostType)</code>
+<div class="block">Initialize using a hostname only.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colOne"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#VicarDataFormat(java.lang.String,%20java.lang.String,%20java.lang.String)">VicarDataFormat</a></strong>(java.lang.String&nbsp;hostType,
+               java.lang.String&nbsp;intFmt,
+               java.lang.String&nbsp;realFmt)</code>
+<div class="block">Initialize using all three strings.</div>
+</td>
+</tr>
+</table>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="method_summary">
+
+</a>
+<h3>Method Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Method Summary table, listing methods, and an explanation">
+<caption><span>Methods</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Method and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>boolean</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#equals(java.lang.Object)">equals</a></strong>(java.lang.Object&nbsp;obj)</code>
+<div class="block">"equals" is defined as having the same intFmtCode and realFmtCode.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>java.io.DataInput</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#getDataInputWrapper(java.lang.Object)">getDataInputWrapper</a></strong>(java.lang.Object&nbsp;s)</code>
+<div class="block">These "factory" methods will create and return a stream object that
+ implements the <code>DataInput</code> or <code>DataOutput</code> interfaces.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>java.io.DataOutput</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#getDataOutputWrapper(java.lang.Object)">getDataOutputWrapper</a></strong>(java.lang.Object&nbsp;s)</code>
+<div class="block">Factory to return a DataOutput object.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#getHostType()">getHostType</a></strong>()</code>
+<div class="block">get the host type property</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#getIntFormatCode()">getIntFormatCode</a></strong>()</code>
+<div class="block">get the int format property as an integer code corresponding to the
+ public static final constants in this class.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#getIntFormatFromHost(java.lang.String)">getIntFormatFromHost</a></strong>(java.lang.String&nbsp;s)</code>
+<div class="block">Returns the integer format corresponding to the given hostType or null
+ if the hostType is not found.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#getIntFormatString()">getIntFormatString</a></strong>()</code>
+<div class="block">get the int format property</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#getPixelSize(java.lang.String)">getPixelSize</a></strong>(java.lang.String&nbsp;dataType)</code>
+<div class="block">Returns the size in pixels of the given data type for the host.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static int</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#getPixelSize(java.lang.String,%20java.lang.String,%20java.lang.String)">getPixelSize</a></strong>(java.lang.String&nbsp;dataType,
+            java.lang.String&nbsp;intFmt,
+            java.lang.String&nbsp;realFmt)</code>
+<div class="block">Returns the size (in bytes) of a pixel, given the integer and real
+ representations.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#getRealFormatCode()">getRealFormatCode</a></strong>()</code>
+<div class="block">get the real format property as an integer code corresponding to the
+ public static final constants in this class.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#getRealFormatFromHost(java.lang.String)">getRealFormatFromHost</a></strong>(java.lang.String&nbsp;s)</code>
+<div class="block">Returns The real format corresponding the given hostType or null if
+ the hostType is not found.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#getRealFormatString()">getRealFormatString</a></strong>()</code>
+<div class="block">get the real format property</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>boolean</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#isTranslationNeeded(java.lang.String)">isTranslationNeeded</a></strong>(java.lang.String&nbsp;dataType)</code>
+<div class="block">Indicate whether or not translation is needed for a given data type.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#setHostType(java.lang.String)">setHostType</a></strong>(java.lang.String&nbsp;hostType)</code>
+<div class="block">set the host type property</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#setIntFormat(java.lang.String)">setIntFormat</a></strong>(java.lang.String&nbsp;intFmt)</code>
+<div class="block">set the int format property</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#setRealFormat(java.lang.String)">setRealFormat</a></strong>(java.lang.String&nbsp;realFmt)</code>
+<div class="block">set the real format property</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<td class="colLast"><code><strong><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#toString()">toString</a></strong>()</code>
+<div class="block">Return a string representation of the VICAR data format object.</div>
+</td>
+</tr>
+</table>
+<ul class="blockList">
+<li class="blockList"><a name="methods_inherited_from_class_java.lang.Object">
+
+</a>
+<h3>Methods inherited from class&nbsp;java.lang.Object</h3>
+<code>clone, finalize, getClass, hashCode, notify, notifyAll, wait, wait, wait</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="details">
+<ul class="blockList">
+<li class="blockList">
+
+<ul class="blockList">
+<li class="blockList"><a name="field_detail">
+
+</a>
+<h3>Field Detail</h3>
+<a name="_hostTypeString">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>_hostTypeString</h4>
+<pre>protected&nbsp;java.lang.String _hostTypeString</pre>
+</li>
+</ul>
+<a name="_intFmtCode">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>_intFmtCode</h4>
+<pre>protected&nbsp;int _intFmtCode</pre>
+</li>
+</ul>
+<a name="_intFmtString">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>_intFmtString</h4>
+<pre>protected&nbsp;java.lang.String _intFmtString</pre>
+</li>
+</ul>
+<a name="_realFmtCode">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>_realFmtCode</h4>
+<pre>protected&nbsp;int _realFmtCode</pre>
+</li>
+</ul>
+<a name="_realFmtString">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>_realFmtString</h4>
+<pre>protected&nbsp;java.lang.String _realFmtString</pre>
+</li>
+</ul>
+<a name="INT_FMT_HIGH">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>INT_FMT_HIGH</h4>
+<pre>public static final&nbsp;int INT_FMT_HIGH</pre>
+<div class="block">indicates that for integers, the high byte is first</div>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../constant-values.html#jpl.mipl.io.vicar.VicarDataFormat.INT_FMT_HIGH">Constant Field Values</a></dd></dl>
+</li>
+</ul>
+<a name="INT_FMT_LOW">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>INT_FMT_LOW</h4>
+<pre>public static final&nbsp;int INT_FMT_LOW</pre>
+<div class="block">indicates that for integers, the low byte is first</div>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../constant-values.html#jpl.mipl.io.vicar.VicarDataFormat.INT_FMT_LOW">Constant Field Values</a></dd></dl>
+</li>
+</ul>
+<a name="REAL_FMT_IEEE">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>REAL_FMT_IEEE</h4>
+<pre>public static final&nbsp;int REAL_FMT_IEEE</pre>
+<div class="block">indicates that the IEEE format is used to represent reals</div>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../constant-values.html#jpl.mipl.io.vicar.VicarDataFormat.REAL_FMT_IEEE">Constant Field Values</a></dd></dl>
+</li>
+</ul>
+<a name="REAL_FMT_RIEEE">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>REAL_FMT_RIEEE</h4>
+<pre>public static final&nbsp;int REAL_FMT_RIEEE</pre>
+<div class="block">indicates that the reverse IEEE format is used to represent reals</div>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../constant-values.html#jpl.mipl.io.vicar.VicarDataFormat.REAL_FMT_RIEEE">Constant Field Values</a></dd></dl>
+</li>
+</ul>
+<a name="REAL_FMT_VAX">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>REAL_FMT_VAX</h4>
+<pre>public static final&nbsp;int REAL_FMT_VAX</pre>
+<div class="block">indicates that the VMS D/F format is used to represent reals</div>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../constant-values.html#jpl.mipl.io.vicar.VicarDataFormat.REAL_FMT_VAX">Constant Field Values</a></dd></dl>
+</li>
+</ul>
+<a name="_hostTable">
+
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>_hostTable</h4>
+<pre>protected static final&nbsp;java.lang.String[][] _hostTable</pre>
+</li>
+</ul>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="constructor_detail">
+
+</a>
+<h3>Constructor Detail</h3>
+<a name="VicarDataFormat(java.lang.String)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>VicarDataFormat</h4>
+<pre>public&nbsp;VicarDataFormat(java.lang.String&nbsp;hostType)</pre>
+<div class="block">Initialize using a hostname only.  intFmt and realFmt are looked up.</div>
+</li>
+</ul>
+<a name="VicarDataFormat(java.lang.String, java.lang.String, java.lang.String)">
+
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>VicarDataFormat</h4>
+<pre>public&nbsp;VicarDataFormat(java.lang.String&nbsp;hostType,
+               java.lang.String&nbsp;intFmt,
+               java.lang.String&nbsp;realFmt)</pre>
+<div class="block">Initialize using all three strings.  Consistency of the strings is
+ not checked, only validity of the intFmt/realFmt.  This should be called
+ by objects reading a label (since consistency in the label is not
+ guaranteed).  Also, host name can be anything.</div>
+</li>
+</ul>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="method_detail">
+
+</a>
+<h3>Method Detail</h3>
+<a name="getIntFormatFromHost(java.lang.String)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getIntFormatFromHost</h4>
+<pre>public&nbsp;java.lang.String&nbsp;getIntFormatFromHost(java.lang.String&nbsp;s)</pre>
+<div class="block">Returns the integer format corresponding to the given hostType or null
+ if the hostType is not found.</div>
+</li>
+</ul>
+<a name="getRealFormatFromHost(java.lang.String)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getRealFormatFromHost</h4>
+<pre>public&nbsp;java.lang.String&nbsp;getRealFormatFromHost(java.lang.String&nbsp;s)</pre>
+<div class="block">Returns The real format corresponding the given hostType or null if
+ the hostType is not found.</div>
+</li>
+</ul>
+<a name="getHostType()">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getHostType</h4>
+<pre>public&nbsp;java.lang.String&nbsp;getHostType()</pre>
+<div class="block">get the host type property</div>
+</li>
+</ul>
+<a name="setHostType(java.lang.String)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setHostType</h4>
+<pre>public&nbsp;void&nbsp;setHostType(java.lang.String&nbsp;hostType)</pre>
+<div class="block">set the host type property</div>
+</li>
+</ul>
+<a name="getIntFormatString()">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getIntFormatString</h4>
+<pre>public&nbsp;java.lang.String&nbsp;getIntFormatString()</pre>
+<div class="block">get the int format property</div>
+</li>
+</ul>
+<a name="getIntFormatCode()">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getIntFormatCode</h4>
+<pre>public&nbsp;int&nbsp;getIntFormatCode()</pre>
+<div class="block">get the int format property as an integer code corresponding to the
+ public static final constants in this class.</div>
+</li>
+</ul>
+<a name="setIntFormat(java.lang.String)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setIntFormat</h4>
+<pre>public&nbsp;void&nbsp;setIntFormat(java.lang.String&nbsp;intFmt)</pre>
+<div class="block">set the int format property</div>
+</li>
+</ul>
+<a name="getRealFormatString()">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getRealFormatString</h4>
+<pre>public&nbsp;java.lang.String&nbsp;getRealFormatString()</pre>
+<div class="block">get the real format property</div>
+</li>
+</ul>
+<a name="getRealFormatCode()">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getRealFormatCode</h4>
+<pre>public&nbsp;int&nbsp;getRealFormatCode()</pre>
+<div class="block">get the real format property as an integer code corresponding to the
+ public static final constants in this class.</div>
+</li>
+</ul>
+<a name="setRealFormat(java.lang.String)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setRealFormat</h4>
+<pre>public&nbsp;void&nbsp;setRealFormat(java.lang.String&nbsp;realFmt)</pre>
+<div class="block">set the real format property</div>
+</li>
+</ul>
+<a name="getPixelSize(java.lang.String, java.lang.String, java.lang.String)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getPixelSize</h4>
+<pre>public static&nbsp;int&nbsp;getPixelSize(java.lang.String&nbsp;dataType,
+               java.lang.String&nbsp;intFmt,
+               java.lang.String&nbsp;realFmt)</pre>
+<div class="block">Returns the size (in bytes) of a pixel, given the integer and real
+ representations.
+<p>
+ Currently, the number of bytes per pixel is the same regardless of the
+ int/real representations -- however, this may change (e.g., "HALF" may
+ not always imply two bytes per pixel), so we take intFmt and realFmt as
+ args in case they become necessary in the future.</div>
+</li>
+</ul>
+<a name="getPixelSize(java.lang.String)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getPixelSize</h4>
+<pre>public&nbsp;int&nbsp;getPixelSize(java.lang.String&nbsp;dataType)</pre>
+<div class="block">Returns the size in pixels of the given data type for the host.  Unlike
+ Java, the size cannot be assumed, although they match in all current cases.</div>
+</li>
+</ul>
+<a name="isTranslationNeeded(java.lang.String)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>isTranslationNeeded</h4>
+<pre>public&nbsp;boolean&nbsp;isTranslationNeeded(java.lang.String&nbsp;dataType)</pre>
+<div class="block">Indicate whether or not translation is needed for a given data type.
+ If not, the caller may save time by avoiding the translation step
+ altogether.</div>
+</li>
+</ul>
+<a name="toString()">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>toString</h4>
+<pre>public&nbsp;java.lang.String&nbsp;toString()</pre>
+<div class="block">Return a string representation of the VICAR data format object.</div>
+<dl>
+<dt><strong>Overrides:</strong></dt>
+<dd><code>toString</code>&nbsp;in class&nbsp;<code>java.lang.Object</code></dd>
+</dl>
+</li>
+</ul>
+<a name="getDataInputWrapper(java.lang.Object)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getDataInputWrapper</h4>
+<pre>public&nbsp;java.io.DataInput&nbsp;getDataInputWrapper(java.lang.Object&nbsp;s)</pre>
+<div class="block">These "factory" methods will create and return a stream object that
+ implements the <code>DataInput</code> or <code>DataOutput</code> interfaces.
+ These streams may be private classes, but they are set up to do the
+ correct data type translations given the current setup of this
+ <code>VicarDataFormat</code>.
+ <p>
+ It is quite possible that the factories may simply return the original
+ stream, if it already implements <code>DataInput</code> or
+ <code>DataOutput</code> and the data is already in Java format.
+ <p>
+ There is no guarantee that the returned stream will support any given
+ random-access or seek operations.  For this reason, the original stream
+ should be retained by the caller, and used to reposition within the
+ file (if needed).  The returned stream (if not simply the original) will
+ only use the read() or write() functions of the given stream, so it will
+ be able to make use of any repositionings done on the original stream.</div>
+<dl><dt><span class="strong">Throws:</span></dt>
+<dd><code>java.lang.IllegalArgumentException</code> - if the provided object is not a subclass
+ of <code>InputStream</code> or <code>DataInput</code>.</dd></dl>
+</li>
+</ul>
+<a name="getDataOutputWrapper(java.lang.Object)">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getDataOutputWrapper</h4>
+<pre>public&nbsp;java.io.DataOutput&nbsp;getDataOutputWrapper(java.lang.Object&nbsp;s)</pre>
+<div class="block">Factory to return a DataOutput object.</div>
+<dl><dt><span class="strong">Throws:</span></dt>
+<dd><code>java.lang.IllegalArgumentException</code> - if the provided object is not a subclass
+ of <code>InputStream</code> or <code>DataInput</code>.</dd><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../jpl/mipl/io/vicar/VicarDataFormat.html#getDataInputWrapper(java.lang.Object)"><code>getDataInputWrapper(java.lang.Object)</code></a></dd></dl>
+</li>
+</ul>
+<a name="equals(java.lang.Object)">
+
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>equals</h4>
+<pre>public&nbsp;boolean&nbsp;equals(java.lang.Object&nbsp;obj)</pre>
+<div class="block">"equals" is defined as having the same intFmtCode and realFmtCode.
+ The host type is not considered when checking for equality.  "equals"
+ thus means the data types are interchangeable with each other.</div>
+<dl>
+<dt><strong>Overrides:</strong></dt>
+<dd><code>equals</code>&nbsp;in class&nbsp;<code>java.lang.Object</code></dd>
+</dl>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+<div class="bottomNav"><a name="navbar_bottom">
+
+</a><a href="/VICAR-DOCS/vicar/core460/html/javadoc/././././././././././././././././jpl/mipl/io/vicar/#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow">
+
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../../overview-summary.html">Overview</a></li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/././././././././././././././././jpl/mipl/io/vicar/package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/././././././././././././././././jpl/mipl/io/vicar/package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+<li><a href="../../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../../../jpl/mipl/io/vicar/VicarBinaryLinePrefix.html" title="class in jpl.mipl.io.vicar"><span class="strong">Prev Class</span></a></li>
+<li><a href="../../../../jpl/mipl/io/vicar/VicarDataInputDIWrapper.html" title="class in jpl.mipl.io.vicar"><span class="strong">Next Class</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../../../index.html?jpl/mipl/io/vicar/VicarDataFormat.html" target="_top">Frames</a></li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/././././././././././././././././jpl/mipl/io/vicar/VicarDataFormat.html" target="_top">No Frames</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_bottom">
+<li><a href="../../../../allclasses-noframe.html">All Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript">
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>Summary:&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/././././././././././././././././jpl/mipl/io/vicar/#field_summary">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/././././././././././././././././jpl/mipl/io/vicar/#constructor_summary">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/././././././././././././././././jpl/mipl/io/vicar/#method_summary">Method</a></li>
+</ul>
+<ul class="subNavList">
+<li>Detail:&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/././././././././././././././././jpl/mipl/io/vicar/#field_detail">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/././././././././././././././././jpl/mipl/io/vicar/#constructor_detail">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core460/html/javadoc/././././././././././././././././jpl/mipl/io/vicar/#method_detail">Method</a></li>
+</ul>
+</div>
+<a name="skip-navbar_bottom">
+
+</a></div>
+
+</body>
+</html>

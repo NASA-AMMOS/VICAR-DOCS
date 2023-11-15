@@ -1,0 +1,118 @@
+<HTML>
+<HEAD><title>HTML Help for RPCWARPM</title></HEAD>
+<BODY>
+<H1>Help for RPCWARPM</H1>
+<pre>
+PURPOSE
+     RPCWARPM reads the GeoTIFF label of a "master" or "reference" image,
+     then reads the rpc's in the GeoTIFF label of the input image.  It
+     calculates a set of GEOMV parameters from these and then calls GEOMV
+     to warp the input image to match the mapping of the "reference" image.
+     
+     1.  The keyword 'coverinp causes the procedure to map all of the
+     input image to an output image that will just contain it.   The
+     keyword gorewid allows the user to specify a zero-filled margin
+     to make the output a little larger (or negative trims smaller).
+	
+     2.  The keyword 'coverref causes the procedure to map the input
+     image to an output image that exactly matches the "reference" image.
+     Some parts of the input can be lost, or huge areas of zero-fill
+     could be added to make the images match.  The gorewid keyword has
+     no effect.
+   
+     Matching MSI from Worldview P1BS/M1BS images can also be scaled and
+     matched to the PAN. Currently only the MSI blue, green, red, and 
+     nir bands can be processed. As with the Pan, the msi bands must have
+     been pre-extracted from their nitf format (e.g., vextract2). The
+     "out" parm is a prefix with the string _b _r _g or _n appended (no
+     appending to the pan image).
+
+     MSI Example:
+     vextract2   inp=&inppan&ntf out=xxa
+     vextract2   inp=&inpmul&ntf out=xx1 band=0 !blue
+     vextract2   inp=&inpmul&ntf out=xx2 band=1 !green
+     vextract2   inp=&inpmul&ntf out=xx3 band=2 !red
+     vextract2   inp=&inpmul&ntf out=xx4 band=3 !nir
+     genpc       out=xref mpix=0.5 lat=28 lon=57 aspect=geographic
+     rpcwarpm    inp=(xxa,&dem) out=xxmas ref=xref                   multb=xx1 multg=xx2 multr=xx3 multn=xx4                   nav=2000 nah=2000 'bilin 'coverinp
+
+CALL
+     rpcwarpm INPUT OUTPUT REF '(QUALIFIERS) PARAMS
+  WHERE:
+     INPUT          is the input data set (must have a GeoTIFF label, with RPC).
+     OUTPUT         is the output data set (will have a GeoTIFF label).
+     REF            is the reference data set (must have a GeoTIFF label).
+     QUALIFIERS     consist of any of the following keywords:
+          COVERINP         smallest output that covers the input geographic area
+          COVERREF         output exactly matches the reference image.
+     PARAMS         interp,nah,nav,gorewid.
+
+  
+OPERATION
+
+First, for the 'coverinp case only, the procedure calculates the
+extrema of the input in the output pixel space.  For the 'coverref
+case, the extrema are the boundaries of the reference image.
+
+Then the procedure calculates (in an ibis file) a grid that is
+rectangular in the output space using the extrema calculated above.
+Then new columns are calculated using the GeoTIFF map projections
+in the labels of the input and reference images yielding the grid
+in the input image.  If there are no GeoTIFF map projections in the
+label then one is calculated from the RPC's.  Then GEOMV is called
+to calculate the result.
+
+PERFORMANCE
+
+The time will consist of the IBIS file grid generation and mapping
+which could be minutes for a 1000 x 1000 grid plus the GEOMV time.
+See the GEOMV document for GEOMV timing (a 4000 by 4000 image was
+transformed by a 500 x 500 grid in 99 seconds on a SPARCstation 20.
+Reducing the grid to 30 x 30 cut the time to 39 seconds.  This shows
+that the use of a large grid doesn't penalize the time too much, 1999).
+
+Restrictions
+------------
+
+The input image must have an RPC label (in the GeoTIFF property label).
+
+The reference image must have a GeoTIFF label.
+
+
+Original Programmer: A. L. Zobrist, 16 Mar, 2005
+<A NAME="CogProg">Current Cognizant Programmer: A. L. Zobrist</A>
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/rpcwarpm_level2.html#inp"><H3>INP</H3></A>
+Input file name with GeoTIFF
+label with RPC's; DTED file
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/rpcwarpm_level2.html#out"><H3>OUT</H3></A>
+Output file name
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/rpcwarpm_level2.html#ref"><H3>REF</H3></A>
+Reference file name with GeoTIFF
+label
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/rpcwarpm_level2.html#typref"><H3>TYPREF</H3></A>
+'COVERINP - output minimally
+   covers the input data
+'COVERREF - output matches
+   the ref image exactly
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/rpcwarpm_level2.html#nah"><H3>NAH</H3></A>
+Number of grid cells horiz.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/rpcwarpm_level2.html#nav"><H3>NAV</H3></A>
+Number of grid cells vert.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/rpcwarpm_level2.html#interp"><H3>INTERP</H3></A>
+interpolation options
+Valid: NOIN,ZNOIN,BILIN
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/rpcwarpm_level2.html#savegrid"><H3>SAVEGRID</H3></A>
+optional file to save geom grid
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/rpcwarpm_level2.html#gorewid"><H3>GOREWID</H3></A>
+Added width of gores for
+'coverinp case only
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/rpcwarpm_level2.html#memsize"><H3>MEMSIZE</H3></A>
+sets vmemsize for call
+of geomv (q.v.)
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/rpcwarpm.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/rpcwarpm.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

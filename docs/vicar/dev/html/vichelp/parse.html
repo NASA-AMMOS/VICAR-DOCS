@@ -1,0 +1,83 @@
+<HTML>
+<HEAD><title>HTML Help for PARSE</title></HEAD>
+<BODY>
+<H1>Help for PARSE</H1>
+<pre>
+PURPOSE:
+PARSE separates images into their periodic components. That is, each output
+is created from every nth line (HORIZONTAL <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#mode">mode</A>) or every nth sample
+(VERTICAL <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#mode">mode</A>) from the input image, with each particular output starting
+from a different line (or sample).  Its original intent was to separate one 
+image into images of each component detector (sensor), but it may be used 
+whenever an image of every nth line or nth sample is desired.
+
+The user may choose to output only selected <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#bands">bands</A> (for multichannel data) or
+selected <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#sensors">sensors</A> (lines or samples). Each output image will contain the
+selected <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#sensors">sensors</A> for one band in the BY_BAND <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#mode">mode</A>, or the selected <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#bands">bands</A> for
+one sensor in the BY_SENSOR <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#mode">mode</A>.
+
+There is also a REVERSE <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#mode">mode</A>, which performs the reverse operation.  That 
+is, given multiple inputs from an image that has been PARSE'd apart, an
+output image will be rebuilt.
+Examples:
+
+  PARSE ASTER_TIR (CH10,CH11,C12,C13,C14) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#count">COUNT</A>=10
+
+In this case, an input with 5 channels in the input file is split into 5
+output images, one per channel.  Each output file will contain 10 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#bands">bands</A>,
+each band is taken from every tenth input line, Band 1 starting with Line 1,
+Band 2 starting with Line 2, etc.
+
+
+  PARSE ASTER_SWIR (ODD,EVEN) 'VERTICAL 'BY_SENSOR <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#count">COUNT</A>=2
+
+In this example, an input is split in two, with the first output containing
+the odd numbered samples, and the second output holding the even numbered
+samples.
+  PARSE ASTER_TIR (S1,S7,S10) 'BY_SENSOR <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#count">COUNT</A>=10 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#sensors">SENSORS</A>=(1,7,10)
+
+Here, the input image is parsed by every tenth line, but only the first,
+seventh, and tenth starting lines (<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#sensors">sensors</A>) are output.
+
+
+  PARSE (CH10,CH11,CH12,C13,CH14) ASTER_TIR <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#count">COUNT</A>=10 'REVERSE
+
+In this example, a single image is regenerated from its components.  That is,
+if the outputs of the first example were used as inputs for this example, the
+output would be identical to the input of the first example.
+WRITTEN BY:  Ron Alley   25 May 2000
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Ron Alley</A>
+REVISION:  New  25 May 2000
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#inp"><H3>INP</H3></A>
+Input image file(s)
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#out"><H3>OUT</H3></A>
+Output image file(s)
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#count"><H3>COUNT</H3></A>
+Number of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#sensors">sensors</A>,
+or, the modulus.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#mode"><H3>MODE</H3></A>
+Scan direction, or
+parsing <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#method">method</A>
+Valid: HORIZONTAL, VERTICAL
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#files_by"><H3>FILES_BY</H3></A>
+Output files will
+be organized by:
+Valid: BY_BAND, BY_SENSOR
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#method"><H3>METHOD</H3></A>
+Split files up (FORWARD) or put
+them together (REVERSE)?
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#bands"><H3>BANDS</H3></A>
+Include only the following list
+of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#bands">bands</A>. (Default is to use 
+all <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#bands">bands</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#sensors"><H3>SENSORS</H3></A>
+Include only the following list
+of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#sensors">sensors</A> (seeds). (Default is
+to use all <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse_level2.html#sensors">sensors</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/parse.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

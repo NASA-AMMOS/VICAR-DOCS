@@ -1,0 +1,91 @@
+<HTML>
+<HEAD><title>HTML Help for IBISREGR</title></HEAD>
+<BODY>
+<H1>Help for IBISREGR</H1>
+<pre>
+PURPOSE
+
+ "ibisregr" performs a series of multiple linear regression analyses on IBIS
+ tabular files, searching for a best fit.  This can be used, for example, 
+ to find the best combination of spectral channels for determination of a
+ physical parameter.
+
+
+METHOD
+
+ The program loops through all possible combinations of independent variables
+ (columns) that are allowed by the user parameters, performing a linear
+ least-squares fit ("regression analysis") of the dependent variable for
+ each case.  The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisregr_level2.html#nbest">NBEST</A> best solutions are retained and are printed to the
+ terminal and optionally written to the output file.
+
+ The criterion for the best fit is that the R-squared statistic be maximized,
+ or the standard error be minimized, or both. The R-squared statistic is the
+ fraction of the total variance in the dependent data that is explained by
+ the regression.  The standard error of the estimate is the RMS average of
+ the residuals (the misfit between the predicted and actual dependent data).  
+
+ The optional output file contains three columns for each of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisregr_level2.html#nbest">NBEST</A> best
+ fits:  the first shows the M input columns used for this solution (the
+ first entry in this column is in row 2, and row 1 always contains a zero,
+ denoting the constant term), the second column contains the M+1 regression
+ coefficients (the first being the constant), and the third contains the
+ residuals.
+
+ NOTE: The multiple regression technique assumes that the residuals are
+ uncorrelated and come from a normal distribution.
+
+<A NAME="examples">EXAMPLE</A>
+
+   ibisregr DATA.TAB REGR.TAB <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisregr_level2.html#cols">COLS</A>=(1,2,5,7,8) <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisregr_level2.html#colrange">COLRANGE</A>=(3,4) <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisregr_level2.html#depcol">DEPCOL</A>=10       <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisregr_level2.html#nbest">NBEST</A>=4 'STDERR '<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisregr_level2.html#print">PRINT</A> 
+
+ This case will search through all possible combinations of three and four of
+ the five specified columns (columns 1, 2, 5, 7, and 8) in the input file
+ DATA.TAB.  The dependent variable is in column 10.  The best four solutions
+ will be retained and written to the file REGR.TAB, using the standard error
+ as the criterion.  The solution for each combination will be printed to the
+ terminal.
+
+RESTRICTIONS
+
+ The maximum number of input columns is 40.
+ The maximum column length is 500.
+ The maximum amount of data (number of columns times column length) is 10000.
+ The maximum number of solutions that can be retained is 20.
+
+
+WRITTEN BY:            L.W.Kamp,	July 1987
+ (based on program "ibisstat")
+REVISIONS:
+  JAN 2 1995 AS (CRI) Made portable for UNIX
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisregr_level2.html#inp"><H3>INP</H3></A>
+Input IBIS tabular file
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisregr_level2.html#out"><H3>OUT</H3></A>
+An output IBIS tabular file
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisregr_level2.html#depcol"><H3>DEPCOL</H3></A>
+Dependent variable column
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisregr_level2.html#cols"><H3>COLS</H3></A>
+Columns to search through
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisregr_level2.html#colrange"><H3>COLRANGE</H3></A>
+(Minimum,maximum) number of
+combinations of columns 
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisregr_level2.html#nbest"><H3>NBEST</H3></A>
+Number of solutions to retain
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisregr_level2.html#depname"><H3>DEPNAME</H3></A>
+Heading for the dependent
+variable.
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisregr_level2.html#colnames"><H3>COLNAMES</H3></A>
+Headings for the columns
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisregr_level2.html#criteria"><H3>CRITERIA</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisregr_level2.html#criteria">Criteria</A> for best solution
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisregr_level2.html#print"><H3>PRINT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisregr_level2.html#print">Print</A> output for each 
+iteration?
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisregr.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/ibisregr.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

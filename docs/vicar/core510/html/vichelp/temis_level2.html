@@ -1,0 +1,198 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for TEMIS</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/temis.html">TEMIS</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+The file containing the bands of a calibrated radiance image, using the
+WATTS units.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+     The first output dataset is a halfword image of all the input bands of
+     emittance data, scaled such that an emittance of 1.0 is 10,000 DN.
+     The second output dataset is a halfword temperature image, where each DN
+     corresponds to 0.01 degree Celsius. 0 DN corresponds to 0 degrees C.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="size"><H3>SIZE</H3></A><pre>
+   The standard VICAR2 output size field.   Default will calibrate
+   the entire data set.
+	Example: SIZE = (1,1,200,638)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sl"><H3>SL</H3></A><pre>
+   Starting line (same as SIZE(1)).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ss"><H3>SS</H3></A><pre>
+   Starting sample (same as SIZE(2)).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nl"><H3>NL</H3></A><pre>
+   Number of lines (same as SIZE(3)).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ns"><H3>NS</H3></A><pre>
+   Number of samples (same as SIZE(4)).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="refchan"><H3>REFCHAN</H3></A><pre>
+	The channel to which the other bands are to be referenced, in
+	the case of REFCHAN mode, is input through this parameter.
+	In  BBFIT and ALPHA modes, this parameter is ignored.
+		Example: REFCHAN = 5
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="e"><H3>E</H3></A><pre>
+     In REFCHAN mode, the spectral emittance of the reference channel is
+     set to a constant value, given by this parameter.
+     In BBFIT mode, spectral emittances are computed so that the maximum
+     of the six emittance values is equal to the value of E.
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="date"><H3>DATE</H3></A><pre>
+        TEMIS needs the center wavelength for each band of the input. The
+        Variables CWAVE, FILFILE or DATE are used to specify those wavelengths.
+        Only one of the three variable should be specified
+
+        CWAVE is an array of the center wavelengths (nicrons) that
+           corresponds to the bands of the input file (in micron
+
+        FILFILE is an ascii file that contains one filter function for
+           each input band. each filter is started by a line containing
+           the string " band" and should consist of two columns, the first
+           the wavelength in microns and the second the response at that
+           wavelength
+
+        DATE is the TIMS flightline date for the case of TIMS data. TEMIS
+           will retreive the filter funtion from timsfilt subroutine.
+
+        if none of these three parameters is specified, TEMIS looks in the
+        label for a TIMS format date, and if it finds one, retreives the
+        filter from the timsfilt subroutine.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="cwave"><H3>CWAVE</H3></A><pre>
+        TEMIS needs the center wavelength for each band of the input. The
+        Variables CWAVE, FILFILE or DATE are used to specify those wavelengths.
+        Only one of the three variable should be specified
+
+        CWAVE is an array of the center wavelengths (nicrons) that
+           corresponds to the bands of the input file (in micron
+
+        FILFILE is an ascii file that contains one filter function for
+           each input band. each filter is started by a line containing
+           the string " band" and should consist of two columns, the first
+           the wavelength in microns and the second the response at that
+           wavelength
+
+        DATE is the TIMS flightline date for the case of TIMS data. TEMIS
+           will retreive the filter funtion from timsfilt subroutine.
+
+        if none of these three parameters is specified, TEMIS looks in the
+        label for a TIMS format date, and if it finds one, retreives the
+        filter from the timsfilt subroutine.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="filfile"><H3>FILFILE</H3></A><pre>
+        TEMIS needs the center wavelength for each band of the input. The
+        Variables CWAVE, FILFILE or DATE are used to specify those wavelengths.
+        Only one of the three variable should be specified
+
+        CWAVE is an array of the center wavelengths (nicrons) that
+           corresponds to the bands of the input file (in micron
+
+        FILFILE is an ascii file that contains one filter function for
+           each input band. each filter is started by a line containing
+           the string " band" and should consist of two columns, the first
+           the wavelength in microns and the second the response at that
+           wavelength
+
+        DATE is the TIMS flightline date for the case of TIMS data. TEMIS
+           will retreive the filter funtion from timsfilt subroutine.
+
+        if none of these three parameters is specified, TEMIS looks in the
+        label for a TIMS format date, and if it finds one, retreives the
+        filter from the timsfilt subroutine.
+
+     An example of a filter file would be:
+
+ band 1
+  0.52  0.2 
+  0.56  1.0 
+  0.60  0.3
+ band 2
+  0.63 0.2
+  0.66 1.0
+  0.69 0.2
+ band 3
+  0.76 0.5  
+  0.77 0.5  
+
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mode"><H3>MODE</H3></A><pre>
+     Three algorithms (MODEs) have presently been implemented. The first
+   method, called REFCHAN, sets a specified reference channel to a specified
+   constant emittance value. The default sets Channel 6 to 0.95. The
+   temperature is computed based upon the radiance and given emittance of
+   the reference channel, then the other five spectral emittances are
+   computed, using this temperature.
+     The second method, called BBFIT, assumes that the highest spectral
+   emittance is at a user-specified level (default = 0.95). It then computes
+   the highest temperature consistent with this assumption, and the six
+   spectral emittances, based upon the computed temperature.
+     The thrid method is the aplha residuals method.
+     The fourth method is to calculate the brightness temperature for each
+   band.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

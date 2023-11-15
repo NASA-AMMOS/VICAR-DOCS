@@ -1,0 +1,324 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for PICMTCH4</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4.html">PICMTCH4</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#inp">INP</A>=(A,B,C),
+     where:
+
+     A                   is the first image to be correlated.
+
+     B                   is   the   second   image   to   be 
+                         correlated   [or  a  ground  control 
+                         point file in graphics-2 format --
+                         NOT CURRENTLY SUPPORTED].
+
+     C                   is  an IBIS file containing the image
+                         1 matching points in pixel (L,S) in
+                         the first two columns.  These points
+                         can also be geographic if the first
+                         image has a GeoTIFF label and the label
+                         coordinate system is used (column 1
+                         will be the East and column 2 will 
+                         be the North).  The file must also
+                         have 11 columns or more, and the 
+                         other 9 columns are filled (see main
+                         help).  The first two columns may
+                         change slightly (see algoritm discussion).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#out">OUT</A>=D
+     D                   Is an image of the matching areas as
+                         "chips".  NOT CURRENTLY SUPPORTED.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="itie"><H3>ITIE</H3></A><pre>
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#itie">ITIE</A>=(X1,Y1,...,X3,Y3)   This  specifies three
+                              control  points in  the  first
+                              input    image   to    control 
+                              matching <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#search">search</A> and resampling 
+                              geometry.   Can be  omitted if 
+                              both images have GeoTIFF labels
+                              and  the  GeoTIFF  mapping  is
+                              desired for a matching model.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="otie"><H3>OTIE</H3></A><pre>
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#otie">OTIE</A>=(P1,Q1,...,P3,Q3)   This specifies the  correspon
+                              ding  control  points  in  the 
+                              second  image.   If the second 
+                              input  is  a  ground   control 
+                              point  file then these  values 
+                              are  latitude longitude pairs.  
+                              The number of values given  to 
+                              <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#otie">OTIE</A>  must be the same as  the 
+                              number to <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#itie">ITIE</A>. Can be  omitted if 
+                              both images have GeoTIFF labels
+                              and  the  GeoTIFF  mapping  is
+                              desired for a matching model.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="magnify"><H3>MAGNIFY</H3></A><pre>
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#magnify">MAGNIFY</A>=(RL,RS)          This  specifies that  sampling 
+                              from  both images is magnified 
+                              by  RL in  the  line direction
+                              and RS  in  the samp direction
+                              (default 1.0,1.0).    The grid 
+                              is  always <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#fftsize">FFTSIZE</A>^2  so  this 
+                              increases the correlation area 
+                              without increasing computation.
+			      The magnification can be speci-
+			      fied  separately  for line and 
+			      sample directions.  If you use
+			      these, you must specify both.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="magshrk"><H3>MAGSHRK</H3></A><pre>
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#magshrk">MAGSHRK</A>="y"              This specifies that the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#magnify">MAGNIFY</A>
+                              parameter will shrink by .9 for
+                              every good fitting point.  Also
+                              only applies after fit to points
+                              is  obtained.   When <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#magmin">MAGMIN</A>  is
+                              reached, then the  shrink is no
+                              longer applied.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="magmin"><H3>MAGMIN</H3></A><pre>
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#magmin">MAGMIN</A>=(RL,RS)           This specifies the minimum vals
+                              for  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#magnify">MAGNIFY</A>  when  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#magshrk">MAGSHRK</A>  is
+                              used.  When <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#magmin">MAGMIN</A> is  reached,
+                              then  the  shrink is  no longer
+                              applied.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="search"><H3>SEARCH</H3></A><pre>
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#search">SEARCH</A>=S                 This specifies that the search 
+                              area  in  the first  input  is 
+                              initially  an SxS  square  re-
+                              gion.   Allow  for uncertainty 
+                              and  nonlinearity in the esti-
+                              mation of matching location by 
+                              <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#itie">ITIE</A>,  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#otie">OTIE</A> and add 12 more to 
+                              S for ineffectiveness of  cor-
+                              relation near the window edge.  
+                              S  must be less than or  equal 
+                              to   128  which  is  also  the 
+                              default.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="minsrch"><H3>MINSRCH</H3></A><pre>
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#minsrch">MINSRCH</A>=T                This   specifies   that    the 
+                              initial   <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#search">search</A>   S  can   be 
+                              reduced    upon     successful 
+                              matching to a minimum value of 
+                              T.    Note   that   successful 
+                              matches  refine  the image  to 
+                              image geometric model allowing 
+                              a  reduction in <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#search">search</A> with  a 
+                              consequent     savings      of 
+                              computation.     The   default 
+                              value  is 50 and miminum value 
+                              is 32.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="zwind"><H3>ZWIND</H3></A><pre>
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#zwind">ZWIND</A>=W                  The program calculates and outputs
+			      the  average brightness values 
+			      at  the matching coordinates.  
+			      The average is calculated using
+			      a W by W window.  Default is 7.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="zreject"><H3>ZREJECT</H3></A><pre>
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#zreject">ZREJECT</A>=Z            The average brightness is rejected 
+			      by setting the output Z value to
+			      -999 if if falls below this value
+			      The default is 5.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="retry"><H3>RETRY</H3></A><pre>
+     <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#retry">RETRY</A>=(N,T,R)            This  instructs the program to 
+                              attempt  more  tries  near   a 
+                              location    if    a    certain 
+                              correlation  threshold is  not 
+                              achieved.   N is the number of 
+                              tries  (1 to 5), with the first
+			      try being the at the original point.
+			      T is  the correlation threshold 
+			      required to stop the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#retry">retry</A> at each  
+			      point.  A failure number is 
+ 			      printed every time the threshold 
+			      test fails.  If all retries for 
+			      a point fail then nothing is 
+			      written to the output files.
+                              The  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#retry">retry</A> pattern is to  move 
+                              to  the corners of a square 
+			      i.e. to move to (+/-R, +/-R) from
+			      the original point.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="noprint"><H3>NOPRINT</H3></A><pre>
+        '<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#noprint">NOPRINT</A>	      This specifies that the normal 
+			      printout is to be suppressed.  
+			      Error messages will still be
+			      printed. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nohpf"><H3>NOHPF</H3></A><pre>
+       '<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#nohpf">NOHPF</A>                 This   specifies   that    the 
+                              default  high  pass filter  in 
+                              the correlation is to be  shut 
+                              off.   The  high  pass  filter 
+                              consists  of zeroing the  low-
+                              order  row  and column of  the 
+                              DFT matrices.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nosubpix"><H3>NOSUBPIX</H3></A><pre>
+         '<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#nosubpix">NOSUBPIX</A>            This  specifies that  subpixel 
+                              correlation   is  not  to   be 
+                              calculated (see operation)
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="redo"><H3>REDO</H3></A><pre>
+The correlation that results from a bad estimation of position will
+usually be not as good as one resulting from a good estimate.  This
+parameter will recalculate the user-selected number of points over
+again at the end of processing.  Usually, the predictor has optimized
+by the end of processing, so the results will be better.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="pred"><H3>PRED</H3></A><pre>
+"LINEAR" will use a 2-D linear fit to predict where a point in the 
+first image will match in the second image.  "QUAD" will use a 2-D
+quadratic fit, but only when enough points are available to solve
+for the coefficients of the quadratic.  Three points are needed 
+to solve for linear coefficients, and six are needed for quadratic.
+If the images have a keystone offset, use quadratic.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="autofit"><H3>AUTOFIT</H3></A><pre>
+The value of this parameter (n) tells the routine to use the first n
+correlations to set the threshold.  It will be the value for which
+1/2 of n are above threshold and 1/2 n are below.  No values are 
+allowed into the fit until these n points determine the threshold.
+Then the convergence is held for the next set of n points while the
+fit is being refined.  This whole procedure is to prevent a misleading
+fit on the first point from sending the whole fitting process in the
+wrong direction.
+
+The user provided <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#fitmin">fitmin</A> will be ignored, it is set by the process 
+just outlined.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ffthalf"><H3>FFTHALF</H3></A><pre>
+0 = default, no retries when <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#zerolim">zerolim</A> exceeded
+1 = one <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#retry">retry</A> at half size
+2 = one <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#retry">retry</A> at half size, another retry at quarter size
+
+This allows correlating closer to the image edge.  The correlation
+threshold is toughened so that the correlation must be at the 
+automatic threshold instead of within .5 of it.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="zerolim"><H3>ZEROLIM</H3></A><pre>
+Setting this to a value limits the number of zeros in either image
+chip to that percentage of zeros.  For the first image, exceeding
+this percentage will cause a message "point outside first image"
+and the point will not be used (column 9 will have -9999).  For
+the second image, which may be searched, the individual chips
+are rejected with no comment.  If the second image is 50% zeros
+a message "point outside second image" is given.  Parts of a chip
+cut off by an image edge are treated as zeros.
+
+The parameter <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#zerolim2">ZEROLIM2</A> allows the second image value to
+be set independantly.  If it is not used, then the default
+value of -1 causes the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/picmtch4_level2.html#zerolim">ZEROLIM</A> for the second image to be the
+same as the first image.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="elvcor"><H3>ELVCOR</H3></A><pre>
+See routine piclsqm2 for use of these parameters
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="angoff"><H3>ANGOFF</H3></A><pre>
+tilts initial match predictor by this angle in degrees.  Gives
+better correlation if the tilt is accurate.  After the solved fit
+for a match predictor, this angle will no longer be used or have 
+any effect on results.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

@@ -1,0 +1,103 @@
+<HTML>
+<HEAD><title>HTML Help for AGGRG2</title></HEAD>
+<BODY>
+<H1>Help for AGGRG2</H1>
+<pre>
+PURPOSE
+
+	"aggrg2" collapses columns of numbers in an IBIS interface file into
+smaller columns using a designated column as the control. Within the control
+column each number which is repeated will define one row. A second key or
+index, the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#area">area</A> key, selects the maximum value from an index group and stores
+is row position in the column. The row position is a pointer from which a
+sample can be selected for other columns.
+
+	There are three alternative methods of collapsing columns:
+
+1. The first option selects a sample item from a column based on the row
+position of the maximum value from the key column. One value is selected
+for each group of control values.
+
+2. The second option aggregates all the values in a column based on the
+limits defined by the control values.
+
+3. The third option selects a maximum value from the column based on the
+limits defined by the control values (default).
+
+	To illustrate the options a sample case is shown:
+
+CONTROL <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#area">AREA</A>	SAMPLE		CONTROL	OPTION	OPTION	OPTION
+COLUMN	KEY	COLUMN		COLUMN	ONE	TWO	THREE
+1	10	 2		1	 4	12	 6
+1	20	 4		2	10	18	10
+1	15	 6		3	16	42	16
+2	24	 8		4	18	18	18
+2	31	10		5	20	20	20
+3	16	12
+3	31	14
+3	53	16
+4	10	18
+5	20	20
+
+TAE COMMAND LINE FORMAT
+
+	aggrg2 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#inp">INP</A>=FILE <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#out">OUT</A>=FILE2 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#agcol">AGCOL</A>=N <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#area">AREA</A>=A <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#byar">BYAR</A>=(X,Y,Z) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#sumcol">SUMCOL</A>=(A,B,C)
+	aggrg2 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#inp">INP</A>=FILE <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#out">OUT</A>=FILE2 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#agcol">AGCOL</A>=N <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#sumcol">SUMCOL</A>=(X,Y,Z)
+
+	FILE represents the interface file, N the control column,
+	A the keyword <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#area">area</A>, X,Y, and Z the columns to be collapsed,
+	and A,B, and C the columns to be collapsed by aggregating
+	all the values for an index group.
+
+<A NAME="examples">EXAMPLE</A>
+
+	sort <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#inp">INP</A>=A SORTCOL=1
+	aggrg2 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#out">OUT</A>=B <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#agcol">AGCOL</A>=1
+
+	This example collapses the interface file by replacing multiple
+rows with the same value in column 1 by a single row and choosing the
+largest value in the other rows to be retained.
+
+RESTRICTIONS
+
+The interface file can be sorted on the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#agcol">AGCOL</A>, but it does not have to
+be.  It will be collapsed on each set of contiguous values, using
+the breaks between them to identify the sets.  For example if the 
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#agcol">agcol</A> contains (0,0,1,1,1,1,0,0,0,1,0,0,1,1,0,0) then 7 sets of 
+contiguous values will be recognized.
+
+Dynamic allocation is used so the columns can be of any length.
+
+WRITTEN BY		A. L. Zobrist		 1 Dec 1975
+<A NAME="CogProg">COGNIZANT PROGRAMMER	K. F. Evans</A>
+
+REVISIONS
+
+  1978-07-26 K. F. Evans - 1
+  1995-01-02 A. Scop (CRI) - Made portable for UNIX
+  2000-06-07 A. L. Zobrist - rewritten in C
+  2008-01-03 W. L. Bunch - switched to USES_ANSI_C AND LIB_CARTO; misc cleanup  
+  2019-08-07 W. L. Bunch - IDS-7922 - initialized some variables
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#inp"><H3>INP</H3></A>
+Standard IBIS input file.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#out"><H3>OUT</H3></A>
+Standard IBIS output file.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#agcol"><H3>AGCOL</H3></A>
+Control column number.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#area"><H3>AREA</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#area">Area</A> maximum key.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#byar"><H3>BYAR</H3></A>
+Columns to be collapsed by the
+first option.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2_level2.html#sumcol"><H3>SUMCOL</H3></A>
+Columns to be collapsed by
+aggregating all values for
+an index group.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/aggrg2.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

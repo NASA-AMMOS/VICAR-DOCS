@@ -1,0 +1,1114 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for LABEL</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label.html">LABEL</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#inp">INP</A> specifies the name of the input file.  The input must have a valid
+VICAR label.
+
+Note:  If no output file name is given, the input file's label will 
+be modified directly.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#out">OUT</A> is the name of the output file to which the data and the modified
+label are to be written.
+
+If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#out">OUT</A> is omitted from the command line, the label <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A> are added to
+the input file directly.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="items"><H3>ITEMS</H3></A><pre>
+The label <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A> which are to be added. The items are given as a
+list in a single string parameter, in the form
+
+key(<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A>)=value-list
+
+where "key" is a valid (0 - 8 character) label keyword, "<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A>"
+is an optional starting <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> number (an integer), and "value-list"
+is the list of values to be associated with that keyword.
+
+The operation differs slightly depending on whether or not the
+starting <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> number is given.
+
+If the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> is not given, i.e. the item is of the form
+"key=value-list", then the entire label item is affected.  The
+indicated keyword is added to the label, with one or more values
+specified by "value-list".  If the keyword already exists, an
+error message is produced.
+If the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> is given, then only parts of the label item are
+affected.  If the keyword currently exists in the file, then the
+indicated values are inserted into it, starting at <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> number
+"<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A>".  For <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#instance">instance</A>, if the label item "LIST" had three values
+(1,2,3), and the following was in the label-add ITEM string:
+"LIST(2)=(10,11)", then values 10 and 11 would be inserted into
+LIST starting at position 2.  The new value of LIST would be
+(1,10,11,2,3).
+
+If the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> is given, but the keyword does not currently exist
+in the file, the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> number is ignored and a new label item
+is created containing the values in "value-list".
+A value of -1 for the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> number indicates the end of the label
+item, i.e. all elements will be appended to the end of the item.
+
+If the same keyword appears twice in "value-list", each is treated
+independently, i.e. the first one is used, then the second one.  If
+the first one causes the number of elements or the relative position
+of an <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> to change, the second one uses the NEW positions, values,
+and number of elements.
+"Value-list" is a list of values, enclosed in parentheses, and
+separated by commas.  If there is only one value, the parentheses
+are not necessary.
+
+All of the values in "value-list" should be of the same <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">type</A>:
+integer, real, doub(le), or string.  The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">type</A> should also match the type
+of the existing label, if "<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A>" is given.  The LABEL program will
+try to convert to the appropriate <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">type</A>, but if it can't it will give
+an error.  It can convert integers to real, doub(le) or string, and 
+reals to doub(le) or string.  Any other conversion is an error.
+
+The four types are differentiated by the way in which they are
+specified. Strings should be contained in single quotes.  The quotes
+are not strictly necessary if there are no commas, spaces, or parentheses
+in the string, but they should normally be included anyway.  Standard
+FORTRAN notation for integers, reals and doub(le)s is understood. Doub(le)s
+are real values with more than 6 significant digits.              
+
+Examples of valid "value-list" specifications:
+
+Specification			Meaning
+-------------			-------
+787				single integer
+(21)				single integer
+(6,-9,42)			list of three integers
++3e2				single real
+-2.000001			single doub(le)
+(3.14159, 2)			list of two reals.  The integer 2 is
+				  converted to a real: (3.14159, 2.0)
+'a string item'			single string
+('another string item')		single string
+('string 1','string 2')		list of two strings
+('string 1', 123, 4.5, wow)	list of four strings.  The values get converted
+				  to strings: ('string 1', '123', '4.5', 'wow')
+Using this input <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A>, the entire list of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A> is input
+as a single string, such as
+
+"slope=-45.8, planet='Jupiter' avgdn = 128 coord=(86.3, 44.8)"
+
+This string stores the real value "slope", the string value
+"planet", the integer value "avgdn", and the two <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> real
+value "coord".
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="task"><H3>TASK</H3></A><pre>
+The name of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A> heading or history subset under which the label
+item is to be stored.
+
+The presence of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">TASK</A> implies that the history label will be modified,
+so <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A> is unnecessary.  If you wish to add to a <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A> label, use
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> instead.  If neither <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">TASK</A> nor PROPERTY are given, and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A> is
+omitted, all labels will be placed in the history label under the
+heading of the current <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A> (LABEL if an output file is given, the
+last <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A> otherwise).
+
+An error occurs if both <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">TASK</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> are given, or if TASK is
+given with <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A>=<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A>.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="instance"><H3>INSTANCE</H3></A><pre>
+Since the same program may be run on an image several times, it is
+possible to have multiple history <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A> headings with the same name.
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#instance">INSTANCE</A>=n is used to refer to the n-th occurence of the named
+history <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A>.  If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#instance">INSTANCE</A> is not specified, 1 is assumed.
+
+If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">TASK</A> is not specified, or if the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A> label is being modified,
+then <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#instance">INSTANCE</A> is ignored.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="property"><H3>PROPERTY</H3></A><pre>
+The name of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A> subset under which the label item is to be
+stored.
+
+The presence of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> implies that the property label will be
+modified, so <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A> is unnecessary.  If you wish to add to a history
+label, use <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">TASK</A> instead.  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> is mandatory for property labels,
+so even if you say <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A>=<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> you must still specify a property name.
+
+An error occurs if both <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">TASK</A> are given, or if PROPERTY is
+given with <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A>=HISTORY.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="type"><H3>TYPE</H3></A><pre>
+Specifies whether the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A> will be added to the HISTORY or <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A>
+label.  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A> is not normally needed, since the presence of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">TASK</A>
+parameter implies history labels, while the presence of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A>
+parameter implies <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A> labels.  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A> may be used for error-checking,
+however, as <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">TASK</A>, <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A>, and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A> must all agree on the type of
+labels being added.
+!
+.SUBCMD CREATE
+LABEL-CREATE takes a file with no label and, using the
+information given by the user, generates a system label for it.
+
+VICAR in some cases can attempt to determining the image <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#size">size</A>
+for you on a VMS machine if you don't specify it, but to avoid
+potential problems it is recommended that you give the input <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#size">size</A>
+with <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nl">NL</A>, <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#ns">NS</A>, and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nb">NB</A> when it is known.  The image <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#size">size</A> cannot be
+automatically determined on a Unix machine.
+
+In addition, if the pixel <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A> is not specified, byte format
+is assumed.  If the file organization is not specified, BSQ
+(band sequential) is assumed.
+
+Unless you specify otherwise via the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#host">HOST</A> label, the input file
+is assumed to be in the data <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A> of the machine you are running
+on.  If this is not the case (i.e. the file was created on a VAX
+and you are running on a Sun), then you need to specify <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#host">HOST</A>.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="inp"><H3>INP</H3></A><pre>
+The name of a single input file which does not have a valid 
+VICAR label.  The input is assumed unconditionally to have
+no label, and the new label is simply prepended to the output.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+The name of a single output file to receive the new label and
+the data from the input.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nl"><H3>NL</H3></A><pre>
+The number of lines in the input image.  Note that this number is not
+a <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#window">window</A> but the actual number of image lines (not including any
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">binary</A> headers), and is unconditionally assumed to be correct.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ns"><H3>NS</H3></A><pre>
+The number of samples in the input image.  Note that this number is
+not a <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#window">window</A> but the actual number of samples (not including any
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">binary</A> headers), and is unconditionally assumed to be correct.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nb"><H3>NB</H3></A><pre>
+The number of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bands">bands</A> in the input image.  Note that this number is not
+a <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#window">window</A> but the actual number of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bands">bands</A> (not including any <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">binary</A>
+headers), and is unconditionally assumed to be correct.
+Default is a one band image.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nbb"><H3>NBB</H3></A><pre>
+The number of bytes of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">binary</A> prefix which precede each image
+record in the output file.  This number is added to <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#ns">NS</A> (for BSQ or
+BIL files) or <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nb">NB</A> (for BIP files) to get the total <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#size">size</A> of an
+image record (i.e. the values for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#ns">NS</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nb">NB</A> should not include <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nbb">NBB</A>).
+
+The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">BINARY</A> keyword must be specified in order for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nbb">NBB</A> to take effect.
+The default for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nbb">NBB</A> is 0.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nlb"><H3>NLB</H3></A><pre>
+The number of lines of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">binary</A> header that precede the image data.
+This number is added to the number of image records to get the total
+number of record in the image (i.e. the values for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nl">NL</A>, <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#ns">NS</A>, and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nb">NB</A> should
+not include <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nlb">NLB</A>).
+
+The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">BINARY</A> keyword must be specified in order for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nlb">NLB</A> to take effect.
+The default for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nlb">NLB</A> is 0.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="format"><H3>FORMAT</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A> of the pixels in the file.  Defaults to 
+BYTE.  The valid values are:
+
+	BYTE	Single byte unsigned <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">binary</A> integer
+	HALF	Half-precision (usually two bytes) signed integer
+	FULL	Full-precision (usually four bytes) signed integer
+	REAL 	Single-precision floating point number
+	DOUB	Double-precision floating point number
+	COMP	Complex pairs of REAL numbers in the order (real,imaginary)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="org"><H3>ORG</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#org">ORG</A> provides a means of specifying the file organization.  Organizations
+may be : BSQ (band sequential), BIP (band interleaved by pixel), or BIL
+(band inerleaved by line). Default is BSQ.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="binary"><H3>BINARY</H3></A><pre>
+If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">BINARY</A> is specified as a keyword, the new file is created with a binary
+label specified by <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nlb">NLB</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nbb">NBB</A>.  The data in the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">binary</A> labels comes from
+the input file, i.e. if <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nlb">NLB</A> is 2 then the first two lines of the input file
+will make up the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">binary</A> header.  See also <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nlb">NLB</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nbb">NBB</A>.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="window"><H3>WINDOW</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#window">WINDOW</A> provides a means of extracting a subset of the input
+for writing to the output.  Its <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A> is the same as that 
+of the VICAR <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#size">size</A> field,
+
+	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#window">WINDOW</A> = (sl,ss,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#ns">ns</A>)
+
+where 		sl	is the starting line to read,
+		ss	is the starting sample,
+		<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nl">nl</A>	is the number of lines to read,
+		<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#ns">ns</A>	is the number of samples to be
+			extracted from each line.
+
+Note that the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#window">window</A> is independent of the parameters <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nl">NL</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#ns">NS</A>.
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nl">NL</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#ns">NS</A> specify the physical <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#size">size</A> of the input, and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#window">window</A> 
+provides a subset of the input for output.  To create a 3-dimensional
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#window">window</A>, the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bands">BANDS</A> parameter must also be used.
+
+If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">BINARY</A> is set, then <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#window">WINDOW</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bands">BANDS</A> are ignored.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="bands"><H3>BANDS</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bands">BANDS</A> provides a means of extracting a subset of the input
+for writing to the output.  Its <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A> is as follows:
+
+	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bands">BANDS</A> = (sb,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nb">nb</A>)
+
+where 		sb	is the starting band to read,
+		<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nb">nb</A>	is the number of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bands">bands</A> to be
+			extracted.
+
+Note that the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bands">BANDS</A> parameter is independent of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nb">NB</A> parameter.
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nb">NB</A> specifies the physical <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#size">size</A> of the input, and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bands">BANDS</A>
+provides a subset of the input for output.  See also <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#window">WINDOW</A>.
+
+If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">BINARY</A> is set, then <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#window">WINDOW</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bands">BANDS</A> are ignored.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="comment"><H3>COMMENT</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#comment">COMMENT</A> is an optional string label item for the user to insert
+into the label.  It is stored under the keyword <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#comment">COMMENT</A> in
+the current <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A>.  It may be up to 132 characters in length.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="host"><H3>HOST</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#host">HOST</A> provides a means to specify the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">type</A> of machine the data came from.
+If the image was created on a machine <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">type</A> other than the one you are
+running on, then the image data will likely be in a different data <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A>,
+e.g. VAX floating point instead of IEEE floating point.  Setting the proper
+value for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#host">HOST</A> allows other VICAR programs to access the image data
+properly.
+
+The default for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#host">HOST</A> is "NATIVE", meaning the data <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A> for the machine
+that LABEL-CREATE is running on.
+The valid values may expand as VICAR is ported to other machines, but as
+of this writing they are:
+
+   NATIVE    The machine LABEL-CREATE is currently running on (default).
+   LOCAL     Same as NATIVE.
+   ALLIANT   Alliant FX series computer.
+   CRAY      Cray (port is incomplete).
+   DECSTATN  DECstation (any DEC MIPS-based RISC machine) running Ultrix.
+   HP-700    HP 9000 Series 700 workstation.
+   MAC-AUX   Macintosh running A/UX.
+   MAC-MPW   Macintosh running native mode with Mac Programmers Workbench.
+   SGI       Silicon Graphics workstation.
+   SUN-3     Sun 3, any model.
+   SUN-4     Sun 4 or SPARCstation, or clone such as Solbourne.
+   TEK       Tektronix workstation.
+   VAX-VMS   VAX running VMS.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="intfmt"><H3>INTFMT</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#intfmt">INTFMT</A> specifies the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A> used to represent integers in the image.
+It should rarely be used, as it defaults to the integer <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A> for the
+machine specified in <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#host">HOST</A>.
+
+The valid values may expand as VICAR is ported to other machines, but as
+of this writing they are:
+
+   NATIVE    The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A> for the machine LABEL-CREATE is currently running on.
+   LOCAL     Same as NATIVE.
+   HIGH      High byte first, "big endian", used with most hosts.
+   LOW       Low byte first, "little endian", used with VAX-VMS and DECSTATN.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="realfmt"><H3>REALFMT</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#realfmt">REALFMT</A> specifies the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A> used to represent floating-point data in the
+image.  It should rarely be used, as it defaults to the floating-point
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A> for the machine specified in <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#host">HOST</A>.
+
+The valid values may expand as VICAR is ported to other machines, but as
+of this writing they are:
+
+   NATIVE    The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A> for the machine LABEL-CREATE is currently running on.
+   LOCAL     Same as NATIVE.
+   IEEE      IEEE 754 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A>, with high-order bytes firt, used with most hosts.
+   RIEEE     Reverse IEEE <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A>, like IEEE but with bytes reversed.  Used
+             on DECSTATN.
+   VAX       VAX <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A>, single precision is VAX F, double is VAX D, used on
+             VAX-VMS.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="bhost"><H3>BHOST</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bhost">BHOST</A> provides a means to specify the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">type</A> of machine the data in the
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">binary</A> label came from.  If the binary label was created on a machine
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">type</A> other than the one you are running on, then the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">binary</A> label data
+will likely be in a different data <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A>, e.g. VAX floating point instead
+of IEEE floating point.  Setting the proper value for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bhost">BHOST</A> allows other
+VICAR programs to access the image data properly.
+
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bhost">BHOST</A> defaults to the value given for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#host">HOST</A> (which in turn defaults to the
+native <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A>), so <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bhost">BHOST</A> should rarely be needed.  BHOST is ignored if
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">BINARY</A> is not set.
+The valid values may expand as VICAR is ported to other machines, but as
+of this writing they are:
+
+   NATIVE    The machine LABEL-CREATE is currently running on (default).
+   LOCAL     Same as NATIVE.
+   ALLIANT   Alliant FX series computer.
+   CRAY      Cray (port is incomplete).
+   DECSTATN  DECstation (any DEC MIPS-based RISC machine) running Ultrix.
+   HP-700    HP 9000 Series 700 workstation.
+   MAC-AUX   Macintosh running A/UX.
+   MAC-MPW   Macintosh running native mode with Mac Programmers Workbench.
+   SGI       Silicon Graphics workstation.
+   SUN-3     Sun 3, any model.
+   SUN-4     Sun 4 or SPARCstation, or clone such as Solbourne.
+   TEK       Tektronix workstation.
+   VAX-VMS   VAX running VMS.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="bintfmt"><H3>BINTFMT</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bintfmt">BINTFMT</A> specifies the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A> used to represent integers in the image.
+It should rarely be used, as it defaults to the integer <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A> for the
+machine specified in <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bhost">BHOST</A>.  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bintfmt">BINTFMT</A> is ignored if <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">BINARY</A> is not set.
+
+The valid values may expand as VICAR is ported to other machines, but as
+of this writing they are:
+
+   NATIVE    The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A> for the machine LABEL-CREATE is currently running on.
+   LOCAL     Same as NATIVE.
+   HIGH      High byte first, "big endian", used with most hosts.
+   LOW       Low byte first, "little endian", used with VAX-VMS and DECSTATN.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="brealfmt"><H3>BREALFMT</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#brealfmt">BREALFMT</A> specifies the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A> used to represent floating-point data in the
+image.  It should rarely be used, as it defaults to the floating-point
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A> for the machine specified in <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bhost">BHOST</A>.  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#brealfmt">BREALFMT</A> is ignored if <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">BINARY</A>
+is not set.
+
+The valid values may expand as VICAR is ported to other machines, but as
+of this writing they are:
+
+   NATIVE    The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A> for the machine LABEL-CREATE is currently running on.
+   LOCAL     Same as NATIVE.
+   IEEE      IEEE 754 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A>, with high-order bytes firt, used with most hosts.
+   RIEEE     Reverse IEEE <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A>, like IEEE but with bytes reversed.  Used
+             on DECSTATN.
+   VAX       VAX <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A>, single precision is VAX F, double is VAX D, used on
+             VAX-VMS.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="bltype"><H3>BLTYPE</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bltype">BLTYPE</A> is a string specifying the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">type</A> of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">binary</A> label, if present.
+It is optional, but is highly recommended to document what kind of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">binary</A>
+label is present.  No checking is performed on the value for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bltype">BLTYPE</A>, but
+it should correspond to one of the registered <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">binary</A> label <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">type</A> names.
+Consult the cognizant programmer for the program that created the image if
+you do not know the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">binary</A> label <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">type</A> name.
+!
+.SUBCMD DELETE
+LABEL-DELETE can be used to delete all or part of the history or
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A> label information in a given VICAR image file.  The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#extent">extent</A>
+of deletion is controlled by the different parameters.  For help
+on the operation of each parameter, <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">type</A> HELP parameter-name
+from tutor mode.
+
+If only an input file is given, the input file label is modified,
+and no output is produced.  If an output file is given, then
+the input file is not modified and the output file is copied 
+from the input.
+Examples:
+
+LABEL-DELETE A B
+
+The entire history label is deleted from A, and the result
+is written to B.  Only the system and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A> labels remain.
+
+LABEL-DELETE A '<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A>
+
+The entire <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A> label is deleted from A.  The system and
+history labels remain.
+
+LABEL-DELETE A <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#keys">KEYS</A>=<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#comment">COMMENT</A>
+
+Every occurrence of the item <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#comment">COMMENT</A> is deleted from the history label
+of A, leaving the rest of the label intact.  No output file is produced.
+Examples (cont.)
+
+LABEL-DELETE A <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#keys">KEYS</A>=/ALL 'HISTORY
+
+Every keyword is deleted from each history <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A>, leaving the history
+subsets themselves intact. 
+
+LABEL-DELETE A B <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">TASKS</A>=(GEOMA,LABEL)
+
+Deletes every occurence of the history subsets created
+by the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">tasks</A> GEOMA and LABEL (including the current <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A>).
+
+LABEL-DELETE A B <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A>=MAP
+
+Deletes the entire MAP <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A>, including the property header.
+
+Examples (cont.)
+
+LABEL-DELETE A B <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#keys">KEYS</A>=(NAH,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#comment">COMMENT</A>) <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">TASKS</A>=(LABEL,GEOMA) <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#instnces">INSTNCES</A>=(1,2)
+
+Here let's assume that GEOMA was run on A once, and it wrote the
+item NAH.  LABEL was run on the image twice previously (making 
+the current <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A> <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#instance">instance</A> 3), writing the keyword <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#comment">COMMENT</A> only
+once.  The item NAH will then be deleted from the first (only)
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#instance">instance</A> of GEOMA, and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#comment">COMMENT</A> will be deleted from the one
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#instance">instance</A> of LABEL in which it is found.
+
+LABEL-DELETE A B <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#keys">KEYS</A>=MANYVAL <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">ELEMENT</A>=3 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nelement">NELEMENT</A>=2
+
+Elements 3 and 4 will be deleted from all occurrences of the
+item MANYVAL in the history label.  If any occurrence of MANYVAL
+has 2 or less elements, nothing will be changed for that occurrence.
+If any occurrence of MANYVAL has 3 elements, only the third will
+be deleted.
+Examples (cont.)
+
+LABEL-DELETE A B <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#keys">KEYS</A>=YOW <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">TASK</A>=FUNSTUF <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#instance">INSTANCE</A>=2 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">ELEMENT</A>=5 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nelement">NELEMENT</A>=1
+
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">Element</A> 5 will be deleted from the item YOW found in the
+second <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#instance">instance</A> of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A> FUNSTUF.
+
+LABEL-DELETE A B <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#keys">KEYS</A>=COORD <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A>=MINE <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">ELEMENT</A>=2 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nelement">NELEMENT</A>=2
+
+Elements 2 and 3 will be deleted from the item COORD found in the
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A> subset MINE.
+
+LABEL-DELETE A B <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#keys">KEYS</A>=/ALL <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">ELEMENT</A>=2 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nelement">NELEMENT</A>=-1
+
+Elements 2 through the end of the item will be deleted for every
+item in the history label.  The result will be that all history label
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A> in the file become single-valued.
+!
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="inp"><H3>INP</H3></A><pre>
+Name of a single input file.  It must have a valid VICAR label.
+
+If no output file is given, the input file label is modified.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+Name of an optional output file.  If an output file name is 
+given, the modified label and the image data are copied to the
+output file, and the input file remains unchanged.
+
+If no output file name is given, the input file label is
+modified directly.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="keys"><H3>KEYS</H3></A><pre>
+Indicates the names, or keywords, of specific <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A> to be deleted.
+If nothing is given under <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">TASKS</A> or <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A>, then every occurrence
+of the given keywords will be deleted from the appropriate (history
+or <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A>) label section.  A list of specific subsets can be given
+with the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">TASKS</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#instnces">INSTNCES</A> parameters or <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> parameter to narrow
+the scope of the deletion.  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">ELEMENT</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nelement">NELEMENT</A> may also be used to
+limit what is deleted.
+
+In addition, the value /ALL may be given for this parameter,
+specifying that every key is to be deleted provided it does not
+form part of a subset header.  The effect is to empty the subset
+without deleting the subset itself.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="tasks"><H3>TASKS</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">TASKS</A> can be used to limit the deletion process to certain
+history subsets or <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A> labels within the history label.
+
+If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A> were given under the parameter <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#keys">KEYS</A>, then the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A>
+names given limit the deletion of those <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A> to the named <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">tasks</A>.
+Otherwise, the subsets named by <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">TASKS</A> are deleted.
+
+The parameter <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#instnces">INSTNCES</A> can be used to limit which <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">tasks</A> are looked in
+for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A> (if <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#keys">KEYS</A> is given) or  which <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">tasks</A> are deleted (if KEYS not given).
+
+The presence of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">TASKS</A> implies that the history label will be modified,
+so <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A> is unnecessary.  If you wish to delete a <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A> label, use
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> instead.  If neither <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">TASKS</A> nor PROPERTY are given, and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A> is
+omitted, then the HISTORY label is assumed.
+
+An error occurs if both <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">TASKS</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> are given, or if TASKS is
+given with <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A>=<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A>.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="instnces"><H3>INSTNCES</H3></A><pre>
+The parameter <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#instnces">INSTNCES</A> can be used to limit the history <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">tasks</A> in
+which <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A> are deleted (if <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#keys">KEYS</A> is given), or the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">tasks</A> which
+are deleted (if <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#keys">KEYS</A> is not given).
+
+If specific <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A> names were given in <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">TASKS</A>, then each value given
+for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#instnces">INSTNCES</A> will be applied to every subset <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A> name.  If nothing
+was specified in <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">TASKS</A> (and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A>=HISTORY), then every <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A> with the
+named instances will be deleted.
+
+ For example, <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">TASKS</A>=(STRETCH,LGEOM) <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#instnces">INSTNCES</A>=(1,4)
+
+would refer to the first and fourth instances of both the STRETCH
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A> and the LGEOM task.  If one or more of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">tasks</A> does not
+exist, an informational message is issued, but no fatal error occurs.
+
+If the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A> label is being modified instead of the history label,
+then <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#instnces">INSTNCES</A> is ignored.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="property"><H3>PROPERTY</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> can be used to limit the deletion process to certain
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A> subsets within the property label.
+
+If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A> were given under the parameter <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#keys">KEYS</A>, then the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A>
+names given limit the deletion of those <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A> to the named <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A>.
+Otherwise, the subsets named by <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> are deleted.
+
+The presence of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> implies that the property label will be modified,
+so <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A> is unnecessary.  If you wish to delete a history label, use
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">TASKS</A> instead, or specify <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A>=HISTORY.  If neither TASKS nor <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A>
+are given, and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A> is omitted, then the HISTORY label is assumed.
+
+An error occurs if both <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">TASKS</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> are given, or if PROPERTY is
+given with <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A>=HISTORY.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="element"><H3>ELEMENT</H3></A><pre>
+Specifies the starting <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> to delete in each item for multi-valued
+label <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A>.  This parameter limits the action of the other parameters.
+Without <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">ELEMENT</A>, each selected item is deleted in its entirety.  With
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">ELEMENT</A>, only part of each selected item is normally deleted.
+
+If the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> specified does not exist in a particular item, then
+no action is taken on that item, and no warning is issued.
+
+If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">ELEMENT</A> is given as 1 (the default value), then the entire
+item may be deleted, depending on the value of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nelement">NELEMENT</A>.
+
+This parameter is normally used in conjunction with <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nelement">NELEMENT</A>.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nelement"><H3>NELEMENT</H3></A><pre>
+Specifies the number of elements to delete in each item for multi-valued
+label <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A>.  This parameter limits the action of the other parameters.
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nelement">NELEMENT</A> defaults to -1.
+
+If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nelement">NELEMENT</A> is given as -1 (or defaulted), then all the remaining
+elements in the item are deleted.  If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">ELEMENT</A> is greater than 1, it
+deletes all elements from <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">ELEMENT</A> to the end of the item.  If ELEMENT
+is 1, the entire item is deleted.
+
+If there are not enough elements in a particular item to satisfy
+the request, then the number of elements deleted is reduced to fit.
+No warning is issued.  For example, if an item has 5 elements, and you
+request <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">ELEMENT</A> 4, <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nelement">NELEMENT</A> 3, that would mean you want to delete
+elements 4, 5, and 6.  Since there are only 5 elements, only 4 and 5
+are deleted.
+
+This parameter is normally used in conjunction with <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">ELEMENT</A>.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="type"><H3>TYPE</H3></A><pre>
+Specifies whether the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A> will be deleted from the HISTORY or <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A>
+label.  If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A> is not specified, the type is assumed from the presence
+of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">TASKS</A> or <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> parameters.  If neither TASKS, PROPERTY, or
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A> is specified, then HISTORY labels are assumed.
+
+If both the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">TASKS</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> labels are specified, or if they disagree
+with a given <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A>, then an error occurs.
+!
+.SUBCMD LIST
+LABEL-LIST is used to list <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#out">out</A> the contents of the label in 
+various formats (specified by <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#extent">EXTENT</A>).  Up to 10 input
+files may be given.  No processing is done on any of the
+files.
+
+Multi-valued <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A> are listed enclosed in parentheses and
+separated by commas.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="inp"><H3>INP</H3></A><pre>
+The names of from one to ten input files.  The input files
+must have valid labels.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="extent"><H3>EXTENT</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#extent">EXTENT</A> specifies how and how much of the label is 
+to be listed.  The valid values are:
+
+      ALL       SYSTEM, <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A>, and HISTORY together.
+      SYSTEM    Lists <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#out">out</A> the important system label information
+                in a readable <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A>.
+      <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A>  Lists <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#out">out</A> a header for each property subset,
+                followed by all keyword-value pairs in that subset.
+      <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#tasks">TASKS</A>     Lists <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#out">out</A> a header for each history subset <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A>,
+                containing the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A> name, name of the user who ran the
+                <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A>, and the date and time of the task.
+      HISTORY   Lists <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#out">out</A> a header for each history subset <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A>,
+                followed by all keyword-value pairs in that subset.
+      DUMP      Lists <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#out">out</A> every keyword-value pair in the label.
+                No attempt is made to <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A> beyond the most basic level.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="pack"><H3>PACK</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#pack">PACK</A> specifies whether or not to pack more than one label item onto
+one line in the output.  Valid values are <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#pack">PACK</A> and NOPACK.  NOPACK
+is the default.
+
+If NOPACK is in effect, every label item is listed on a line by
+itself.  If there is more than one <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> in an item, as many
+elements as will fit are listed on the same line.
+
+If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#pack">PACK</A> is in effect, then label <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A> are packed together as much
+as possible on the output line, separated by spaces.  If there is
+not room for the label key and at least one of the values, a new
+line is started.  Only label <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A> from one <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A> or history
+subset are packed together.
+
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#pack">PACK</A> and NOPACK apply when <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#extent">EXTENT</A> is <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A>, HISTORY, or DUMP.
+It also applies when <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#extent">EXTENT</A> is ALL, but only to the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A> and
+history portions.
+!
+.SUBCMD REMOVE
+LABEL-REMOVE can be used to remove the the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">binary</A> header, binary 
+prefix or both the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">binary</A> header and prefix from the input,
+and write the results with the data in an output file. If the output is
+a tape, the NOBLOCK keyword may be specified to prevent the tape
+from being blocked (useful for sending to foreign installations).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="inp"><H3>INP</H3></A><pre>
+VICAR labeled input file whose label is to be removed.  The input
+file data will be copied to the output, and the input file will
+remain unchanged.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+The required output file.  The output file will consist only of image
+data and will have no label.
+
+Take care to record the image <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#size">size</A> of the output file, since VICAR
+may not be able to determine the proper <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#size">size</A> if needed on a future
+date.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="size"><H3>SIZE</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#size">SIZE</A> can be used to copy only a portion of the input to the output
+file.  It is in standard VICAR <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#size">size</A> field <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A>
+
+	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#size">SIZE</A>=(sl,ss,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#ns">ns</A>)	,
+
+where 		sl	is the starting line to read,
+		ss	is the starting sample,
+		<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nl">nl</A>	is the number of lines to read,
+		<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#ns">ns</A>	is the number of samples to be
+			extracted from each line.
+
+Note that <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#size">SIZE</A> works only in the line and sample directions--to provide
+a complete subsection specification, you must also use the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bands">BANDS</A> parameter.
+
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#size">SIZE</A> is ignored if <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">BINARY</A> is set.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="bands"><H3>BANDS</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bands">BANDS</A> can be used to copy only a portion of the input to the output
+file.  It has the following <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A>:
+
+	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bands">BANDS</A>= (sb,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nb">nb</A>)
+
+where 		sb	is the starting band to read,
+		<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nb">nb</A>	is the number of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bands">bands</A> to read.
+
+The output file <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#size">size</A> will be <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nl">nl</A> x <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#ns">ns</A> x <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#nb">nb</A>, where nl and ns are
+specified with the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#size">SIZE</A> parameter.
+
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bands">BANDS</A> is ignored if <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">BINARY</A> is in effect.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="blocking"><H3>BLOCKING</H3></A><pre>
+If NOBLOCK is specified, then if the output is tape the tape will
+not be blocked, that is, there will be one record per block on the
+tape.  If NOBLOCK is not specified, then the output tape will be in
+blocks of in the neighborhood of 20,000 bytes.
+
+If the output is disk, this parameter has no effect.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="binary"><H3>BINARY</H3></A><pre>
+If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">BINARY</A> is specified as a keyword, the binary label of the file is not
+removed with the VICAR label.  This option tells the program to determine
+the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#size">size</A> of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">binary</A> header and prefix and generates an output file 
+containing the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">binary</A> header and prefix.  NOBINARY causes LABEL-REMOVE 
+to remove the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">binary</A> label along with the VICAR label.  NOBINHEAD causes
+LABEL-REMOVE to remove the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">binary</A> header.  NOBINPREF causes LABEL-REMOVE
+to remove the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">binary</A> prefix.  The default is NOBINARY.
+
+If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#binary">BINARY</A> is specified, then the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#size">SIZE</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#bands">BANDS</A> parameters are disabled,
+so the entire file will be copied.
+!
+.SUBCMD REPLACE
+LABEL-REPLACE is used in the same fashion as LABEL-ADD, except
+
+1)  The item must already exist, and
+2)  The item may be in the system label as well as the history and
+    <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A> labels.
+
+If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">TASK</A> is specified, <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A>=HISTORY is assumed and an error occurs if
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A> is different.  Likewise, if <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> is specified, TYPE=PROPERTY
+is assumed.
+
+To replace an item in the system label, the keyword SYSTEM must be
+given, and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">TASK</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> may not be specified.  Great care should
+be given to replacing any system <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A>, however, as it may affect how
+the data is read by the executive.  In particular, <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#ns">NS</A>, RECSIZE, BUFSIZE,
+and LBLSIZE should never be changed.  The results would be unpredictable.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="inp"><H3>INP</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#inp">INP</A> specifies the name of the input file.  The input must have a valid
+VICAR label.
+
+Note:  If no output file name is given, the input file's label will 
+be modified directly.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#out">OUT</A> is the name of the output file to which the data and the modified
+label are to be written.
+
+If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#out">OUT</A> is omitted from the command line, the label <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A> are replaced
+in the input file directly.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="items"><H3>ITEMS</H3></A><pre>
+The label <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A> which are to be replaced. The items are given as a
+list in a single string parameter, in the form
+
+key(<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A>)=value-list
+
+where "key" is a valid (0 - 8 character) label keyword, "<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A>"
+is an optional starting <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> number (an integer), and "value-list"
+is the list of values to be associated with that keyword.
+
+The operation differs slightly depending on whether or not the
+starting <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> number is given.
+
+If the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> is not given, i.e. the item is of the form "key=value-list",
+then the entire label item is replaced.  The indicated keyword is
+first deleted from the label in its entirety, then the new item is
+added with values specified in "value-list".  The keyword must
+previously exist in the label, or an error message will be issued.
+If the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> is given, then only parts of the label item are
+affected.  If the keyword currently exists in the file, then the
+indicated values replace existing elements in it, starting at <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A>
+number "<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A>".  For <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#instance">instance</A>, if the label item "LIST" had four
+values (1,2,3,4), and the following was in the label-replace ITEM
+string: "LIST(2)=(10,11)", then values 10 and 11 would be put into
+LIST starting at position 2, replacing the old values at those
+positions.  The new value of LIST would be (1,10,11,4).
+
+If the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> is given, but the keyword does not currently exist
+in the file, the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> number is ignored and a new label item
+is created containing the values in "value-list".  This is slightly
+different from the action when "<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A>" is not given, as the item
+does not have to previously exist.
+A value of -1 for the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> number indicates the end of the label
+item, i.e. all elements will be appended to the end of the item.
+
+If the same keyword appears twice in "value-list", each is treated
+independently, i.e. the first one is used, then the second one.  If
+the first one causes the number of elements or the relative position
+of an <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> to change, the second one uses the NEW positions, values,
+and number of elements.
+"Value-list" is a list of values, enclosed in parentheses, and
+separated by commas.  If there is only one value, the parentheses
+are not necessary.
+
+All of the values in "value-list" should be of the same <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">type</A>:
+integer, real, doub(le) or string.  The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">type</A> should also match the type
+of the existing label, if "<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A>" is given.  The LABEL program will
+try to convert to the appropriate <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">type</A>, but if it can't it will give
+an error.  It can convert integers to real, doub(le) or string, and 
+reals to doub(le) or string.  Any other conversion is an error.
+
+The four types are differentiated by the way in which they are
+specified. Strings should be contained in single quotes.  The quotes
+are not strictly necessary if there are no commas, spaces, or parentheses
+in the string, but they should normally be included anyway.  Standard
+FORTRAN notation for integers and reals is understood. Doub(le)s
+are real values with more than 6 significant digits.              
+
+Examples of valid "value-list" specifications:
+
+Specification			Meaning
+-------------			-------
+787				single integer
+(21)				single integer
+(6,-9,42)			list of three integers
++3e2				single real
+-2.000001			single doub(le)
+(3.14159, 2)			list of two reals.  The integer 2 is
+				  converted to a real: (3.14159, 2.0)
+'a string item'			single string
+('another string item')		single string
+('string 1','string 2')		list of two strings
+('string 1', 123, 4.5, wow)	list of four strings.  The values get converted
+				  to strings: ('string 1', '123', '4.5', 'wow')
+Using this input <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#format">format</A>, the entire list of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A> is input
+as a single string, such as
+
+"slope=-45.8, planet='Jupiter' avgdn = 128 coord=(86.3, 44.8)"
+
+This string replaces the real value "slope", the string value
+"planet", the integer value "avgdn", and the two <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#element">element</A> real
+value "coord".
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="task"><H3>TASK</H3></A><pre>
+The name of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A> heading or history subset under which the label
+item is to be stored.
+
+The presence of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">TASK</A> implies that the history label will be modified,
+so <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A> is unnecessary.  If you wish to replace a <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A> label, use
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> instead.  If neither <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">TASK</A> nor PROPERTY are given, and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A> is
+omitted, all labels will be placed in the history label under the
+heading of the current <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A> (LABEL if an output file is given, the
+last <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A> otherwise).
+
+An error occurs if both <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">TASK</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> are given, or if TASK is
+given with <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A>=<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> or TYPE=SYSTEM.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="instance"><H3>INSTANCE</H3></A><pre>
+Since the same program may be run on an image several times, it is
+possible to have multiple history <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A> headings with the same name.
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#instance">INSTANCE</A>=n is used to refer to the n-th occurence of the named
+history <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">task</A>.  If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#instance">INSTANCE</A> is not specified, 1 is assumed.
+
+If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">TASK</A> is not specified, or if the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A> or system labels are
+being modified, then <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#instance">INSTANCE</A> is ignored.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="property"><H3>PROPERTY</H3></A><pre>
+The name of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A> subset under which the label item is to be
+stored.
+
+The presence of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> implies that the property label will be
+modified, so <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A> is unnecessary.  If you wish to replace a history
+label, use <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">TASK</A> instead.  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> is mandatory for property labels,
+so even if you say <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A>=<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> you must still specify a property name.
+
+An error occurs if both <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">TASK</A> are given, or if PROPERTY is
+given with <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A>=HISTORY or TYPE=SYSTEM.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="type"><H3>TYPE</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">TASK</A> specifies whether the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A> will be replaced in the SYSTEM,
+HISTORY, or <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> label.  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A> is not normally needed for history
+and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A> labels, since the presence of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">TASK</A> parameter implies
+history labels, while the presence of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A> parameter implies
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A> labels.  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A> may be used for error-checking, however, as
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">TASK</A>, <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A>, and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A> must all agree on the type of labels being added.
+
+To replace an item in the system label, the keyword SYSTEM must be given.
+Great care should be given to replacing any system <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#items">items</A>, however, as 
+it may affect how the data is read be the executive.  In particular,
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#ns">NS</A>, RECSIZE, BUFSIZE, and LBLSIZE should never be changed.  The results
+would be unpredictable.  If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#type">TYPE</A>=SYSTEM is given, then <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#task">TASK</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">PROPERTY</A>
+may not be used.
+!
+.SUBCMD SWITCH
+LABEL-SWITCH creates an output file containing the following:
+		the history and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A> labels of the first input file 
+		the system label of the second input 
+		the data of the second input file 
+
+INVOCATION:
+
+	LABEL-SWITCH (A,B) C
+
+where A, B, and C are VICAR labeled files.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="inp"><H3>INP</H3></A><pre>
+The two input files whose labels are to be switched.  See help
+on LABEL-SWITCH for all the details.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+A single output file containing the data of the second input and
+the history and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/label_level2.html#property">property</A> labels of the first input.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

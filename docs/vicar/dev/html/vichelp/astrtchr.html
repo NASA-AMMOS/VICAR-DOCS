@@ -1,0 +1,206 @@
+<HTML>
+<HEAD><title>HTML Help for ASTRTCHR</title></HEAD>
+<BODY>
+<H1>Help for ASTRTCHR</H1>
+<pre>
+ PURPOSE:
+
+"astrtchr" is a general purpose VICAR applications program which performs 
+automatic linear stretches on floating point and fullword integer pictures.
+"astrtchr" can also be used to make pictures of GALGEN light transfer
+calibration files.
+ EXECUTION:
+
+The input image may either be fullword floating point or fullword integer
+data.  The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#size">SIZE</A> parameter specifies the portion of the image that will be 
+stretched and then written to the output file. The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#area">AREA</A> parameter specifies 
+the portion of the input image to use in determining the stretch <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#limits">limits</A>. 
+The default for both the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#area">AREA</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#size">SIZE</A> parameters is to use the full input 
+image.  Both <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#area">AREA</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#size">SIZE</A> give the starting pixel number and number of 
+pixels per line instead of values measured in bytes. 
+
+The output image may either be byte or halfword data.  The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#size">size</A> of the output
+image is determined by the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#size">SIZE</A> parameter. 
+
+Program "astrtchr" uses dynamic memory allocation (using subroutine STACKA)
+to avoid imposing restrictions on the image <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#size">size</A>.
+TAE COMMAND LINE FORMAT
+      The following command line formats show the major allowable forms:
+      "astrtchr" <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#inp">INP</A>=a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#out">OUT</A>=b optional parameters
+      "astrtchr" a b optional parameters
+
+       Here 'a' represents the input image file name, and
+       'b' represents the output image file name.
+<A NAME="examples">EXAMPLE</A>
+
+      "astrtchr" <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#out">OUT</A>=B  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#percent">PERCENT</A>=2 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#excl">EXCL</A>=(1000 1.0E10)
+
+      In this example the output file B is a byte data image derived
+      from the input image A.  The data format of A is obtained from the
+      VICAR label for A.  The image is stretched to the default <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#limits">limits</A> of 
+      0 to 255. The linear stretch is defined to produce 1 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#percent">percent</A> saturation
+      at each end of the output DN range.  The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#excl">EXCL</A> parameter effectively
+      excludes input DNs greater than or equal to 1000 in the determination
+      of the linear function used for stretching.  If the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#strexcl">STREXCL</A> keyword
+      is specified, then the values supplied in the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#excl">EXCL</A> parameter are
+      also excluded from the actual stretch operation, and are instead set
+      to the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#replace">REPLACE</A> value.
+
+RESTRICTIONS
+
+1. The input image must be floating point (REAL*4) or fullword
+   integer (INTEGER*4) data.
+2. The output image must be byte or halfword data.
+
+ OPERATION:
+
+"astrtchr" is called an automatic linear stretch program because the user
+does not have to specify the range of DNs in the input image to use in
+defining the linear function used for the stretch.  Program "astrtchr" follows
+a two step process.  The first step determines the linear function (stretch)
+to use based on the contents of the input image file and options specified
+by the user.  The second step applies the linear function to the DNs of
+the input image and writes the result to the output file.  The net effect
+is that the image is stretched to the specified <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#limits">limits</A> without requiring
+the user to know the range of DNs in the input image.
+
+The way in which the linear function is determined depends on several
+parameters. The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#area">AREA</A> parameter specifies the portion of the input image
+to examine in determining (perhaps approximately) the range of input DNs
+for the linear function.  The range is determined as follows.  From the
+portion of the image determined by the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#area">AREA</A> parameter, the program selects
+N evenly spaced pixels, where N is the value of the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#sort">SORT</A> parameter.  The
+DNs for these pixels are examined and any DNs excluded by the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#excl">EXCL</A> parameter
+are removed from the list of sample DNs.  This list is then sorted to produce
+a <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#sort">sort</A> of histogram.  The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#percent">PERCENT</A> parameter ( or the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#lpercent">LPERCENT</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#hpercent">HPERCENT</A>
+parameters) are then applied to the sorted list to determine the range of
+DNs to use for the linear function.  If the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#percent">PERCENT</A> parameter is 0 or is
+defaulted, then the minimum and maximum DNs in the list are used as the range.
+Otherwise, the range is obtained by skipping the specified percentage of
+DNs at the ends of the sorted list.
+
+For example, suppose the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#area">AREA</A> parameter specified a full 1000 by 1000 image,
+the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#sort">SORT</A> parameter was 10000, no <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#excl">EXCL</A> parameter was entered, and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#percent">PERCENT</A>=2
+was specified.  The program would sample DNs at 10000 pixels spaced 10 lines
+and 10 pixels apart.  The program would then select the 101st and 9900th DNs
+in the sorted list as the range of DNs for the linear function.
+
+Once the range of input DNs is determined, the linear function that maps
+the range to the stretch <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#limits">limits</A> (specified through the LIMITS parameter)
+can be determined algebraicly.  This function is then applied to the input
+DNs in the region specified by the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#size">SIZE</A> parameter to produce the output
+image.  Since the range of input DNs used to determine the linear function
+is not necessarily the minimum and maximum DNs in the input image, output
+DNs outside of the range of the stretch <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#limits">limits</A> are possible.   (See the
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#noclip">NOCLIP</A> parameter.)  The output data format may restrict the output DN values,
+however.  For byte data output files, output DN values less than 0 are changed
+to 0 and output DN values greater than 255 are set to 255. For halfword data
+output files, output DN values less than -32768 are changed to -32768 and
+output DN values greater than 32767 are set to 32767. 
+
+"astrtchr" writes a history label for the output file to show what linear
+function (stretch) was used to produce the output file. VICAR keywords
+STRETCH_MINIMUM and STRETCH_MAXIMUM correspond to the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#limits">limits</A> of the 
+input data and the output DN values to which they map. For example,
+if input image DN values ranged from -1,204 to 32,431 in halfword format,
+and the output <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#limits">limits</A> were specified as (0,255), then the values of 
+STRETCH_MINIMUM would be (-1204,0) and the values of STRETCH_MAXIMUM would
+be (32431,255). These keywords are also PDS Data Dictionary keywords and 
+their VICAR/PDS definitions are as follows:
+
+STRETCH_MINIMUM
+The stretch_minimum element provides a sequence of values, the first value 
+representing the lowest sample value in an input image to be mapped to the
+lower output limit and the second value representing the lowest output
+sample value in the output image (first value in the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#limits">LIMITS</A> parameter.) 
+Sample values between stretch_minimum and stretch_maximum are interpolated 
+over the range of DNs as specified by other parameters of "astrtchr".
+
+STRETCH_MAXIMUM
+The stretch_maximum element provides a sequence of values, the first value 
+representing the highest sample value in an input image to be mapped to the
+upper output limit and the second value representing the highest output
+sample value in the output image (second value in the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#limits">LIMITS</A> parameter.) 
+Sample values between stretch_minimum and stretch_maximum are interpolated 
+over the range of DNs as specified by other parameters of "astrtchr".
+
+ WRITTEN BY:             Steve Pohorsky              11 Jan 1984
+<A NAME="CogProg"> COGNIZANT PROGRAMMER:   Steve Pohorsky              11 Jan 1984</A>
+
+ MIPS TRACEABILITY:	 MIPS FRD D-4419 Rev. C, Req. 4.1.2.3 &lt205&gt
+
+ REVISION:               6                           13 Apr 1987
+
+ January 17, 1994	JFM	Added to VICAR history label the PDS standard
+				keywords STRETCH_MINIMUM and STRETCH_MAXIMUM
+				as an alternate way of expressing input and
+				output stretch <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#limits">limits</A>. (FR 82901 for GLL NIMS)
+ April 4, 1994          CRI     Ported to UNIX 
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#inp"><H3>INP</H3></A>
+Input file name
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#out"><H3>OUT</H3></A>
+Output file name
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#size"><H3>SIZE</H3></A>
+standard VICAR <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#size">size</A> field
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#size">SIZE</A> in terms of fullword
+pixels for performing stretch.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#area"><H3>AREA</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#size">SIZE</A> field in terms of fullword
+pixels for sampling pixels to
+determine range of input DNs.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#iformat"><H3>IFORMAT</H3></A>
+The input data format -- 
+REAL or FULL.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#oformat"><H3>OFORMAT</H3></A>
+The output data format -- 
+BYTE or HALF. 
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#limits"><H3>LIMITS</H3></A>
+Lower and upper stretch <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#limits">limits</A>
+(output DNs).
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#noclip"><H3>NOCLIP</H3></A>
+Causes the range of output DNs 
+to be limited by output format
+instead of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#limits">LIMITS</A> parameter.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#percent"><H3>PERCENT</H3></A>
+Percentage of sampled pixels to
+be stretched to or beyond the
+stretch <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#limits">limits</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#hpercent"><H3>HPERCENT</H3></A>
+Percentage of sampled pixels to
+be stretched to or beyond the
+upper stretch limit.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#lpercent"><H3>LPERCENT</H3></A>
+Percentage of sampled pixels to
+be stretched to or beyond the
+lower stretch limit.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#sort"><H3>SORT</H3></A>
+The maximum number of pixels
+which will be sampled in the
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#area">area</A> specified for AREA.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#sinc"><H3>SINC</H3></A>
+If <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#sinc">SINC</A>=n, then output file will
+contain just every nth pixel in
+each line.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#linc"><H3>LINC</H3></A>
+If <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#linc">LINC</A>=n, then output file will
+contain just every nth line.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#excl"><H3>EXCL</H3></A>
+Intervals of input DNs to be
+excluded from the list of
+sampled pixels.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#strexcl"><H3>STREXCL</H3></A>
+Exclude <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#excl">EXCL</A> DNs from the stretch
+operation itself
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#replace"><H3>REPLACE</H3></A>
+Replaces excluded DNs if <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#strexcl">STREXCL</A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#print"><H3>PRINT</H3></A>
+Enter <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr_level2.html#print">PRINT</A>=PRINT to print the
+sorted list of DNs of sampled
+pixels.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/astrtchr.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

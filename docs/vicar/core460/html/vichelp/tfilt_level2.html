@@ -1,0 +1,168 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for TFILT</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt.html">TFILT</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+ input file
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+ output file and one or two scratch files
+
+ If the primary input is multi-band, then three output files are required
+ of which the last two are scratch files.  Otherwise, only one scratch
+ file is required, which is the second output file.
+
+ The first output file is always the output image.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="size"><H3>SIZE</H3></A><pre>
+ (number of lines,number of samples,
+ starting line number,starting sample number)
+ Specifies area of input image to process.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sl"><H3>SL</H3></A><pre>
+Starting line.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ss"><H3>SS</H3></A><pre>
+Starting sample.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nl"><H3>NL</H3></A><pre>
+Number of lines.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ns"><H3>NS</H3></A><pre>
+Number of samples per line.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nlw"><H3>NLW</H3></A><pre>
+ <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#nlw">NLW</A> is an integer which specifies the number of lines dimension
+ of the convolution window.
+
+ The default is <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#nlw">NLW</A>=<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#nl">NL</A>/10 where NL is the number of lines in the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#size">size</A> field.
+ If <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#nlw">NLW</A> is an even number (whether user-specified or default), then 1 is
+ added to get an odd number.  E.g., for a 100x100 image, the default is
+ <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#nlw">NLW</A>=11.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nsw"><H3>NSW</H3></A><pre>
+ <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#nsw">NSW</A> is an integer which specifies the number of pixels dimension of the
+ convolutional window.  The default is <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#nl">NL</A>/10.
+
+ If <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#nlw">NLW</A> is an even number (whether user-specified or default), then 1 is
+ added to get an odd number.  
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="thresh"><H3>THRESH</H3></A><pre>
+ <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#thresh">THRESH</A> is an integer which specifies a threshold
+ level above which pixels will be accepted into
+ the average (low pass).  When a pixel lies 
+ below <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#thresh">THRESH</A> the output picture pixel will
+ always be zero.  The default is <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#thresh">THRESH</A>=0,
+ which, at least for byte, converts tfilt into
+ a linear boxfilter.
+
+(NOTE:  until 20-Dec-2012, the default for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#thresh">THRESH</A> was
+-1 and the criterion for exclusion was DN&lt=<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#thresh">THRESH</A>.  This
+was changed when support for REAL*4 data was added, to
+make the behaviour at <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#thresh">THRESH</A>=0 consistent with integer
+data types.  As a result, to obtain the same results as
+the older version of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#thresh">THRESH</A>, 1 must be added to the old
+value.)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="filter"><H3>FILTER</H3></A><pre>
+ This parameter specifies the type of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#filter">filter</A> to be used.
+ 
+ HIGH: performs a high pass <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#filter">filter</A> using the following equation:
+ 	<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#out">OUT</A> = (DN-AVGDN)*<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#boost">BOOST</A>+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A>*DN+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#dclevel">DCLEVEL</A>
+ 
+ SCENE: performs a SCENE <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#filter">filter</A> using the following equation:
+	<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#out">OUT</A> = (DN-AVGDN)/ADVDN*<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#scale">SCALE</A>+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A>*DN+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#dclevel">DCLEVEL</A>
+ 
+ LOW:  performs a low pass <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#filter">filter</A> using the following equation:
+	<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#out">OUT</A> = AVGDN*<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#boost">BOOST</A>+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#offset">OFFSET</A>
+ 
+ DIVIDE: performs a divide <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#filter">filter</A> using the following equation:
+	<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#out">OUT</A> = DN/AVGDN*<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#scale">SCALE</A>+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A>*DN+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#offset">OFFSET</A>
+	 This is the default <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#filter">filter</A>.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="scale"><H3>SCALE</H3></A><pre>
+ <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#scale">SCALE</A> is a real number, used to scale output for SCENE and
+ DIVIDE filters only.  The default is 100.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="dctran"><H3>DCTRAN</H3></A><pre>
+ <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A> is a real, DC transmission. Default = 0.0  (See the section on 
+ <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#dctran">DCTRAN</A> in the main help section for tfilt.)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="boost"><H3>BOOST</H3></A><pre>
+ <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#boost">BOOST</A> is a real number, used to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#scale">scale</A> output for HIGH and LOW
+ filters only.   Default is 1.0
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="dclevel"><H3>DCLEVEL</H3></A><pre>
+ <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#dclevel">DCLEVEL</A> is a real additive factor in SCENE and HIGH filters only.
+ Default is 128.0
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="offset"><H3>OFFSET</H3></A><pre>
+ <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/tfilt_level2.html#offset">OFFSET</A> is a real additive factor used with
+ LOW and DIVIDE filters only. (Default = 0.5)
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

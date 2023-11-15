@@ -1,0 +1,411 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for MARSREFMESH</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh.html">MARSREFMESH</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+There are two options for describing input images. 
+
+Either:
+List the image file names 
+
+Or:
+provide an ascii file with the file names listed, one per record.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="in_mesh"><H3>IN_MESH</H3></A><pre>
+Input mesh file in OBJ format. The OBJ file is expected to contain vertices
+coordinates, faces (only triangular faces).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out_mesh"><H3>OUT_MESH</H3></A><pre>
+Output file name of the refined mesh. Should be an OBJ type of file. The number 
+vertices and faces may be different than the output if some of the vertices are
+deemed invalid per user parameters (see <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#min_vertices">MIN_VERTICES</A>, MIN/<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#max_dist">MAX_DIST</A>).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="refimages"><H3>REFIMAGES</H3></A><pre>
+List of indexes (1-based) in <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#inp">INP</A> list identifying the reference images. Default
+is 1, i.e.,  the first image of the list. There could be several reference 
+images, in which case, in turn, they will all be reference image with respect to
+the rest of the list (non-reference images and other reference images). For
+instance if <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#refimages">REFIMAGES</A> is 1,2,3, then all images of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#inp">INP</A> will be projected to the
+mesh, then backprojected onto img 1 and correlated. The correlation score of
+all pixels will be cumulated. Then all images will be projected on the mesh, 
+then backprojected onto img2 and correlated, augmenting the global correlation
+score. And so on with img 3. 
+Potentially all images in <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#inp">INP</A> could be references images. Beware though, it can
+lead to very long processing time.
+
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#refimages">REFIMAGES</A> can be a single image, or a list of images.  Each image in the
+list will be a reference image.  (see also <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#until">UNTIL</A>).  This allows any arbitrary
+images to be selected as references.  If an image number is negative, it means
+all images from the previous number through (the absolute value of) this one 
+will be references.  For example a list:
+
+1,3,-6,8,11,-15
+
+will cause the following images to be reference imgaes:
+
+1,3,4,5,6,8,11,12,13,14,15
+
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#refimages">REFIMAGES</A>=-1 defaults to first image is a reference image.
+Numbering of images starts at 1.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="texture_ids"><H3>TEXTURE_IDS</H3></A><pre>
+List of images indices (w.r.t. <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#inp">INP</A> list) that will be used to texture the mesh.
+The order of the indices sets the priority of the images in texturing the mesh.
+The first image is used to texture as many faces as possible. Then, if some 
+faces are not textured by the first image (because of occlusion for instance), 
+the second image is used to texture the faces that haven't yet been textured.
+And so on. If the mesh is the output of a single stereo-correlation, it is 
+highly recommended to use first the master image of that stereo-pair. 
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="evaluate"><H3>EVALUATE</H3></A><pre>
+If set, the process is run <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#until">until</A> the optimization starts and print out some
+information about the setup. Most notably, the global correlation score and
+the global curvature cost will be printed. The values can be used to decide
+on the regularization weight to apply (see <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#lambda">LAMBDA</A>). Once LAMBDA value has been
+decided, the program can be re-run with <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#lambda">LAMBDA</A> set to the proper value and
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#evaluate">EVALUATE</A> removed.
+
+These two costs, which represent
+the data attachement and regularization costs are added like this:
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#lambda">lambda</A> is a weigthing factor (see LAMBDA)
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_vertices"><H3>MIN_VERTICES</H3></A><pre>
+This indicates the minimum size of a mesh patch (in number of vertices) for it
+to be refined. The refinement involves a series of mathematical operations on
+the mesh requires vertices on the edge and vertices whose neighbor vertices is 
+on the mesh edge to be held static (no refinement). So too small mesh patches
+are not worth being refined as most of the vertices will be held fixed. This
+parameters sets the minimum size of the mesh patch to consider for refinement.
+Default is 20.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_dist"><H3>MIN_DIST</H3></A><pre>
+Minimum distance (in the unit of the mesh file - usually meters) between the 
+mesh vertices and the reference image cameras positions. All vertices that are 
+closer to any reference image camera will be removed from the refinement.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="max_dist"><H3>MAX_DIST</H3></A><pre>
+Same thing as <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#min_dist">MIN_DIST</A> but for a maximum distance.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="lambda"><H3>LAMBDA</H3></A><pre>
+The global cost which is minimized is the sum of the two components:
+- The data attachement term, which is the sum of the (inverse) of the 
+correlation scores. The better the correlation, the smaller the score.
+- The regularization term, which is a measurment of the global curvature of the
+mesh.
+Essentially we have:
+global cost = data cost + <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#lambda">lambda</A> * regularization cost.
+The balancing between the two terms is controlled via a weigting factor, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#lambda">LAMBDA</A>.
+The higher <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#lambda">lambda</A>, the smoother will be the mesh.
+Estimating a good <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#lambda">LAMBDA</A> is not trivial and usually involves a trial and error
+approach.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sigma"><H3>SIGMA</H3></A><pre>
+The correlation is done through a gaussian window (as opposed to a square 
+window). <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#sigma">SIGMA</A> scales the width of the gaussian spread (standard
+deviation). The default is 2 pixels.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nb_sigma"><H3>NB_SIGMA</H3></A><pre>
+How large of a correlation window do we want, in terms of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#sigma">sigma</A>. For instance
+if <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#sigma">SIGMA</A> is set to 2 and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#nb_sigma">NB_SIGMA</A> is set to 3 (the default), then a gaussian
+window of about 6x6 pixels will be used.
+
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="navtable"><H3>NAVTABLE</H3></A><pre>
+The optional input navigation table.  If provided, this allows the user to
+provide an initial nav solution, which is then tweaked by the marsnav process.
+This allows a pointing solution created by other means, (such as MICA) or via
+an earlier marsnav run, to be adjusted.  This may be used to better globally
+distribute error or accomodate new tiepoints, among other things.
+
+Note that there is no guarantee the result will bear any resemblance to the
+input nav file.  It is merely a starting point, and marsnav may go off in a
+completely different direction.
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out_solution_id"><H3>OUT_SOLUTION_ID</H3></A><pre>
+Solution id for the OUTPUT navigation file in XML format.
+If solution id is missing when FORMAT=XML, then the output
+navigation file can not be created (therefore the parameter is required).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="solution_id"><H3>SOLUTION_ID</H3></A><pre>
+Specifies which solution ID to use for the INPUT nav file (if present).
+
+There are potentially many different definitions for the same coordinate
+system. These are identified via a unique Solution ID.  If this parameter
+is given, only the specified solution's definition is searched for.  Normally
+it is not used.
+
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="until"><H3>UNTIL</H3></A><pre>
+Means that all images from 1 to the first value of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#refimages">REFIMAGES</A> inclusive are
+treated as reference images. Any additional images listed in <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#refimages">REFIMAGES</A> will also
+be reference images.
+
+The functionality of this parameter has been subsumed by the negative number
+feature of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#refimages">REFIMAGES</A>.  For example, REF=5 -<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#until">UNTIL</A> is the same as REF=\(1,-5\).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ignore"><H3>IGNORE</H3></A><pre>
+Specifies a list of images that won't be reference images. This parameter may 
+be used when all but a few images are to be reference. It is easier then to 
+set up all images as references (with <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#refimages">REFIMAGES</A>) and identify with this 
+parameters which ones are not. 
+
+Like <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#refimages">REFIMAGES</A>, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#ignore">IGNORE</A> accepts negative numbers to indicate ranges.  So a value
+of 4,-7 means 4,5,6,7 are all ignored.  See <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#refimages">REFIMAGES</A> for more examples.
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="omp_on"><H3>OMP_ON</H3></A><pre>
+Turns on or off parallel processing using OMP, which uses multiple cores on
+a single host machine.  The default is on.  The main help describes some
+environment variables that can further control parallel processing.  Note
+that this program uses standard OpenMP (which is built in to the gcc/g+ compilers), so further details can be found in the OpenMP documentation.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="config_path"><H3>CONFIG_PATH</H3></A><pre>
+A colon-separated list of directories in which to look for configuration
+and calibration files.  Environment variables are allowed in the list
+(and may themselves contain colon-separated lists).  The directories are
+searched in order for each config/cal file when it is loaded.  This allows
+multiple projectes to be supported simultaneously, and allows the user to
+override any given config/cal file.  Note that the directory structure below
+the directories specified in this path must match what the project expects.
+For example, Mars 98 expects flat fields to be in a subdirectory named
+"flat_fields" while Mars Pathfinder expects them to be directly in the
+directory specified by the path (i.e. no intermediate subdirectories).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="point_method"><H3>POINT_METHOD</H3></A><pre>
+Specifies a mission-specific pointing method to use.  Normally this
+parameter is not used, in which case the "default" pointing methods
+are used.  Some missions may have special, or alternate, pointing
+methods available, which are indicated by this string (for example,
+backlash models, using arm joint angles instead of x/y/z/az/el, etc).
+A substring search is used, so multiple methods (where that makes sense)
+can be specified by separating the keywords with commas.
+
+The methods available vary per mission, but some methods available at
+the time of this writing are:
+
+BACKLASH : Mars 98 SSI only.  Selects a backlash pointing model,
+which adjusts the telemetered azimuth and elevation values based on
+knowledge of the camera's mechanical backlash and the direction the
+motor was travelling when the image was taken.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="match_method"><H3>MATCH_METHOD</H3></A><pre>
+Specifies a method for reading the nav file.
+
+Loose method matches with pointing parameters of the image.
+Tight method matches with unique id of the image.
+
+Applies only to an input nav file, if given (not to the output nav file).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="match_tol"><H3>MATCH_TOL</H3></A><pre>
+Tolerance value for matching pointing parameters in the pointing corrections file.
+Used if <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#match_method">MATCH_METHOD</A>=LOOSE
+Default value is pretty arbitrary, though seems to work well so far....
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rsf"><H3>RSF</H3></A><pre>
+Rover State File.  This is a list of filenames to load containing
+Rover State information.  These files contain position and orientation
+information for a rover (or other mobile spacecraft) at various sites.
+They are in XML format.  See the "Rover Motion Counter (RMC) Master File SIS"
+for details on these files.
+
+Rover State Files have a priority order.  The files listed first have
+the highest priority.
+
+Environment variables may be used in the list.
+
+For MER, if a directory is specified, then that directory is searched for
+RMC Master files and any found are loaded.  The directory structure and
+filename convention is covered in the RMC SIS.  The directory specified
+is the one containing "master", so if &ltdir&gt is the name specified in the
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#rsf">RSF</A> parameter, the following files will be searched for:
+
+&ltdir&gt/master/<mission>_Master.svf
+&ltdir&gt/master/<mission>_Site_<n>_Master.rvf
+
+The name of each file loaded is printed to the stdout log for reference.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="debug_rsf"><H3>DEBUG_RSF</H3></A><pre>
+If enabled, this causes the internal database of RMC locations to be
+printed out to the stdout log.  This is after the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#rsf">RSF</A> files have been
+loaded and the coordinate systems read from the input label(s).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord"><H3>COORD</H3></A><pre>
+This parameter is ignored by marsnav, except for one place.  It is
+here for compatibility with subroutines used by other programs (see
+e.g. marsmap).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord_index"><H3>COORD_INDEX</H3></A><pre>
+This parameter is ignored by marsnav (except in one case; see <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#coord">COORD</A>).  It
+is here for compatibility with subroutines used by other programs (see
+e.g. marsmap).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="fixed_site"><H3>FIXED_SITE</H3></A><pre>
+Specifies which major Site is the "Fixed" Site for this run.
+
+Historically, MPF and M98 had a single "Surface Fixed" frame which never
+moved, and which all other coordinate system frames were referenced to.
+With the advent of long-range rovers (such as MER and FIDO), that became
+insufficient.  The rover traverses far enough that errors in knowledge of
+coordinate system offset and orientation become unacceptable.
+
+For this reason, a system of major Sites was introduced.  Periodically
+during the mission, a Site frame is declared.  This then becomes the
+reference frame for all activities <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#until">until</A> the next Site is declared.
+References are kept local, and errors don't propogate across Sites.
+
+However, if images from more than one Site are combined together, the
+Site's must be placed relative to each other.  Therefore a single reference
+frame is still needed to combine different sites.
+
+The <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#fixed_site">FIXED_SITE</A> parameter controls which of the major Site frames is
+the reference ("fixed") site for this program run.  This fixed frame
+can vary in different program runs, but is constant throughout one
+execution.
+
+If not specified, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#fixed_site">FIXED_SITE</A> defaults to the minimum Site number (i.e.
+lowest numbered, or earliest chronologically) used in all input images.
+Normally this default is sufficient; rarely must <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#fixed_site">FIXED_SITE</A> be specified.
+
+One or more Rover State Files must usually be specified in order to combine
+image from more than one Site.  These describe the relationship between
+sites.  See the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrefmesh_level2.html#rsf">RSF</A> parameter.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

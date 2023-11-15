@@ -1,0 +1,409 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+
+<title>SpiReader</title>
+<meta name="date" content="2018-06-21">
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css" title="Style">
+<script type="text/javascript" src="../../../script.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+var methods = {"i0":9,"i1":9,"i2":9,"i3":9};
+var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],8:["t4","Concrete Methods"]};
+var altColor = "altColor";
+var rowColor = "rowColor";
+var tableTab = "tableTab";
+var activeTableTab = "activeTableTab";
+</script>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+
+<div class="topNav"><a name="navbar.top">
+
+</a>
+<div class="skipNav"><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/util/#skip.navbar.top" title="Skip navigation links">Skip navigation links</a></div>
+<a name="navbar.top.firstrow">
+
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/util/package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/util/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+<li><a href="../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../../jpl/mipl/util/ObjectiveFunction.html" title="interface in jpl.mipl.util"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li>Next&nbsp;Class</li>
+</ul>
+<ul class="navList">
+<li><a href="../../../index.html?jpl/mipl/util/SpiReader.html" target="_top">Frames</a></li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/util/SpiReader.html" target="_top">No&nbsp;Frames</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_top">
+<li><a href="../../../allclasses-noframe.html">All&nbsp;Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript">
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>Summary:&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/util/#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/util/#method.summary">Method</a></li>
+</ul>
+<ul class="subNavList">
+<li>Detail:&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/util/#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/util/#method.detail">Method</a></li>
+</ul>
+</div>
+<a name="skip.navbar.top">
+
+</a></div>
+
+
+<div class="header">
+<div class="subTitle">jpl.mipl.util</div>
+<h2 title="Class SpiReader" class="title">Class SpiReader</h2>
+</div>
+<div class="contentContainer">
+<ul class="inheritance">
+<li>java.lang.Object</li>
+<li>
+<ul class="inheritance">
+<li>jpl.mipl.util.SpiReader</li>
+</ul>
+</li>
+</ul>
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<hr>
+<br>
+<pre>public class <span class="typeNameLabel">SpiReader</span>
+extends java.lang.Object</pre>
+<div class="block">This class assists in reading a Service Provider Interface (SPI) file for
+ use in auto-registration of services.  This duplicates some functionality
+ in both IIO and JAI 1.1, but since those classes are not public, we have
+ to roll our own.  All functions are static; the class cannot be instantiated.
+ <p>
+ An SPI file lives in the <code>META-INF/services</code> directory of a jar
+ file (or in an exposed classpath directory).  It typically lists class
+ names that exist in that jar/directory that should be globally registered
+ via some mechanism.  For example, MICA uses this to register its Tools.
+ IIO uses it to register file format plugins.  JAI 1.1 uses it to register
+ operators and codecs.
+ <p>
+ The nice thing about this mechanism is that the user merely has to dump a
+ jar file containing the registration file into some place in the CLASSPATH,
+ and it will be automatically found and dealt with.
+ <p>
+ This class provides assistance for finding and reading the SPI files;
+ actually doing something with the lines in the SPI file is up to the
+ caller.  Comments (initial #) will be stripped, blank lines skipped, and
+ leading/trailing blanks on the line will be eliminated.
+ <p>
+ The caller should find SPI files via the following mechanism:
+ <pre>
+     ClassLoader loader = this.getClass().getClassLoader();  // see below
+     Enumeration enumm = loader.getResources(
+                        "META-INF/services/jpl.mipl.mica.MicaToolsSpi");
+     while (enumm.hasMoreElements()) {
+         Collection lines = SpiReader.readSpi((URL)enumm.nextElement());
+         Iterator it = lines.iterator();
+         while (it.hasNext()) {
+             String l = (String)it.next();
+             ... process this line ...
+         }
+     }
+ </pre>
+ Note the two loops.  The outer loops over each SPI file (e.g. each jar
+ file), while the inner loops over each line in the file.  A
+ <code>Collection</code> of <code>String</code>s is returned after comments,
+ blank lines, and leading/trailing blanks have been stripped.
+ <p>
+ The SPI filename should start with "<code>META-INF/services/</code>" and the
+ filename part should include the fully-qualified package name of the
+ entity doing the registration (MICA, in this case).  This will prevent
+ name collisions.
+ <p>
+ The <code>ClassLoader</code> is usually the system default loader; this will
+ cause <code>$CLASSPATH</code> to be searched.  If you want to load a plugin
+ at runtime, you need a special class loader like <code>URLClassLoader</code>
+ for the jar anyway; this is then what should be used to get the resources.
+ <p>
+ As a convenience, for users that do not need to keep track of different
+ jar files, a single Collection of lines from all SPI files (concatenated
+ together) may be obtained via <code>SpiReader.readAllSpis()</code>.  Then
+ the above example becomes:
+ <pre>
+     Collection lines = SpiReader.readAllSpis(
+                     "META-INF/services/jpl.mipl.mica.MicaToolsSpi", null);
+     Iterator it = lines.iterator();
+     while (it.hasNext()) {
+         String l = (String)it.next();
+         ... process this line ...
+     }
+ </pre></div>
+</li>
+</ul>
+</div>
+<div class="summary">
+<ul class="blockList">
+<li class="blockList">
+
+<ul class="blockList">
+<li class="blockList"><a name="constructor.summary">
+
+</a>
+<h3>Constructor Summary</h3>
+<table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructor Summary table, listing constructors, and an explanation">
+<caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colOne" scope="col">Constructor and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../jpl/mipl/util/SpiReader.html#SpiReader--">SpiReader</a></span>()</code>&nbsp;</td>
+</tr>
+</table>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="method.summary">
+
+</a>
+<h3>Method Summary</h3>
+<table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Method Summary table, listing methods, and an explanation">
+<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t1" class="tableTab"><span><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/util/show(1);">Static Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/util/show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Method and Description</th>
+</tr>
+<tr id="i0" class="altColor">
+<td class="colFirst"><code>static java.lang.String</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../jpl/mipl/util/SpiReader.html#getContainerName-java.net.URL-">getContainerName</a></span>(java.net.URL&nbsp;url)</code>
+<div class="block">Attempts to determine the "name" of the entity containing the SPI, given
+ the URL.</div>
+</td>
+</tr>
+<tr id="i1" class="rowColor">
+<td class="colFirst"><code>static java.lang.String</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../jpl/mipl/util/SpiReader.html#getContainerPathname-java.net.URL-">getContainerPathname</a></span>(java.net.URL&nbsp;url)</code>
+<div class="block">Attempts to determine the pathname of the entity containing the SPI, given
+ the URL.</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code>static java.util.Collection</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../jpl/mipl/util/SpiReader.html#readAllSpis-java.lang.String-java.lang.ClassLoader-">readAllSpis</a></span>(java.lang.String&nbsp;name,
+           java.lang.ClassLoader&nbsp;loader)</code>
+<div class="block">Convenience routine to read in all SPI's at once.</div>
+</td>
+</tr>
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code>static java.util.Collection</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../jpl/mipl/util/SpiReader.html#readSpi-java.net.URL-">readSpi</a></span>(java.net.URL&nbsp;url)</code>
+<div class="block">Reads a file and returns a Collection of valid lines.</div>
+</td>
+</tr>
+</table>
+<ul class="blockList">
+<li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
+
+</a>
+<h3>Methods inherited from class&nbsp;java.lang.Object</h3>
+<code>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="details">
+<ul class="blockList">
+<li class="blockList">
+
+<ul class="blockList">
+<li class="blockList"><a name="constructor.detail">
+
+</a>
+<h3>Constructor Detail</h3>
+<a name="SpiReader--">
+
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>SpiReader</h4>
+<pre>public&nbsp;SpiReader()</pre>
+</li>
+</ul>
+</li>
+</ul>
+
+<ul class="blockList">
+<li class="blockList"><a name="method.detail">
+
+</a>
+<h3>Method Detail</h3>
+<a name="readSpi-java.net.URL-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>readSpi</h4>
+<pre>public static&nbsp;java.util.Collection&nbsp;readSpi(java.net.URL&nbsp;url)
+                                    throws java.io.IOException</pre>
+<div class="block">Reads a file and returns a Collection of valid lines.  The following are
+ stripped out:
+ <ul>
+ <li>Comments starting with # in the first column
+ <li>Blank lines
+ <li>Leading and trailing blanks on each line
+ </ul>
+ There is actually nothing specific to SPI's about this function; it could
+ be used for reading any kind of configuration or similar file.</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - if the URL being read does</dd>
+</dl>
+</li>
+</ul>
+<a name="readAllSpis-java.lang.String-java.lang.ClassLoader-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>readAllSpis</h4>
+<pre>public static&nbsp;java.util.Collection&nbsp;readAllSpis(java.lang.String&nbsp;name,
+                                               java.lang.ClassLoader&nbsp;loader)
+                                        throws java.io.IOException</pre>
+<div class="block">Convenience routine to read in all SPI's at once.  Use this if you don't
+ care which entries came from which jar file.
+ <p></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>name</code> - The name of the file, should start with
+ <code>META-INF/services/</code>.  See class comments.</dd>
+<dd><code>loader</code> - The class loader to use.  If null, the system class loader
+ is used.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>A single <code>Collection</code> containing all the lines from
+ the files, as massaged by <code>readSpi()</code>.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code> - if any called routines do.</dd>
+</dl>
+</li>
+</ul>
+<a name="getContainerPathname-java.net.URL-">
+
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getContainerPathname</h4>
+<pre>public static&nbsp;java.lang.String&nbsp;getContainerPathname(java.net.URL&nbsp;url)</pre>
+<div class="block">Attempts to determine the pathname of the entity containing the SPI, given
+ the URL.  If the entity is a jar file, the pathname of the jar (with
+ path and extensions) is returned.  If it is a file, the last directory
+ element before META-INF is returned.  If the name cannot be determined,
+ null is returned.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><code>JarURLConnection</code>, 
+<a href="../../../jpl/mipl/util/SpiReader.html#getContainerName-java.net.URL-"><code>getContainerName(java.net.URL)</code></a></dd>
+</dl>
+</li>
+</ul>
+<a name="getContainerName-java.net.URL-">
+
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>getContainerName</h4>
+<pre>public static&nbsp;java.lang.String&nbsp;getContainerName(java.net.URL&nbsp;url)</pre>
+<div class="block">Attempts to determine the "name" of the entity containing the SPI, given
+ the URL.  If the entity is a jar file, the simple name of the jar (without
+ path or extensions) is returned.  If it is a file, the last directory
+ element before META-INF is returned.  If the name cannot be determined,
+ null is returned.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><code>JarURLConnection</code>, 
+<a href="../../../jpl/mipl/util/SpiReader.html#getContainerPathname-java.net.URL-"><code>getContainerPathname(java.net.URL)</code></a></dd>
+</dl>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+<div class="bottomNav"><a name="navbar.bottom">
+
+</a>
+<div class="skipNav"><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/util/#skip.navbar.bottom" title="Skip navigation links">Skip navigation links</a></div>
+<a name="navbar.bottom.firstrow">
+
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/util/package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/util/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+<li><a href="../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../../jpl/mipl/util/ObjectiveFunction.html" title="interface in jpl.mipl.util"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li>Next&nbsp;Class</li>
+</ul>
+<ul class="navList">
+<li><a href="../../../index.html?jpl/mipl/util/SpiReader.html" target="_top">Frames</a></li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/util/SpiReader.html" target="_top">No&nbsp;Frames</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_bottom">
+<li><a href="../../../allclasses-noframe.html">All&nbsp;Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript">
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>Summary:&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/util/#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/util/#method.summary">Method</a></li>
+</ul>
+<ul class="subNavList">
+<li>Detail:&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/util/#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="/VICAR-DOCS/vicar/core470/html/javadoc/jpl/mipl/util/#method.detail">Method</a></li>
+</ul>
+</div>
+<a name="skip.navbar.bottom">
+
+</a></div>
+
+</body>
+</html>

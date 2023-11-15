@@ -1,0 +1,186 @@
+<HTML>
+<HEAD><title>HTML Help for POLYGEOV</title></HEAD>
+<BODY>
+<H1>Help for POLYGEOV</H1>
+<pre>
+PURPOSE
+
+     POLYGEOV mimics two programs: TIECONV and GEOMV
+     
+     It calculates a GEOMV warp like TIECONV.  The warp is
+     not written out, and is only used internally.
+     
+     It maps a point set in an IBIS file like GEOMV.  It uses
+     the internal warp to map the points.
+     
+TAE COMMAND LINE FORMAT
+
+     polygeov <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#inp">INP</A>=(tiep,points) PARAMS
+
+     where
+
+     tiep		 is an IBIS tabular file containing
+			   the input tiepoints.
+     points		 is an IBIS tabular file containing
+			   the points to be moved and two
+			   columns to receive the moved points.
+     B                   is the output parameter dataset.
+     PARAMS              is a standard VICAR parameter field.
+OPERATION
+
+     polygeov operates in two phases.   In phase 1, the input 
+     points  are  fully  triangulated  by  a version  of the 
+     Thiessen   algorithm.   This operates by  computing the
+     Voronoi polygons (polygons of area  nearest each point)
+     and  computing  the  triangles  formed by the bisectors
+     of the  polygons.   Four extra points  are  added  five 
+     diameters away from the convex hull so that the surface 
+     will extend smoothly beyond the input tiepoints.
+
+     In  phase 2,  the output grid is formed by  evaluating 
+     the  triangular surface at grid point locations.   That 
+     is,  a grid point will fall in some triangle,  and  the 
+     GEOM  shift  will  be the linear interpolation  of  the 
+     input shifts at the three corners of the triangle.  The 
+     user  should  note  that  the  triangular  surface   is 
+     continuous but not differentiable and it passes through 
+     all  of  the input  points.   Point-surface  generation 
+     routines can e compared in the following table.
+|       \ PROPERTIES| CONTI-|DIFFEREN-| EVALUATES |   WELL   |
+|        \    OF    | NUOUS |TIABLE   | AT INPUT  |  BEHAVE  |
+| METHOD  \ SURFACE |       |         |   POINT   | NO MESAS |
+|-------------------|-------|---------|-----------|----------|
+| Triangulation     |  yes  |    no   |    yes    |   yes    |
+|-------------------|-------|---------|-----------|----------|
+|                -1 |       |         |           |          |
+| Interpolation r   |   no  |    no   |    yes    |   yes    |
+|-------------------|-------|---------|-----------|----------|
+|                -p |       |         |           |          |
+| Interpolation r   |   no  |    no   |    yes    |    no    |
+|-------------------|-------|---------|-----------|----------|
+| Polynomial Fit    |  yes  |    yes  |    no     |    no    |
+|-------------------|-------|---------|-----------|----------|
+| Linear            |  yes  |    yes  |    no     |   yes    |
+|-------------------|-------|---------|-----------|----------|
+| Bilin (keystone)  |  yes  |    yes  |    no     |   yes    |
+|-------------------|-------|---------|-----------|----------|
+| Quadratic         |  yes  |    yes  |    no     |   yes    |
+|-------------------|-------|---------|-----------|----------|
+| Cubic             |  yes  |    yes  |    no     |   yes    |
+|-------------------|-------|---------|-----------|----------|
+
+<A NAME="examples">EXAMPLE</A>
+
+     POLYGEOV can be used to prepare a polynomial surface fit
+     of four types.  The keyword is <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#poly">POLY</A>  and  it  has  five
+     values: "LINEAR","KEYSTONE","QUAD","CUBIC", (or ""  for
+     triangulation).  LINEAR fits the  best plane (in the L2
+     norm or least squares) through the x-distortion and the
+     y-distortion.   KEYSTONE fits a  bilinear surface, QUAD
+     fits a general quadratic surface and CUBIC fits  a gen-
+     eral cubic surface.  The  number of  tiepoints required
+     are LINEAR - 3, KEYSTONE - 4, QUAD - 6, and CUBIC - 10.
+     More tiepoints  are handled  by a least squares fit.
+     
+     
+     Back to the  triangulation case, if the  input data set
+     is a  grid, or  approximately  a  grid, a  shortcut  is
+     applied that  speeds up  enormously.  The detection  of
+     the grid is automatic.
+     
+
+     GEN OUT=X NL=1000 NS=1000 IVAL=0 LINC=0 SINC=0
+     polygeov OUT=B 'GEOMZ              <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#tiepoint">TIEPOINT</A>=(
+               1   1    0
+               1000   1    0
+               1    1000     0
+               1000  1000      0
+               500   500       255)
+     GEOMZ <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#inp">INP</A>=X <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#parms">PARMS</A>=B OUT=Y
+
+     this  example constructs a "pyramid" shaped  brightness 
+     surface in the image Y.
+
+TIMING
+
+     Timing  is dominated by the triangulation method  which 
+     is 0(n*log(n)) where n is the number of input points.  A case 
+     with  10000  points  was run in 1.63 minutes  CPU  time, 
+     and a case with 400,000 points was run in 4.52 hours on
+     a SPARCstation 20.
+     
+     If the input data set is a grid, or approximately a grid,
+     a shortcut is applied that speeds up enormously.  The
+     detection of the grid is automatic.
+     
+     The polynomial fits (LINEAR, KEYSTONE, QUAD, CUBIC) are
+     very fast.
+     
+     The final move of the data points in the second data set is
+     very fast.
+     
+RESTRICTIONS
+
+   The maximum number of input tiepoints is probably about 1 million.
+   This value will increase as the machines get more virtual and
+   real memory since dynamic memory allocation is used throughout
+   the algorithm.
+   
+   The maximum number of output tiepoints is limited by IBIS table
+   size (currently about 10 million?).  Internal to the program,
+   dynamic memory allocation is used.
+
+
+WRITTEN BY:            A. L. Zobrist, 8 August 2005
+
+REVISIONS: 
+  2008-01-11 WLB - Switched to USES_ANSI_C AND LIB_CARTO; misc cleanup.
+  2016-05-16 WLB - Migrated to MIPL; replaced printf with zifmessage.
+  2019-09-06 WLB - IDS-7922 - Initialized some variables; cleaned up -Wall warnings.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#inp"><H3>INP</H3></A>
+Input IBIS tabular file and
+IBIS file with data points
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#cols"><H3>COLS</H3></A>
+Columns to use from first
+IBIS file.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#dcols"><H3>DCOLS</H3></A>
+Columns to use from second
+IBIS file (see help 2).
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#out"><H3>OUT</H3></A>
+Output dataset (type depends
+on other parameters, see
+detailed help)
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#parms"><H3>PARMS</H3></A>
+Input parameter dataset
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#tiepoint"><H3>TIEPOINT</H3></A>
+Specify <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#tiepoint">tiepoint</A> pairs 
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#reject"><H3>REJECT</H3></A>
+Radius for duplicate  points
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#mode"><H3>MODE</H3></A>
+GEOMA for GEOMA or POLYGEOV use 
+GEOMZ for GEOMZ  use
+LGEOM for LGEOM  use 
+MGEOM for MGEOM  use
+GEOMV for GEOMV  use
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#plot"><H3>PLOT</H3></A>
+Gen <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#plot">plot</A> file of triangulation
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#print"><H3>PRINT</H3></A>
+Keyword to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#print">print</A> data values
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#abend"><H3>ABEND</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#abend">ABEND</A> abend if duplicate points
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#abendg"><H3>ABENDG</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#abendg">ABENDG</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#abend">abend</A> if not a grid
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#poly"><H3>POLY</H3></A>
+forget triangulation and do
+Polynomial fit (see help 2)
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov_level2.html#gridtol"><H3>GRIDTOL</H3></A>
+Use to make grid-finding more
+or less tolerant
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/polygeov.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

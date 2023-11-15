@@ -1,0 +1,133 @@
+<HTML>
+<HEAD><title>HTML Help for MARSRESCALE</title></HEAD>
+<BODY>
+<H1>Help for MARSRESCALE</H1>
+<pre>
+PURPOSE:
+
+MARSRESCALE program is used to rescale an image from the current grid
+to an arbitrary grid.  Currently two interpolation methods are supported:
+bilinear and bicubic spline.  Bicubic spline <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#method">method</A> is default.
+
+The image can be either upsampled or downsampled.  Upsampling and 
+downsampling rates are specified using either <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#nl">NL</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#ns">NS</A> parameters or 
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#zoom">ZOOM</A> parameter.  If both <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#ns">NS</A> and ZOOM parameters are specified, ZOOM 
+parameter value is ignored.
+
+Marsrescale will handle multi-<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#band">band</A> images automatically if the BAND 
+parameter is not specified. If <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#band">BAND</A> is specified, only that single band 
+(in the multi-<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#band">band</A> images) is processed. If a non-existent band (e.g. 4th 
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#band">band</A> for a 3-band image) is specified, the first band is processed.
+
+
+EXECUTION:
+
+marsrescale <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#inp">inp</A>=in_image <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#out">out</A>=out_image <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#nl">NL</A>=nl_new <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#ns">NS</A>=ns_new -<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#method">method</A>
+
+marsrescale <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#inp">inp</A>=in_image <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#out">out</A>=out_image <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#zoom">ZOOM</A>=zoom -<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#method">method</A>
+
+marsrescale <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#inp">inp</A>=in_image <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#out">out</A>=out_image <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#band">BAND</A> = band <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#zoom">ZOOM</A>=zoom -<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#method">method</A>
+
+Upsampling and downsampling rates are specified using either <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#nl">NL</A> and <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#ns">NS</A> 
+parameters or <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#zoom">ZOOM</A> parameter.  If both <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#ns">NS</A> and ZOOM parameters are 
+specified, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#zoom">ZOOM</A> parameter value is ignored.
+
+Examples:
+
+Single-<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#band">band</A> image:
+
+marsrescale NLB_532342096RAS_F0592578NCAM00278M1.IMG test_2048x2048_bilinear.vic <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#nl">NL</A> = 2048 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#ns">NS</A> = 2048 -bilinear
+marsrescale NLB_532342096RAS_F0592578NCAM00278M1.IMG test_zoom2_bilinear.vic <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#zoom">ZOOM</A> = 2 -bilinear
+marsrescale NLB_532342096RAS_F0592578NCAM00278M1.IMG test_2048x2048_bicubic.vic <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#nl">NL</A> = 2048 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#ns">NS</A> = 2048 -bicubic
+marsrescale NLB_532342096RAS_F0592578NCAM00278M1.IMG test_zoom2_bicubic.vic <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#zoom">ZOOM</A> = 2 -bicubic
+marsrescale NLB_532342096RAS_F0592578NCAM00278M1.IMG test_512x512_bicubic.vic <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#nl">NL</A> = 512 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#ns">NS</A> = 512 -bicubic
+marsrescale NLB_532342096RAS_F0592578NCAM00278M1.IMG test_zoom0.5_bicubic.vic <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#zoom">ZOOM</A> = 0.5 -bicubic
+
+Multiple-<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#band">band</A> image:
+
+Process all bands:
+
+marsrescale MH0_445788563EDR_S0261274MHLI00350M1.IMG MH0_zoom2_bicubic.vic <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#zoom">ZOOM</A> = 2 -bicubic
+
+Process <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#band">band</A> 2:
+
+marsrescale MH0_445788563EDR_S0261274MHLI00350M1.IMG MH0_zoom2_bicubic_band2.vic <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#band">BAND</A> = 2 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#zoom">ZOOM</A> = 2 -bicubic
+
+If set to process a non-existing <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#band">band</A> (e.g. 4), the processing would be performed on band 1: 
+
+marsrescale MH0_445788563EDR_S0261274MHLI00350M1.IMG MH0_zoom2_bicubic_band4.vic <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#band">BAND</A> = 4 <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#zoom">ZOOM</A> = 2 -bicubic
+
+
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#method">METHOD</A>:
+
+Marsrescale program loops over pixels in the specified/new grid and
+identifies the corresponding pixels in original grid, which are used
+for interpolation.  In order to consider pixels as areas instead of points,
+we consider the transformation:
+
+ ii = (i+0.5) * nl_old / nl_new - 0.5
+
+This transformation maps -0.5 -&gt -0.5 and nl_new-0.5 -> nl_old-0.5
+using 0-based indexing.
+
+
+REFERENCES:
+
+[1] Igor Yanovsky, Bilinear and Bicubic Interpolation, Report, 2017.
+[2] Bicubic interpolation. (2016, November 28). In Wikipedia, The Free Encyclopedia, https://en.wikipedia.org/wiki/Bicubic_interpolation.
+[3] Generalized Bicubic Interpolation, GIASSA.NET, https://www.giassa.net/?page_id=371.
+[4] Xiao Shu, Bicubic Interpolation slides, http://www.ece.mcmaster.ca/~xwu/3sk3/interpolation.pdf, Mar. 2013.
+[5] Don Lancaster, A Review of Some Image Pixel Interpolation Algorithms, https://www.tinaja.com/glib/pixintpl.pdf, Mar. 2013.
+
+
+HISTORY:
+  2017-09    Igor Yanovsky - Initial Version
+  2017-11    Igor Yanovsky - Revised to allow color imagery to be processed with a single call
+  2018-08    Francois Ayoub - Added Nearest Neighbor sampler
+  2020-02-06 Walt Bunch - IDS-7928 - Corrected format string to match arg, added unit test
+  2020-05-15 Walt Bunch - IDS-7927 - Replaced sprintf calls
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER: Igor Yanovsky</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#inp"><H3>INP</H3></A>
+Input image
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#out"><H3>OUT</H3></A>
+Output rescaled image
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#band"><H3>BAND</H3></A>
+The input file <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#band">band</A> number to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#nl"><H3>NL</H3></A>
+Number of lines in the rescaled image
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#ns"><H3>NS</H3></A>
+Number of samples in the rescaled image
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#zoom"><H3>ZOOM</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#zoom">Zoom</A> factor for rescaled image
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#method"><H3>METHOD</H3></A>
+Interpolation <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#method">method</A> to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation filename
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find configuration/
+calibration files
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-specific
+pointing <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#method">method</A> to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/marsrescale.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

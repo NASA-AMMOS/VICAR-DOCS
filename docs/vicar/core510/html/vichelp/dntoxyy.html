@@ -1,0 +1,83 @@
+<HTML>
+<HEAD><title>HTML Help for DNTOXYY</title></HEAD>
+<BODY>
+<H1>Help for DNTOXYY</H1>
+<pre>
+PURPOSE:
+To generate xyY images (chromaticity x and y and tristimulus Y) from
+unknown input multispectral imagery where the scenes contain known
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#colors">colors</A>. Use this program if the images are not in radiance units or
+the bands are outside the visible or of unknown wavelength. If you
+know these things then use spectoxyy instead. Once xyY images exist 
+they can be converted to rgb for a particular device using xyytospec
+or xyy2hdtv.
+
+METHOD:
+This method solves for a linear relation between input dn and XYY
+tristimulus values. You specify the xyY's and dn's of special <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#colors">colors</A> in the
+scene and a solution is made for the C's from the simultaneous
+equations:
+X(color1)=C1*dn(color1,band1)+C2*dn(color1,band2),...
+X(color2)=C1*dn(color2,band1)+C2*dn(color2,band2),...
+..ETC..
+This is done three times once for X, then Y, and then Z.
+Once the C's are known you can substitute any input dn's to derive
+the corresponding tristimulus values XYZ. The XYZ's are converted to
+xyY's and written <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#out">out</A>.
+
+All color data are input either after the keyword <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#colors">COLORS</A> or after the
+keyword <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#macbeth">MACBETH</A>. These are the only mechanisms for inputting <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#colors">colors</A>. Each time
+you use these keywords the program writes a color calibration file called:
+color_calibration.txt. Once this file exists you can cause the program to
+read it for processing other images by running dntoxyy without any parameters.
+See the example below.
+
+WARNING: If you read a color calibration file your images must retain the same
+order and gains as the images from which the file was created.
+
+EXECUTION:
+
+To process images and to create a calibration file:
+
+dntoxyy <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#inp">inp</A>=(band1,band2,...bandn) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#out">out</A>=(x,y,Y) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#colors">colors</A>=(...)
+xyy2hdtv <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#inp">inp</A>=(x,y,Y) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#out">out</A>=(r,g,b)
+or
+dntoxyy <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#inp">inp</A>=(band1,band2,...bandn) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#out">out</A>=(x,y,Y) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#macbeth">macbeth</A>=(...)
+xyy2hdtv <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#inp">inp</A>=(x,y,Y) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#out">out</A>=(r,g,b)
+
+To process images using an existing calibration file:
+
+dntoxyy <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#inp">inp</A>=(band1,band2,...bandn) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#out">out</A>=(x,y,Y)
+xyy2hdtv <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#inp">inp</A>=(x,y,Y) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#out">out</A>=(r,g,b)
+
+
+METHOD:
+HISTORY:
+5-1-2001 J Lorre. 
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Jean Lorre</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#inp"><H3>INP</H3></A>
+N input images
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#out"><H3>OUT</H3></A>
+3 Output images
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#colors"><H3>COLORS</H3></A>
+Color coordinates
+and dn values.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#weights"><H3>WEIGHTS</H3></A>
+Priorities of the
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#colors">colors</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#macbeth"><H3>MACBETH</H3></A>
+Location of
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy_level2.html#macbeth">macbeth</A> chart.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/dntoxyy.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

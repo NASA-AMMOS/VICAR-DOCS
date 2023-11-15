@@ -1,0 +1,123 @@
+<HTML>
+<HEAD><title>HTML Help for RPC2GRID</title></HEAD>
+<BODY>
+<H1>Help for RPC2GRID</H1>
+<pre>
+PURPOSE
+     The RPC or RSM in a label give the transformation of a
+     non-orthorectified image (line,sample) to rectified (lon,lat)
+     coordinates.  Mathematically, the equations (RPF's) are reversed
+     from lon-lat to line-sample.  This routine creates an ultrafine
+     grid (should be finer than the underlying DTED used) that is
+     equivalent to the transformations.
+
+     The user can use tieconv to invert the ultrafine grid to apply to the
+     raw image to get a mapped, orthocorrected image.  This process has been
+     codified in the procedure RPCWARP.  Most users should use RPCWARP.
+	   
+CALL
+
+There are two modes
+
+     rpc2grid INP=(rpcim,dted) OUT=outgrid NAH=nah NAV=nav
+  WHERE:
+     rpcim          is the input data set (must have a GeoTIFF label with RPC's)
+     dted           is a dted data set (must have a GeoTIFF label, lon-lat)
+     outgrid        is the output ultrafine grid cols=(lon,lat,elv,line,samp)
+     nah            is the number of areas horizontally in the grid (points-1)
+     nav            is the number of areas vertically in the grid (points-1)
+
+and
+
+     rpc2grid INP=(rpcim,dted) OUT=outgrid NAH=nah NAV=nav LON1=lon1                 LAT1=lat1 LON2=lon2 ...etc
+  WHERE:
+     rpcim          is the input data set (must have a GeoTIFF label with RPC's)
+     dted           is a dted data set (must have a GeoTIFF label, lon-lat)
+     outgrid        is the output ultrafine grid cols=(lon,lat,elv,line,samp)
+     nah            is the number of areas horizontally in the grid (points-1)
+     nav            is the number of areas vertically in the grid (points-1)
+     lon1,lat1      is the first corner in clockwise order
+     lon2,lat2      is the second corner in clockwise order
+     lon3,lat3      is the third corner in clockwise order
+     lon4,lat4      is the fourth corner in clockwise order
+  
+OPERATION
+
+In mode one, the corner (lon,lat) points are obtained from the label (these should
+always be present for RPC labels).  The corners are enlarged outward by 4% relative
+to the middle so the generated quadrangle will cover the image data better.
+
+In mode two, the (lon,lat) points are given by the user.  The user should take care
+to cover data.
+
+Then the dted us used to look up elevation for each point using bilinear interp-
+olation.  Then the RPCORRSMFWD routine is used to calculate (line,sample) for each
+point.
+
+The columns are always in that order.  The ncols parameter can add extra columns to
+the file.
+
+There is an unusual fix for bad data.   If the corner points are not in clockwise
+order (points 3 and 4), then they are moved to a correct order so that the program will produce the desired grid output.
+
+PERFORMANCE
+
+The file is (nah+1)*(NAV+1) in length.  Almost all of the time will be spent in
+rpcorrsmfwd.
+
+Restrictions
+------------
+
+The ibis file must have at least 8 columns.
+
+Original Programmer: A. L. Zobrist, 16 Mar, 2005
+<A NAME="CogProg">Current Cognizant Programmer: A. L. Zobrist</A>
+
+REVISIONS: 
+  Fri Feb 1 2019 smyth switched to using rpcorrsmfwd to support RSM
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rpc2grid_level2.html#inp"><H3>INP</H3></A>
+Input file with GeoTIFF, RPC's
+and a DTED file
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rpc2grid_level2.html#out"><H3>OUT</H3></A>
+Output file name, ultra-fine
+grid for image warping
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rpc2grid_level2.html#ncol"><H3>NCOL</H3></A>
+Number of columns to put in
+grid
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rpc2grid_level2.html#nah"><H3>NAH</H3></A>
+Number of areas horizontally
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rpc2grid_level2.html#nav"><H3>NAV</H3></A>
+Number of areas vertically
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rpc2grid_level2.html#lon1"><H3>LON1</H3></A>
+Longitude of 1st corner point
+clockwise
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rpc2grid_level2.html#lat1"><H3>LAT1</H3></A>
+Latitude of 1st corner point
+clockwise
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rpc2grid_level2.html#lon2"><H3>LON2</H3></A>
+Longitude of 2d corner point
+clockwise
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rpc2grid_level2.html#lat2"><H3>LAT2</H3></A>
+Latitude of 2d corner point
+clockwise
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rpc2grid_level2.html#lon3"><H3>LON3</H3></A>
+Longitude of 3d corner point
+clockwise
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rpc2grid_level2.html#lat3"><H3>LAT3</H3></A>
+Latitude of 3d corner point
+clockwise
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rpc2grid_level2.html#lon4"><H3>LON4</H3></A>
+Longitude of 4th corner point
+clockwise
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rpc2grid_level2.html#lat4"><H3>LAT4</H3></A>
+Latitude of 4th corner point
+clockwise
+.END
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rpc2grid.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/rpc2grid.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

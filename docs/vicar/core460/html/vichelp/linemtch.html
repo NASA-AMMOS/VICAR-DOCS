@@ -1,0 +1,110 @@
+<HTML>
+<HEAD><title>HTML Help for LINEMTCH</title></HEAD>
+<BODY>
+<H1>Help for LINEMTCH</H1>
+<pre>
+PURPOSE
+     LINEMTCH performs one-dimensional line-to-line correlation between two
+images.  It is helpful for precise comparison or registration of two images.
+It allows one of the images to have a different scale than the other or
+to be offset from each other, but does not allow one image to be rotated 
+with respect to the other.
+It is similar in purpose to program PICMATCH, but is more special purpose.
+It could have application in geometric calibration of cameras.
+LINEMTCH requires that the geometric realtionship between the two images be 
+approximately linear.  It computes the variation (OFFSET) between the images
+and the linear model.  Thus it can perform precise (subpixel) measurement
+of non-linear variations.
+
+TAE COMMAND LINE FORMAT
+
+     LINEMTCH <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#inp">INP</A>=(A,B) INP=INT  PARAMS
+
+     where
+     A                   is the first image to be correlated.
+     B                   is the second image to be correlated.
+     INT                 is  the output IBIS interface  file 
+                         that contains the pairs of matching 
+                         sample   locations  together   with 
+                         editing    information   such    as 
+                         correlation value.
+OPERATION
+
+     First  the  program sets up a geometric model  relating 
+     the two images using <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#itie">ITIE</A>-<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#otie">OTIE</A> parameters.  Since it is 
+     assumed  that  the relationship between the geometry of
+     the two images is approximately linear,   two 
+     tiepoints should be enough to specify the  model.   The 
+     model is used to estimate the a search locations and to 
+     resample  the input image to match the sampling of  the 
+     output  image.   Then  the  FFTs of  input  and  output 
+     samplings  are computed and phase correlation  function 
+     is obtained as an inverse FFT of the normalized product 
+     of those two.   The maximum of the correlation function 
+     should  yield the value of offset.   If the search <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#area">area</A> 
+     is  larger than the sampling size,  program extracts  9 
+     uniformly  spaced  samplings from the  search  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#area">area</A>  of 
+     input image and choses the offset value as maximum of 9 
+     phase correlation function,  thus ruling <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#out">out</A> accidental 
+     matches.   For each line pair, at the sample locations
+     defined by the parameters <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#mins">MINS</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#maxs">MAXS</A>, & <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#spacing">SPACING</A>, the offset
+     (between the geometric model and the location of the
+     cross-correlation maximum) and the correlation value
+     are computed. The  final results are placed in columns  of 
+     the IBIS interface file as follows:
+
+Column:      1            2         3         4       5
+Value:  line pair # input samp  output samp  offs  correlation
+                                                        value
+<A NAME="examples">EXAMPLE</A>
+
+     linemtch <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#inp">INP</A>=(A,B) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#out">OUT</A>=INT <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#itie">ITIE</A>=(1,400) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#otie">OTIE</A>=(20,730)           LINE=(1,1,5,5) <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#mins">MINS</A>=100 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#maxs">MAXS</A>=800 SPAC=100 <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#power">POWER</A>=5           <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#area">AREA</A>=128
+RESTRICTIONS
+     Input images must have byte format.
+     Line size &lt= 60000 samples
+     <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#power">Power</A> &lt= 10, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#area">area</A> <= 1024
+WRITTEN BY:                   B. Gokhman
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:         K. F. Evans</A>
+
+REVISION:                     New           March 4, 1983
+
+  7-96  SP   Ported to UNIX.  Unfortunately, the only source file available
+             appears as if it was not the final version.  It called a version
+             of FFTT that had 4 arguments.  The current FFTT has 3 arguments.
+             The phase correlation values are supposed to be normalized to
+             1.0 (for an exact match) but the version I am delivering
+             does not seem to give values greater than .5.  This program
+             probably needs more debugging before it is used, which may
+             be never.  The exact meaning of the offset column in the
+             output file remains fuzzy.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#inp"><H3>INP</H3></A>
+Input images to correlate
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#out"><H3>OUT</H3></A>
+Interface file for corr info
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#itie"><H3>ITIE</H3></A>
+Samp coord of tiepoints(input)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#otie"><H3>OTIE</H3></A>
+Samp coord of tiepoints(output)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#lines"><H3>LINES</H3></A>
+Line numbers to correlate
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#mins"><H3>MINS</H3></A>
+First sample for matching
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#maxs"><H3>MAXS</H3></A>
+Last sample for matching
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#spacing"><H3>SPACING</H3></A>
+Step in samples
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#area"><H3>AREA</H3></A>
+Search <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#area">area</A> in samples
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#power"><H3>POWER</H3></A>
+Size of sampling (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#power">power</A> of 2)
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch_level2.html#noprint"><H3>NOPRINT</H3></A>
+Suppress printout
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/linemtch.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

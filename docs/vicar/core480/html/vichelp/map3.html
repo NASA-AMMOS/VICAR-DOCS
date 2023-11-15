@@ -1,0 +1,1302 @@
+<HTML>
+<HEAD><title>HTML Help for MAP3</title></HEAD>
+<BODY>
+<H1>Help for MAP3</H1>
+<pre>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#purpose">PURPOSE</A>
+	MAP3 performs the necessary calculations of a rubber-sheet stretch
+ on a picture to convert it from a perspective projection (in which 
+ latitudes and longitudes are complicated functions of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A>
+ depending on the position and orientation of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A>) to a standard
+ cartographic projection (in which longitude and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> are simpler
+ functions of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> that are independent of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> viewing
+ geometry).  The following projections are currently implemented:
+		<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#mercator">Mercator</A>
+		<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lambert">Lambert</A> Two-Standard Conformal Conic
+		Oblique and Polar Orthographic
+		Oblique and Polar Stereographic
+		Cylindrical (Normal)
+		Simple Cylindrical (Rectangular)
+                Transverse <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#mercator">Mercator</A>
+                Oblique Simple Cylindrical.
+                Sinusoidal
+                Oblique Sinusoidal
+                <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#mollweid">Mollweid</A>
+                Perspective 
+ EXECUTION
+	      map3 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#inp">INP</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#out">OUT</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#size">SIZE</A> PARAMS
+    -or-
+	      map3 (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#inp">INP</A>,GEOM) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#out">OUT</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#size">SIZE</A> PARAMS
+
+    SEE Parameter Section for explanation of parameters.
+
+PARAMETERS FOR RETRIEVING <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">CAMERA</A> POINTING FROM SPICE:
+
+The following parameters permit the user to retrieve a specific instance of
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing from the SPICE kernels:
+
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#spicemode">SPICEMODE</A> specifies whether SPICE data is retrieved from LOCAL kernels or
+or via the REMOTE SPICE server.  If defaulted, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#spicemode">SPICEMODE</A> is set to the value
+of the environmental variable DEFAULTSPICE.
+
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#ckname">CKNAME</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#ckid">CKID</A> are alternative ways to specify the C kernel to be used.  For
+example, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#ckname">CKNAME</A>=FARE or <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#ckid">CKID</A>=M904 specifies that MIPS_FARENC.CK is to be used.
+When specified, the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#ckid">CKID</A> parameter overrides the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#ckname">CKNAME</A> parameter.  If the
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing data is not found in the requested C kernel, the other C kernels
+are searched.
+
+Within a given C kernel, there may be a number of different versions of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A>
+pointing for a given image.  The segment identifier for each version contains
+provenance information identifying the creator of the pointing data.  One or
+more of the following parameters may be used to retrieve a specific instance of
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing based upon this provenance information:
+
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#cdate">CDATE</A> specifies the date and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#time">time</A> the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing was created.
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#reqnum">REQNUM</A> identifies the request number associated with the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing.
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#purpose">PURPOSE</A> identifies the purpose for creating the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing.
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">PROGRAM</A> identifies the program which created the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing.
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#spkid">SPKID</A> identifies the SP-kernel used to create the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing.
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#userid">USERID</A> identifies the user who created the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing.
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#groupid">GROUPID</A> identifies the group which created the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing.
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#institute">INSTITUTE</A> identifies the facility which created the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing.
+
+A complete list of CK and SPK IDs are located in the ASCII file assigned the
+logical name (or environmental variable) KERNELDB.
+
+The above parameters are optional, and if defaulted (or if no data is found for
+the requested version), the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">program</A> will attempt to locate the "best" data
+available for the given image.  See the level 2 help (via the TAE tutor mode)
+for further details.
+
+Examples:  'LOCAL <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#ckname">CKNAME</A>=NAIF specifies that SPICE data be retrieved from
+          local kernels using <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing from predicts or AACS telemetry.
+
+           'REMOTE <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#ckname">CKNAME</A>=FARE <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#institute">INSTITUTE</A>=MIPS <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#spkid">SPKID</A>=N015 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#userid">USERID</A>=ADC retrieves
+          the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing created by Amy Culver at MIPS using the SP kernel
+          GLL_LONG_2.BSP from file MIPS_FARENC.CK via the SPICE server.  (whew!)
+
+It takes longer to search for SPICE data on the basis of provenance
+information.  If all provenance parameters are specified, for example, the
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">program</A> first searches through all the C kernels for an exact match.  If no
+match is found, the search is relaxed by removing the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#cdate">CDATE</A> criteria.  If no
+match is found, the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#reqnum">REQNUM</A> criteria is removed.  Etc.
+
+ OPERATION
+	MAP3 begins by examining the input picture label to determine if it
+contains a map label for a perspective projection.  If so, the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">program</A> will
+not access the SPICE/SEDR and will extract the needed input navigation from
+this label.
+Then the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">program</A> checks the label to see if the  frame comes from one of the
+standard flights:  Mariner 9, Mariner 10, Viking  Orbiters 1 and 2 Voyager or
+Galileo.  If so, and if SPICE/SEDR data is available, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> 
+ pointing information and the latitudes and longitudes of the four corners and 
+ center of the input frame are read from the SEDR.  Otherwise the parameter 
+ list is checked to see if <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> and longitude of the center of the input 
+ frame are specified.  The latitudes and longitudes are used only to determine 
+ a projection type if the user does not specify one via parameters.  However, 
+ the pointing information is vital and must be obtained by MAP3 somehow or it 
+ will ABEND.  See VIEWING GEOMETRY PARAMETERS section for details.
+	Next, the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">program</A> mathematically specifies the output projection in
+ full.  The required data consists of the projection type and projection-depen-
+ dent information such as the center of projection, standard parallels,
+ central meridian, angle of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#north">north</A> in the output picture, and position in the
+ output of the center of projection <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A> or equator, etc. See Reference (2)
+ for a detailed description of which parameters specify which projection.  A
+ description of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#size">size</A> and shape of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet">planet</A> is also required at this
+ stage.  MAP3 checks the parameter list for user specifications, then computes
+ the remaining parameters (if any) using a set of default algorithms.
+	Next, the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">program</A> checks the parameter list for any user overrides or
+ supplements to the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> optical geometry information and viewing geometry
+ data.  Then the 'output' picture is spanned by a grid of tiepoints.
+ At each point the projection descriptive data determines the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> and
+ longitude which must map there.  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> optics and viewing geometry data
+ are used to compute, from the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> and longitude, the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> of
+ the corresponding point in an undistorted (geometrically) input picture.  If
+ instructed to do so, MAP3 transforms the undistorted input <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A>
+ to a distorted (image space) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A>.  The result of this process is a
+ set of points in the output picture for which the corresponding input
+ points are known, whether or not the input frame has been geometrically
+ corrected.  Map3 then performs the GEOM operation on the input image to
+ form the output image.
+        The geom operation is performed upon each grid square independently.
+ The operation depends upon the number of vertices of the square which
+ fall on the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet">planet</A>:
+ 1. No vertices on the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet">planet</A>:
+	The output is set to zero for this square.
+ 2. All 4 vertices are on the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet">planet</A>:
+	The output is interpolated from the input using a polynomial model to
+	map from output to input of the form:
+       		line_in=c1*L+c2*s+c3*L*s+c4
+       		samp_in=k1*L+k2*s+k3*L*s+k4
+ 3. One to three vertices are on the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet">planet</A>:
+	Compute the exact transformation to map output to input.
+
+ PARAMETERS
+	MAP3 is designed to be easy to use, at least for standard flight
+ pictures.  But it is also a flexible <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">program</A> performing a complex task.  It
+ needs a large amount of auxiliary information concerning <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet">planet</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#size">size</A> and
+ shape, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> optics, viewing geometry, and a precise specification of the
+ projection desired.  For standard flights, the planetary data and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A>
+ specifications are built into MAP3.  SEDR's are usually available to provide
+ viewing geometry parameters, and the projection description parameters may
+ always be defaulted.  But to provide sufficient <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">program</A> flexibility to
+ handle non-standard flight pictures, bad or missing SEDR's, and mosaicking
+ capability, a very large number of parameters are available.
+	Each of the following sections describes some subset of the parameters,
+ grouped according to function.  Each section is preceded by an explanatory
+ introduction.  The following conventions are observed.  Within each section
+ numerical parameters are numbered consecutively.  Parameters required to be
+ integers begin with N; floating point parameters begin with R. NOTE:  
+ALL LATITUDES ARE  GEOCENTRIC; ALL LONGITUDES ARE WEST.  ALL PARAMETERS ARE
+EXPLAINED IN DETAIL  IN THE PARAMS SECTION. 
+
+ FLIGHT RELATED PARAMETERS
+	MAP3 normally determines the flight from the picture label. It
+ recognizes Mariner 9, Mariner 10, Viking Orbiter, Voyager and Galileo labels.
+ If the label is bad or missing, the following parameters can be used to
+ specify the flight.
+ 
+          <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#mm71">MM71</A>  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#mvm73">MVM73</A>  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#vi76">VI76</A>  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#vgr1">VGR1</A>  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#vgr2">VGR2</A>  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#gll">GLL</A>  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#noprojec">noprojec</A>
+ 
+ If the picture label is not from one of the standard flights and these
+ parameters are defaulted, a non-standard flight is assumed, requiring the
+ user to enter all necessary information through the parameter list.
+                   <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#das">DAS</A>         <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#fds">FDS</A>          <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#fsc">FSC</A>
+ <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet">PLANET</A> DESCRIPTIVE PARAMETERS
+	MAP3 must know the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#radii">radii</A> of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#target">target</A> body being projected.  In the
+ case of Voyager, these are normally obtained from the SEDR.  For other
+ flights, or to override the Voyager SEDR values, the following keywords can
+ be used.
+                    <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#radii">RADII</A>        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#target">TARGET</A>         <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lora">LORA</A>
+ <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">CAMERA</A> DESCRIPTIVE PARAMETERS
+	This group defines the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> optical system.  All can be defaulted
+ for standard flights because correct values are built into MAP3.
+ These should be specified (unless there is a default) if <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#noprojec">NOPROJEC</A> is specified.
+     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#cscale">CSCALE</A>     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#focl">FOCL</A>     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#cline">CLINE</A>     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#csamp">CSAMP</A>     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">CAMERA</A>
+     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#distor">DISTOR</A>     IMAGE    OBJECT
+
+ VIEWING GEOMETRY PARAMETERS
+	The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> viewing geometry is specified by a vector and rotation
+ matrix.  The vector, called the RS vector, is the vector from the center of
+ the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet">planet</A> to the spacecraft, specified in the planet coordinate system.  The
+ matrix, called OM, rotates vectors from the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet">planet</A> coordinate system to the
+ <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> system.  Reference (3) contains a complete description of how camera
+ optics data, planetary <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#radii">radii</A>, and the RS vector and OM matrix allow a <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A>
+ and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> to be computed from a <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> and longitude.
+	MAP3 can obtain RS and OM in several different ways.  They can be
+ specified in the parameter list or computed by one of four different
+ algorithms.  In addition, they can be obtained from the SPICE/SEDR for some 
+ Voyager and for Galileo frames.
+  The following sections describe these various methods.
+     1.  Direct Specification by the User
+         Parameters in this subsection can be used by themselves to
+         completely specify RS and OM.  Or they can be used individually to
+         override specific SEDR entries or to supply necessary information
+         needed by the algorithms described in later subsections.
+         <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#cmatrix">CMATRIX</A>     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#mematrix">MEMATRIX</A>     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#ommatrix">OMMATRIX</A>      <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#vrvector">VRVECTOR</A>     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#rsvector">RSVECTOR</A>     
+                 SLAT         SLON          RMAG
+     2. Default Algorithm
+        In this algorithm (the default), the RS vector is computed from
+        the ME matrix and the VR vector.  The OM matrix is computed from
+        the C and ME matrices.  This algorithm is considered inferior
+        because the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing information in the C matrix usually
+        does not have very great accuracy.  The C matrix and the VR vector
+        are normally obtained from the SEDR.  The ME matrix is usually
+        obtained from the SEDR also, except for Mariner 9, whose SEDR does
+	not contain an ME matrix.  If an ME matrix is not obtained from the
+	SEDR or parameter list, MAP3 will attempt to calculate it using
+	built-in ephemeris data.  This is possible only for the five inner
+	planets and the moon.  The following parameters can be used to
+	override data used to calculate the ME matrix.
+		<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#time">TIME</A>          <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#rtas">RTAS</A>          <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#declinat">DECLINAT</A>(Declination)
+     3. <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#quam">QUAM</A> Algorithm
+	If the RS vector is known, the OM matrix can be computed from
+	another vector, called RRP5, and the angle of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#north">north</A> in the image
+	plane, using an algorithm developed by Lynn <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#quam">Quam</A>.  The RRP5 vector
+	is the vector, in the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet">planet</A> coordinate system, from the planet
+	center to the intersection of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A>'s optical axis and the
+	<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet">planet</A>'s surface (in other words to the point in the center of the
+	input frame).
+	      <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#quam">QUAM</A>         CLAT        CLON        NORA
+     4. FAR ENCOUNTER Algorithm
+	Given the RS vector and the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#north">north</A> angle, the OM matrix can be com-
+	puted if the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> of the subspacecraft point in the input
+	picture are known.  The RS vector is computed from SLAT, SLON, and
+	RMAG (see subsection 1).  The algorithm, developed by Denis Elliott,
+	is usually applicable only for pictures containing all or most of the
+	<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet">planet</A>, since only then can the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> of the subspacecraft
+	point be determined directly from the input image.
+		<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#isscpt">ISSCPT</A>       NORA       <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#osscpt">OSSCPT</A>
+     5. TIEPOINTS Algorithm
+	If the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> and longitude of three or more points at specified
+	lines and samples are known, as well as the RS vector, the OM matrix
+	may be computed using still another algorithm, developed by Arnie
+	Schwartz.  The RS vector is obtained in the same way as for the FAR
+	ENCOUNTER algorithm.
+			<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#tiepts">TIEPTS</A>
+ PROJECTION DESCRIPTIVE PARAMETERS
+	The parameters in this group are used to describe the output
+ projection to the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">program</A>.  The projection type, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">scale</A>, and position of the
+ input frame in the output frame are under user control.  For oblique and
+ polar orthographic and stereographic, the orientation of the input in the
+ output is also under user control.
+	Some of the parameters have slightly different meanings depending on
+ the projection type.  So this section will be divided into projection-related
+ subsections.  Some parameters will be discussed more than once.
+	All parameters in all subgroups are optional.  The default philosophy
+ is: "Where applicable, choose a center of projection in the center of the
+ input picture.  Center the input in the output.  Where orientation is not
+ fixed (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#mercator">Mercator</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lambert">Lambert</A> always have <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#north">north</A> at the top), preserve the
+ orientation of the input in the output.  Subject to the above restrictions,
+ which have priority, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">scale</A> the output projection so that the input frame
+ nearly fills the output frame without loss of data over the edge. Also make
+ the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">scale</A> come <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#out">out</A> so that it is one of nine standard numbers times a power
+ of ten."
+
+     1. Choice of Projection
+	The parameters in this subgroup are used to specify the projection
+	type.  If the user makes no choice the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">program</A> decides as follows:
+	For Standard flights with the SEDR available, the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> of the
+	center of the input image is obtained from the SEDR.  If the absolute
+	value of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> is less than 30 degrees, a <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#mercator">Mercator</A> projection 
+	results.  If it is greater than 65 degrees, a Polar Stereographic
+	projection is used.  Otherwise a <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lambert">Lambert</A> Two-Standard Conformal Conic
+	is chosen, with standard parallels at 59 degrees.17 and 35 degrees.83
+	or -35 degrees.83 and 59 degrees.17, depending on the sign of the 
+	<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A>.  If no SEDR is available (as for non-standard flight
+	pictures) the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">program</A> checks to see if CLAT was specified (see <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#quam">QUAM</A>
+	algorithm subsection).  If so, its value is used in the above test. 
+	If not, an Orthographic projection is chosen.
+        
+        The choices of projection are:
+
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#orthogra">ORTHOGRA</A>                 Oblique Orthographic
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#orthogra">ORTHOGRA</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">POLE</A>            Polar Orthographic
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#stereogr">STEREOGR</A>                 Oblique Stereographic
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#stereogr">STEREOGR</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">POLE</A>            Polar Stereographic
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lambert">LAMBERT</A>                  Lambert Two Standard Conformal Conic
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#mercator">MERCATOR</A>                 Mercator
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#tmercato">TMERCATO</A>                 Transverse <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#mercator">Mercator</A>
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#cylindri">CYLINDRI</A>                 Normal Cylindrical
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#rectangu">RECTANGU</A>                 Simple Cylindrical or Rectangular
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#obcylind">OBCYLIND</A>                 Oblique Simple Cylindrical
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sinusoid">SINUSOID</A>                 Sinusoidal
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#obsinuso">OBSINUSO</A>                 Oblique Sinusoidal
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#mollweid">MOLLWEID</A>                 Mollweide
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#perspect">PERSPECT</A>                 Perspective 
+
+     2. Projection Scaling
+	In all map projections, there is at least one point at which the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">scale</A>
+	of the projection equals the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">scale</A> on the sphere.  The scale at such
+	points, in km/pixel, determines the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#size">size</A> of the input picture in the
+	output area.  For the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#mercator">Mercator</A> projection, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">scale</A> is correct everywhere
+	on the equator.  For the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lambert">Lambert</A>, it is valid all along both standard
+	parallels.  For the Orthographic and Stereographic, it is valid at the
+	center of projection.  If no <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">scale</A> is specified, one will be computed
+	so that the input picture is as large as possible without loss of
+	data.  Then this <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">scale</A> is rounded to one of nine standard values in
+	such a way as to make the projection of the input frame slightly
+	smaller.
+				<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A>
+
+     3. Projection Descriptive Parameters for Mosaicking
+	The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#mercator">Mercator</A> projection, for which the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A>, and
+	LONGITUDE parameters can be used to place any desired point anywhere
+	in the output, and the Polar Stereographic and Orthographic, for which
+	the default is to center the input picture in the output frame REGARD-
+	LESS of the position of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A>, are easy to use to produce large
+	<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">scale</A> mosaics with the above parameters.  For such mosaics it is impor-
+	tant that the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">scale</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> and longitude of special points, meri-
+	dians, or parallels, and orientation be constant in all projections.
+	Then good results can be obtained by simple translation of the pro-
+	jected pictures.  But for the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lambert">Lambert</A> and Oblique Stereographic and
+	Orthographic projections, the previously discussed parameters are
+	clumsy to use for mosaicking.  Frequently, the center of projection or
+	central meridian is far outside the input frame.  Defaulting <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> and
+	<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A> then leads to an all zero output frame.  To overcome the
+	problem, users were formerly forced to compute <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A>
+	parameters using the equations describing their projection.  A new 
+	group of parameters, explained below, allows the user to specify an
+	approximate <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> for an arbitrary point unrelated to the
+	center of projection or the central meridian.  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">program</A> then 
+	computes values of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A> parameters consistent with the 
+	user's specification and acts as if these values were present in the 
+	parameter list (see the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lambert">Lambert</A> subsection for restrictions on the use 
+	of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> parameters).  Note also that the value of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A> is required
+ 	in order to perform the calculations.  For the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lambert">Lambert</A> case, this means
+	that <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lin1">LIN1</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lin2">LIN2</A> may not be used if any of the keywords below are 
+	present.
+		The group below is collectively called "recentering parameters"
+	because the center of projection is repositioned from its normal 
+	default location.  The presence of any of the recentering parameters 
+	implies the use of repositioning algorithms which, to repeat, have the 
+	effect of overriding default values of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A>.  Therefore, 
+	<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A> should not be used if recentering is used.  The LINE 
+	and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A> values are computed so that a specified point projects as 
+	close as possible to a specified output pixel, subject to the 
+	constraint that the center of projection (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A> for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lambert">Lambert</A>) projects 
+	to an integral pixel. This restriction ensures that translational 
+	offsets for various parts of a mosaic are all integral numbers of 
+	pixels.
+		PLAT     PLON     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pline">PLINE</A>     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#psample">PSAMPLE</A>     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#recenter">RECENTER</A>
+
+     4. <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lambert">Lambert</A> Projection Parameters
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A>      The line in the output to which the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A> will project.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A>    The sample to which the central meridian projects,
+                  specified by LONGITUDE.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A>     The scale in km/pixel at the standard parallels.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#par1">PAR1</A>      The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> in degrees of the northernmost of the two 
+		  standard parallels. 
+                  Default is 59.17 for northern hemisphere input frames 
+		  and -35.83 for southern.  
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#par2">PAR2</A>      The southernmost of the two  standard parallels. 
+                  Default is 35.83 or -59.17. <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#par1">PAR1</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#par2">PAR2</A> must have the same 
+		  sign or the projection is undefined.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lin1">LIN1</A>      The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> in the output frame at which the northern standard 
+		  parallel's projected arc is to intersect the central 
+		  meridian.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lin2">LIN2</A>      The same as <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lin1">LIN1</A> but refers to the  southern standard 
+		  parallel.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A>  The projected parallel which will intersect the central 
+		  meridian at <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#nl">NL</A>/2, where NL is obtained from the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#size">size</A> 
+		  field on the EXEC card.  R3 need not be a standard parallel. 
+		  Default is to use the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> of the center of the input 
+		  picture for R3.  This can have unpleasant results (such as a 
+		  completely black output picture) if the central meridian does
+		  not appear in the output frame (see the mosaicking subsection
+		  for ways to avoid this problem). 
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#longitud">LONGITUD</A>  The longitude, in degrees, to be used as the central
+                  meridian.  The default is the longitude of the center of the
+                  input picture.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#recenter">RECENTER</A>  Computes <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A> such that the center of the input
+                  maps to the center of the output.  It is suggested that you 
+		  use this parameter along with PLAT and PLONG !  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and
+		  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> that goes with a certain <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> and longitude can 
+		  be specified using <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pline">PLINE</A>, PSAMP, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#platitud">PLATITUD</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#plongitu">PLONGITU</A>. 
+		  Otherwise these will default to the center of the output and 
+		  the lat/lon in the center of the input image respectively.
+
+        NOTES:
+	The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">scale</A> and vertical placement of the output image can be specified
+	in a variety of ways.  Do not attempt to overspecify the projection.
+	Further explanation will follow keywords below.
+ 	  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A>     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#longitud">LONGITUD</A>     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A>     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#par1">PAR1</A>     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#par2">PAR2</A>     <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lin1">LIN1</A>
+		   <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lin2">LIN2</A>		<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A>
+	In the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lambert">Lambert</A> projection, any two of the parameters <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lin1">LIN1</A>,
+	and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lin2">LIN2</A> are sufficient to specify the other two.  In view of this, 
+	MAP3 proceeds as follows:
+
+  	  If three or more of the above are specified, 
+		the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">program</A> ABENDS because it probably cannot satisfy all the 
+		demands. The projection has been overspecified.
+	  If two are specified, 
+		their values are used and the remaining two are computed from 
+		them.
+	  If any of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> parameters are specified, but neither <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A> nor 
+	  the other <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> parameters are, 
+		the value of the specified parameter is used. Then <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A> is 
+		computed in the usual default manner. Then the other two <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> 
+		parameters follow.
+	  If <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A> is specified but none of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> parameters, 
+		the value of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A> parameter obtained from the parameter
+		list or by default is used to compute the values of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lin1">LIN1</A>,
+ 		and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lin2">LIN2</A> in a consistent manner.
+	  If none of the parameters are specified, 
+		<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A> is computed in the usual way and then the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">program</A> 
+		proceeds as if <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A> alone were specified.
+
+	From the above discussion it should be clear that if any of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lin1">LIN1</A>,
+	or <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lin2">LIN2</A> appear as parameters, the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A> parameter is ignored.
+
+     5. <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#mercator">Mercator</A> projection parameters:
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A>      The line in the output to which <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A> will project.
+                  Defaults to 1.0.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A>    The sample in the output to which LONGITUDE will project.
+                  Defaults to 1.0.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A>  The latitude of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> in the output.
+                  Default computes <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> to center input in output.
+        LONGITUDE The longitude of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A> in the output.
+                  Default computes longitude to center input in output.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A>     The scale in km/pixel at the equator.        
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#recenter">RECENTER</A>  Computes <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A> such that the center of the input
+                  maps to the center of the output.  It is suggested that you 
+		  use this parameter along with PLAT and PLONG !  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and 
+		  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> that goes with a certain <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> and longitude can 
+		  be specified using <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pline">PLINE</A>,PSAMP,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#platitud">PLATITUD</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#plongitu">PLONGITU</A>. Otherwise 
+		  these will default to the center of the output and the 
+		  lat/lon in the center of the input image respectively.
+
+     6. Cylindrical projection parameters:
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A>      The line in the output to which <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A> will project.
+                  Defaults to 1.0.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A>    The sample in the output to which LONGITUDE will project.
+                  Defaults to 1.0.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A>  The latitude of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> in the output.
+                  Default computes <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> to center input in output.
+        LONGITUDE The longitude of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A> in the output.
+                  Default computes longitude to center input in output.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A>     The scale in km/pixel at the equator.        
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#recenter">RECENTER</A>  Computes <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A> such that the center of the input
+                  maps to the center of the output.
+                  It is suggested that you use this parameter along with
+                  PLAT and PLONG !
+                  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> that goes with a certain <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A>
+                  and longitude can be specified
+                  using <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pline">PLINE</A>,PSAMP,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#platitud">PLATITUD</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#plongitu">PLONGITU</A>. Otherwise these
+                  will default to the center of the output and the lat/lon
+                  in the center of the input image respectively.
+
+     7. Simple Cylindrical (rectangular) projection parameters:
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A>      The line in the output to which <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A> will project to.
+                  Defaults to 1.0
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A>    The sample in the output to which LONGITUDE will project to.
+                  Defaults to 1.0
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A>  The latitude of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> in the output.
+                  Default computes <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> to center input in output.
+        LONGITUDE The longitude of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A> in the output.
+                  Default computes longitude to center input in output.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A>     The scale in km/pixel at the equator.        
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#recenter">RECENTER</A>  Computes <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A> such that the center of the input
+                  maps to the center of the output.
+                  It is suggested that you use this parameter along with
+                  PLAT and PLONG !
+                  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> that goes with a certain <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A>
+                  and longitude can be specified
+                  using <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pline">PLINE</A>,PSAMP,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#platitud">PLATITUD</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#plongitu">PLONGITU</A>. Otherwise these
+                  will default to the center of the output and the lat/lon
+                  in the center of the input image respectively.
+
+     8. Oblique Stereographic projection parameters.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A>      The line of the center of projection in the output.
+                  Defaults to nlout/2.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A>    The sample of the center of projection in the output.
+                  Defaults to nsout/2.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A>  The latitude of the center of projection.
+                  Defaults to the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> at the center of the input.
+        LONGITUDE The longitude of the center of projection.
+                  Defaults to the longitude at the center of the input.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A>     Scale in km/pixel at the center of projection.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#north">NORTH</A>     Angle of the projected spin axis of the north <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A>
+                  measured in degrees clockwise from up in the output.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#recenter">RECENTER</A>  Computes <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A> such that the center of the input
+                  maps to the center of the output.
+                  It is suggested that you use this parameter along with
+                  PLAT and PLONG !
+                  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> that goes with a certain <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A>
+                  and longitude can be specified
+                  using <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pline">PLINE</A>,PSAMP,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#platitud">PLATITUD</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#plongitu">PLONGITU</A>. Otherwise these
+                  will default to the center of the output and the lat/lon
+                  in the center of the input image respectively.
+
+     9. Oblique Orthographic projection parameters.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A>      The line of the center of projection in the output.
+                  Defaults to nlout/2.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A>    The sample of the center of projection in the output.
+                  Defaults to nsout/2.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A>  The latitude of the center of projection.
+                  Defaults to the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> at the center of the input.
+        LONGITUDE The longitude of the center of projection.
+                  Defaults to the longitude at the center of the input.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A>     Scale in km/pixel at the center of projection.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#north">NORTH</A>     Angle of the projected spin axis of the north <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A>
+                  measured in degrees clockwise from up in the output.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#recenter">RECENTER</A>  Computes <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A> such that the center of the input
+                  maps to the center of the output.
+                  It is suggested that you use this parameter along with
+                  PLAT and PLONG !
+                  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> that goes with a certain <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A>
+                  and longitude can be specified
+                  using <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pline">PLINE</A>,PSAMP,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#platitud">PLATITUD</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#plongitu">PLONGITU</A>. Otherwise these
+                  will default to the center of the output and the lat/lon
+                  in the center of the input image respectively.
+
+    10. Polar Stereographic projection parameters.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A>      The line in the output to which the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A> will project. 
+                  Defaults to nlout/2.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A>    The sample in the output to which the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A> will project. 
+                  Defaults to nsout/2.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A>  If latitude is + or - 90 degrees a 
+                  polar projection results 
+                  whether or not the parameter <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">POLE</A> is also specified. 
+                  If <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">POLE</A> is specified, the sign of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A> 
+                  parameter (if present) determines which <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A> is used 
+                  as the center of projection.
+        LONGITUDE The west longitude in degrees of the meridian which
+                  will point up from the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A> in the output. Default is to 
+                  compute lon so that the upper left and upper right corners of
+                  the input are projected to the same <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> in the output. 
+                  This algorithm minimizes rotation from input to output 
+                  regardless of the location of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A> in either picture.
+                  This algorithm will not work if either of the upper corners 
+                  of the picture is off the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet">planet</A>. In this case <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#longitud">LONGITUD</A> must 
+                  be specified. Note that the default calculation of
+                  orientation is, in a sense, more powerful for polar than 
+                  oblique projections. In the oblique projections the algorithm
+                  used minimizes rotation only if the center of projection 
+                  lies within the input frame. A superior algorithm is 
+                  available for the polar projections because of the many
+                  simplifications of the projection equations due to the fact
+                  that longitude meridians are all straight lines.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A>     The scale in km/pixel at the center of projection. 
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#recenter">RECENTER</A>  Computes <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A> such that the center of the input
+                  maps to the center of the output.
+                  It is suggested that you use this parameter along with
+                  PLAT and PLONG !
+                  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> that goes with a certain <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A>
+                  and longitude can be specified
+                  using <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pline">PLINE</A>,PSAMP,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#platitud">PLATITUD</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#plongitu">PLONGITU</A>. Otherwise these
+                  will default to the center of the output and the lat/lon
+                  in the center of the input image respectively.
+
+    11. Polar Orthographic projection parameters.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A>      The line in the output to which the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A> will project.
+                  Defaults to nlout/2.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A>    The sample in the output to which the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A> will project. 
+                  Defaults to nsout/2.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A>  If latitude is + or - 90 degrees a 
+                  polar projection results 
+                  whether or not the parameter <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">POLE</A> is also specified. 
+                  If <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">POLE</A> is specified, the sign of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A> 
+                  parameter (if present) determines which <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A> is used 
+                  as the center of projection.
+        LONGITUDE The west longitude in degrees of the meridian which
+                  will point up from the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A> in the output. Default is to 
+                  compute lon so that the upper left and upper right corners of
+                  the input are projected to the same <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> in the output. 
+                  This algorithm minimizes rotation from input to output 
+                  regardless of the location of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A> in either picture.
+                  This algorithm will not work if either of the upper corners 
+                  of the picture is off the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet">planet</A>. In this case <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#longitud">LONGITUD</A> must 
+                  be specified. Note that the default calculation of
+                  orientation is, in a sense, more powerful for polar than 
+                  oblique projections. In the oblique projections the algorith 
+                  used minimizes rotation only if the center of projection 
+                  lies within the input frame. A superior algorithm is 
+                  available for the polar projections because of the many
+                  simplifications of the projection equations due to the fact
+                  that longitude meridians are all straight lines.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A>     The scale in km/pixel at the center of projection. 
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#recenter">RECENTER</A>  Computes <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A> such that the center of the input
+                  maps to the center of the output.
+                  It is suggested that you use this parameter along with
+                  PLAT and PLONG !
+                  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> that goes with a certain <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A>
+                  and longitude can be specified
+                  using <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pline">PLINE</A>,PSAMP,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#platitud">PLATITUD</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#plongitu">PLONGITU</A>. Otherwise these
+                  will default to the center of the output and the lat/lon
+                  in the center of the input image respectively.
+
+    12. Oblique Simple Cylindrical projection parameters.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A>      Line in output to which <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A>=0 will project.
+                  Defaults to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#nl">nl</A>/2.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A>    Sample in output to which longitude=180 will project.
+                  Defaults to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#ns">ns</A>/2.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A>  The new latitude of the position to which the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#north">North</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A>
+                  will move in the oblique space.
+                  Defaults to +90 degrees.
+        LONGITUDE The new longitude of the position to which the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#north">North</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A>
+                  will move in the oblique space.
+                  Defaults to 0.0.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#par1">PAR1</A>      The new longitude in the oblique space to which
+                  LONGITUDE will move.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A>     The scale in km/pixel.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#recenter">RECENTER</A>  Computes <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A> such that the center of the input
+                  maps to the center of the output.
+                  It is suggested that you use this parameter along with
+                  PLAT and PLONG !
+                  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> that goes with a certain <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A>
+                  and longitude can be specified
+                  using <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pline">PLINE</A>,PSAMP,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#platitud">PLATITUD</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#plongitu">PLONGITU</A>. Otherwise these
+                  will default to the center of the output and the lat/lon
+                  in the center of the input image respectively.
+        
+        Suggestions: Use <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#recenter">RECENTER</A> and PLAT,PLONG. If you use RECENT, then
+        the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">program</A> will know where you sent the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A> (using LATI,LONG)
+        and will assure that the PLAT,PLONG you specified maps to the
+        center of the output. For example, if you specified:
+                LATI=0 LONG=180 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#par1">PAR1</A>=180 
+        the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#north">North</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A> would rotate to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A>=0 longitude=180.
+        If you also specified:
+                'RECENT PLAT=90. PLONG=60.
+        then you would be assured to see the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A> centered in the output
+        but projected as though it were really at <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A>=0 longitude=180.
+    13. Sinusoidal projection parameters.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A>      The output line of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> specified by LATITUDE.
+                  Defaults to the center of the output.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A>    The output sample of the reference longitude 
+                  specified by LONGITUDE.
+                  Defaults to the center of the output.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A>  The latitude placed at <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> in the output.
+                  Defaults to the center of the input.
+        LONGITUDE The REFERENCE longitude for the projection
+                  ( that longitude which maps to a vertical <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> ).
+                  Defaults to the center of the input.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A>     The scale in km/pixel at the equator.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#recenter">RECENTER</A>  Computes <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A> such that the center of the input
+                  maps to the center of the output.
+                  It is suggested that you use this parameter along with
+                  PLAT and PLONG !
+                  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> that goes with a certain <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A>
+                  and longitude can be specified
+                  using <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pline">PLINE</A>,PSAMP,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#platitud">PLATITUD</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#plongitu">PLONGITU</A>. Otherwise these
+                  will default to the center of the output and the lat/lon
+                  in the center of the input image respectively.
+
+    14. Oblique Sinusoidal projection parameters.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A>      Line in output to which <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A>=0 will project.
+                  Defaults to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#nl">nl</A>/2.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A>    Sample in output to which longitude=180 will project.
+                  Defaults to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#ns">ns</A>/2.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A>  The new latitude of the position to which the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#north">North</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A>
+                  will move to in the oblique space.
+                  Defaults to +90 degrees.
+        LONGITUDE The new longitude of the position to which the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#north">North</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A>
+                  will move to in the oblique space.
+                  Defaults to 0.0.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#par1">PAR1</A>      The new longitude in the oblique space to which
+                  LONGITUDE will move.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A>     The scale in km/pixel on the oblique equator.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#recenter">RECENTER</A>  Computes <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A> such that the center of the input
+                  maps to the center of the output.
+                  It is suggested that you use this parameter along with
+                  PLAT and PLONG !
+                  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> that goes with a certain <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A>
+                  and longitude can be specified
+                  using <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pline">PLINE</A>,PSAMP,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#platitud">PLATITUD</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#plongitu">PLONGITU</A>. Otherwise these
+                  will default to the center of the output and the lat/lon
+                  in the center of the input image respectively.
+        
+        Suggestions: Use <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#recenter">RECENTER</A> and PLAT,PLONG. If you use RECENT then
+        the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">program</A> will know where you sent the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A> (using LATI,LONG)
+        and will assure that the PLAT,PLONG you specified maps to the
+        center of the output. For example if you specified:
+                LATI=0 LONG=180 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#par1">PAR1</A>=180 
+        the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#north">North</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A> would rotate to <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A>=0 longitude=180.
+        If you also specified:
+                'RECENT PLAT=90. PLONG=60.
+        then you would be assured to see the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A> centered in the output
+        but projected as though it were really at <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A>=0 longitude=180.
+
+    15. Mollweide projection parameters.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A>      The output line of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> 0.
+                  Defaults to the center of the output.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A>    The output sample of the reference longitude 
+                  specified by LONGITUDE.
+                  Defaults to the center of the output.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A>  not used.
+        LONGITUDE The REFERENCE longitude for the projection.
+                  Will be a vertical <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> in the output.
+                  Defaults to the center of the input.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A>     The scale in km/pixel at <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> 40 deg 44 min N or S.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#recenter">RECENTER</A>  Computes <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A> such that the center of the input
+                  maps to the center of the output.
+                  It is suggested that you use this parameter along with
+                  PLAT and PLONG !
+                  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> that goes with a certain <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A>
+                  and longitude can be specified
+                  using <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pline">PLINE</A>,PSAMP,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#platitud">PLATITUD</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#plongitu">PLONGITU</A>. Otherwise these
+                  will default to the center of the output and the lat/lon
+                  in the center of the input image respectively.
+
+    16. Transverse <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#mercator">Mercator</A> projection parameters.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A>      The output line of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> specified by LATITUDE.
+                  Defaults to the center of the output.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A>    The output sample of the reference longitude 
+                  specified by LONGITUDE.
+                  Defaults to the center of the output.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A>  The latitude placed at <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> in the output.
+                  Defaults to the center of the input.
+        LONGITUDE The REFERENCE longitude for the projection
+                  ( That longitude which maps to a vertical <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> ).
+                  Defaults to the center of the input.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A>     The scale in km/pixel at central meridian.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#recenter">RECENTER</A>  Computes <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A> such that <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#platitud">PLATITUD</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#plongitu">PLONGITU</A>
+                  go to that <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> in the output.
+                  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> that goes with a certain <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A>
+                  and longitude can be specified
+                  using <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pline">PLINE</A>,PSAMP,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#platitud">PLATITUD</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#plongitu">PLONGITU</A>. Otherwise these
+                  will default to the center of the output and the lat/lon
+                  in the center of the input image respectively.
+
+    17. Perspective projection parameters.
+        In this projection the user may specify a "new <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A>" location (and
+        even new <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> descriptive parameters) to generate an output image
+        corresponding to the perspective from the new location.  Changing
+        the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A> (specifying SCALE) changes the distance of the "new <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A>"
+        to the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet">planet</A>.
+
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A>      The output line of the center of projection. Is 
+		  the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> of
+                  the new sub-spacecraft point in the output.
+                  Defaults to center of output.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A>    The output sample of the center of projection. Is 
+                  the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> of the new sub-spacecraft point in the output.
+                  Defaults to center of output.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A>  The new sub-spacecraft point latitude in the output. 
+                  Defaults to the input sub-spacecraft <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A>.
+        LONGITUDE The new sub-spacecraft longitude in the output.
+                  Defaults to the input sub-spacecraft longitude.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#north">NORTH</A>     The angle of the new north spin axis measured clockwise
+                  from up in the output.
+                  Defaults to the same as the input.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A>     The scale in km/pixel in the output.
+                  Defaults to the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">scale</A> of the input picture.
+        <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#recenter">RECENTER</A>  Computes <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">LINE</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">SAMPLE</A> such that the center of the input
+                  maps to the center of the output.
+                  It is suggested that you use this parameter along with
+                  PLAT and PLONG if the field of view is so small that
+                  the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">LATITUDE</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#longitud">LONGITUD</A> coordinate does not appear in
+                  the input. 
+                  The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> that goes with a certain <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A>
+                  and longitude can be specified
+                  using <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pline">PLINE</A>,PSAMP,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#platitud">PLATITUD</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#plongitu">PLONGITU</A>. Otherwise these
+                  will default to the center of the output and the lat/lon
+                  in the center of the input image respectively.
+PRECISION:
+
+This portable version of MAP3 will produce basically the same output on
+all of the MIPS-supported platforms.  This output will frequently not be
+identical to the output of the unported version of MAP3, but the differences
+will be trivial and should be improvements.
+
+This section is required by the MSTP SRD for all programs that
+do not meet the precision requirements given in the SRD.  The two requirements
+not met by MAP3 are:
+1) Integer data output by a ported <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">program</A> must be the same as that produced
+   by the unported <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">program</A>.
+2) Integer data output by a ported <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">program</A> must be the same on all of the
+   MIPS-supported platforms.
+All of the programs that do geometric transformations are going to have problems
+meeting one or both of these requirements.   This includes MAP3, LGEOM, MGEOM,
+GEOMA, and several others.  MAP3 was modified to increase the use of
+Double Precision floating point arithmetic so that the second requirement is met
+"well enough" and the first requirement is met "well enough". 
+The definition of the above qouted term is given towards the end of this 
+section.
+
+In the port, MAP3 was modified to retain the full precision returned from
+subroutine DSIMQ.  This was done to minimize the differences
+produced on different platforms.  The results are somewhat more accurate
+than those of the unported MAP3, but since the output DN values are rounded
+to the nearest integer, the output images are essentially the same as for the
+unported MAP3.
+
+In computing the output pixel value (DN), MAP3 first determines if the pixel
+lies on the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet">planet</A>.  If it does not, the output pixel value is set to 0.
+If the pixel does lie on the (map-projected) <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet">planet</A>, MAP3 uses subroutine 
+CONVEV to compute the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> and longitude from the output <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A>
+coordinates.  Then it uses subroutine CORCAV to compute (in floating point)
+the the input image <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> coordinates from the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> and
+longitude.  Since the floating point <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> coordinates generally lie
+between the integer <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> coordinates of four adjacent input pixels,
+MAP3 uses bilinear interpolation to compute a pixel value for the floating
+point location.  This is the value given to the output pixel. (This is a
+simplification, but is adequate for this discussion of precision.) 
+
+The image a2.map3 used in the MAP3 test pdf shows what type of
+differences are likely to occur between the ported MAP3 and the unported MAP3.
+The output file from the ported MAP3 is very slightly different
+from the output file from the unported MAP3.  99.997% of the pixels are
+identical.  All but one of the rest differ in value by 1.  The other pixel
+differs in value by 129.
+
+The cause of the differences is that the single precision computations
+(unported MAP3) round differently than the double precision computations
+(ported MAP3).  MAP3 rounds the results to the nearest integer.  Usually the
+differences make no difference once the rounding occurs.  Only rarely do the
+differences cause rounding up in one case and rounding down in the other, which
+causes a difference of 1 in the output value.  In one case, the differences
+caused the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">program</A> to conclude the output pixel did not correspond to
+an input pixel in one case but did in the other.  This occurred at the border 
+of the non-zero section of the image  (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet">planet</A> limb or terminator.)
+These two type of differences combines to produce
+a slight but insignificant difference.  This difference is estimated at
+less than 1% of the difference between using '<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#nointerp">NOINTERP</A> and using regular
+interpolation, which is the definition I will use for "well enough".
+I believe that such differences will not be humanly observable in an image
+display.  
+
+The image a2.map3 used in the MAP3 test pdf shows what type of what type of
+differences are likely to occur (with the ported MAP3) between machines. 
+The output file from the ported MAP3 on the DEC Alpha is very slightly different
+from the output file on the Sun SparcStation.  99.997% of the pixels are
+identical.  All but one of the rest differ in value by 1.  The other pixel
+differs in value by 7.
+
+In general, the differences between the results for the ported MAP3 on different
+machines are comparable to the differences between the ported MAP3 and the
+unported MAP3.  Both types of differences are on the order of the expected
+rounding in single precision computations.  Although the bilinear interpolation
+computation was upgraded to double precision, parts of the CONVEV and CORCAV
+computation are in single precision.  
+For a 1000 by 1000 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#byte">byte</A> image from 10 to 1000 slightly different pixels may be
+expected.  This assumes matching SPICE data.  If the SPICE data differ 
+significantly, the output images will not be comparable.
+REFERENCES:
+
+  1) MAP2 User's Guide 900-639, Vol. III (November 1973).
+  2) JPL Publication 77-7, "Transformations from an Oblate Spheroid to a
+     Plane and Vice Versa", (January 1977).
+  3) "Digital Cartographic Projection", Proceedings of the Caltech/JPL
+     Conference on Image Processing Technology, Data Sources and Software
+     for Commercial and Scientific Applications, (November 1976).
+  4) MIPS Map projection Software User's Guide D-11810, Ver. 1.1 (May 1994).
+
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">PROGRAM</A> HISTORY:
+
+ WRITTEN BY: A. R. Gillespie and C. A. Rofer     22 June 1972
+ MODIFIED BY: Arnie Schwartz, Denis Elliott, Joel Mosher, Jean Lorre,
+   Charles Avis, Helen (DeReuda) Mortenson, Florance Moss, John Reimer,
+   Dave Glackin, Gary Yagi, Thuy Truong
+<A NAME="CogProg"> CURRENT COGNIZANT PROGRAMMER: Jean Lorre</A>
+ REVISION HISTORY:
+     Nov 99  lwk  added some checks for silly values of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#nl">NL</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#ns">NS</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">SCALE</A>, RADIUS;
+                  added check for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#par1">PAR1</A>/2 for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lambert">Lambert</A>;  fixed problem with
+                  Julian date ("Y2K" correction was being done twice)
+     Nov 97  SP   Restored equation for RMAG_PERS for perspective projection.
+                  This had been changed in Jan. 1997 erroneously, causing
+                  distorted results, particularly when the new <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> location
+                  was close to the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet">planet</A>.
+     Oct 96  SP   Correct handling of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#gll">GLL</A> summation mode.  Corrections for
+                  handling <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#dnthresh">DNTHRESH</A> parameter and and interpolation.
+                  Please note that even when the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#dnthresh">DNTHRESH</A> parameter is 
+                  defaulted, the associated algorithm will occasionally result
+                  in minor changes (improvements) because pixels with a DN
+                  value of 0 will not be used in the interpolation.  Differences
+                  will typically be found where a zero pixel and a non-zero
+                  pixel are adjacent.
+     Aug 96  OAM  Added <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#dnthresh">DNTHRESH</A> parameter and subroutine setDnValue to
+                  handle interpolation. 
+     May 96  SP   Added proper initialization of variables.  Modified to
+                  use GETSPICE2 and associated PDF parameters.
+     Jan 96  SP   Reported to UNIX using many of changes from TLT but using
+                  CONVEV instead of MP_XY2LL.  Modified to expect any second
+                  input file to be in IBIS tiepoint format.
+                  Added call to GLLGCOR to Farenc algorithm for Galileo support.
+     AUG 94  TLT  Ported to UNIX (only suppports <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#gll">GLL</A> input, does not support
+                  output PERSPECTIVE projection).
+                  Replaced CONVEV, TRANV, SEARCV2, MAPLABV2 w/ MP software.
+                  Added keyword SPICE_SERVER.
+     Sep 93  jjl  Permit space telescope data
+     AUG 93  JJL  Permits perspective projection inputs.
+     JUN 91  JJL  Extensive cleanup to help, test, added 6 projections.
+     DEC 89  JJL  Perform own geom.
+     Oct 89  JJL  Converted to project independent.
+  29 OCT 89  GMY  Deleted FARENC keyword (invoked via <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#isscpt">ISSCPT</A> or <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#osscpt">OSSCPT</A>)
+  23 Aug 89  GMY  Delete fiddling with <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#fds">FDS</A> for WA of simultaneous exposure pair
+  22 jun 89  jjl  Change flag to 1.0e+15 to fix lgeom artifact
+  10 may 88  FFM  Add keyword 'SEDRSRC
+  01 mar 88  GMY  Add check for NAV and NAV2 flags in SEDR when one or more
+		  tiepoints is off <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet">planet</A>.
+  10-MAY-88  FFM  INCORPORATE "SEDRSRC" KEYWORD
+  22-FEB-87  JAM  INCORPORATED SMT,SXP CHANGES 
+                  SMT COMMENTED <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#out">OUT</A> CALLS TO SEDR73 AND ACOS3
+                  SXP CHANGED OACALL TO VOLAB TO VOLABV2
+  10-FEB-87  JAM  WARNING IF INPUT IS O.S. AND GEOM FILE INPUT
+  28-DEC-86  JAM  INCORPORATE "<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#noprojec">NOPROJEC</A>" KEYWORD
+  23 Feb 86  JAM  FIX DISTAL
+  23 Jan 86  JAM  Add 'IMAGE,'OBJECT
+   4-JUL-85  JAM  START REORGANIZING PARAMETER PROCESSING
+  28-JUN-85  JAM  REPLACE *CAL SUBROUTINES WITH R2LIB:CONVEV
+  26-JUN-85  JAM  REPLACE TIECHK WITH R2LIB:TIECHV
+  23-JUN-85  JAM  REPLACE FOMCL2 WITH R2LIB:FOMCLV
+  23-JUN-85  JAM  REPLACE CORCAL WITH R2LIB:CORCAV
+  22-JUN-85  JAM  REPLACE IPPCOR WITH R2LIB:IPPCOV
+  15-JUN-85  JAM  CONVERT TO VICAR2
+  23 APR 84  HBD  RESTRUCTURED SOME CODE AND DELETED SOME CALLS
+                         TO OPEN AND CLOSE
+   5 APR 84  HBD  DELETED CALLS TO OPEN BEFORE GLABEL CALLS
+  24 MAR 84  JAM  CHANGE CALL TO LABEL FOR RECTANGULAR PROJECTION
+  15 DEC 83  CCA  REMOVE IDS;MAKE DSRN 1=PDS (LABELED)
+  02 AUG 83  JAM  CONVERT TO VAX
+  02 MAY 83  JHR  BUGS
+  10 JAN 82  JHR  CODE MODIFICATIONS, SLAT FROM SEDR79
+                         CHANGED TO GEOCENTRIC
+  12 APR 81  JHR  ADDED SIMPLE CYLINDRICAL PROJECTION
+  10 MAR 81  JAM  READ OM MATRIX FROM VGR SEDR
+  16 FEB 81  JAM  ALLOW MAP3 TO GET <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#ommatrix">OMMATRIX</A> FROM FARENC
+   8 OCT 80  JJL  ADD KEYWORDS:
+   8 OCT 80  JJL  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#osscpt">OSSCPT</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#isscpt">ISSCPT</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lora">LORA</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#geodet">GEODET</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#nam2">NAM2</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#half">HALF</A>
+  19 JUN 80  JAM  ADD VOYAGER FLIGHT INFORMATION
+  28 MAY 80  JAM  CHANGE ROUTCO CALLS TO OUTCON
+                         MUST INCLUDE OUTCON2 IN LINKEDIT
+  25 MAY 80  JAM  PUT IN HALFWORD OPTION
+     JAN 79  DLG  ADD VOYAGER MISSION MODULE
+  30 AUG 78  DAE  TRIAXIAL SOLID
+  03 JAN 77  DAE  USE EXACT EQUATIONS FOR SPHEROIDAL PLANETS
+                  REDO DEFAULT <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#north">NORTH</A> ANGLE COMPUTATION
+                  INSTALL RECENTERING OPTION FOR EASIER MOSAICING
+  12 MAY 76  DAE  ADD FINAL <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#vi76">VI76</A> CHANGES
+  23 APR 76  DAE  RESTRUCTURE LINK EDIT TREE AND <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#distor">DISTOR</A> SECTION
+  05 FEB 76  DAE  CONVERT TO OS AND MAKE VO76 A STANDARD MISSION
+  27 JUN 75  DAH  CHANGES FOR CONVERSION TO 360/OS
+   1 MAR 75  DAE&AAS  VERSION XXX RELOCATABLE, FARENC & <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#tiepts">TIEPTS</A> MODES
+  01 JAN 73  AAS  LAMB.CONF.FIX/LABEL MISCOUNT PROBLEM/MULTPHASING
+   SUPERMAP A.R.GILLESPIE
+   ALGORITHMIC DEVELOPMENT - J.B.SEIDMAN
+   MAP3 C.A.ROFER
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#inp"><H3>INP</H3></A>
+ STRING-(1:3)Required and
+ optional input datasets.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#out"><H3>OUT</H3></A>
+ STRING-1 Required
+ output dataset.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#size"><H3>SIZE</H3></A>
+ INTEGER-(1:4) Starting <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">line</A>,
+ starting <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A>, number of
+ lines, number of samples
+ for output.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#nl"><H3>NL</H3></A>
+ INTEGER-Number of lines in
+ output.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#ns"><H3>NS</H3></A>
+ INTEGER-Number of samples in
+ output.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet"><H3>PLANET</H3></A>
+ STRING-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#target">Target</A> body name
+ 12 characters
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#nosedr"><H3>NOSEDR</H3></A>
+ KEYWORD-do not read project SEDR for
+ pointing, trajectory,etc. data
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#nointerp"><H3>NOINTERP</H3></A>
+ KEYWORD-suppress interpolation
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#dnthresh"><H3>DNTHRESH</H3></A>
+Interpolation DN
+threshold. Pixel 
+DNs &gt <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#dnthresh">DNTHRESH</A>
+will be included.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#nogeom"><H3>NOGEOM</H3></A>
+ KEYWORD to suppresses the
+ fetch of LGEOM.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#reftime"><H3>REFTIME</H3></A>
+ INTEGER-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#time">Time</A> of projection.
+ For zonal flow
+ correction.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#zvp"><H3>ZVP</H3></A>
+ STRING-Name of zonal
+ flow file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#short"><H3>SHORT</H3></A>
+ KEYWORD-implying SEDR input
+ NOT the master Viking
+ Orbiter SEDR.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#nolabel"><H3>NOLABEL</H3></A>
+ KEYWORD-to supress label
+ updating activity.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#format"><H3>FORMAT</H3></A>
+ KEYWORD-for data format.
+ Valid:('<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#half">HALF</A>,'<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#byte">BYTE</A>)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#geodet"><H3>GEODET</H3></A>
+ KEYWORD-to specify geodetic
+ latitudes.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#nam2"><H3>NAM2</H3></A>
+ KEYWORD-to request projection
+ for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#north">north</A> angle.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#mm71"><H3>MM71</H3></A>
+ KEYWORD-Mariner 9 project
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#mvm73"><H3>MVM73</H3></A>
+ KEYWORD-Mariner 10 project
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#vi76"><H3>VI76</H3></A>
+ KEYWORD-Viking project
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#vgr1"><H3>VGR1</H3></A>
+ KEYWORD-Voyager 1 project
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#vgr2"><H3>VGR2</H3></A>
+ KEYWORD-Voyager 2 project
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#gll"><H3>GLL</H3></A>
+ KEYWORD-Galileo project
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#noprojec"><H3>NOPROJEC</H3></A>
+ KEYWORD-non-flight project
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#das"><H3>DAS</H3></A>
+ INTEGER-Used in default
+ processing.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#fds"><H3>FDS</H3></A>
+ INTEGER-Used in default
+ processing.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#fsc"><H3>FSC</H3></A>
+ INTEGER-Used in default
+ processing.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#radii"><H3>RADII</H3></A>
+ REAL-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#radii">Radii</A> of projected <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#target">target</A>
+ body.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lora"><H3>LORA</H3></A>
+ REAL-Longitude of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#target">target</A> body.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#cscale"><H3>CSCALE</H3></A>
+ REAL-Number of pixels/mm on
+ focal plane.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#focl"><H3>FOCL</H3></A>
+ REAL-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">Camera</A> focal length in mm.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#cline"><H3>CLINE</H3></A>
+ REAL-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">Line</A> of optic axis 
+ picture.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#csamp"><H3>CSAMP</H3></A>
+ REAL-Specifies <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">sample</A> of
+ optical axis.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera"><H3>CAMERA</H3></A>
+ INTEGER-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">Camera</A> number.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#distor"><H3>DISTOR</H3></A>
+ KEYWORD-Input frame has
+ NOT been corrected.
+ Same as 'IMAGE
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#image"><H3>IMAGE</H3></A>
+ KEYWORD-Input frame has NOT
+ been corrected.
+ Same as '<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#distor">DISTOR</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#object"><H3>OBJECT</H3></A>
+ KEYWORD-Input frame has
+ been corrected.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#cmatrix"><H3>CMATRIX</H3></A>
+ REAL-Specifies C-matrix in
+ row major order.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#mematrix"><H3>MEMATRIX</H3></A>
+ REAL-Specifies ME matrix
+ in row major order.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#ommatrix"><H3>OMMATRIX</H3></A>
+ REAL-Specifies OM matrix
+ in row major order.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#vrvector"><H3>VRVECTOR</H3></A>
+ REAL-Specifies X, Y, Z
+ components of the VR vector.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#rsvector"><H3>RSVECTOR</H3></A>
+ REAL-Specifies RS vector.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#slatitud"><H3>SLATITUD</H3></A>
+ REAL-Spherical <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#target">target</A> body
+ coordinate.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#slongitu"><H3>SLONGITU</H3></A>
+ REAL-Spherical <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#target">target</A> body
+ coordinate.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#rmagnitu"><H3>RMAGNITU</H3></A>
+ REAL-Spherical <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#target">target</A> body
+ coordinate.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#time"><H3>TIME</H3></A>
+ INTEGER-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#time">Time</A> frame was taken.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#rtas"><H3>RTAS</H3></A>
+ REAL-Right ascension of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#target">target</A>
+ body's <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#north">north</A> celestrial <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#declinat"><H3>DECLINAT</H3></A>
+ REAL-Declination of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#target">target</A>'s
+ <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#north">north</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole">pole</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#quam"><H3>QUAM</H3></A>
+ KEYWORD-Specifies use of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#quam">QUAM</A>
+ algorithm.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#clatitud"><H3>CLATITUD</H3></A>
+ REAL-Center <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A> of input
+ image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#clongitu"><H3>CLONGITU</H3></A>
+ REAL-West longitude of above
+ point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#norangle"><H3>NORANGLE</H3></A>
+ REAL-Angle of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#north">north</A> in degrees.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#isscpt"><H3>ISSCPT</H3></A>
+ REAL-Subspacecraft point in
+ image space.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#osscpt"><H3>OSSCPT</H3></A>
+ REAL-Subspacecraft point in
+ object space.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#tiepts"><H3>TIEPTS</H3></A>
+ REAL-Specifies tiepoint mode.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#mercator"><H3>MERCATOR</H3></A>
+ KEYWORD-map projection type
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lambert"><H3>LAMBERT</H3></A>
+ KEYWORD-map projection type
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#stereogr"><H3>STEREOGR</H3></A>
+ KEYWORD-map projection type
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#cylindri"><H3>CYLINDRI</H3></A>
+ KEYWORD-map projection type
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#rectangu"><H3>RECTANGU</H3></A>
+ KEYWORD-map projection type
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#orthogra"><H3>ORTHOGRA</H3></A>
+ KEYWORD-map projection type
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pole"><H3>POLE</H3></A>
+ KEYWORD-Forces polar projection.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#obcylind"><H3>OBCYLIND</H3></A>
+ KEYWORD-map projection type
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sinusoid"><H3>SINUSOID</H3></A>
+ KEYWORD-map projection type
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#obsinuso"><H3>OBSINUSO</H3></A>
+ KEYWORD-map projection type
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#mollweid"><H3>MOLLWEID</H3></A>
+ KEYWORD-map projection type
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#tmercato"><H3>TMERCATO</H3></A>
+ KEYWORD-map projection type
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#perspect"><H3>PERSPECT</H3></A>
+ KEYWORD-map projection type 
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#south"><H3>SOUTH</H3></A>
+ KEYWORD-Causes negative default
+ values.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale"><H3>SCALE</H3></A>
+ REAL-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#scale">Scale</A> in km/pixel.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line"><H3>LINE</H3></A>
+ REAL-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">Line</A> in output picture.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample"><H3>SAMPLE</H3></A>
+ REAL-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">Sample</A> in output picture.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude"><H3>LATITUDE</H3></A>
+ REAL-Specifies <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">latitude</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#longitud"><H3>LONGITUD</H3></A>
+ REAL-Specifies longitude
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#par1"><H3>PAR1</H3></A>
+ REAL-Northernmost lat. of 2
+ standard parallels.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#par2"><H3>PAR2</H3></A>
+ REAL-Southernmost lat. of 2
+ standard parallels.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lin1"><H3>LIN1</H3></A>
+ REAL-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">Line</A> in output frame.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#lin2"><H3>LIN2</H3></A>
+ REAL-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">Line</A> in output frame.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#north"><H3>NORTH</H3></A>
+ REAL-Angle in degrees <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#north">north</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#platitud"><H3>PLATITUD</H3></A>
+ REAL-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#latitude">Latitude</A> of a point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#plongitu"><H3>PLONGITU</H3></A>
+ REAL-Longitude of a point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#pline"><H3>PLINE</H3></A>
+ REAL-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#line">Line</A> near point
+ (PLAT,PLON).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#psample"><H3>PSAMPLE</H3></A>
+ REAL-<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#sample">Sample</A> near point
+ (PLAT,PLON).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#recenter"><H3>RECENTER</H3></A>
+ KEYWORD-Specifies recentering
+ algorithms.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#half"><H3>HALF</H3></A>
+ KEYWORD-Input is 
+ 16 bits per pixel
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#byte"><H3>BYTE</H3></A>
+ KEYWORD-Input is 
+ 8 bits per pixel
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#target"><H3>TARGET</H3></A>
+Optional 12-char string
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#target">Target</A> name (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#planet">planet</A>,
+  satellite, or asteroid)
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#spicemode"><H3>SPICEMODE</H3></A>
+Optional keyword
+Location of SPICE kernels
+(LOCAL or REMOTE)
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#ckname"><H3>CKNAME</H3></A>
+Optional 4-char string
+C-kernel name
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#ckid"><H3>CKID</H3></A>
+Optional 4-char string
+C-kernel ID
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#userid"><H3>USERID</H3></A>
+Optional 3-char string
+User who created <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#groupid"><H3>GROUPID</H3></A>
+Optional 3-char string
+Group which created <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#institute"><H3>INSTITUTE</H3></A>
+Optional 4-char string
+Facility which created <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#purpose"><H3>PURPOSE</H3></A>
+Optional 4-char string
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#purpose">Purpose</A> for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program"><H3>PROGRAM</H3></A>
+Optional 6-char string
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#program">Program</A> which created <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#spkid"><H3>SPKID</H3></A>
+Optional 4-char string
+SP kernel for created <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#reqnum"><H3>REQNUM</H3></A>
+Optional 4-char string
+IPL request number for created <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#cdate"><H3>CDATE</H3></A>
+Optional 12-char string
+Date and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#time">time</A> <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#camera">camera</A> pointing was created
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#print"><H3>PRINT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3_level2.html#print">PRINT</A>=(startline,endline)
+prints LAT,LON,IN_LINE,IN_SAMP
+for the range of output lines.  
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/map3.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

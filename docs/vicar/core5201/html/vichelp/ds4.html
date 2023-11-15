@@ -1,0 +1,141 @@
+<HTML>
+<HEAD><title>HTML Help for DS4</title></HEAD>
+<BODY>
+<H1>Help for DS4</H1>
+<pre>
+PURPOSE:
+DS4 attempts to remove 6 line striping from LANDSAT imagery by
+performing localized histogram matching of the 6 sensors.
+
+EXECUTION:
+
+Examples
+	DS4 IN <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#out">OUT</A>
+
+	will remove striping using sensor 3 as the reference sensor
+	(which is the default), and assuming 3 sets per <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#group">group</A> (default).
+	The first line of the first set, in this case, is line number 1,
+	chosen so that the reference sensor becomes the third line within
+	the set.
+
+	DS4 IN <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#out">OUT</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#rsen">RSEN</A>=5
+
+	will remove striping as above, with the exception that the
+	reference sensor will be sensor number 5, making line number 3
+	the first line of the first set.
+
+	DS4 IN <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#out">OUT</A> '<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#average">AVERAGE</A>
+
+	will remove striping as in the first example above, but instead
+	of using one particular sensor as a reference sensor, will
+	use the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#average">average</A> of all of the sensors as a reference.  Line 1
+	is again the first line in the first set.
+
+	DS4 IN <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#out">OUT</A> '<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#average">AVERAGE</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#rsen">RSEN</A>=6
+
+	Here the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#average">AVERAGE</A> option has been combined with the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#rsen">RSEN</A> option
+	to cause averaging and, at the same time, make sensor number 6
+	the third line in the image.  The net effect is to ignore the
+	first three lines of the first set.  Again, as above, the
+	number of lines per <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#group">group</A> defaults to 3.
+
+	DS4 IN <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#out">OUT</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#filter">FILTER</A>=(1,2,3,2,1) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#rsen">RSEN</A>=1
+
+	The reference sensor is sensor number 1, and there are three sets
+	in a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#group">group</A>.  Line 5, then, is the first line of the first set.
+	The reference CDF is filtered with the weights 1,2,3,2,1 before
+	matching is performed.
+
+	DS4 IN <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#out">OUT</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#rsen">RSEN</A>=2 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#group">GROUP</A>=7 '<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#average">AVERAGE</A>  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#filter">FILTER</A>=(1,2,1)
+
+	Averaging and filtering are performed as above, and line number 6
+	is the first line of the first set.  Note, here, that there are
+	7 sets per <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#group">group</A>.
+
+SPECIAL NOTES:
+1) LANDSAT frames have been received with 12 line striping superimposed
+   upon the 6 line striping.  DS4 will not correct the 12 line striping.
+   The 12 line striping should be removed by other means prior to the
+   execution of DS4.
+2) DS4 is unable to remove 6 line striping from water bodies.
+
+
+OPERATION:
+The input picture is considered to be subdivided into contiguous sets of
+6 lines each.  The starting line of a given set is determined by the
+reference sensor number such that the reference sensor becomes the third
+line within the set.  For example, if the reference sensor were chosen to
+be 5, then the starting line of the first set would be 3 and that of the
+second set would be 9, and so on.  Note that the line numbers above
+refer to the image given by the VICAR <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#size">size</A> field.  That is, if a subarea
+is specified, then line 5 above refers to the fifth line of the subarea.
+
+To initiate the matching process, the CDF's for each sensor are compiled
+using the first <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#group">group</A> of sets (i.e., the first GROUP sets).  The reference
+CDF is that of the specified sensor <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#rsen">RSEN</A>.  If the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#average">AVERAGE</A> parameter is
+specified, the reference CDF is taken to be the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#average">average</A> of all 6 sensor
+CDF's.  If the parameter <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#filter">FILTER</A> is specified, then the reference CDF
+is low-pass filtered using the integer weights F1, . . ., FN.  The CDF
+of each sensor is matched to that of the reference CDF and corresponding
+transfer tables are generated.  The first ((N2-1)/2) + 1 sets plus any
+lines skipped over at the beginning (see the first paragraph) are then
+transformed using the generated transfer table.
+
+Subsequent sets are transformed in the following manner:
+1) The CDF's of the sensors of the first set in the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#group">group</A> are subtracted
+   <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#out">out</A> of the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#group">group</A> sensor CDF's.
+2) The CDF's of the sensors in the first set following the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#group">group</A> are added
+   in to the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#group">group</A> sensor CDF's.
+3) The transfer tables are generated as before.
+4) The middle set of the updated <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#group">group</A> is transformed.
+
+This process continues until the last set of the image has been included
+in a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#group">group</A>.  At this point, the middle set of the group, all sets following
+it, and any lines after the last set are transformed.
+
+The parameters <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#average">AVERAGE</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#rsen">RSEN</A> are not mutually exclusive.  While the
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#average">AVERAGE</A> parameter will override the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#rsen">RSEN</A> parameter in terms of how the
+reference CDF is generated (i.e., from one sensor or from an <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#average">average</A> of all
+six sensors), the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#rsen">RSEN</A> parameter can be used to define which lines
+compose the first set of lines and hence all subsequent sets of lines.
+This was illustrated in the examples.
+
+PROGRAM HISTORY
+
+WRITTEN BY:  Daryl Madura, 5 January 1979
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  A. S. Mazer</A>
+REVISIONS
+SEP 02 83  Alan Mazer  MODIFIED FOR VAX CONVERSION
+JUN XX 87  Ron Alley   CONVERTED TO VICAR2 BY RON ALLEY
+MAR 15 98  GMY  Ported to Unix
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#inp"><H3>INP</H3></A>
+Input image file
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#out"><H3>OUT</H3></A>
+Output image file
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#size"><H3>SIZE</H3></A>
+Standard VICAR <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#sl"><H3>SL</H3></A>
+Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#ss"><H3>SS</H3></A>
+Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#ns"><H3>NS</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#nl"><H3>NL</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#rsen"><H3>RSEN</H3></A>
+Reference sensor number
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#average"><H3>AVERAGE</H3></A>
+Use <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#average">average</A> of all sensors
+as reference (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#average">AVERAGE</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#group"><H3>GROUP</H3></A>
+Sets per <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#group">group</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4_level2.html#filter"><H3>FILTER</H3></A>
+Species filtering weights
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ds4.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

@@ -1,0 +1,359 @@
+<HTML>
+<HEAD><title>HTML Help for MARSCAHV</title></HEAD>
+<BODY>
+<H1>Help for MARSCAHV</H1>
+<pre>
+PURPOSE:
+To convert images from distorted (CAHVOR/CAHVORE) to linear (CAHV) coordinates.
+
+This is a multimission program derived from marsmos.
+It supports any mission, instrument, and camera model supported by the
+Planetary Image Geometry (Pig) software suite.
+
+The program can accept a navigation file written by marsnav(for example).
+This will cause the output camera model to include the updated pointing,
+but in most cases will have no effect on the output pixels. Only CAHVORE
+input images using a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#surface">surface</A> model other than the default SPHERE may show
+differences in pixels due to the presence of a nav file.
+
+Radiometric correction is turned off by default; this may be turned on via 
+the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#rad">RAD</A> keyword parameter.
+
+The program will work with color images if such are given as input and the
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#band">BAND</A> parameter is not specified; the number of output bands will equal the
+maximum number of bands across all inputs. If <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#band">BAND</A> parameter is specified, 
+only that one single <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#band">band</A> is processed and output.
+
+EXECUTION:
+
+marscahv <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#inp">inp</A>=input.img <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#out">out</A>=output.img
+where input.img is a VICAR file and output.img is the resulting VICAR
+output file.
+
+marscahv <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#inp">inp</A>=left.img <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#out">out</A>=output.img <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#stereo_partner">stereo_partner</A>=right.img
+If <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#stereo_partner">stereo_partner</A> is not present, the program tries to find stereo partner
+of the input image based on mission, instrument etc. info of the input image.
+The presence of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#stereo_partner">stereo_partner</A> input parameter is an unconditional overwrite of
+that process.
+Note that for a generic camera, there is absolutely no way to tell what the
+stereo partner might be, or even if there is one.  Thus using <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#stereo_partner">stereo_partner</A>
+input parameter is the ONLY way to specify stereo pair for generic image.
+
+marscahv <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#inp">inp</A>=sub.img <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#out">out</A>=output.img <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#fullsize">fullsize</A>='('1024, 1024')'
+The presence of the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#fullsize">fullsize</A> input parameter tells marscahv that the input
+image is the subframe and the full frame size is specified by "<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#fullsize">fullsize</A>".  
+This parameter is only necessary if the camera model specified in subframe is
+for a full frame image.
+Note that for MER this parameter is not necessary, since every subframe has
+it's own camera model, specific to it's size and location within full frame.
+
+
+USAGE:
+The purpose of marscahv is to remove geometric distortion inherent in the 
+camera instruments, or "linearize" image data. This is usually necessary to 
+facilitate correlation process, to line up stereo pair for viewing etc.
+
+In order to linearize an image, the 2D image coordinate must be projected
+into 3D space using the non-linear model, then projected back into 2D space
+using the linear model(and interpolated from there).  For CAHVOR-based 
+cameras(MER:pancam, navcam, MI), this process creates a linearized(CAHV-based)
+image which is mathematically perfect according to the camera models(with 
+the exception of interpolation noise). It is perfect since any point in 
+CAHVOR image along the 3D projected line will back-project to the same point
+on the CAHV image since they both project through the same C point. 
+For CAHVORE-based cameras(MER: hazcams), however, that is not the case.  The
+moving entrance pupil means that the program has to pick a specific point
+along the projected ray, and which point is picked will make a difference in
+the output.
+
+The only way to pick that specific point is to use some kind of 
+"<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#surface">surface</A> model".  For example, sphere, picking the point at some <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#radius">radius</A>
+(default is 1unit = 1 meter) from the camera center.  So, depending on what
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#surface">surface</A> model program uses, the linearization process will provide different
+results, and will always be an approximation.  The only "exact" solution is
+to model the actual <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#surface">surface</A>.  But we generate approximation of the actual 
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#surface">surface</A> using linearized images obtained by marscahv, thus we don't have
+actual <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#surface">surface</A>.
+
+For MER hazcams, the entrance pupil moves only about 1mm over the usable
+range of hazcams, which is not very much.  And, the effect decreases toward 
+the center of the image, becoming 0 at the axis.  But, since the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#ground">ground</A> is
+only ~0.5 meters away at the closest point, the "moving entrance pupil" effect
+could be noticeable.
+
+Labels will be written to the output image specifying all parameters
+needed in order to reproject the image, and to convert pixel coordinates
+into XYZ view rays in the output coordinate system.  See ???? for
+details on what the label items mean.
+
+
+OPERATION:
+The program uses the appropriate camera model for input image and
+outputs an image using a camera model aligned for stereo viewing.  
+Each pixel in the output is transformed from output to input camera models 
+in the following steps:
+1. Each output pixel defines a unit vector.
+2. We compute the intersection of this vector with a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#surface">surface</A> model.  This is
+   by default a unit sphere(not exactly, see notes below) with the center 
+   at unit vector's origin.
+Note that in CAHVORE case the process doesn't actually project the rays <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#out">out</A>
+to a sphere.  It projects them from the ray's origin which could not coinside
+with the location of C-vector.  As a result, we are actually projecting onto a
+sort of ovoid-shaped <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#surface">surface</A>, slightly elongated in the direction the entrance
+pupil moves.
+3. Then this <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#ground">ground</A> point is ray traced back into the input camera images.
+4. The DN value in the selected input image is bilinearly interpolated
+   and placed into the output location
+
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#unsub">UNSUB</A> mode will "un-subframe" the image before linearizing it.
+When this mode is on, the program looks up the nominal size of the camera
+frame (using the camera mapping file), and sets the output to be that size.
+It then puts the input in the right position in the output according to the
+subframe start (FIRST_LINE and FIRST_LINE_SAMPLE labels for most missions).
+From then on, it proceeds as if a full-frame image had been given.  This is
+useful for cameras like the MSL Mastcam, where the differential zoom on both
+eyes causes them to often do different subframes on the two eyes.  Removing
+the subframe puts it all back in the same geometry again, so downstream
+programs that need the same image size for both eyes can work.
+
+Linearization Modes
+-------------------
+
+There are now multiple linearization modes, controlled by "cmod_warp" in
+the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#point_method">POINT_METHOD</A> parameter.  For example, point=cmod_warp=2 will set mode 2.
+
+Mode 1:  This is the traditional method, used throughout most of MER and MSL
+ops, and is still the default for those missions.  It assumes images come
+from traditional stereo cameras, so the baseline is approximately parallel
+to the image rows.  This works fine for most stereo cameras but does not work
+well for odd cases such as long baseline, vertical stereo, repointed stereo,
+or cross-instrument coregistration.
+
+Mode 2:  This is a new method, and is the default for InSight and Mars 2020.
+This does not assume the rows match the baseline, so it will handle many more
+cases, including long baseline, vertical stereo, repointed stereo, or
+cross-instrument coregistration.  It can be used with MER and MSL by setting
+the cmod_warp.
+
+Mode 3 or PSPH:  This linearizes to a new model type developed by Todd Litwin,
+called Planospheric or PSPH.  It is *not* a CAHV model, it is something
+entirely different.  It is designed to have better performance at the center
+of fisheye cameras (such as hazcams).  Although this is supported fully in PIG,
+it is not supported (as of this writing) in marsjplstereo so getting a first
+stage correlation may be challenging.
+
+Modes 2 and PSPH fully support input images of different sizes, such as
+different subframes or different instruments, without the use of -<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#unsub">unsub</A>.
+In order to do this, you'll need to specify an output size, so that both runs
+of marscahv (making the left and right image) end up with the same size.  This
+can be done via <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#outsize">OUTSIZE</A>, but can also be done via the MINSIZE or MAXSIZE
+keywords, which set the output size to the minimum or maximum dimensions of
+the two inputs.  This only applies if <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#stereo_partner">stereo_partner</A> is provided.
+
+One other note is regarding "cahv_fov".  This <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#point_method">POINT_METHOD</A> parameter selects
+the field of view of the output, either max, min, or linear.  The min sets
+the output FOV to the intersection of the inputs... at infinity.  So if you
+are looking at infinity, or have no appreciable toe-in, cahv_fov=min will give
+you the best image scale, with nothing but overlap.  However, if you have
+significant toe-in and are not looking at infinity, it's possible that
+cahv_fov=min may end up with no overlap.  For that reaason, cahv_fov=max is
+strongly recommended for non-traditional stereo, or for toed-in cameras (such
+as the MSL Mastcam).
+
+In summary, the following will give the maximum likelihood of success for
+non-traditional stereo images:
+
+$MARSLIB/marscahv left_in left_out stereo_p=right_in
+				-max point='"cahv_fov=max,cmod_warp=2"'
+
+Parallel Processing
+-------------------
+This program has been parallelized using Open MP (OMP), which is built in
+to the g++ compiler.
+
+By default the number of threads used equals the number of cores on the machine
+where the program is being run.  Each image line is assigned to a different
+core, with "dynamic" scheduling to keep the workload for eeach core similar.
+
+Parallel processing can be disabled via the -OMP_OFF keyword.  The number
+of threads can be controlled by setting the OMP_NUM_THREADS environment
+variable before running the program.  There are numerous other OMP variables
+that can be set; see the OMP documentation.  However, the number of threads
+is the only one that is likely to be useful in most cases.
+
+
+HISTORY:
+1994-04-30 jjl	Initial mpfmos, mpfcahv by J Lorre. 
+1998-08    rgd	Multimission conversion of mpfmos to marsmos by B. Deen
+2002-09    ozp	Adaptation to marscahv by O. Pariser
+2012-09-03 rgd	Added -<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#unsub">unsub</A> capability
+2016-05    rgd  Parallelization of code
+2017-05    rgd	Added new linearization modes
+2018-10    sl   Added color processing capability   
+2020-02-18 wlb  IDS-7927 - replaced sprintf() calls with snprintf() calls; added unit test and log
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  B. Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#inp"><H3>INP</H3></A>
+Input image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#out"><H3>OUT</H3></A>
+Output image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#stereo_partner"><H3>STEREO_PARTNER</H3></A>
+Left/right partner of input image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#fullsize"><H3>FULLSIZE</H3></A>
+Full frame size of
+input image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#outsize"><H3>OUTSIZE</H3></A>
+Overrides size of
+output image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#autosize"><H3>AUTOSIZE</H3></A>
+Sets output size to
+min or max of inputs.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#outoff"><H3>OUTOFF</H3></A>
+Overrides x/y offset
+values for output.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#band"><H3>BAND</H3></A>
+The BSQ <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#band">band</A> number or
+don't specify for all bands.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#normal"><H3>NORMAL</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#normal">normal</A> vector.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#ground"><H3>GROUND</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#surface">Surface</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#ground">ground</A> point.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#radius"><H3>RADIUS</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#radius">Radius</A> of a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#surface">surface</A> sphere.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#surface"><H3>SURFACE</H3></A>
+The type of mars
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#surface">surface</A> to use INFINITY, PLANE, 
+SPHERE, MESH.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#surf_mesh"><H3>SURF_MESH</H3></A>
+Mesh file for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#surface">surface</A> model
+
+VARI <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#surf_csfile">SURF_CSFILE</A> 
+File containing CS for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#surface">surface</A>
+model
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#rad"><H3>RAD</H3></A>
+Turns on or off
+radiometric correction.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#dnscale"><H3>DNSCALE</H3></A>
+DN scaling factor.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#match_method"><H3>MATCH_METHOD</H3></A>
+Specifies a method
+for pointing corrections.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#match_tol"><H3>MATCH_TOL</H3></A>
+Tolerance value for
+matching pointing params
+in pointing corrections file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#interp"><H3>INTERP</H3></A>
+Turns on or off
+the interpolation.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#unsub"><H3>UNSUB</H3></A>
+Turns on or off the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#unsub">unsub</A>
+mode, which converts subframes
+to full frames.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#omp_on"><H3>OMP_ON</H3></A>
+Turns on or off parallel
+processing (default: on)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+pointing correction.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marscahv.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

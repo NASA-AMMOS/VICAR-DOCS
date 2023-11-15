@@ -1,0 +1,570 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for MARSUNMOSAIC</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic.html">MARSUNMOSAIC</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+Input mosaic.  Must be in cylindrical projection, and have appropriate
+(MER-style) labels describing the projection.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+Output image filename, which will contain the frame that is unmosaicked.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="example"><H3>EXAMPLE</H3></A><pre>
+Input <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#example">example</A> file.  This is used to extract the camera and pointing models,
+and coordinate systems.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="band"><H3>BAND</H3></A><pre>
+The BSQ input file <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#band">band</A> number. Defaults to 1.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="normal"><H3>NORMAL</H3></A><pre>
+The local mars <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surface">surface</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#normal">normal</A> vector in the coordinate system specified
+by <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surf_coord">SURF_COORD</A> (defaults to <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surface">surface</A> fixed coordinates).
+
+For most pan/tilt cameras, if the lander is not tilted this vector
+would be: <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#normal">normal</A>=(0,0,-1).  ie: x_component=0, y_component=0, z_component=-1.
+This need not be <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> unit vector.  This vector is used to define the
+<<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surface">surface</A> plane to which image points are projected in order to minimize
+parallax.
+
+For SPHERE1/2 <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surface">surface</A> models, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#normal">NORMAL</A>'s first parameter is used to
+denote the sphere's radius.  Thus to describe sphere of radius <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#r">R</A>, the
+user would specify <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#normal">NORMAL</A>=(<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#r">R</A>, 0, 0).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ground"><H3>GROUND</H3></A><pre>
+Any point on the <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surface">surface</A>, in the coordinate system specified by <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surf_coord">SURF_COORD</A>
+(defaults to <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surface">surface</A> fixed coordinates).  This defines where the tilted
+plane is in space.  Although any point may be used, ideally the point just
+"under" the origin is selected.
+
+Defaults:
+Mars Pathfinder:  (0.0, 0.0, 0.0)       (lander zero point is on the <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#ground">ground</A>)
+Mars 98 Lander:   (0.0, 0.0, 1.64)      (lander zero point is on top of deck)
+MER           :   (0.0, 0.0, 0.294)
+For MER images taken on top of the lander, the <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#ground">ground</A> is roughly at (0.0, 0.0, 0.7)
+For SPHERE1/2 <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surface">surface</A> models, the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#ground">GROUND</A> parameter is used to denote the
+sphere's center.  
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="surface"><H3>SURFACE</H3></A><pre>
+The type of mars <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surface">surface</A> to use. The surface is used to intercept view rays
+emanating from the cameras in order to model <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#out">out</A> parallax between the
+stereo cameras. The options are <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surface">surface</A>=INFINITY which means no surface
+is used, <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surface">surface</A>=PLANE (the default case). If surface = PLANE then the plane
+is defined by the <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#normal">NORMAL</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#ground">GROUND</A> parameters.  For the cases when PLANE 
+doesn'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#t">t</A> match local topography sufficiently well, here are two sphere <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surface">surface</A>
+models: <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surface">surface</A>=SPHERE1 and surface=SPHERE2.  SPHERE1 is useful to model
+convex surfaces like hills, it returns closest(first) ray-<<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surface">surface</A> intersection 
+point.  SPHERE2 is useful to model concave surfaces, like crater when the
+camera point is outside looking in, it returns farthest(second) ray-<<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surface">surface</A> 
+intersection point.  For the case when camera is inside the sphere <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surface">surface</A>, 
+like rover sitting in the crater, there is only <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> single intersection point
+and SPHERE1 and SPHERE2 behave exactly the same.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="surf_coord"><H3>SURF_COORD</H3></A><pre>
+The coordinate system that <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surface">surface</A> parameters like <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#ground">GROUND</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#normal">NORMAL</A> are
+defined in.  For valid values refer to the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#coord">COORD</A> parameter description.
+Defaults to the <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surface">surface</A> fixed coordinate system.
+
+Note that no validation is done for input strings because <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#coord">COORD</A> is using
+the same values.  So the user needs to be extra careful in specifying
+<<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surf_coord">SURF_COORD</A> values.  For <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#example">example</A>, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#coord">COORD</A>=local would be correctly interpreted
+to mean LOCAL_LEVEL because of the validation process.  On the other hand,
+specifying <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surf_coord">SURF_COORD</A>=local is not valid and would revert to the default.
+So the values for <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surf_coord">SURF_COORD</A> should be spelled exactly as found in the list
+of valid values for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#coord">COORD</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="model_type"><H3>MODEL_TYPE</H3></A><pre>
+Specifies the type of camera model.  CAHV, CAHVOR, and CAHVORE are supported.
+The default, FILE, means that the camera model is obtained from the <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#example">EXAMPLE</A>
+file rather than from the <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#c">C</A>, A, etc. vectors.
+
+Specifying <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#model_type">MODEL_TYPE</A> other than FILE means that all appropriate parameters
+must also be filled in.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="c"><H3>C</H3></A><pre>
+The <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#c">C</A> vector for CAHV, CAHVOR, and CAHVORE camera models.  Used only if
+<<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#model_type">MODEL_TYPE</A> is not FILE.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="a"><H3>A</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> vector for CAHV, CAHVOR, and CAHVORE camera models.  Used only if
+<<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#model_type">MODEL_TYPE</A> is not FILE.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="h"><H3>H</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#h">H</A> vector for CAHV, CAHVOR, and CAHVORE camera models.  Used only if
+<<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#model_type">MODEL_TYPE</A> is not FILE.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="v"><H3>V</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#v">V</A> vector for CAHV, CAHVOR, and CAHVORE camera models.  Used only if
+<<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#model_type">MODEL_TYPE</A> is not FILE.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="o"><H3>O</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#o">O</A> vector for CAHVOR and CAHVORE camera models.  Used only if
+<<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#model_type">MODEL_TYPE</A> is not FILE.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="r"><H3>R</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#r">R</A> vector for CAHVOR and CAHVORE camera models.  Used only if
+<<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#model_type">MODEL_TYPE</A> is not FILE.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="e"><H3>E</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#e">E</A> vector for CAHVORE camera models.  Used only if <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#model_type">MODEL_TYPE</A> is not FILE.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="t"><H3>T</H3></A><pre>
+The MTYPE parameter for CAHVORE camera models.  Used only if <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#model_type">MODEL_TYPE</A> is
+not FILE.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="p"><H3>P</H3></A><pre>
+The MPARM parameter for CAHVORE camera models.  Used only if <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#model_type">MODEL_TYPE</A> is
+not FILE.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nl"><H3>NL</H3></A><pre>
+The number of lines in the output.  Required if <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#model_type">MODEL_TYPE</A>=FILE is not
+specified.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ns"><H3>NS</H3></A><pre>
+The number of samples in the output.  Required if <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#model_type">MODEL_TYPE</A>=FILE is not
+specified.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="xoff"><H3>XOFF</H3></A><pre>
+X offset value for the camera model.  Overrides default value.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="xoff"><H3>XOFF</H3></A><pre>
+X offset value for the camera model.  Overrides default value.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="pparam"><H3>PPARAM</H3></A><pre>
+Pointing parameters for the output camera model.  These match the pointing
+parameters used by the PIG library for the given mission.  Note that angular
+measurements are typically in degrees.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="azimuth"><H3>AZIMUTH</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#azimuth">Azimuth</A> for pointing az/el cameras, in degrees.  The azimuth is expressed
+in the coordinate frame defined by <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#coord">COORD</A>, and is internally converted to
+the instrument pointing coordinate system.  It is then stuffed into <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#pparam">PPARAM</A>(1),
+so <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> value specified here overrides the first element of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#pparam">PPARAM</A>.
+
+Nonsensical results will occur if the pointing model does not have <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#azimuth">Azimuth</A>
+as its first pointing parameter.
+
+If <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#azimuth">AZIMUTH</A> is specified, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#elevation">ELEVATION</A> must be as well.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="elevation"><H3>ELEVATION</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#elevation">Elevation</A> for pointing az/el cameras, in degrees.  The elevation is expressed
+in the coordinate frame defined by <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#coord">COORD</A>, and is internally converted to
+the instrument pointing coordinate system.  It is then stuffed into <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#pparam">PPARAM</A>(2),
+so <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> value specified here overrides the second element of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#pparam">PPARAM</A>.
+
+Nonsensical results will occur if the pointing model does not have <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#elevation">Elevation</A>
+as its second pointing parameter.
+
+If <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#elevation">ELEVATION</A> is specified, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#azimuth">AZIMUTH</A> must be as well.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="position"><H3>POSITION</H3></A><pre>
+Absolute override of the camera <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#position">position</A> (normally the <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#c">C</A> vector for CAHV-
+style models) after all pointing is done.  Not recommended for use with
+PIG pointing, although it works.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="config_path"><H3>CONFIG_PATH</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> colon-separated list of directories in which to look for configuration
+and calibration files.  Environment variables are allowed in the list
+(and may themselves contain colon-separated lists).  The directories are
+searched in order for each config/cal file when it is loaded.  This allows
+multiple projectes to be supported simultaneously, and allows the user to
+override any given config/cal file.  Note that the directory structure below
+the directories specified in this path must match what the project expects.
+For <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#example">example</A>, Mars 98 expects flat fields to be in a subdirectory named
+"flat_fields" while Mars Pathfinder expects them to be directly in the
+directory specified by the path (i.<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#e">e</A>. no intermediate subdirectories).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="point_method"><H3>POINT_METHOD</H3></A><pre>
+Specifies <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> mission-specific pointing method to use.  Normally this
+parameter is not used, in which case the "default" pointing methods
+are used.  Some missions may have special, or alternate, pointing
+methods available, which are indicated by this string (for <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#example">example</A>,
+backlash models, using arm joint angles instead of x/y/z/az/el, etc).
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> substring search is used, so multiple methods (where that makes sense)
+can be specified by separating the keywords with commas.
+
+Note that nav files created using one pointing method will most likely
+not be compatible with <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> mosaic created using a different pointing method.
+
+The methods available vary per mission, but some methods available at
+the time of this writing are:
+
+BACKLASH : Mars 98 SSI only.  Selects <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> backlash pointing model,
+which adjusts the telemetered <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#azimuth">azimuth</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#elevation">elevation</A> values based on
+knowledge of the camera's mechanical backlash and the direction the
+motor was travelling when the image was taken.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nosite"><H3>NOSITE</H3></A><pre>
+Disables all label-derived parameters to the Site mechanism which underlies
+coordinate systems.  This forces all sites to be identical, with all rotations
+and offsets set the same.  In the case of MPF or Mars 98, this disables
+the lander quaternion and offset (sets them to identity and 0, respectively).
+This option should not be used with images taken from different vantage
+points (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#e">e</A>.g. the spacecraft moved, or mixing <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> lander and a rover) or
+invalid results will be obtained.  The use of this option invalidates the
+Fixed coordinate frame; any values reported in the Fixed frame will not
+correctly reflect the orientation of the lander/rover.
+
+Obviously, this option should be rarely used; it is intended for when the
+image labels defining the site are invalid or inconsistent.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="interp"><H3>INTERP</H3></A><pre>
+Keyword parameter that turns on or off interpolation of the output
+images pixel values.  <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#interp">INTERP</A> (the default) enables the interpolation, 
+while NOINTERP disables it.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="data_set_name"><H3>DATA_SET_NAME</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#data_set_name">DATA_SET_NAME</A> typically identifies the instrument that acquired the
+data, the target of that instrument, and the processing level of the data.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#data_set_name">DATA_SET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="data_set_id"><H3>DATA_SET_ID</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#data_set_id">DATA_SET_ID</A> value for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> given data set or product is constructed
+according to flight project naming conventions.  In most cases the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#data_set_id">DATA_SET_ID</A> is an abbreviation of the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#data_set_name">DATA_SET_NAME</A>.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#data_set_id">DATA_SET_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="release_id"><H3>RELEASE_ID</H3></A><pre>
+When <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> data set is released incrementally, such as every three months during
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> mission, the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#release_id">RELEASE_ID</A> is updated each time part of the data set is released.
+For each mission(or host id if multiple spacecrafts), the first release of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> data
+set should have <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> value of "0001".
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#release_id">RELEASE_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="product_id"><H3>PRODUCT_ID</H3></A><pre>
+Specifies <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> permanent, unique identifier assigned to a data product by
+its producer. Most commonly, it is the filename minus the extension.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#product_id">PRODUCT_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="producer_id"><H3>PRODUCER_ID</H3></A><pre>
+Specifies the unique identifier of an entity associated with the
+production of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> data set. This value is copied to the output label,
+property IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#producer_id">PRODUCER_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="producer_inst"><H3>PRODUCER_INST</H3></A><pre>
+Specifies the identity of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> university, research center, NASA center or other
+institution associated with the production of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> data set.
+This value is copied to the output label, property IDENTIFICATION, keyword
+PRODUCER_INSTITUTION_NAME.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="target_name"><H3>TARGET_NAME</H3></A><pre>
+Specifies <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> target.  The target may be a planet, satelite, ring, region, feature,
+asteroid or comet.  This value is copied to the output label, property
+IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#target_name">TARGET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="target_type"><H3>TARGET_TYPE</H3></A><pre>
+Specifies the type of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> named target. This value is copied to the output
+label, property IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#target_name">TARGET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rsf"><H3>RSF</H3></A><pre>
+Rover State File.  This is <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> list of filenames to load containing
+Rover State information.  These files contain <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#position">position</A> and orientation
+information for <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> rover (or other mobile spacecraft) at various sites.
+They are in XML format.  See the "Rover Motion Counter (RMC) Master File SIS"
+for details on these files.
+
+Rover State Files have <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> priority order.  The files listed first have
+the highest priority.
+
+Environment variables may be used in the list.
+
+For MER, if <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> directory is specified, then that directory is searched for
+RMC Master files and any found are loaded.  The directory structure and
+filename convention is covered in the RMC SIS.  The directory specified
+is the one containing "master", so if &ltdir&gt is the name specified in the
+<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#rsf">RSF</A> parameter, the following files will be searched for:
+
+&ltdir&gt/master/<mission>_Master.svf
+&ltdir&gt/master/<mission>_Site_<n>_Master.rvf
+
+The name of each file loaded is printed to the stdout log for reference.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="debug_rsf"><H3>DEBUG_RSF</H3></A><pre>
+If enabled, this causes the internal database of RMC locations to be
+printed <<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#out">out</A> to the stdout log.  This is after the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#rsf">RSF</A> files have been
+loaded and the coordinate systems read from the input label(s).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord"><H3>COORD</H3></A><pre>
+The coordinate system to use for most input parameters:  the camera model
+vectors (<<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#c">C</A>, A, etc.), the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#azimuth">AZIMUTH</A> and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#elevation">ELEVATION</A> parameters, and <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#position">POSITION</A>.
+The interpretation of the values of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#coord">COORD</A> is dependent on the mission.
+Some representative missions are listed here:
+
+Fixed - The Fixed frame (default).  This is the ultimate reference frame
+    (see also <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#fixed_site">FIXED_SITE</A> for rover missions).
+Instrument - The "natural" frame for the instrument (of the first input
+    image).  MPF: Lander or Rover; M98: MVACS; MER: Rover.
+Site - <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">A</A> major Site frame.  For rover missions, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#coord_index">COORD_INDEX</A> specifies which
+    Site frame to use.  Non-rover missions treat this as Fixed.
+Rover - An instance of the Rover frame.  For rover missions, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#coord_index">COORD_INDEX</A>
+    specifies which instance of the rover frame to use.  Non-rover mission
+    use the spacecraft frame (<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#e">e</A>.g. Lander for M98).
+Local_Level - An instance of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> Local Level frame.  This is typically
+    coincident with the Rover frame (in XYZ) but oriented toward North
+    like the Site and Fixed frames.  For MER, this is an instance of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A>
+    Drive index move.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord_index"><H3>COORD_INDEX</H3></A><pre>
+The index specifies which instance of <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> coordinate system to use.  It is
+currently applicable only to rover-based missions, but could have other
+uses.  The index is equivalent to the Rover Motion Counter (RMC) for MER
+and FIDO.
+
+For MER/FIDO, there are many Site frames.  Each is numbered with <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> single
+index.  For Site Frames, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#coord_index">coord_index</A> specifies which to use.  Likewise,
+there are many Local_Level and Rover frames, corresponding to values of
+the RMC.  The multiple instances of this frame are selected by <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#coord_index">COORD_INDEX</A>.
+
+Generally <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#coord_index">COORD_INDEX</A> defaults sensibly so you don'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#t">t</A> usually need to
+specify it.  It will default to the instance used by the first input.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="fixed_site"><H3>FIXED_SITE</H3></A><pre>
+Specifies which major Site is the "Fixed" Site for this run.
+
+Historically, MPF and M98 had <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> single "<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#surface">Surface</A> Fixed" frame which never
+moved, and which all other coordinate system frames were referenced to.
+With the advent of long-range rovers (such as MER and FIDO), that became
+insufficient.  The rover traverses far enough that errors in knowledge of
+coordinate system offset and orientation become unacceptable.
+
+For this reason, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> system of major Sites was introduced.  Periodically
+during the mission, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> Site frame is declared.  This then becomes the
+reference frame for all activities until the next Site is declared.
+References are kept local, and errors don'<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#t">t</A> propogate across Sites.
+
+However, if images from more than one Site are combined together, the
+Site's must be placed relative to each other.  Therefore <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#a">a</A> single reference
+frame is still needed to combine different sites.
+
+The <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#fixed_site">FIXED_SITE</A> parameter controls which of the major Site frames is
+the reference ("fixed") site for this program run.  This fixed frame
+can vary in different program runs, but is constant throughout one
+execution.
+
+If not specified, <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#fixed_site">FIXED_SITE</A> defaults to the minimum Site number (i.<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#e">e</A>.
+lowest numbered, or earliest chronologically) used in all input images.
+Normally this default is sufficient; rarely must <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#fixed_site">FIXED_SITE</A> be specified.
+
+One or more Rover State Files must usually be specified in order to combine
+image from more than one Site.  These describe the relationship between
+sites.  See the <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/marsunmosaic_level2.html#rsf">RSF</A> parameter.
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

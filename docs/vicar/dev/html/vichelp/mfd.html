@@ -1,0 +1,109 @@
+<HTML>
+<HEAD><title>HTML Help for MFD</title></HEAD>
+<BODY>
+<H1>Help for MFD</H1>
+<pre>
+PURPOSE
+
+    MFD is a linited version arithmetic IBIS function program that operates
+in double-precision.  Currently, program MF accepts IBIS columns in 'DOUB"
+format but performs all calculations using only "real" precision.  MF calls 
+KNUTH and XKNUTH which only handle real and complex data. 
+     
+    MFD preserves full double-precision accuracy and data detail.  However,
+only the most basic functional expressions are available in MFD, and only 
+one expression is permotted for each call of the program.
+
+EXECUTION:
+
+mfd   int  params
+
+where
+int     is the input IBIS Interface (tabular) file opened for update
+Params  is a standard VICAR parameter field
+
+The input file is an IBIS interface file which is also used for output. 
+The VICAR SIZE file is not used.
+
+The available functions include:
+
+ADD - Add two or more columns together.
+SUB - Subtract columns. 
+MULT - Multiply columns. 
+DIV - Divide columns.
+INT - Take the integer <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#value">value</A> of the columns.
+ABS - Determine the absolute <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#value">value</A> of the columns.
+SQR - Find the square root of the columns
+MIN - Find the minimum <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#value">value</A> in the columns.
+MAX - Find the maximum <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#value">value</A> in the columns.
+SET - Put the provided <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#value">VALUE</A> in the columns.
+INDEX - Put a run of numbers from 1 to NROW in the column.
+For the following logicals, the output column is set to TRUE=1 orFALSE=0
+EQ - If the column equals the provided <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#value">VALUE</A>.
+NE - If the column is not equal to the provided <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#value">VALUE</A>.
+LE - If the column is less than or equal to the provided <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#value">VALUE</A>.
+LT - If the column is less than the provided <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#value">VALUE</A>.
+GE - If the column is greater than or equal to the provided <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#value">VALUE</A>.
+GT - If the column is greater than the provided <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#value">VALUE</A>.
+<A NAME="examples">EXAMPLES</A>
+MFD        A  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#incols">INCOLS</A>=(1,2,3)  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#outcols">OUTCOLS</A>=1  'ADD
+
+In this example, the data in columns 1, 2, and 3 are added together, 
+and the sum is placed in C1, overwritting the previous data.
+
+
+MFD       A  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#incols">INCOLS</A>=(4,5)  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#outcols">OUTCOLS</A>=(6,7)  'INT
+
+The integer values of the data in C4 are put in C6, and the integer
+ values of C5 are put in C7.
+
+
+MFD       A  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#incols">INCOLS</A>=9  OUTCOL=10  'EQ  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#value">VALUE</A>=128
+
+If the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#value">value</A> in C9 is equal to 128, then a 1 is placed in C10, 
+otherwise a 0 is placed in C10.
+
+MFD       A  OUTCOL=11  'SET  <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#value">VALUE</A>=999
+
+The number 999 is placed in all rows of C11.
+
+
+MFD       A  OUTCOL=8  'INDEX
+
+A run of numbers from 1 to the number of rows is placed in C8.
+
+RESTRICTIONS:
+
+The maximum input line length is 255 characters.
+The maximum number of columns in the interface file is 100.
+
+HISTORY:
+  1998-10-30 BAM - initial version.
+  2017-08-09 WLB - removed DEBUG from imake.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#input"><H3>INPUT</H3></A>
+Input IBIS interface 
+data file
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#incols"><H3>INCOLS</H3></A>
+The input column/s on 
+which the function will
+operate.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#outcols"><H3>OUTCOLS</H3></A>
+The output column/s on 
+which the result of the
+function will be placed.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#value"><H3>VALUE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#value">Value</A> for comparison in 
+logical functions;
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#value">value</A> to be inserted into
+column for SET function.
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd_level2.html#func"><H3>FUNC</H3></A>
+ADD,SUB,MULT,DIV,INT,ABS,SQR,MIN
+MAX,SET,INDEX,EQ,NE,LE,LT,GE,GT
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/mfd.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

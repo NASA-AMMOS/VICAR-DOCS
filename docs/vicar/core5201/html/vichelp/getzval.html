@@ -1,0 +1,132 @@
+<HTML>
+<HEAD><title>HTML Help for GETZVAL</title></HEAD>
+<BODY>
+<H1>Help for GETZVAL</H1>
+<pre>
+PURPOSE
+
+     getzval looks up brightness values in an image at a set 
+     of  points  specified in an IBIS interface  file.   The 
+     brightness   average   of  a  surrounding   <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#window">window</A>   is 
+     calculated  for each point and placed back in the  IBIS 
+     interface   file.    Interpolation  is  performed   for 
+     fractional  point  locations.   The  new  algorithm for 
+     interpolation  causes  the  pixels  at  the edge of the 
+     <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#window">window</A> to be "feathered" at less than full weight.  The
+     user can choose full uniform weighting on the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#window">window</A> or
+     several circular spot algorithms.
+     
+     standard deviation can also be  requested.  It is calc-
+     ulated as the  square  root of the weighted mean of the
+     squared deviations.
+     
+     The keyword '<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#igzero">IGZERO</A> causes zero  values to be  ignored.
+     The remaining  non-zero values are  used  to  calculate
+     the mean and sigma.  If there  are no non-zero  values,
+     a mean of 0.0 and a sigma of 0.0 are returned.
+     
+TAE COMMAND LINE FORMAT
+
+     getzval <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#inp">INP</A>=(PIC,INT) SIZE PARAMS
+
+     where
+
+     PIC                 is an image.
+     INT                 is    an   IBIS   interface    file 
+                         containing columns which give point 
+                         locations in the image PIC.
+                         No  output  file is  used  but  the 
+                         second input file is modified.
+     SIZE                is the standard VICAR size field.
+     PARAMS              is  the  standard  VICAR  parameter 
+                         field.
+OPERATION
+     The  point  locations in the IBIS file are in  floating 
+     point, hence they may be fractional.  The grey value is 
+     calculated for a WxW interpolated grid about the  point 
+     location.  Bilinear interpolation is used.  The average 
+     grey  value  is  stored in the selected column  of  the 
+     interface file.   In two cases,  the flag -999.0  is 
+     stored:   first,  if the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#window">window</A> touches the boundary of 
+     the  image,  or  second,  if the  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#reject">REJECT</A>  threshold  is 
+     achieved in the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#window">window</A>. 
+     
+     The 2 x 2 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#window">window</A> is the usual bilinear interpolation.  
+     If a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#window">window</A> larger than 2 x 2 is used, the same bilinear
+     formula is applied to the edges and corners of the 
+     <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#window">window</A> area, but the interior points are added "times one".
+     This means that in all cases, moving the point a fraction
+     of a pixel will cause the z-value to change as the edges
+     of the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#window">window</A> move the same fraction of a pixel.
+     
+     THE DEFAULT BILINEAR ALGORITHM IS RECOMMENDED FOR ALMOST
+     ALL CASES SINCE IT GIVES A GOOD RESULT FOR FRACTIONAL 
+     PIXEL LOCATIONS AND THE RESULT FOR A LOCATION NEAR A
+     PIXEL CENTER IS CLOSE TO THE RESULT FOR THE PIXEL CENTER.
+     THE INTERPOLATION AT THE EDGE PIXELS IS EQUIVALENT TO
+     A SLIGHT AMOUNT OF CENTER WEIGHTING, WHICH IS USUALLY
+     A GOOD THING.
+     
+     THE INTEGRAL ALGORITHM IS NOT RECOMMENDED UNLESS THE 
+     (X,Y) LOCATIONS ARE INTEGRAL.  THIS ALGORITHM ALSO
+     REQUIRES AN ODD <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#window">WINDOW</A> SIZE SO THE WINDOW CAN BE
+     CENTERED ON THE (X,Y).
+     
+     THE SPOT ALGORITHMS ARE RECOMMENDED WHERE A CIRCULAR
+     PATTERN IS DESIRED OR (IN THE CASE OF SPOT_R AND SPOT_R2)
+     WHERE CENTER WEIGHTING IS DESIRED.  THESE REQUIRE AN
+     ODD <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#window">WINDOW</A> SIZE.  THESE WOULD ALSO BE SUPERIOR FOR 
+     COMPARING TWO IMAGES AT 45 DEGREE ROTATION TO EACH
+     OTHER.
+     
+     All standard deviations are calculated as a weighted
+     mean using the weight of a point in the calculation of 
+     the mean.
+
+
+WRITTEN BY:           H. Wilczynski 01Dec77
+<A NAME="CogProg">COGNIZANT PROGRAMMER:</A>
+REVISIONS:
+  1995-01-02 CRI - Made Portable for UNIX
+  2000-04-21 Al Zobrist - Rewritten in C
+  2002-02-28 Al Zobrist - Algorithm updated
+  2002-03-04 Al Zobrist -
+  2007-12-28 Walt Bunch - Switched to USES_ANSI_C AND LIB_CARTO; misc cleanup
+  2015-10-14 Walt Bunch - Migrated to MIPL
+  2019-09-04 Walt Bunch - IDS-7922 - Initialized a variable.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#inp"><H3>INP</H3></A>
+Input image and interface file
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#cols"><H3>COLS</H3></A>
+Column numbers for L,S and DN;
+optional 4th column for sigma
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#igzero"><H3>IGZERO</H3></A>
+If keyword is used, zeros will
+not be used in statistics
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#dted"><H3>DTED</H3></A>
+Fixes case where DMA <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#dted">DTED</A> has
+negative 1 elevation represented
+as -32767 value
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#reject"><H3>REJECT</H3></A>
+Rejection threshold count
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#threject"><H3>THREJECT</H3></A>
+Rejection threshold value
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#window"><H3>WINDOW</H3></A>
+Box size
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#algor"><H3>ALGOR</H3></A>
+BILIN    - bilinear
+NOIN     - nearest pixel
+INTEGRAL - uniform rectangle
+SPOT     - circular spot
+SPOT_R   - 1/R weighted spot
+SPOT_R2  - 1/R*R weighted spot
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval_level2.html#spotfac"><H3>SPOTFAC</H3></A>
+Use to vary the spot_r or
+spot_r2 formula
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/getzval.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

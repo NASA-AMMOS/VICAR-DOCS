@@ -1,0 +1,325 @@
+<HTML>
+<HEAD><title>HTML Help for PERSLAB</title></HEAD>
+<BODY>
+<H1>Help for PERSLAB</H1>
+<pre>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#purpose">PURPOSE</A>:
+Places a perspective map projection label onto an object space image.
+In general this is not desired for flight projects because the image
+navigation is contained in the SEDR/SPICE data base and is subject
+to change. For Space Telescope and other imagery there is no spice 
+so this provides an alternative. Many programs will honor this label
+and not request spice information.
+
+USAGE & EXECUTION:
+perslab <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=(in1,in2,...inn) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#out">out</A>=in1_modified parameters
+
+for example:
+
+FOR SPACE TELESCOPE AND OTHER NON FLIGHT PROJECTS:
+The input files in2,in3... contain ascii header info which contains
+navigation information from which spice can be requested to compute
+complete navigation. If these ascii files are missing then the spice
+cannot be called and the user must supply all the parameters himself.
+For the following example perslab first puts into the label 
+everything it knows.
+Then Farenc creates a file called farenc.pos containing the planet center.
+Then perslab reads the farenc file and adds this to the label.
+Both perslab calls are identical.
+
+TEST FOR WFPC1
+vfits2 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=a_fits_image  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#out">out</A>=w.half
+perslab <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=(w.half,w.hdr,w.dat) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#out">out</A>=x.img
+farenc <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=x.img area=(60,60,680,680)
+perslab <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=(w.half,w.hdr,w.dat) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#out">out</A>=x.img
+
+TEST FOR WFPC2
+vfits2 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=a_fits_image  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#out">out</A>=w.real
+flot <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=w.real <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#out">out</A>=f.real 'vert
+astrtchr <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=f.real <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#out">out</A>=f.byte percent=2.
+perslab <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=(f.byte) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#out">out</A>=x.img
+farenc <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=x.img area=(60,60,680,680)
+perslab <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=(f.real) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#out">out</A>=x.img
+
+TEST FOR WFPC2 where no labels exist but the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> and time are known.
+vfits2 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=a_fits_image  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#out">out</A>=w.real
+flot <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=w.real <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#out">out</A>=f.real 'vert
+astrtchr <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=f.real <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#out">out</A>=f.byte percent=2.
+perslab <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=(f.byte) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#out">out</A>=x.img <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#project">project</A>=WFPC2 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A>=2   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#juldate">juldate</A>=(1994,196,11,33,2) planet=jupiter <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#north">north</A>=313.3   project=WFPC2 camera=2
+farenc <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=x.img area=(60,60,680,680)
+perslab <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=(f.real) <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#out">out</A>=x.img <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#project">project</A>=WFPC2 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A>=2   <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#juldate">juldate</A>=(1994,196,11,33,2) planet=jupiter <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#north">north</A>=313.3   project=WFPC2 camera=2
+
+OVERRIDING ALL PARAMETERS
+perslab <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=something <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#out">out</A>=x.img    planet=jupiter <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#sclat">sclat</A>=45.    <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#sclon">sclon</A>=234. <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#sunlat">sunlat</A>=.5 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#sunlon">sunlon</A>=99. <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#centline">centline</A>=456 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#centsamp">centsamp</A>=66    <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#range">range</A>=987654. <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#north">north</A>=2. <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#focal">focal</A>=1400. <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#scale">scale</A>=65. <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#oaline">oaline</A>=300.    <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#oasamp">oasamp</A>=301. <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#datetime">datetime</A>=(92,350,14,14,17)
+
+ VOYAGER TEST
+perslab <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=mipl:[mipl.vgr]f1636832.fic <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#out">out</A>=x.img source=FARE
+
+ GALILEO TEST
+perslab <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=mipl:[mipl.gll]venus.img <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#out">out</A>=x.img
+
+You now can run other programs as below:
+
+ TEST OF PHOTFUNC
+photfunc <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=x.img <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#out">out</A>=v2$scratch:c.img minn=.7 maxcor=5.
+
+ TEST OF MAP3
+Uses a zonal flow model and a reference time one day later. Note that
+perslab stores the space telescope date in the label for retrieval.
+map3 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">inp</A>=x.img <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#out">out</A>=v2$scratch:p.img 'orth <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#north">north</A>=0     <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#scale">scale</A>=200 reftime=(92,351,14,14,17,0)
+
+NEW FEATURES SINCE LAST DELIVERY
+
+Version (January 22, 1997):
+* The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#program">program</A> now informs the user that it's making 90-degree adjustment to the
+NORTH_ANGLE when processing data of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#project">project</A> GLL, VGR-1, VGR-2 or CASSI.  The
+actual adjustment was actually made on 7/15/96, but it seems nice to let the
+user  know.
+
+OPERATION:
+Perslab reads the input label and any additional input ascii files for
+information about image navigation.
+
+For flight projects it reads the sedr/spice files.
+
+For WFPC it looks for specific label entries and computes the rest
+using the NAIF spice subroutines.
+
+SPICE and SEDR PARAMETERS
+
+All of the following parameters except <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#target">TARGET</A> are for SPICE and SEDR operation 
+only.  These SPICE parameters will only affect the GLL and VGR processing.
+
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#target">TARGET</A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#spicemode">SPICEMODE</A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#ckname">CKNAME</A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#ckid">CKID</A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#userid">USERID</A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#groupid">GROUPID</A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#institute">INSTITUTE</A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#cdate">CDATE</A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#reqnum">REQNUM</A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#purpose">PURPOSE</A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#program">PROGRAM</A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#spkid">SPKID</A> 
+
+SPICE Operations
+PARAMETERS FOR RETRIEVING <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">CAMERA</A> POINTING FROM SPICE:
+
+The following parameters permit the user to retrieve a specific instance of
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> pointing from the SPICE <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#kernels">kernels</A>:
+
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#spicemode">SPICEMODE</A> specifies whether SPICE data is retrieved from LOCAL <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#kernels">kernels</A> or
+or via the REMOTE SPICE server.  If defaulted, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#spicemode">SPICEMODE</A> is set to the value
+of the environmental variable DEFAULTSPICE.
+
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#ckname">CKNAME</A> and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#ckid">CKID</A> are alternative ways to specify the C kernel to be used.  For
+example, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#ckname">CKNAME</A>=FARE or <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#ckid">CKID</A>=M904 specifies that MIPS_FARENC.CK is to be used.
+When specified, the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#ckid">CKID</A> parameter overrides the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#ckname">CKNAME</A> parameter.  If the
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> pointing data is not found in the requested C kernel, the other C <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#kernels">kernels</A>
+are searched.
+
+Within a given C kernel, there may be a number of different versions of <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A>
+pointing for a given image.  The segment identifier for each version contains
+provenance information identifying the creator of the pointing data.  One or
+more of the following parameters may be used to retrieve a specific instance of
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> pointing based upon this provenance information:
+
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#cdate">CDATE</A> specifies the date and time the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> pointing was created.
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#reqnum">REQNUM</A> identifies the request number associated with the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> pointing.
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#purpose">PURPOSE</A> identifies the purpose for creating the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> pointing.
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#program">PROGRAM</A> identifies the program which created the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> pointing.
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#spkid">SPKID</A> identifies the SP-kernel used to create the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> pointing.
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#userid">USERID</A> identifies the user who created the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> pointing.
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#groupid">GROUPID</A> identifies the group which created the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> pointing.                 
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#institute">INSTITUTE</A> identifies the facility which created the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> pointing.
+
+A complete list of CK and SPK IDs are located in the ASCII file assigned the
+logical name (or environmental variable) KERNELDB.
+
+The above parameters are optional, and if defaulted (or if no data is found for
+the requested version), the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#program">program</A> will attempt to locate the "best" data
+available for the given image.  See the level 2 help (via the TAE tutor mode)
+for further details.
+
+Examples:  'LOCAL <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#ckname">CKNAME</A>=NAIF specifies that SPICE data be retrieved from
+          local <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#kernels">kernels</A> using <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> pointing from predicts or AACS telemetry.
+
+           'REMOTE <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#ckname">CKNAME</A>=FARE <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#institute">INSTITUTE</A>=MIPS <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#spkid">SPKID</A>=N015 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#userid">USERID</A>=ADC retrieves
+          the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> pointing created by Amy Culver at MIPS using the SP kernel
+          GLL_LONG_2.BSP from file MIPS_FARENC.CK via the SPICE server.  (whew!)
+
+It takes longer to search for SPICE data on the basis of provenance
+information.  If all provenance parameters are specified, for example, the
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#program">program</A> first searches through all the C <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#kernels">kernels</A> for an exact match.  If no
+match is found, the search is relaxed by removing the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#cdate">CDATE</A> criteria.  If no
+match is found, the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#reqnum">REQNUM</A> criteria is removed.  Etc.
+
+FOR USERS OF PREVIOUS VERSION OF PERSLAB
+
+Parameter PLANET is replaced by <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#target">TARGET</A>; SOURCE by <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#ckname">CKNAME</A> in order to eliminate 
+the duplication with getspice2's parameters
+
+HISTORY:
+08-28-02 VRH  Have 90 added to NORTH_ANGLE for CASSI also. AR107373
+02-14-97 SMC  Terminated all necessary XV* calls & Free MP buffer        FR89945
+01-22-97 SMC  * "Normalize" MP_LABEL's NORTH_ANGLE to fall within 0-359. FR89954
+              * Insert correct value to MP_LABEL's A_AXIS_RADIUS         FR89954
+07-16-96 SMC  Added SPICE parameters, replace parameter PLANET by <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#target">TARGET</A>;
+              SOURCE by <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#ckname">CKNAME</A>
+07-16-96 SMC  use XVPARM to obtain parameter <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#north">NORTH</A> instead of XVPARMD
+07-15-96 SMC  Corrected the NORTH_ANGLE for GLL and VGRs by adding 90 to it.
+07-13-96 SMC  Convert Planet ID to that of GLL's when processing VGR, FR89379
+              Open <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp">INP</A> file as READ instead of WRITE.
+
+8-15-93  J Lorre. 
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Jean Lorre</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#inp"><H3>INP</H3></A>
+First input: image
+The rest: ascii files
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#out"><H3>OUT</H3></A>
+Output image
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#kernels"><H3>KERNELS</H3></A>
+NAIF SP <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#kernels">kernels</A> filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#sclat"><H3>SCLAT</H3></A>
+Sub spacecraft latitude
+in degrees.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#sclon"><H3>SCLON</H3></A>
+Sub spacecraft longitude
+in degrees west.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#sunlat"><H3>SUNLAT</H3></A>
+Sub solar latitude
+in degrees.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#sunlon"><H3>SUNLON</H3></A>
+Sub solar longitude
+in degrees west.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#centline"><H3>CENTLINE</H3></A>
+Line of planet center.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#centsamp"><H3>CENTSAMP</H3></A>
+Sample of planet center
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#range"><H3>RANGE</H3></A>
+Distance from spacecraft
+to planet center in KM.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#focal"><H3>FOCAL</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">Camera</A> <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#focal">focal</A> length.
+In mm.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#scale"><H3>SCALE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">Camera</A> <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#scale">scale</A>.
+pixels/mm.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#north"><H3>NORTH</H3></A>
+The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#north">north</A> angle
+in degrees clockwise
+from up.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#oaline"><H3>OALINE</H3></A>
+Line of the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A>
+optical axis.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#oasamp"><H3>OASAMP</H3></A>
+Sample of the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A>
+optical axis.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#datetime"><H3>DATETIME</H3></A>
+Date & time 
+in the form
+y d h m s
+all integers
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#project"><H3>PROJECT</H3></A>
+Override the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#project">project</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera"><H3>CAMERA</H3></A>
+Override <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> number
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#juldate"><H3>JULDATE</H3></A>
+Override the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#julian">julian</A>
+date.
+Five integers.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#jultime"><H3>JULTIME</H3></A>
+Override the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#julian">julian</A>
+date.
+A string.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#julian"><H3>JULIAN</H3></A>
+Override the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#julian">julian</A>
+date.
+Large float.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#ra_v1"><H3>RA_V1</H3></A>
+Override the space
+telescope V1 axis
+RA direction.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#dec_v1"><H3>DEC_V1</H3></A>
+Override the space
+telescope V1 axis
+Declination direction.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#pa_v3"><H3>PA_V3</H3></A>
+Override the space
+teleccope V3 axis
+position angle.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#target"><H3>TARGET</H3></A>
+Optional 12-char string
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#target">Target</A> name (planet,
+  satellite, or asteroid)
+This parameter replaces PLANET
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#spicemode"><H3>SPICEMODE</H3></A>
+Optional keyword
+Location of SPICE <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#kernels">kernels</A>
+(LOCAL or REMOTE)
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#ckname"><H3>CKNAME</H3></A>
+Optional 4-char string
+This parameter replaces SOURCE
+C-kernel name
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#ckid"><H3>CKID</H3></A>
+Optional 4-char string
+C-kernel ID
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#userid"><H3>USERID</H3></A>
+Optional 3-char string
+User who created <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#groupid"><H3>GROUPID</H3></A>
+Optional 3-char string
+Group which created <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#institute"><H3>INSTITUTE</H3></A>
+Optional 4-char string
+Facility which created <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#purpose"><H3>PURPOSE</H3></A>
+Optional 4-char string
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#purpose">Purpose</A> for <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#program"><H3>PROGRAM</H3></A>
+Optional 6-char string
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#program">Program</A> which created <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#spkid"><H3>SPKID</H3></A>
+Optional 4-char string
+SP kernel for created <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#reqnum"><H3>REQNUM</H3></A>
+Optional 4-char string
+IPL request number for created <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#cdate"><H3>CDATE</H3></A>
+Optional 12-char string
+Date and time <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab_level2.html#camera">camera</A> pointing was created
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/perslab.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

@@ -1,0 +1,327 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for TIMSCAL2RE</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/timscal2re.html">TIMSCAL2RE</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+The first file is the file containing all six bands of a calibrated TIMS image,
+using the IRAD mode and WATTS units.  The second file is the file containing
+all six bands of emissivity data, scaled such that the 0 to 1 emissivity range
+is mapped to 0 to 10,000.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+Output data set in 16-bit integer format of all six bands of ground radiance
+TIMS data.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="size"><H3>SIZE</H3></A><pre>
+The standard VICAR2 output size field.   Default will calibrate
+the entire data set.
+	Example: SIZE = (1,1,200,638)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sl"><H3>SL</H3></A><pre>
+Starting line (same as SIZE(1)).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ss"><H3>SS</H3></A><pre>
+Starting sample (same as SIZE(2)).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nl"><H3>NL</H3></A><pre>
+Number of lines (same as SIZE(3)).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ns"><H3>NS</H3></A><pre>
+Number of samples (same as SIZE(4)).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="org"><H3>ORG</H3></A><pre>
+ORG specifies the organizational format of the output dataset. BIL (the default)
+and BSQ are supported.  
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="amodel"><H3>AMODEL</H3></A><pre>
+	This selects the model atmosphere for which the atmospheric cor-
+	rections will be computed.  The program uses a version of LOWTRAN
+	(or MODTRAN) as a subroutine, to which AMODEL is passed.  The exact 
+        parameters of each model is given in the LOWTRAN handbook.  The 
+        options in brief:
+		TR - TRopical model atmosphere
+		MS - Midlatitude Summer
+		MW - Midlatitude Winter
+		SS - Subarctic Summer
+		SW - Subarctic Winter
+		ST - U.S. STandard
+                RS - User supplied (e.g. Radiosonde) model atmosphere
+	These same abbreviations are used with the HUMID parameter, with
+	the same meanings.
+		Example: LMODEL = SW
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="atemp"><H3>ATEMP</H3></A><pre>
+The ATEMP parameter is used to modify the AMODEL given, with respect to 
+its temperature and pressure profiles.  The choices are the same as those 
+given in the AMODEL description and with the same meanings.  The ATEMP 
+parameter will only change AMODEL's temperature and pressure profiles and 
+nothing else.  Here are the valid strings:
+		TR - TRopical model atmosphere
+		MS - Midlatitude Summer
+		MW - Midlatitude Winter
+		SS - Subarctic Summer
+		SW - Subarctic Winter
+		ST - U.S. STandard
+		Example: ATEMP = MW
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ahumid"><H3>AHUMID</H3></A><pre>
+	The AHUMID parameter is used to modify the AMODEL given, with
+	respect to its water vapor content.  The choices are the same
+	as those given in the AMODEL description and with the same
+	meanings.  The AHUMID parameter will only change AMODEL's water
+	vapor profile and nothing else.  Here are the valid strings:
+		TR - TRopical model atmosphere
+		MS - Midlatitude Summer
+		MW - Midlatitude Winter
+		SS - Subarctic Summer
+		SW - Subarctic Winter
+		ST - U.S. STandard
+		Example: HUMID = MW
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="aozone"><H3>AOZONE</H3></A><pre>
+	The AOZONE parameter is used to modify the AMODEL given, with
+	respect to its ozone concentrations. The choices are the same
+	as those given in the AMODEL description and with the same
+	meanings.  The AOZONE parameter will only change AMODEL's ozone
+	concentration profile and nothing else.  Here are the valid strings:
+		TR - TRopical model atmosphere
+		MS - Midlatitude Summer
+		MW - Midlatitude Winter
+		SS - Subarctic Summer
+		SW - Subarctic Winter
+		ST - U.S. STandard
+		Example: HUMID = MW
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="height"><H3>HEIGHT</H3></A><pre>
+	Variable HEIGHT gives the altitude above mean sea level of the
+	TIMS aircraft as it scanned the particular flight line.  The
+	units of HEIGHT are kilometers.  A default value of 10 kilometers
+	is used as a nominal approximation of a typical TIMS overflight.
+		Example: HEIGHT = 12.5
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="datum"><H3>DATUM</H3></A><pre>
+	The DATUM is the mean elevation in kilometers of the targeted
+	terrain	above mean sea level.  A default value of 1 meter is
+	used if the user does not specify the DATUM explicitly.  Again,
+	this variable is used only in the MODE = GRAD, GTEM or EMIS cases.
+		Example: DATUM = 0.2
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nlayers"><H3>NLAYERS</H3></A><pre>
+If the atmospheric model to be used is user-defined (AMODEL=RS), NLAYERS
+specifies the number of altitudes for which the atmospheric parameters are
+expressed. NLAYERS has a minimum of 2 and a maximum of 61. It is not used
+if one of the standard LOWTRAN/MODTRAN models is selected.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="altitude"><H3>ALTITUDE</H3></A><pre>
+This parameter is used only if the atmospheric model to be used is user-defined
+(AMODEL=RS). It specifies the altitudes of each of the NLAYERS of atmospheric 
+layers given in the radiosonde data. The proper units are kilometers.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="pressure"><H3>PRESSURE</H3></A><pre>
+This parameter is used only if the atmospheric model to be used is user-defined
+(AMODEL=RS). It specifies the pressure (in millibars) of each of the NLAYERS 
+of atmospheric layers given in the radiosonde data. 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="temp"><H3>TEMP</H3></A><pre>
+This parameter is used only if the atmospheric model to be used is user-defined
+(AMODEL=RS). It specifies the temperature (in degrees Celsius) of each of the
+NLAYERS of atmospheric layers given in the radiosonde data.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="water"><H3>WATER</H3></A><pre>
+This parameter is used only if the atmospheric model to be used is user-defined
+(AMODEL=RS). It specifies the moisture content of each of the NLAYERS of 
+atmospheric layers given in the radiosonde data. It may be specified in units
+of dewpoint temperature, grams per cubic meter, or relative humidity, as 
+indicated by the WTYPE parameter.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="wtype"><H3>WTYPE</H3></A><pre>
+This parameter is used only if the atmospheric model to be used is user-defined
+(AMODEL=RS). It specifies the units used by the WATER parameter to denote
+moisture content. The valid values are:
+                       RH for relative humidity (percent of sauration)
+                       DP for dewpoint temperature (degrees Celsius)
+                   and DE for density (grams per cubic meter)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="o3fac"><H3>O3FAC</H3></A><pre>
+	Used to vary the impact of the ozone model in use. All ozone
+        concentrations are multiplied by this factor prior to atmospheric
+        parameter computation.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="o2fac"><H3>O2FAC</H3></A><pre>
+	Used to vary the impact of the oxygen model in use. All oxygen
+        concentrations are multiplied by this factor prior to atmospheric
+        parameter computation.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="co2fac"><H3>CO2FAC</H3></A><pre>
+	Used to vary the impact of the carbon dioxide model in use. All
+        carbon dioxide concentrations are multiplied by this factor prior to 
+        atmospheric parameter computation.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="so2fac"><H3>SO2FAC</H3></A><pre>
+	Used to vary the impact of the sulfur dioxide model in use. All
+        sulfur dioxide concentrations are multiplied by this factor prior to 
+        atmospheric parameter computation.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ch4fac"><H3>CH4FAC</H3></A><pre>
+	Used to vary the impact of the methane model in use. All methane
+        concentrations are multiplied by this factor prior to atmospheric
+        parameter computation.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="waterfac"><H3>WATERFAC</H3></A><pre>
+	Used to vary the impact of the moisture profile in use. All moisture
+        concentrations are multiplied by this factor prior to atmospheric
+        parameter computation.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="date"><H3>DATE</H3></A><pre>
+	TIMSCAL2RE uses the date of data acquisition to determine the proper
+	calibration coefficients.  If defaulted, the date in the VICAR 
+	label is used. This parameter is needed only if the VICAR label
+	is incorrect, or if an abnormal calibration set is to be used.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="lowfile"><H3>LOWFILE</H3></A><pre>
+   Normally, the report file generated by LOWTRAN (or MODTRAN) is discarded 
+   at the conclusion of the LOWTRAN/MODTRAN run.  If a dataset name is given
+   as the parameter value to LOWFILE, the report for the nadir looking case
+   of LOWTRAN/MODTRAN is saved in that dataset.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="lowtab"><H3>LOWTAB</H3></A><pre>
+   Normally, the tabular file generated by LOWTRAN (or MODTRAN) is discarded 
+   at the conclusion of the LOWTRAN/MODTRAN run.  If a dataset name is given
+   as the parameter value to LOWTAB, the report for the nadir looking case
+   of LOWTRAN/MODTRAN is saved in that dataset.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="atmodel"><H3>ATMODEL</H3></A><pre>
+   This parameter selects the particular atmospheric modelling program to be
+   used in the computation.  The choices are LOWTRAN (LOWTRAN7) or MODTRAN
+   (MODTRAN3).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="shift"><H3>SHIFT</H3></A><pre>
+   This parameter is used to adjust the wavelength calibration of the TIMS
+   filter functions.  This value (in nanometers) is added to the wavelengths
+   in the table of spectral response functions.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

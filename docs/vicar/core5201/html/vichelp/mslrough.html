@@ -1,0 +1,393 @@
+<HTML>
+<HEAD><title>HTML Help for MSLROUGH</title></HEAD>
+<BODY>
+<H1>Help for MSLROUGH</H1>
+<pre>
+PURPOSE:
+
+MSLROUGH computes a measure indicating the roughness of the surface for
+each pixel, given XYZ and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#uvw">UVW</A> (surface normal) images or an XYZ image and a 
+single <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#uvw">UVW</A> surface normal vector as input.  If a single UVW vector is 
+provided, then it is used at every point in the XYZ input image file.  This
+roughness value is a floating-point number representing the maximum peak-to-
+peak deviation from the plane perpendicular to the normal.
+
+By requesting the program calculate curvature instead, the program calculates
+two floating point numbers, an estimate of concavity and convexity. Concavity
+is calculated by finding, in the filtered area for each point, the difference 
+between the farthest point below the surface plane and the mean of all the 
+distances to surface plane. Convexity is similarly calculated for the farthest
+point above the surface plane.
+
+This program is very similar to MARSROUGH, but the algorithm is tuned for
+the specifics of the MSL arm.  It is not mission-specific per se; it could
+be used for any data for which the algorithm applies. It is being used for 
+M2020 as well.
+
+The inputs for MSLROUGH are an XYZ image such as that created by the MARSXYZ
+program, and a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#uvw">UVW</A> image such as that created by MARSUVW.  These can each
+be single 3-band files or three 1-band files; see MARSXYZ and MARSUVW for
+details.  Alternatively, the input <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#uvw">UVW</A> can be a single surface normal vector,
+the vector and its coordinate system are provided as input through the 
+input parameters <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#uvw_vector">UVW_VECTOR</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#uvw_coord">UVW_COORD</A> respectively.  If the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#uvw">UVW</A> surface
+normal vector(s) are provided both as an input image and as an input single
+vector, then the image takes precedence and the single vector is ignored.
+
+The output of MSLROUGH when calculating roughness is a single 2- or 3-band 
+file of type REAL, containing flags indicating whether the data met roughness 
+criteria, as well as the actual roughness values (see below for details).  
+As with XYZ images, the output image may contain holes (missing data), defined 
+by MISSING_CONSTANT.
+
+The output of MSLROUGH when calculating curvature is a single 3-band file of 
+type REAL, containing flags indicating whether the data met curvature criteria,
+as well as the two curvature values (see below for details). As with XYZ images, 
+the output image may contain holes (missing data), defined by MISSING_CONSTANT.
+Curvature is only calculated for the patch region. -<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#do_ring">do_ring</A> is not valid when
+calculating curvature.
+
+There will likely be many more holes than in the input images, since the
+roughness algorithm requires a patch around each pixel.
+
+EXECUTION:
+
+mslrough <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#inp">inp</A>=data.xyz <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#out">out</A>=data.rough <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#uvw">uvw</A>=data.uvw
+or
+mslrough <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#inp">inp</A>=data.xyz <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#out">out</A>=data.rough <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#uvw_vector">uvw_vector</A>=\(&ltx&gt,<y>,<z>\) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#uvw_coord">uvw_coord</A>="<type>"
+where:
+data.xyz is an input 3-band image of type REAL with the X, Y and Z values
+at that pixel in meters (the unit is actually irrelevant).
+In the first case, data.<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#uvw">uvw</A> is an input 3-band image of type REAL with the 
+U, V, and W components of the unit vector for each pixel.
+In the second case, &ltx&gt, <y> and <z> are replaced with the numeric values
+of the single surface normal vector components, and &lttype&gt is replaced with
+the coordinate system name in which the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#uvw">UVW</A> vector is given.
+
+Any program producing 3D position could be used; marsxyz is simply an example.
+
+To generate curvature instead of roughness:
+mslrough <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#inp">inp</A>=data.xyz <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#out">out</A>=data.rough <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#uvw">uvw</A>=data.uvw -<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#do_curvature">do_curvature</A> 
+
+METHOD:
+
+The actual algorithm and core code was developed by Matt Robinson (based on
+earlier MER code from Chris Leger), both from Section 347.
+
+The surface roughness algorithm attempts to quantify the suitability of a
+surface for placement of the MSL Drill or Dust Removal Tool (DRT).
+
+At each point in the image, the surface normal is used to define a reference
+plane.  The XYZ values of pixels that meet the criteria (below) are gathered,
+and the distance from them to the plane is computed.  Outliers are thrown
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#out">out</A> (see <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#filter_scale">FILTER_SCALE</A>).  For the remainders, the minimum and maximum distances
+from the plane are found.  Roughness is defined as the distance between this
+min and max. 
+
+Two roughnesses are computed.  The first is an overall measurement based on
+the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#patch_radius">PATCH_RADIUS</A> and considers all points within that radius of the central
+pixel.  For MSL, this is used for the DRT, and the drill body.  The second
+(used only if -<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#do_ring">DO_RING</A> is set) is a ring between the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#inner_radius">INNER_RADIUS</A> and
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#outer_radius">OUTER_RADIUS</A>.  For MSL, this is used for the drill stabilizer bars. The parameters
+allow for a gap between the patch and the ring:
+
+     -------ring outer-------             
+    / ++++++++++++++++++++++++\
+   /++++----ring innner----++++\ 
+  /+++/                     \+++\
+ |+++|                       |+++|
+ |+++|     -patch outer-     |+++|
+ |+++|    / ........... \    |+++|
+ |+++|   |.............. |   |+++|     
+
+
+ However the patch can include or extend beyond the outer ring as it does in MSL: 
+
+     ---ring outer/patch ---
+   / ++++++++++++++++++++++++\
+  /++++----ring innner----++++\ 
+ /+++/.....................\+++\
+|+++|.......................|+++|
+|+++|.......................|+++|
+|+++|.......................|+++|
+|+++|.......................|+++|
+
+In each case, the computed roughness is compared to a threshold, which
+determines whether the point is "good" or not.
+
+The points are additionally filtered by a XYZ-space window (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#x_center">X_CENTER</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#y_center">Y_CENTER</A>,
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#box_radius">BOX_RADIUS</A>) which encloses the entire arm workspace, and a local pixel-space
+window centered on each pixel (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#max_window">MAX_WINDOW</A>).  If fewer than <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#min_points">MIN_POINTS</A> pixels
+remain, roughness is not calculated for that pixel.
+
+The algorithm for the curvature calculation was developed by Kris Wehage and 
+Curtis Collins from section 347.
+
+When used to computer curvature, the algorithm for point selection and filtering
+are identical to roughness. Instead of calculating the peak to peak distance in
+the area, concavity reports the distance between the farthest point below
+the surface plane and the mean distance of the other points within the specified 
+area. Concavity reports the distance between the farthest point above the surface
+plane and the mean.
+
+Concavity has two thresholds that are checked <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#concave_high">CONCAVE_HIGH</A>, a more relaxed
+threshold that is farther from the mean plane, and CONVCAVE_LOW, a more stringent
+threshold closer to the mean plane. Convexity has two parameters <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#convex_high">CONVEX_HIGH</A> and
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#convex_low">CONVEX_LOW</A> which identical purposes. The thresholds are arranged as:
+
+ ---- curvature: convexity threshold high ----
+
+ ---- curvature: convexity threshold low  ----
+
+ +++++++++++ surface mean plane ++++++++++  ---- curvature: concavity threshold low  ----
+ 
+ ---- curvature: concavity threshold high ----
+
+OUTPUT FORMAT:
+
+The output when calculating roughness is a 2- or 3-band file in REAL format.
+The output when calculating curvature is a 3-band file in REAL format.
+
+The first band is the State.  This band consists of a set of flags, stored in
+float format simply because files must be of a consistent data format.  The
+possible values for roughness are:
+
+0.0 = No solution
+1.0 = Both ring and overall roughnesses exceed thresholds
+2.0 = Overall roughness (only) exceeds its threshold
+3.0 = Ring roughness (only) exceeds its threshold
+4.0 = Roughnesses within threshold (good)
+
+Note that if -NO_RING is specified, then the values 1.0 an 3.0 cannot occur.
+
+The possible values for curvature are:
+
+0.0 = No solution
+1.0 = Both concavity and convexity exceed thresholds
+2.0 = Convexity exceeds one or more threshold
+3.0 = Concavity exceeds one or more threshold
+4.0 = -- skipped --
+5.0 = Curvature within high thresholds, exceeded one or more low threshold
+6.0 = Curvature within all low (and high) thresholds (good)
+
+For roughness products:
+
+The second band is the actual Overall roughness measurement.  Unlike most
+other products, 0.0 does NOT indicate a missing value.  Rather, the value
+in <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#bad_rough">BAD_ROUGH</A> (default 1.0) is used.  This value shows up in MISSING_CONSTANT
+in the label.
+
+The third band contains the Ring roughness measurement, and is present only
+if -<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#do_ring">DO_RING</A> is specified.  It is otherwise similar to the second band.
+
+The roughness will be expressed in units defined by the coordinate system
+specified by the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#coord">COORD</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#coord_index">COORD_INDEX</A> parameters.
+
+For curvature products:
+
+The second bad is the actual concavity measurement. The third band is the 
+convexity measurement. Unlike most other products, 0.0 does NOT indicate a 
+missing value.  Rather, the value in <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#bad_curve">BAD_CURVE</A> (default 1.0) is used. This
+value shows up in MISSING_CONSTANT in the label.
+
+The curvature will be expressed in units defined by the coordinate system
+specified by the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#coord">COORD</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#coord_index">COORD_INDEX</A> parameters.
+
+
+HISTORY:
+2011-11-21 Initial mslrough by B. Deen, based on code from Matt Robinson (347)
+<A NAME="CogProg">COGNIZANT PROGRAMMER: B. Deen</A>
+2020-05-25 updated by E.  Sarkissian to optionally use a single surface normal
+vector <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#uvw">UVW</A> instead of many provided through an input image file.
+2020-10-23 updated by B. Crocco to optionally calculate curvature using code from
+Kris Wehage and Curtis Collins (347)
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#inp"><H3>INP</H3></A>
+Input XYZ image.
+Must be 1 3-band file
+or (x,y,z) triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#out"><H3>OUT</H3></A>
+Output file.
+Must be 1 filename
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#uvw"><H3>UVW</H3></A>
+Input <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#uvw">UVW</A> image.
+Must be 1 3-band file
+or (u,v,w) triplet.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#uvw_vector"><H3>UVW_VECTOR</H3></A>
+Input single <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#uvw">UVW</A> vector.
+Must be 3D vector.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#uvw_coord"><H3>UVW_COORD</H3></A>
+Coordinate system in
+which <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#uvw_vector">UVW_VECTOR</A>
+is given.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#inner_radius"><H3>INNER_RADIUS</H3></A>
+Inner radius of ring.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#outer_radius"><H3>OUTER_RADIUS</H3></A>
+Outer Radius of ring.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#patch_radius"><H3>PATCH_RADIUS</H3></A>
+Radius of the
+patch. Defaults to ring
+outer radius.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#rough_ring"><H3>ROUGH_RING</H3></A>
+Maximum roughness
+for ring.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#rough_overall"><H3>ROUGH_OVERALL</H3></A>
+Maximum roughness for 
+patch.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#sphere_radius"><H3>SPHERE_RADIUS</H3></A>
+An optional 3D radius to exclude
+points from testing
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#bad_rough"><H3>BAD_ROUGH</H3></A>
+Value that represents
+missing or invalid
+roughness.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#filter_scale"><H3>FILTER_SCALE</H3></A>
+Sigma multiplier for
+outlier rejection filter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#max_window"><H3>MAX_WINDOW</H3></A>
+Max window size (pixels).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#min_points"><H3>MIN_POINTS</H3></A>
+Min # of points in the
+region needed to accept
+roughness value.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#x_center"><H3>X_CENTER</H3></A>
+Center of bounding box (m).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#y_center"><H3>Y_CENTER</H3></A>
+Center of bounding box (m).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#box_radius"><H3>BOX_RADIUS</H3></A>
+Half-width of bounding box
+(in meters).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#do_ring"><H3>DO_RING</H3></A>
+Specifies whether or not to
+compute the ring roughness.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#do_curvature"><H3>DO_CURVATURE</H3></A>
+Specifies whether to
+compute curvature not roughness.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#bad_curve"><H3>BAD_CURVE</H3></A>
+Value that represents
+missing or invalid
+curvature.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#convex_high"><H3>CONVEX_HIGH</H3></A>
+Far threshold for allowed  
+convex curvature 
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#convex_low"><H3>CONVEX_LOW</H3></A>
+Closer threshold for allowed  
+convex curvature 
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#concave_low"><H3>CONCAVE_LOW</H3></A>
+Closer threshold for allowed  
+concave curvature
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#concave_high"><H3>CONCAVE_HIGH</H3></A>
+Far threshold for allowed  
+concave curvature
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#omp_on"><H3>OMP_ON</H3></A>
+Turns on or off parallel
+processing (default: on)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/mslrough.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

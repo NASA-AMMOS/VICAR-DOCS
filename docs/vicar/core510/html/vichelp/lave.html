@@ -1,0 +1,101 @@
+<HTML>
+<HEAD><title>HTML Help for LAVE</title></HEAD>
+<BODY>
+<H1>Help for LAVE</H1>
+<pre>
+PURPOSE:
+LAVE calculates the average DN values or the standard deviation values for each
+line (HORIZONTAL <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#mode">mode</A>) or each column (VERTICAL mode) of samples within a
+picture.  The output is either a single line of the average (or standard
+deviation)  DN values (default) or an <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#image">image</A> the same <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#size">size</A> as the input picture,
+but with each pixel replaced by its average (or standard deviation) value
+(<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#image">IMAGE</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#mode">mode</A>).  LAVE determines the data format from the VICAR label of the
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#image">image</A>.  LAVE works on byte, halfword, fullword, and real*4 data.
+EXECUTION:
+
+LAVE A <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#out">OUT</A>=C <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#filter">FILTER</A>=7		Find the averages of rows (default), perform 
+				a box <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#filter">filter</A> with window <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#size">size</A> 7, and send the 
+				output to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#image">image</A> file C.
+LAVE A <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#mode">MODE</A>=VERT 		Find column averages.  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#print">Print</A> the results only.
+LAVE A <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#out">OUT</A>=C <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#mode">MODE</A>=<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#image">IMAGE</A>		Find averages of rows, and write image same
+				<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#size">size</A> as original <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#image">image</A> (with each pixel
+				replaced by its average value) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#out">out</A> to C.
+LAVE A <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#exclude">EXCLUDE</A>=1		Ignore all samples with value of 1.
+LAVE A <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#filter">FILTER</A>=3 'HIGH	        Do filter with window <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#size">size</A> 3, and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#highpass">highpass</A>
+				output.
+
+LAVE A <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#out">OUT</A>=C <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#size">SIZE</A>=(50,20,100,200) '<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#image">IMAGE</A> 'VERT
+
+has the same effect as	LAVE A B <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#size">SIZE</A>=(50,20,100,200) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#mode">MODE</A>=VERT 
+			<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#size">SIZE</A> B C SIZE=(1,1,100,200)
+
+LAVE A C <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#filter">FILTER</A>=7 
+
+has the same effect as	LAVE A B
+			BOXFLT2 B C NLW=1 NSW=7
+
+OPERATION:
+The input picture is read and the average DN values are computed, excluding
+any pixels of the DN specified by the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#exclude">EXCLUDE</A> keyword.  If there remain no
+pixels to be averaged, the output pixel is assigned 0 DN.  All the average
+values are then printed.  If a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#filter">filter</A> has been requested, the average values
+are filtered and those values are also printed.  Unless the keyword <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#image">IMAGE</A>
+was specified, a single line of average values is output.  Note that in the
+HORIZONTAL <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#mode">mode</A>, the number of samples output is the number of LINES input.
+If the keyword <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#image">IMAGE</A> was used, a full-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#size">size</A> image is produced by either
+repeating the line of average values, once for each line (VERTICAL <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#mode">mode</A>), or
+repeating each average value once for each sample, with each average value
+on its original line (HORIZONTAL <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#mode">mode</A>).
+
+If <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#stdev">STDEV</A> is specified, standard deviation values are used instead of averages.
+
+WRITTEN BY:  R.M. Ruiz, 25 February 1971
+<A NAME="CogProg">COGNIZANT PROGRAMMER: Ron Alley </A>
+REVISION:  8 February 2001
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#inp"><H3>INP</H3></A>
+Input <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#image">image</A> file
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#out"><H3>OUT</H3></A>
+Output <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#image">image</A> file, if any.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#size"><H3>SIZE</H3></A>
+Standard VICAR <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#sl"><H3>SL</H3></A>
+Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#ss"><H3>SS</H3></A>
+Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#ns"><H3>NS</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#nl"><H3>NL</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#mode"><H3>MODE</H3></A>
+VERTICAL or HORIZONT
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#highpass"><H3>HIGHPASS</H3></A>
+Perform <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#highpass">highpass</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#filter">filter</A>?
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#plot"><H3>PLOT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#print">print</A> a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#plot">plot</A> of results?
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#print"><H3>PRINT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#print">print</A> the averages?
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#image"><H3>IMAGE</H3></A>
+Repeat output line or
+column to make output file the 
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#size">size</A> of input file.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#stdev"><H3>STDEV</H3></A>
+Specifies standard deviation 
+will be computed as the output
+instead of averages.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#exclude"><H3>EXCLUDE</H3></A>
+Value to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#exclude">exclude</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#filter"><H3>FILTER</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#filter">Filter</A> width
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#ais"><H3>AIS</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#print">Print</A> output values
+in block(s) of 32 by 32 values.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#title"><H3>TITLE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#title">Title</A> for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#ais">AIS</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#print">print</A>-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave_level2.html#out">out</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/lave.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

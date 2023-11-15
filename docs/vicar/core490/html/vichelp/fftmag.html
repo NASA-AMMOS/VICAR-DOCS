@@ -1,0 +1,134 @@
+<HTML>
+<HEAD><title>HTML Help for FFTMAG</title></HEAD>
+<BODY>
+<H1>Help for FFTMAG</H1>
+<pre>
+PURPOSE:
+"fftmag" will expand a picture's size <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#by">by</A> a factor of 2^N by enlarging
+the Fourier Transform of the picture.  This technique provides correct 
+interpolation using the Sampling Theorem.
+
+ 
+EXECUTION:
+
+Examples
+
+fftmag  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#inp">INP</A>=FFTIN  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#out">OUT</A>=FFTOUT  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#by">BY</A>=2
+
+This command will enlarge input transform FFTIN <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#by">by</A> a factor of two in both the
+line and sample directions.
+
+fftmag  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#inp">INP</A>=FFTIN  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#out">OUT</A>=FFTOUT  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#byl">BYL</A>=5  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#bys">BYS</A>=2
+
+This command will enlarge the transform <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#by">by</A> a factor of two in the sample
+direction, but <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#by">by</A> a factor of four in the line direction.  This is because 
+expansion factors must be powers of 2, and are rounded down to the next-lower 
+power, as necessary.
+
+Note that ALLOC must be used to allocate space for the output transform before
+"fftmag" is run.
+
+
+OPERATION:
+"fftmag" expands a picture <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#by">by</A> partitioning the Fourier Tranform and placing the 
+four quadrants into a larger transform array.  The details of the partitioning
+are illustrated in the figure.  The expansion of the spatial dimension is
+accomplished <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#by">by</A> a reduction in the apparent frequency (apparent because of the
+larger format of the new FFT) according to the Similarity Theorem:
+
+					       1      fx fy
+If FT(g(x,y)) = G(fx,fy), then FT(g(ax,<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#by">by</A>)) = ---- G (--,--)
+					      |ab|     a  b
+
+where a = the sample magnification and b = the line magnification as specified
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#by">by</A> the magnification keywords.
+
+The interpolation algorithm which results in the above operation is the
+Sampling Theorem, or optimal interpolation method for band limited data.  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#by">By</A>
+partitioning the FFT we equivalently band limit the larger image of the scene
+until it contains the same frequencies we actually possess.  For <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#by">BY</A>=2, for 
+example:
+				    ____
+	FT(I(i,j)) = FT(I(i,j)) * __|  |__0.25 cps
+	  actual       double
+
+Taking the FFT of both sides results in the Sampling Theorem, which is superior
+to all other interpolation theorems.
+
+
++--+------------+--+------------+--+	\
+|DC|		|  |		|DC|	|
++--+------------+--+------------+--+	|
+|  |            |  |		|	|
+|  | FFT        |  |		|	| N/2+1
+|  | INPUT      |  |		|	|
+|  | FORMAT     |  |		|	|
+|  |            |  |		|	|
+|  |            |  |		|	|
++--+------------+--+------------+	|	
+|  |		|XX|		|	/
++--+------------+--+------------ |  |            |  |		|	\
+|  |            |  |		|	|
+|  |            |  |		|	| N/2-1
+|  |            |  |		|	|
+|  |            |  |		|	|
+|  |            |  |		|	/
++--+------------+--+------------+-- |DC|				|DC|
++--+                            +-- 
+\-----------------/ \-----------/
+      8(M/2+1)         8(M/2-1)
+
+
++--+------------+--+----------------------------+--------------- |DC|		|  |				|		|
++--+------------+--+                            +--------------- |  |            |  |				|		|
+|  |            |  |				|		|
+|  |            |  |				|		|
+|  |            |  |				|		|
+|  |            |  |				|		|
+|  |            |  |				|		|
++--+------------+--+                            +--------------- |  |            |XX|                            |               |
++--+------------+--+				+--------------- |								|
+|			FFT OUTPUT FORMAT			|
+|								|
+|								|
+|								|
+|								|
++--+------------+--+                            +--------------- |  |            |  |				|		|
+|  |            |  |				|		|
+|  |            |  |				|		|
+|  |            |  |				|		|
+|  |            |  |				|		|
+|  |            |  |				|		|
++--+------------+--+----------------------------+--------------- 
+WRITTEN <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#by">BY</A>:  J. J. Lorre, 1 April 1980
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  A. S. Mazer</A>
+REVISION:  New
+Made portable for UNIX: A. Scop (CRI) 1 July 1994
+27.04.98.....RRP.....Changed COMPLEX format keyword to COMP as per AR-9582.
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#inp"><H3>INP</H3></A>
+STRING - Input FFT
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#out"><H3>OUT</H3></A>
+STRING - Output FFT
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#sl"><H3>SL</H3></A>
+INTEGER - Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#ss"><H3>SS</H3></A>
+INTEGER - Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#ns"><H3>NS</H3></A>
+INTEGER - Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#nl"><H3>NL</H3></A>
+INTEGER - Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#size"><H3>SIZE</H3></A>
+INTEGER - Standard VICAR size field
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#by"><H3>BY</H3></A>
+INTEGER - Line/sample magnification
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#byl"><H3>BYL</H3></A>
+INTEGER - Line magnification
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag_level2.html#bys"><H3>BYS</H3></A>
+INTEGER - Sample magnification
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/fftmag.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

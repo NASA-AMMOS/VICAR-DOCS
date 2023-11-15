@@ -1,0 +1,147 @@
+<HTML>
+<HEAD><title>HTML Help for GRAFIMG</title></HEAD>
+<BODY>
+<H1>Help for GRAFIMG</H1>
+<pre>
+PURPOSE
+
+    grafimg turns a Vicar image into a 3-D IBIS graphics-1 file by drawing
+grid lines with z values depending on the pixel values.  The program accepts
+a sarting line and sample in the image and a number of lines and samples in 
+the image to 'look at' -- they define a window.  Additionally/optionally
+one can subsample this window when turning l,s,DN into graphics coordinates.
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#sinc">SINC</A> picks up every SINC'th pixel in the sample direction for conversion.
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#linc">LINC</A> picks up every LINC'th pixel in the line direction for conversion.
+So the following pixels are converted to graphics points:
+	<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#ss">SS</A>, SS + <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#sinc">SINC</A>, SS + 2*SINC, ...   for sample coordinate
+	<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#sl">SL</A>, SL + <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#linc">LINC</A>, SL + 2*LINC, ...   for line coordinates
+
+    The largest grid of sampled points is 256 x 256. If the user specifies 
+a window and subsampling that results in a grid larger than 256 x 256, 
+then the program automatically chooses an integer subsampling value that 
+will map the grid <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#size">size</A> down to fit inside 256 x 256.  This can be very 
+tricky; an initial window of 257 x 257 and subsampling of 1 x 1 will
+result in a 128 x 128 grid !  You can lose resolution in both the graphics
+domain and the image domain if subsamplings are not chosen consistent with
+the window <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#size">size</A>.
+
+    The output grafics file can also include a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#cube">cube</A>, in which the data is
+contained. Either the top or the bottom or both the top and the bottom of
+the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#cube">cube</A> can be created. The cube will fit the min/max values by default,
+but the user may specify the exact min and max if desired. The user may also
+clip the creation of output grafics below or above a specific Z value (useful
+if the image is a rotate elevation file within an image and contains vast
+regions of zero DN). The output data set will also be clipped to the range of
+the specified <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#cube">cube</A>.
+
+    The user may view the 3-D data in one of several formats. For a quick
+preview of the dataset, the user may specify the PREView option in <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#mode">MODE</A>, which
+will create a graphics representation around the 4 sides of the data set
+(similar to profile lines across terrain). The user may select DOTS, which will
+create a dot at the intersection of the grid cells or PRDT (preview plus dots).
+The conventional graphics file is the default, this being the BOTH option which
+will create the normal "fishnet" graphics file. Either the XONLY or the YONLY
+axis can be specified with the specific option to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#mode">MODE</A>.
+
+EXECUTION
+
+  grafimg ELEV.IMG ELEV.GRA <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#zscale">ZSCALE</A>=100
+
+  grafimg SURFACE.IMG ELEV.3D <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#linc">LINC</A>=5 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#sinc">SINC</A>=5 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#mode">MODE</A>=PRDT <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#zmin">ZMIN</A>=500 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#zmax">ZMAX</A>=2500  			      <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#cube">CUBE</A>=CUBE <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#ztop">ZTOP</A>=3500 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#zbtm">ZBTM</A>=0
+
+
+Original Programmer:  Frank Evans		February 1986
+<A NAME="CogProg">Cognizant Programmer: Ted Barragy / Richard Fretz    January 1988</A>
+Made portable for UNIX:   CRI                   06-MAR-95
+
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#inp"><H3>INP</H3></A>
+The input image
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#out"><H3>OUT</H3></A>
+The output 3-D IBIS
+graphics file
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#size"><H3>SIZE</H3></A>
+The Vicar <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#sl"><H3>SL</H3></A>
+Starting line in image
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#ss"><H3>SS</H3></A>
+Starting sample in image
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#nl"><H3>NL</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#ns"><H3>NS</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#linc"><H3>LINC</H3></A>
+Subsamples only every <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#linc">LINC</A>'th
+pixel in the line direction.
+Line increment.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#sinc"><H3>SINC</H3></A>
+Subsamples only every <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#sinc">SINC</A>'th
+pixel in the sample direction.
+Sample increment.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#mode"><H3>MODE</H3></A>
+Type of output file
+generated. BOTH,
+XONLY, YONLY, DOTS,
+PREView (profile
+around the grid)
+and PRDT (dots and
+preview combined).
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#xscale"><H3>XSCALE</H3></A>
+Multiplier scale factor
+for sample numbers.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#yscale"><H3>YSCALE</H3></A>
+Multiplier scale factor
+for line numbers.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#zscale"><H3>ZSCALE</H3></A>
+Multiplier scale factor
+for pixel values.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#zmin"><H3>ZMIN</H3></A>
+Minimum Z value to
+be included in 3-D
+graphics output file
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#zmax"><H3>ZMAX</H3></A>
+Maximum Z value to
+be included in 3-D
+graphics output file
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#cube"><H3>CUBE</H3></A>
+    <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#cube">CUBE</A> or FIT
+Use <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#cube">CUBE</A> to indicate
+inclusion of either
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#ztop">ZTOP</A> of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#cube">cube</A> and/or
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#zbtm">ZBTM</A> of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#cube">cube</A> around
+the output grid. Use
+FIT to fit a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#cube">cube</A> to
+min/max of raw data.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#ztop"><H3>ZTOP</H3></A>
+Elevation (DN) of the
+top of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#cube">cube</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#zbtm"><H3>ZBTM</H3></A>
+Elevation (DN) of the
+bottom of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#cube">cube</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#lticks"><H3>LTICKS</H3></A>
+LINE tick mark switch.
+TOP BTM or BOTH
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#sticks"><H3>STICKS</H3></A>
+SAMPLE tick mark switch.
+LEFT RIGHT or BOTH
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#zticks"><H3>ZTICKS</H3></A>
+Z axis tick mark switch.
+TL:top left TR:top right
+BL:btm left BR:btm right
+or ALL
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#ltickinc"><H3>LTICKINC</H3></A>
+Tick mark increment
+for the LINE axis.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#stickinc"><H3>STICKINC</H3></A>
+Tick mark increment
+for the SAMPLE axis.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg_level2.html#ztickinc"><H3>ZTICKINC</H3></A>
+Tick mark increment
+for the Z (DN) axis.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/grafimg.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

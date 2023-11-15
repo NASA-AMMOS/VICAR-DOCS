@@ -1,0 +1,172 @@
+<HTML>
+<HEAD><title>HTML Help for LOOKUP</title></HEAD>
+<BODY>
+<H1>Help for LOOKUP</H1>
+<pre>
+ PURPOSE:
+
+LOOKUP generates output images from input images using data number
+mappings defined in a multi-channel lookup table.  The user can specify 
+the table by giving its location (if it is contained in a file), by 
+entering the contents of the table as program parameters, or by naming an 
+IDX pseudocolor transformation. The user has the option of modifying the 
+table via the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#change">CHANGE</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#ltable">LTABLE</A> parameters. The modified table may then be 
+saved by specifying the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#save">SAVE</A> or <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#tblsave">TBLSAVE</A> parameter.
+ EXECUTION:
+
+In the table format used by LOOKUP, a lookup table is made up of four
+independent channels.  Each channel defines a mapping or discrete
+transfer function to be applied to an input image. Some of these
+channels may be undefined depending on the application.  The lookup
+table is limited to four channels because LOOKUP allows at most
+four output images.  LOOKUP allows at most four input images.
+
+In the most straightforward <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#use">use</A> of LOOKUP, the number of input images
+is equal to the number of output images and the default channel
+assignments are used.  In this case, the first channel in the table
+is used to map the first input image to the first output image, the
+second channel in the table is used to map the second input image to 
+the second output image, and so on.
+The user may select to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#use">use</A> different channels (than the default) with
+the images by using the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#use">USE</A> parameter.  The user may also specify
+fewer input images than output images.  In this case, the last input
+image is mapped through the remaining channels to create the appropriate
+number of output images.  Thus, one input image could be mapped through
+three independent channels (transfer functions) to three output images.
+This feature allows simple production of Pseudo Color pictures.
+When the user specifies a lookup table in a file, LOOKUP requires that
+the file have a particular format.  The file must contain a VICAR label
+followed by one or more tables, each table being stored as one 1024-byte
+record.  A table record contains 1024 output data number values in the
+following order:
+
+ d(0,1), d(0,2), d(0,3), d(0,4),... d(255,1), d(255,2), d(255,3), d(255,4),
+
+where d(i,j) is the output data number to which the data number i is mapped
+by channel j.  The user specifies the location of the table by giving the
+name of the file and the number (ordinal) of the table within the file.  
+In general, such a file is built using another VICAR program or using
+LOOKUP itself.
+TAE COMMAND LINE FORMAT
+      The following command line formats show the major allowable forms:
+      LOOKUP <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#inp">INP</A>=(a...) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#out">OUT</A>=(b...) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#size">SIZE</A>=(<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#ns">ns</A>) optional parameters
+      LOOKUP <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#inp">INP</A>=(a...) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#out">OUT</A>=(b...) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#sl">SL</A>=sl <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#ss">SS</A>=ss <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#nl">NL</A>=nl <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#ns">NS</A>=ns optional parameters
+      LOOKUP (a...) (b...) (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#ss">ss</A>,<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#nl">nl</A>,<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#ns">ns</A>) optional parameters
+      LOOKUP (a...) (b...) optional parameters
+
+       Here (a...) represents a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#list">list</A> of one to five file names which includes
+       from one to four input image file names optionally followed by the
+       name of a file containing the lookup table to be used by this program.
+       (b...) represents a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#list">list</A> of one to four output image file names
+       optionally followed by an output lookup table file.
+
+      LOOKUP also accepts command lines without the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#inp">INP</A> or <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#out">OUT</A> fields.  
+      This allows the user to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#use">use</A> LOOKUP just for working with tables.
+<A NAME="examples">EXAMPLES</A>
+
+1.    LOOKUP  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#inp">INP</A>=(L1 T1) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#out">OUT</A>=L2 '<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#list">LIST</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#tabno">TABNO</A>=2 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#use">USE</A>=3
+
+      In this example, channel 3 of table 2 of file T1 is used to map
+      image file L1 to image file L2.
+
+2.    LOOKUP IN (RED,GREEN,BLUE) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#ps">PS</A>=3
+
+      In this example, the IDX pseudocolor transformation <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#ps">PS</A> 3 is used to
+      map image file IN to files RED, GREEN, and BLUE. The color assignments
+      must be in this order to get results corresponding to what is seen in
+      IDX.
+3.    LOOKUP <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#inp">INP</A>=(L1) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#out">OUT</A>=(L3,L4,L5,T2) '<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#newtblf">NEWTBLF</A>                      <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#ltable">LTABLE</A>=( 0       0  1  2                                          1  -98  2  3  4                                          99 -255 5  6  7                     )
+
+      In this example, the three channels of the table defined through the
+      <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#ltable">LTABLE</A> parameter are used to map the input file to the three output
+      files.  T2 is the output table file, in which the table is saved.
+
+RESTRICTIONS
+1. The input and output images and the table file must be byte data.
+2. Maximum number of samples is 20000 per line.
+
+ WRITTEN BY:                 Steven Pohorsky           2 Aug 1983
+<A NAME="CogProg"> COGNIZANT PROGRAMMER:       Steven Pohorsky</A>
+ REVISION:                   3                        24 April 1986
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#inp"><H3>INP</H3></A>
+Input file name(s);
+ includes input images
+ optionally followed by
+ table file.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#out"><H3>OUT</H3></A>
+Output file name(s)
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#size"><H3>SIZE</H3></A>
+Standard Vicar <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#size">size</A> field:
+  (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#ns">NS</A>)
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#sl"><H3>SL</H3></A>
+Starting line number
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#ss"><H3>SS</H3></A>
+Starting sample number
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#nl"><H3>NL</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#ns"><H3>NS</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#list"><H3>LIST</H3></A>
+Enter to get the lookup
+table listed to your terminal.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#tabno"><H3>TABNO</H3></A>
+Number (ordinal) of the lookup
+table if the table is in a file.
+This parameter is required
+if the table is in a file.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#ps"><H3>PS</H3></A>
+Number of the IDX pseudocolor
+table, if the table is a
+standard IDX pseudocolor.
+Valid: 1-11.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#newtblf"><H3>NEWTBLF</H3></A>
+Enter to have the
+lookup table saved if the
+table file is new.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#save"><H3>SAVE</H3></A>
+Enter to have the
+lookup table saved in the next 
+available location in an
+existing table file.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#tblsave"><H3>TBLSAVE</H3></A>
+To have the lookup table saved
+in an exactly specified
+location in an existing table 
+file, enter the table number
+(location).
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#use"><H3>USE</H3></A>
+Specifies which channel of the
+table corresponds to which
+output image. The nth value
+entered is the channel for
+the nth output image.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#change"><H3>CHANGE</H3></A>
+One or more of the following
+type of changes can be entered
+using the following format:
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#change">CHANGE</A>=(n1,m1 n2,m2 ...)
+The table entries for data
+number ni are, for each channel,
+replaced with the table entries
+for data number mi, for
+i=1,2,...
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#nchan"><H3>NCHAN</H3></A>
+The number of channels for which
+data is entered under the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#ltable">LTABLE</A>
+parameter.  The default for
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#nchan">NCHAN</A> is the number of output
+images.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#ltable"><H3>LTABLE</H3></A>
+Specifies values for the lookup
+table.  If a table from a file
+is not used, then the table
+must be defined through <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup_level2.html#ltable">LTABLE</A>
+values.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/lookup.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

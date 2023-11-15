@@ -1,0 +1,133 @@
+<HTML>
+<HEAD><title>HTML Help for GETLAB</title></HEAD>
+<BODY>
+<H1>Help for GETLAB</H1>
+<pre>
+PURPOSE: This PDF will get a requested label item from any part
+         of a VICAR label and assign it to a local variable. This local
+         variable must be previously defined using the intrinsic command:
+ 
+                     VICAR&gtLOCAL variable_name variable_type
+ 
+          where variable_type must match <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#itm_type">ITM_TYPE</A>.
+
+        Note: GETLAB only works on single-valued variables. Multi-valued
+        variables are not yet supported.  However, the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#element">ELEMENT</A> keyword can
+        be used to select one <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#element">element</A> from a multi-valued keyword.
+OPERATION:
+          There is one <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#mode">mode</A> of "system label" operation:
+                SYSTEM
+SYSTEM:   This <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#mode">mode</A> retrieves the label item matching <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#lab_item">LAB_ITEM</A> in the system
+          section of the VICAR label
+ 
+          There are three modes of "history label" operation:
+                EARLIEST, LATEST, INSTANCE.
+ 
+EARLIEST: This <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#mode">mode</A> retrieves the earliest history label item matching <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#lab_item">LAB_ITEM</A>.
+LATEST:   This <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#mode">mode</A> retrieves the latest history label item matching <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#lab_item">LAB_ITEM</A>.
+INSTANCE: This <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#mode">mode</A> retrieves a specific instance of a history label item.
+          When using the INSTANCE <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#mode">mode</A>, the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#itm_task">ITM_TASK</A> and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#itm_inst">ITM_INST</A> parameters
+          must be supplied. <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#itm_task">ITM_TASK</A> specifies the name of the task to
+          be searched for the label item, and <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#itm_inst">ITM_INST</A> specifies which
+          instance of <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#itm_task">ITM_TASK</A> should be searched, since the task ITM_TASK
+          may appear multiple times in the history label.
+<A NAME="examples">EXAMPLES:</A>
+ 
+The following examples use the label listed below.
+        ************  File A ************
+                3 dimensional IMAGE file
+                File organization is BSQ
+                Pixels are in BYTE format
+                1 bands
+                10 lines per band
+                10 samples per line
+---- Task: TASK1 -- User: XXX000 -- Mon Jan 0 00:00:00 0000 ----
+IVAL=0.0
+SINC=1.0
+LINC=1.0
+BINC=1.0
+MODULO=0.0
+TEST1='FIRST TEST STRING'
+TEST2=123
+TEST3=4.56
+---- Task: TASK2 -- User: XXX000 -- Mon Jan 1 00:00:00 0000 ----
+TEST1='MIDDLE TEST STRING'
+---- Task: TASK3 -- User: XXX000 -- Mon Jan 2 00:00:00 0000 ----
+TEST1='LAST TEST STRING'
+ 
+In order to retrieve label values, local variables of the appropriate type
+must be declared first:
+        LOCAL T1 STRING
+        LOCAL T2 INT
+        LOCAL T3 REAL
+ 
+To receive SYSTEM label information:
+GETLAB A FORMAT T1 STRING 'SYSTEM       !'T1' would equal 'BYTE'
+GETLAB A NL T2 INT 'SYSTEM              !'T2' would equal '10'
+ 
+To receive lastest HISTORY label information:
+GETLAB A TEST1 T1 STRING                !'T1' should equal 'LAST TEST STRING'
+GETLAB A TEST2 T2 INT                   !'T2' should equal '123'
+GETLAB A TEST3 T3 REAL                  !'T3' should equal '4.56'
+ 
+To receive earliest HISTORY label information:
+GETLAB A TEST1 T1 STRING 'EARLIEST      !'T1' should equal 'FIRST TEST STRING'
+ 
+To receive specific HISTORY label information:
+GETLAB A TEST1 T1 STRING TASK2 1 'INSTANCE
+                                        !'T1' would equal 'MIDDLE TEST STRING'
+ 
+AUTHOR:   C. C. Meisl
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  C. C. Meisl</A>
+Unix port: Bob Deen, 4-92
+REVISION:  2
+REVISION HISTORY:
+ 
+  1997-03-18 T.Huang - Ported from VAX to UNIX.  This version has
+                       an added keyword parameter "PROPERTY" to handle
+                       retrieval of property label info.
+  2008-06    rgd - Added <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#element">ELEMENT</A> keyword.
+  2018-01-04 WLB - Fixed multi-string-value bug.
+  2018-10-25 WLB - Fixed REAL type handling bug.
+  2019-06-13 WLB - IDS-7925: Null-terminated a buffer.
+                   IDS-7922: Initialized some variables.
+                   Misc warnings cleanup.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#inp"><H3>INP</H3></A>
+Name of file containing
+label to be accessed
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#lab_item"><H3>LAB_ITEM</H3></A>
+Name of label item to
+be accessed
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#itm_name"><H3>ITM_NAME</H3></A>
+Name of local variable
+in which to store value
+of label item <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#lab_item">LAB_ITEM</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#itm_type"><H3>ITM_TYPE</H3></A>
+Type of label item
+to be accessed. <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#itm_name">ITM_NAME</A>
+must be of same type
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#lab_type"><H3>LAB_TYPE</H3></A>
+This parameter specifices 
+the type of vicar label to 
+be retrive from.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#itm_task"><H3>ITM_TASK</H3></A>
+Task name for task
+specific access of label,
+i.e INSTANCE access
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#itm_inst"><H3>ITM_INST</H3></A>
+Instance number of task
+for task specific access
+of label, i.e. INSTANCE
+access
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#mode"><H3>MODE</H3></A>
+Type of label access
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#element"><H3>ELEMENT</H3></A>
+Which <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab_level2.html#element">element</A> to pick.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/getlab.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

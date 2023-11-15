@@ -1,0 +1,89 @@
+<HTML>
+<HEAD><title>HTML Help for GRADREM</title></HEAD>
+<BODY>
+<H1>Help for GRADREM</H1>
+<pre>
+PURPOSE:
+Wide angle aircraft scanners often exhibit large, systematic, and non-linear
+artificial brightness gradients along scan lines.  GRADREM seeks to remove
+these gradients by ratioing the input picture with an estimate of the gradient
+upon a flat field.
+
+EXECUTION:
+
+Example 
+	GRADREM <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#out">OUT</A>=B <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#size">SIZE</A>=(50,100,500,500) <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#linc">LINC</A>=10 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#percent">PERCENT</A>=2.0
+
+	In this example, every tenth line of the entire region specified by the
+	<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#size">SIZE</A> parameter is used to compute the gradient function.  The output
+	picture will be about 2.0 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#percent">percent</A> saturated (1.0 high, 1.0 low).
+
+	GRADREM <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#out">OUT</A>=B <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#length">LENGTH</A>=300 <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#gain">GAIN</A>=150.0
+
+	In this example, the first 300 lines are used to compute the
+	gradient function.  DNout = 150.0 * (DNin / gradient).
+
+	GRADREM <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#inp">INP</A>=A <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#out">OUT</A>=B '<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#nosat">NOSAT</A>
+
+	In this example, the entire region is used to compute the gradient
+	function; the program sets the offset (<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#off">OFF</A>) to 0 and chooses a
+	<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#gain">gain</A> such that no unsaturated input pixel becomes saturated in the
+	output image.  
+
+
+OPERATION:
+The user selects a region of the picture whose differences in brightness
+are believed to be predominantly artificial.  The lines in this region are
+averaged to produce a 'standard' DN level at each sample.  If requested, a
+box filter is used to smooth the standard DN function.  Each pixel is then
+ratioed with its appropriate standard DN, and the specified gains and
+offsets applied.  Floating point arithmetic is used throughout.
+
+
+WRITTEN BY:  Ron Alley, 7 June 1979
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Steve Pohorsky</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#inp"><H3>INP</H3></A>
+Input image file
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#out"><H3>OUT</H3></A>
+Output image file
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#size"><H3>SIZE</H3></A>
+Standard VICAR <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#sl"><H3>SL</H3></A>
+Starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#ss"><H3>SS</H3></A>
+Starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#ns"><H3>NS</H3></A>
+Number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#nl"><H3>NL</H3></A>
+Number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#start"><H3>START</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#start">Start</A> of grad estimation region
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#length"><H3>LENGTH</H3></A>
+Lines in grad estimation region
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#linc"><H3>LINC</H3></A>
+Gather stats every <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#linc">LINC</A>'th line
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#filt"><H3>FILT</H3></A>
+Number of filter weights
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#gain"><H3>GAIN</H3></A>
+Output DN calculation factor
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#off"><H3>OFF</H3></A>
+Output DN calculation offset
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#percent"><H3>PERCENT</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#percent">Percent</A> saturation
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#meansig"><H3>MEANSIG</H3></A>
+Forces this mean and sigma for
+the estimation region
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#noprint"><H3>NOPRINT</H3></A>
+Suppresses gradient function
+printing. Valid: <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#noprint">NOPRINT</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#nosat"><H3>NOSAT</H3></A>
+Selects <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#gain">gain</A> for no saturation 
+Valid: <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem_level2.html#nosat">NOSAT</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/gradrem.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

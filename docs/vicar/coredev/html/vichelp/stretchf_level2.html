@@ -1,0 +1,259 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for STRETCHF</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf.html">STRETCHF</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+A standard Vicar input data set
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+A standard Vicar output file.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="size"><H3>SIZE</H3></A><pre>
+  FOUR INTEGERS - A standard Vicar <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#size">size</A> field specifying starting line,
+                  starting sample, number of lines, and number of samples.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sl"><H3>SL</H3></A><pre>
+ INTEGER - Starting line
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ss"><H3>SS</H3></A><pre>
+ INTEGER - Starting sample
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nl"><H3>NL</H3></A><pre>
+ INTEGER - Number of lines
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ns"><H3>NS</H3></A><pre>
+ INTEGER - Number of samples
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="dnmin"><H3>DNMIN</H3></A><pre>
+ INTEGER -      Specifies the minimum DN value of the input data. 
+		The domain of the stretch <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#function">function</A> is <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmin">DNMIN</A> to <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmax">DNMAX</A>.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="dnmax"><H3>DNMAX</H3></A><pre>
+ INTEGER -	Specifies the maximum DN value of the input data.
+		The domain of the stretch <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#function">function</A> is <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmin">DNMIN</A> to <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmax">DNMAX</A>.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="linear"><H3>LINEAR</H3></A><pre>
+ TWO INTEGERS - <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#linear">LINEAR</A>=(min,max) performs the following transform:
+		           a = (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmax">dnmax</A>-<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmin">dnmin</A>)/(max-min)
+		           DN(<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#out">out</A>) = a*(DN(in)-min) + <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmin">dnmin</A>   
+                if DN(<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#out">out</A>) would be less than <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmin">DNMIN</A>:    DN(out) = DNMIN
+                if DN(<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#out">out</A>) would be greater than <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmax">DNMAX</A>: DN(out) = DNMAX
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="contour"><H3>CONTOUR</H3></A><pre>
+ INTEGER -	Input intensities which are a multiple of n are
+		set to the value specified by the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnvalue">DNVALUE</A> parameter.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="alarm"><H3>ALARM</H3></A><pre>
+ N INTEGERS -	The input DN values specified are set the value
+                specified by the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnvalue">DNVALUE</A> parameter.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="gamma"><H3>GAMMA</H3></A><pre>
+ This parameter causes a "<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#gamma">gamma</A>" stretch to be performed. The gamma
+ stretch is defined by the following formula:
+                            /                        \
+          DN    = DNRANGE * | (DN  -DN   ) / DNRANGE | ** (1.0/<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#gamma">gamma</A>)
+            <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#out">out</A>             |    in   min            |
+                            \                        /
+    where the user specifies the parameter, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#gamma">gamma</A>.
+ 
+ In all cases, the output DN is rounded to the nearest integer prior to
+ output.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="table"><H3>TABLE</H3></A><pre>
+ N PAIRS REALS - <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#table">TABLE</A>=(in1,out1,in2,out2,..,inN,outN) will set the
+		 input DN values in1,in2,... to the DN values 
+                 out1,out2,... and will linearly interpolate between
+		 these points to compute the intervening DN values.
+		 All DN values outside the range in1 to inN will 
+		 remain unchanged unless the parameter <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#backgnd">BACKGND</A> is 
+		 also specified.  In that case, all DN values 
+		 outside the range in1 to inN will be set to
+                 the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#backgnd">BACKGND</A> value. The maximum number of pairs 
+		 which may be specified is 100.  The values 
+		 in1,in2,...,inN must be specified in increasing 
+		 order.  
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="itable"><H3>ITABLE</H3></A><pre>
+ N PAIRS INTEGERS - <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#itable">ITABLE</A>=(in1,out1,in2,out2,...,inN,outN) will
+		set the input DN values in1,in2,... to the DN values 
+                out1,out2,... but will not do any interpolation.
+		All DN values not explicitly specified, including
+ 		those outside the range in1 to inN will remain
+ 		unchanged unless the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#backgnd">BACKGND</A> parameter is also
+		specified.  In that case, all DN values not
+                explicitly specified, including those outside the
+                range in1 to inN, will be set to the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#backgnd">BACKGND</A> value.
+                The maximum number of pairs which may be specified 
+		is 100. 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="function"><H3>FUNCTION</H3></A><pre>
+ STRING - 	Allows the user to explicitly specify the transfer
+		<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#function">function</A> as a FORTRAN type expression with the
+		keyword DN as the independent variable.  This
+                is similar to the VICAR program F2. For example,
+		<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#function">FUNCTION</A>="2*DN+3" will multiply each input DN
+		value by 2 and add 3.  This will then be the output
+                DN value, provided it is in the range <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmin">DNMIN</A> to <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmax">DNMAX</A>.
+		If it is less than <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmin">DNMIN</A> it is set to DNMIN or if it
+                is greater than <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmax">DNMAX</A> it is set to DNMAX.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="other"><H3>OTHER</H3></A><pre>
+ KEYWORD   There are two stretch options that are specified by a keyword.
+           These two (COMP and PSTRETCH) options are lumped together here.
+
+   COMP     - Causes intensity levels to be complemented. The actual transform 
+              is:          DN(<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#out">out</A>) = <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmax">DNMAX</A>+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmin">DNMIN</A>-DN(in)
+
+   PSTRETCH - Specifies that a periodic stretch is to be performed.
+              The transfer <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#function">function</A> is:
+
+              DN(<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#out">out</A>)=<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#ampl">AMPL</A>/2*SIN[2*PI*<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#freq">FREQ</A>*DN(in)/(<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmax">DNMAX</A>-<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmin">DNMIN</A>)+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#phi">PHI</A>]+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dc">DC</A>
+
+                  where PI = 3.14159
+                  and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#ampl">AMPL</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#freq">FREQ</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#phi">PHI</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dc">DC</A> are parameters which may be specified 
+                  seperately by the user and which have the following defaults:
+                                  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#ampl">AMPL</A>= <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmax">DNMAX</A>-<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmin">DNMIN</A>
+                                  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#freq">FREQ</A>= 1.0
+                                  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#phi">PHI</A> = 0.0
+                                  <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dc">DC</A>  = (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmax">DNMAX</A>-<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmin">DNMIN</A>)/2
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="post"><H3>POST</H3></A><pre>
+ TWO INTEGERS - Specifies that a <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#linear">linear</A> <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#post">post</A> stretch will be performed
+                following the initial stretch. The initial stretch
+	        will performed over the range <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmin">DNMIN</A> to <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmax">DNMAX</A>.
+                Specifying a <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#post">post</A> stretch of POST=(LVAL,HVAL) will
+                then take DN value <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmin">DNMIN</A> to LVAL and DN value <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmax">DNMAX</A>
+                to HVAL. Actually only one stretch is performed;  
+                the composite of the initial and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#post">post</A> stretches.
+                (Default is that no <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#post">post</A>-stretch is performed.)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="dnvalue"><H3>DNVALUE</H3></A><pre>
+ INTEGER -      Specifies the DN value to use for the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#contour">CONTOUR</A> and
+		<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#alarm">ALARM</A> stretches. The appropriate DN's will be set
+		to this DN value.  (Default is <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnvalue">DNVALUE</A>=<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmax">DNMAX</A>)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="backgnd"><H3>BACKGND</H3></A><pre>
+ INTEGER -      Specifies a DN value to use as background for the
+		<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#table">TABLE</A> and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#itable">ITABLE</A> stretches.  All DN values outside
+		the range specified by <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#table">TABLE</A>, or all those not
+		explicitly specified by <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#itable">ITABLE</A> will be set to this 
+		value.  (Default is to leave these DN's unchanged.)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="freq"><H3>FREQ</H3></A><pre>
+ REAL -         Specifies the frequency to be used in the case of
+		the PSTRETCH (periodic) stretch.  (Default is
+		<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#freq">FREQ</A>=1.0)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ampl"><H3>AMPL</H3></A><pre>
+ REAL -         Specifies the amplitude to be used in the case of
+		the PSTRETCH (periodic) stretch.  (Default is
+		<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#ampl">AMPL</A>=<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmax">DNMAX</A>-<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmin">DNMIN</A>)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="phi"><H3>PHI</H3></A><pre>
+ REAL -         Specifies the phase to be used in the case of 
+		the PSTRETCH (periodic) stretch.  (Default is
+		<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#phi">PHI</A>=0)
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="dc"><H3>DC</H3></A><pre>
+ REAL -         Specifies the mean to be used in the case of 
+		the PSTRETCH (periodic) stretch.  (Default is
+		<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dc">DC</A>=(<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmax">DNMAX</A>-<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/stretchf_level2.html#dnmin">DNMIN</A>)/2 )
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

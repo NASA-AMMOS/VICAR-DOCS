@@ -1,0 +1,426 @@
+<HTML>
+<HEAD><title>HTML Help for MARSRCORR</title></HEAD>
+<BODY>
+<H1>Help for MARSRCORR</H1>
+<pre>
+PURPOSE:
+Marsrcorr, which stands for Mars Regularized Correlation, is an image matching
+program that computes regularized disparity maps. Traditionaly, image matching 
+programs such as marscor3 and marsecorr, compute the disparity for each pixel
+independently of the disparity found for neighbooring pixels. That is, no 
+constraints are used between the disparity found at one pixel and the disparity
+found at the pixel next to it. The merit of such approach is to have independant
+measurements between pixels without any "effect" from the neighbors measurements.
+(note that the measurements are not stictly independant because of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#template">template</A>
+size, but we're referring here to the influence of the disparity found at one
+pixel to the disparity found at the next pixel). The drawback of the approach 
+however is the complete permeability to noise and outliers. Matching measurement
+noise and outliers are ubiquitous to any matching algorithms; the wrong 
+disparity will get the best matching score and will be selected as the winner.
+Two neighbooring pixels could have a difference in measurements that do not make
+sense and nothing will prevent that to happen. This leaves noise and outliers in
+the disparity maps. The regularized approach on the other hand enforces a 
+minimum of coherence in disparity found between neighbooring pixels. 
+Essentially, a regularized approach is still looking for the best matching score
+(as the standard approach does), but is willing to select not the best matching
+score (but still a good one) if the relative disparity coherence between 
+neighbooring pixels is improved. "Coherence" here is the assumption that from 
+one pixel to the next, the change in disparity should be smooth, which is a 
+translation of the assumption that the ground surface should be continuous and 
+change smoothly - at the scale of the pixel. Note that occlusion causes sharp 
+discontinuities in the ground surface, which invalidates the surface smoothness,
+but this situation is also accounted for in the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#regularization">regularization</A> scheme.
+How much "coherence" to enforce does not have unfortunately a magic number and
+is essentially a "knob" to adjust based on the scene and image noise. Too much
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#regularization">regularization</A> and the process will "erase" topographic surface, not enough 
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#regularization">regularization</A> and noise/outliers will be left in the disparity map.
+
+There are roughly 2 approaches for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#regularization">regularization</A>. Global method and Semi-Global
+methods (SGM). The Global approach regularizes the disparity map based on the 
+minimization of a cost that is accounting at once for all the pixel of the 
+image. The resource needed (hardware and time) is usually prohibitively high. 
+The second approach lessen the requirement on the resources by not accounting 
+for all the pixels at once, but only accounting for a subset of them. Instead of
+doing a full 2-dimensional minimization, SGM does a series of 1-dimensional 
+minimization. There's a vast swath of litterature on various implementations of
+the SGM, with various ways to define the smoothness criteria. See Hirschmuller, 
+2008, "Stereo processing by semiglobal matching and mutual information" for SGM 
+landmark paper. In 2005, an improved SGM algorithm was introduced, MGM (More
+Global Matching) which reduces some of the typical SGM artefact (light striking
+artefact in the disparity maps, along the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#regularization">regularization</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#directions">directions</A>) without 
+significant processing time penalty. See Facciolo, 2015, "MGM: A Significantly
+More Global Matching for Stereovision". Both methods are available in this
+program.
+
+
+
+
+
+EXECUTION:
+Here are some expected calls:
+
+First, if the user has not a good idea on how to adjust the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#regularization">regularization</A>
+parameters, the program should be run first with all the needed parameters and
+-AUTOCORR to get an estimate of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#regularization">regularization</A> parameter
+
+The simplest call (disparity with pixel accuracy, no <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#subpixel">subpixel</A>):
+
+marsrcorr <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#inp">inp</A>=\(leftImage, rightImage\) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#out">out</A>=disparity.img -AUTOCORR
+
+This will print <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#out">out</A> the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#regularization">regularization</A> parameters to use (for the given 
+images, and default <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#template">template</A> size, matching algorithm, and disparity <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A> 
+approach), but will not compute the disparity maps proper. The process needs to
+be launched again with the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#regularization">regularization</A> parameters:
+
+marsrcorr <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#inp">inp</A>=\(leftImage, rightImage\) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#out">out</A>=disparity <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#reg_params">REG_PARAMS</A>=\(...\)
+
+
+Some prior information on the disparity map can be supplied to the program to
+reduce the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A> space. For instance a global offset between the two images
+or a disparity map at a lower resolution:
+
+marsrcorr <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#inp">inp</A>=\(leftImage, rightImage\) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#out">out</A>=disparity <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#reg_params">REG_PARAMS</A>=\(...\)
+          <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#in_disp">IN_DISP</A>=priorMap.VIC
+
+
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#subpixel">Subpixel</A> matching precision is controlable via a parameter (SUBPIXEL):
+
+marsrcorr <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#inp">inp</A>=\(leftImage, rightImage\) <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#out">out</A>=disparity <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#reg_params">REG_PARAMS</A>=\(...\)
+          SUBPIX=4
+
+
+
+
+PROCESSING:
+The goal is to get, for each pixel of the left image, the corresponding pixel
+in the right image.
+
+At a high level, this is a 2-steps process:
+- Compute the matching score volume: Run the matching algorithm as it would be
+done with standard matching programs, except that instead of storing only the 
+best matching score within the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A> space for a given pixel, store all the 
+scores. This, depending on the image size and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A> space, can grow quite 
+large (a pyramidal approach is available to limit the memory footprint needed)
+- Apply <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#regularization">regularization</A> to the score volume to find the scores winners (based on 
+SGM cost function to minimize). From the location of the score winners in the 
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A> area, derive the disparity maps.
+
+Note that, currently, marsrcorr is expecting and looking for local 2D 
+translations only. That is, the input images should be relatively close to what
+is called a stereo-pair: roughly same resolution, baseline about perpendicular 
+to viewing angle. It does not support the wider range of possibilities that
+marsecorr support for instance.
+
+
+DISPARITY <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">SEARCH</A> APPROACH:
+To compute the disparity file, independently of any <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#regularization">regularization</A>, there could
+be different approaches. The standard approach is to do a 2D <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A> around an
+apriori initial location. Marsecorr program on the other hand runs a plane sweep
+appoach (which require camera models), which essentially look for a matching 
+pixel not around a 2D patch, but along the epipolar line. Although it is our 
+hope to eventually implement a regularized plane sweep approach, as of now, the 
+standard approach is implemented. The type of disparity <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A> to use is 
+controlled with <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#disp_search">DISP_SEARCH</A>. By default, it is assumed that the Left and Right 
+image are coregistered, that is, for any pixel in the Left image, the apriori 
+location in the Right image is at the same (x,y). This could be modified using 
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#in_disp">IN_DISP</A> or <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#affine_param">AFFINE_PARAM</A> which allows to supply different apriori location.
+ 
+IMAGE MATCHING ALGORITHM:
+The core of the matching step is an image to image comparison. There are two
+algorithms available at the moment. The Normalized Cross-Correlation (NCC) and
+the Zero-mean Sum of Square Difference (ZSSD). The algoritm of choice can be 
+selected with <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#match_img">MATCH_IMG</A>. The NCC is insensitive to affine constrast change 
+whereas the ZSSD is insensitive to additional constract change only. ZSSD is 
+therefore applicable in less scenarii than the NCC but is less computing
+intensive. Nevertheless it is recommended to use the NCC as it is overall more
+robust.
+
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#regularization">REGULARIZATION</A>:
+The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#regularization">regularization</A> is the motivation for marsrcorr. It is formulated as finding
+the disparity map that minimizes a cost E defined as:
+
+E = sum(Cp(Dp)) + sum(V(Dp,Dq))
+with Cp(Dp): matching score of pixel p at disparity Dp (note that matching score
+is reversed: smaller is better). 
+V(Dp, Dq): penalty change in disparity between pixel p and pixel q
+
+V follows this rule:
+V(d, d') = 0   if d=d'
+V(d, d') = P1  if |d-d'| = 1
+V(d, d') = P2  if |d-d'| &gt 1
+Which means that there is no penalty for pixel that have the same disparity, a 
+small penalty (P1) for small jump (1 pixel) in disparity, and a larger penalty
+(P2) for disparity larger than that.
+
+The energy is computed recursively along 1D <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#directions">directions</A> (usually along the 4 or 8
+cardinal <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#directions">directions</A>) that runs from one edge to the image to the opposite edge.
+
+For instance, assume a NxN image pair matching with a 3x3 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A> space (9 search 
+locations), and consider the SGM process when it is running along the line 
+direction. We start at a given pixel on the left edge of the image (samp=0, 
+line=y), and will end on the right side of the image (samp=N, line=y).
+Along that direction a cost will be computed for each pixel and at each <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A> 
+position. It's a recursive cost that is computed as follow:
+At a given pixel position (samp=x, line=y) and at <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A> location (d), we will 
+compute a list of "overall" costs with all the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A> locations of the previous
+pixel (samp=x-1, line=y). These overall costs L(x,d) are:
+L(x,d) = C(x,d) + L(x-1,d') + V(d,d')  with d' = {d1, d2, ..., d9}
+with L(x,d) the "overall" cost, C(x,d) the matching score a pixel (x,y), <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A> 
+position (d), L(x-1,d') the "overall" cost at the previous pixel, at <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A> 
+position d', and V(d,d') the penalty for jumping from <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A> location d to d'.
+that is:
+L(x,d) = C(x,d) + L(x-1, d1) + V(d,d1)  
+L(x,d) = C(x,d) + L(x-1, d2) + V(d,d2)  
+...
+L(x,d) = C(x,d) + L(x-1, d9) + V(d,d9)  
+and we select the smallest L(x,d) of all, which will be the overall cost for 
+pixel (samp=x, line=Y) at disparity (d). 
+That process is done for each pixel of the line, for all the lines (starting on
+the left side of the image, up to the right side).
+
+That process is done for all the 4 or 8 cardinal <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#directions">directions</A> (user select):
+along the line, going left to right      |
+along the line, going right to left      |  4 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#directions">directions</A>
+along the sample, going top to bottom    |
+along the sample, going bottom to top    |
+along the diagonal, going topLeft to bottomRight   |
+along the diagonal, going bottomRight to topLeft   |  4 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#directions">directions</A>
+along the diagonal, going topRight to bottomLeft   |
+along the diagonal, going bottomLeft to topRight   |
+
+All the 4 (or 8) "overall" scores maps are then summed up, and for each pixel,
+the disparity location with the overall best score win.
+
+
+
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#regularization">REGULARIZATION</A> PARAMETERS:
+The intensity of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#regularization">regularization</A> to apply is quite subjective. There's no
+hard and fast rule, but more a continuum of increasing smoothness for which the
+user must decide what is a good tradeoff between acceptable noise and too
+smooth. These are essentially "knobs" to adjust.
+
+The parameters depends on the type of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#regularization">regularization</A> applied. For now, only
+one type of minimization function is available (see above), that is, a penalty
+V is applied depending on the jump from <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A> location from one pixel to the
+next:
+V(d, d') = 0   if d=d'
+V(d, d') = P1  if |d-d'| = 1
+V(d, d') = P2  if |d-d'| &gt 1
+
+There are therefore 2 <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#regularization">regularization</A> parameters to define (P1, P2). They are not
+intuitively defined as they depends on the matching score. 
+In the "penalized" score:
+C(p) + V(d,d')
+V needs to be sized properly against C, so it has some effect, but not too
+much. C(p) depends on the images themselves (mainly texture, noise, and 
+disparity) and image matching technique (NCC, ZDSSD) which renders the 
+definition of P1/P2 situation dependent.
+To facilitate the definition, marsrcorr provides estimates of P1/P2 (
+-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#autocorrelation">AUTOCORRELATION</A>), by computing the autocorrelation of one image (the left in 
+practice). The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#autocorrelation">autocorrelation</A> is the correlation of the image with a shifted 
+version of itself. The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#autocorrelation">autocorrelation</A> is computed for a 1-pixel shift and a 
+2-pixel shift, and are estimates for P1 and P2, respectively.
+
+Note that if <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#subpixel">subpixel</A> precision is required, 2 sets of P1 and P2 are needed. One
+for pixel-wise matching, and one for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#subpixel">subpixel</A> matching. Remember that marsrcorr
+do <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#subpixel">subpixel</A> matching in 2 steps: first pixel-wise <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A>, then subpixel search.
+The matching score varies significantly between pixel-wise <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A> and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#subpixel">subpixel</A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A>, which requires separate penalty coefficients. The estimates of the 2 
+sets are also provided by the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#autocorrelation">autocorrelation</A> process.
+
+
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#subpixel">SUBPIXEL</A> PRECISION:
+By default, the image matching is done at the integer pixel level. No <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#subpixel">subpixel</A>
+precision. This can be modified using the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#subpixel">SUBPIXEL</A> parameter. If used, the 
+process operates in 2-steps: First a pixel-wise disparity map is computed, then
+a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#subpixel">subpixel</A> <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A> between [-1,1] pixel is done, centered on the pixel-wise 
+best location found and with a shift increment based on <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#subpixel">SUBPIXEL</A> value.
+This is done in two steps to limit the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A> space at any moment given the
+likely possibility of running <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#out">out</A> of memory. For example, a process running a 
+full resolution M20 ncam pair (5120x3840) with a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A> space of 3 pixels on 
+each side and a <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#subpixel">subpixel</A> resolution of 0.2 pixel would require 70GB (!!!) of
+memory to store the matching score volume.
+If a pyramidal approach is used, the matches are done with a pixel-wise
+precision for all the pyramidal level. Once done, an extra match step is done 
+with <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#subpixel">subpixel</A> precision.
+
+
+
+HISTORY:
+2022-06 ayoubfra  Initial implementation. 
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  F. Ayoub</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#inp"><H3>INP</H3></A>
+Input images.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#out"><H3>OUT</H3></A>
+Output disparity map.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#bands"><H3>BANDS</H3></A>
+Band id to process
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#disp_search"><H3>DISP_SEARCH</H3></A>
+Disparity <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">search</A> 
+strategy
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#match_img"><H3>MATCH_IMG</H3></A>
+Matching algorithm
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#template"><H3>TEMPLATE</H3></A>
+Correlation window 
+size.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search"><H3>SEARCH</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#search">Search</A> range in X and Y
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#directions">directions</A>.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#subpixel"><H3>SUBPIXEL</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#subpixel">Subpixel</A> matching accuracy
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#in_disp"><H3>IN_DISP</H3></A>
+Prior input disparity
+file
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#affine_param"><H3>AFFINE_PARAM</H3></A>
+Prior affine transform
+between left and right
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#affine_size"><H3>AFFINE_SIZE</H3></A>
+Size of image the 
+affine params are expressed in
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#regularization"><H3>REGULARIZATION</H3></A>
+Type of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#regularization">regularization</A> to
+apply
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#directions"><H3>DIRECTIONS</H3></A>
+Number of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#directions">directions</A> to regularize
+
+.<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#reg_params">REG_PARAMS</A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#regularization">Regularization</A> parameters
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#autocorrelation"><H3>AUTOCORRELATION</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#autocorrelation">Autocorrelation</A> to estimate
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#regularization">regularization</A> parameters
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#pyrlevel"><H3>PYRLEVEL</H3></A>
+Pyramid level.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#max_pyr_size"><H3>MAX_PYR_SIZE</H3></A>
+Left or Right side
+size max for pyramid
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#pyr_level"><H3>PYR_LEVEL</H3></A>
+Final pyramid level
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#filter"><H3>FILTER</H3></A>
+pre low-pass images.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#filter_size"><H3>FILTER_SIZE</H3></A>
+Low-pass <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#filter">filter</A>
+intensity.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#filter_const"><H3>FILTER_CONST</H3></A>
+Scale low-pass <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#filter">filter</A>
+intensity.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#omp_on"><H3>OMP_ON</H3></A>
+Turns on or off parallel
+processing (default: on)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation filename
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#match_method"><H3>MATCH_METHOD</H3></A>
+Specifies a method
+for pointing corrections.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#match_tol"><H3>MATCH_TOL</H3></A>
+Tolerance value for
+matching pointing params
+in pointing corrections file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#nosite"><H3>NOSITE</H3></A>
+Disables coordinate
+system sites.
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+pointing correction.
+
+
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/marsrcorr.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

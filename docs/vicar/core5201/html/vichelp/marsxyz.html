@@ -1,0 +1,307 @@
+<HTML>
+<HEAD><title>HTML Help for MARSXYZ</title></HEAD>
+<BODY>
+<H1>Help for MARSXYZ</H1>
+<pre>
+PURPOSE:
+To compute, from a disparity map, the XYZ coordinates of each point in
+a stereo pair.
+
+This is a multimission program derived from Mars Pathfinder's mpfxyz.
+It supports any mission, instrument, and camera model supported by the
+Planetary Image Geometry (Pig) software suite.
+
+The XYZ coordinates are in a coordinate system defined by the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#coord">COORD</A> and
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#coord_index">COORD_INDEX</A> parameters.  This defaults to the Fixed frame for the mission
+(see the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#coord">COORD</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#coord_index">COORD_INDEX</A> parameters).
+
+Best results are obtained if the images are actually a stereo pair, but
+this is in theory not a requirement.  Images from different locations
+and instruments should be usable, as long as disparity maps can be
+generated.
+
+EXECUTION:
+marscorr <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#inp">inp</A>=(left,right) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#out">out</A>=(line_disparity,sample_disparity) ...
+marsxyz <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#inp">inp</A>=(left,right) <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#dispar">dispar</A>=(line_disparity,sample_disparity)    <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#out">out</A>=xyz.img <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#err_file">err_file</A>=<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#error">error</A>.img parameters
+where:
+left is the left eye image of a stereo pair
+right is the corresponding right eye image of a stereo pair
+line_disparity is the right eye line value computed by marscorr or other
+  correlator.
+sample_disparity is the right eye sample value computed by marscorr or other
+  correlator.
+xyz.img is a 3-band file with the X, Y, and Z values at that pixel in meters.
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#error">error</A>.img is the view ray miss distance in meters
+
+Any correlation program producing the correct kind of disparity map may
+be used; marscorr is simply an example.
+
+METHOD:
+Marsxyz computes, for each pixel, two view rays using the input camera models 
+and the disparity maps.
+It locates the closest approach point for the two vectors. These become the xyz
+coordinates in local level mars coordinates (for MPF, M98).
+
+Input file contents:
+
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#inp">INP</A>: left eye view, right eye view
+
+Note that there's no actual requirement that the first input be left or the
+second right.  The two images can be given in any order.  The first image,
+though, is the "master" image; the disparity maps and output files match the
+first image's pixels.  Convention places left first, however.
+
+Also, the actual image pixels are not used from these files; only the label
+information (to get the pointing and thus camera models) are used.
+
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#dispar">DISPAR</A>: REAL-formatted images giving the line and sample disparity.  Either
+two files may be given (line, sample order), or a single file with two bands.
+
+The disparities are interpreted as follows:  Each pixel in the disparity
+map corresponds to the same pixel in the first (left) input.  The value of
+the pixel in the disparity map is the line and sample of the point in the
+second (right) image, which matches this location in the first (left).  Note
+that these are standard VICAR 1-based file coordinates.  If both line and
+sample disparity values are 0, the point has no value.
+
+Output file contents:
+
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#out">OUT</A>:  marsxyz will generate either three separate one-band files (x, y, z), or
+a single 3-band file, depending on the number of filenames given.  The output
+files are in the coordinates of the first (left eye) image. This means there
+is a 1:1 correspondence between pixels and the first input file.
+
+Units of XYZ are in meters, in the coordinate system specified by the
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#coord">COORD</A> and COORD_SYS parameters.
+
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#err_file">ERR_FILE</A>:  This is the miss distance between the view rays for each pixel,
+in meters.  It is also in coordinates of the first (left) image.
+
+
+There are various reasons points are rejected by MARSXYZ, most of them
+controllable via parameters.  A summary of points rejected for each reason,
+as well as successfully computed points, is printed at the end of the run.
+They are:
+
+Rejected n points for missing correlation
+    These points failed to correlate.  This is normally a large number.
+Rejected n points for excessive line disparity
+    Adjusted by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#linedisp">LINEDISP</A> parameter.
+Rejected n points for exeeding average line disparity
+    These points exceeded the local average line disparity.  Adjusted by
+    <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#avglinedisp">AVGLINEDISP</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#box_width">BOX_WIDTH</A>, and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#box_height">BOX_HEIGHT</A> parameters.
+Rejected n points as not computable
+    The miss-distance calculation failed, possibly due to parallel rays.
+    Should always be 0.
+Rejected n points for excessive absolute miss distance (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#abserror">abserror</A>)
+    Adjusted by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#abserror">ABSERROR</A> parameter.
+Rejected n points for excessive miss distance per range (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#error">error</A>)
+    Adjusted by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#error">ERROR</A> parameter.
+Rejected n points for exceeding Z limits
+    Adjusted by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#zlimits">ZLIMITS</A> parameter
+Rejected n points due to diverging rays
+    Diverging rays put the XYZ point "behind" the camera and are always
+    rejected.  Should always be 0; if not, a bad camera model or bad
+    correlations are likely suspects.
+Rejected n points for exceeding range limit
+    Adjusted by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#range_limit">RANGE_LIMIT</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#range_factor">RANGE_FACTOR</A> parameters.  The actual range
+    limit used is printed <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#out">out</A> early in the log.
+Rejected n points for exceeding <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#spike">spike</A> value
+    The point differs from its neighbors in XYZ space by more than a threshold.
+    Adjusted by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#spike">SPIKE</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#spike_box">SPIKE_BOX</A> parameters.
+Rejected n points for exceeding <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#spike">spike</A> value per range
+    As above, but the threshold is based on the range to the point.
+    Adjusted by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#spike_range">SPIKE_RANGE</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#spike_box">SPIKE_BOX</A> parameters.
+Rejected n points for being outliers
+    Points that do not have enough valid neighbors are defined as outliers.
+    Adjusted by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#outlier">OUTLIER</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#outlier_box">OUTLIER_BOX</A> parameters.
+Computed n valid XYZ points
+    The number of valid XYZ points in the file.
+
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  Bob Deen</A>
+
+HISTORY:
+  1995-12-1  J Lorre - Initial mpfxyz
+  1999-03    B. Deen - Multimission conversion
+  2003-02    B. Deen - Additional rejection filtering; rejection reasons reported
+  2004-02    B. Deen - Added <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#avglinedisp">AVGLINEDISP</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#abserror">ABSERROR</A>
+  2007-08    B. Deen - Added <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#spike">spike</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#outlier">outlier</A> filters
+  2019-12-12 W. Bunch - Initialized some variables; cleaned up -Wall warnings; added unit test
+  2020-05-26 W. Bunch - Replaced sprintfs
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#inp"><H3>INP</H3></A>
+Input images.
+Must be 2.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#out"><H3>OUT</H3></A>
+Output files
+(x,y,z) triplet
+or 1 3-band file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#dispar"><H3>DISPAR</H3></A>
+Disparity map
+input files.
+(l,s) or 1 2-band file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#err_file"><H3>ERR_FILE</H3></A>
+Miss distance output
+file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#navtable"><H3>NAVTABLE</H3></A>
+Corrected navigation
+filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#error"><H3>ERROR</H3></A>
+Maximum ray miss
+distance per meter of
+range.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#abserror"><H3>ABSERROR</H3></A>
+Maximum ray miss
+distance (not adjusted
+for range).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#linedisp"><H3>LINEDISP</H3></A>
+Maximum line
+disparity.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#avglinedisp"><H3>AVGLINEDISP</H3></A>
+Maximum line disparity
+deviation from local
+average.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#box_width"><H3>BOX_WIDTH</H3></A>
+Width of box used for
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#avglinedisp">AVGLINEDISP</A> local average.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#box_height"><H3>BOX_HEIGHT</H3></A>
+Height of box used for
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#avglinedisp">AVGLINEDISP</A> local average.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#zlimits"><H3>ZLIMITS</H3></A>
+Permitted limits
+on z.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#range_limit"><H3>RANGE_LIMIT</H3></A>
+Override range limit
+for computed points.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#range_factor"><H3>RANGE_FACTOR</H3></A>
+Normal way to specify
+range limit for computed
+points.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#spike"><H3>SPIKE</H3></A>
+Specifies threshold for
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#spike">spike</A> filter (also
+enables it).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#spike_range"><H3>SPIKE_RANGE</H3></A>
+Specifies threshold for
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#spike">spike</A> filter that is
+adjusted based on range
+(also enables the filter).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#spike_box"><H3>SPIKE_BOX</H3></A>
+Size (h,w) of box used
+for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#spike">spike</A> filter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#outlier"><H3>OUTLIER</H3></A>
+Specifies threshold for
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#outlier">outlier</A> filter (also
+enables it).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#outlier_box"><H3>OUTLIER_BOX</H3></A>
+Size (h,w) of box used
+for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#outlier">outlier</A> filter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#write_cm"><H3>WRITE_CM</H3></A>
+Writes the camera model
+to the file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#match_method"><H3>MATCH_METHOD</H3></A>
+Specifies a method
+for pointing corrections.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#match_tol"><H3>MATCH_TOL</H3></A>
+Tolerance value for
+matching pointing params
+in pointing corrections file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#rsf"><H3>RSF</H3></A>
+Rover State File(s) to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#debug_rsf"><H3>DEBUG_RSF</H3></A>
+Turns on debugging of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#rsf">RSF</A>
+parameter.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#coord"><H3>COORD</H3></A>
+Coordinate system to use.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#coord_index"><H3>COORD_INDEX</H3></A>
+Coordinate system index for
+some <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#coord">COORD</A>/mission combos.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#fixed_site"><H3>FIXED_SITE</H3></A>
+Which site is FIXED for
+rover missions.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#solution_id"><H3>SOLUTION_ID</H3></A>
+Solution ID to use for
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz_level2.html#coord_index">COORD_INDEX</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/marsxyz.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

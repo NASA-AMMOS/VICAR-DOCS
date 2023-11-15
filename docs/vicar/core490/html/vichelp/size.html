@@ -1,0 +1,284 @@
+<HTML>
+<HEAD><title>HTML Help for SIZE</title></HEAD>
+<BODY>
+<H1>Help for SIZE</H1>
+<pre>
+PURPOSE:
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A> is a VICAR applications program which may be used to magnify or compress
+the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">size</A> of an image and/or change its aspect ratio.  The program may also
+be used to re-<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#scale">scale</A> the input DN values and to change the data format
+(e.g. byte-to-halfword).  Note, however, that if image <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">size</A> or aspect ratio
+manipulation is not required, these latter two operations are more efficiently
+accomplished via program C.
+
+EXECUTION STATEMENT:
+
+      <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A>  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#inp">INP</A>=IPIC  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#out">OUT</A>=OPIC  user-parameters...
+
+where IPIC is the input image and OPIC is the output image.  IPIC and OPIC
+may be in byte, halfword (16-bit integer), fullword (32-bit integer), or
+floating point (REAL*4) data format.  IPIC and OPIC may have different data
+formats.
+OPERATION:
+
+The input data format is determined from the input picture label.  The output
+data format may be specified via the keyword <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#oform">OFORM</A>.  If not specified, OPIC
+will be output in the same data format as IPIC.
+
+The magnification or compression (<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">zoom</A>) factor is specified via the VICAR
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">size</A> field or by the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">ZOOM</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#lzoom">LZOOM</A>, or <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#szoom">SZOOM</A> parameters (see below).  
+The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">zoom</A> factor(s) is inserted as annotation in the output picture label.
+The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#area">AREA</A> parameter may be used to restrict processing to an area of the
+input image.  For example:
+
+		<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A>  IDS  OPIC  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">ZOOM</A>=-3  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#area">AREA</A>=(10,10,100,100)
+is equivalent to
+		COPY  IPIC  IDS  (10,10,100,100)
+		<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A>  IDS  OPIC  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">ZOOM</A>=-3
+
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A> performs its own interpolation (i.e. GEOM, et al, are not fetched).
+Since it treats a special case of geometric transformation, the resulting
+simplified algorithm is faster than the more general algorithm in GEOM.
+See sections on image magnification and reduction below.
+If the output data format is different from the input format, data format
+conversion is performed.  The image DNs may be optionally rescaled at this
+point via parameter <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#scale">SCALE</A>.  Note that rescaling may be necessary when
+converting to a smaller data format (e.g. halfword-to-byte).  If a sample
+value is outside to range of the output format (e.g. 0 to 255 DN for byte
+data), the output DN will be truncated.  The output DN range may be
+further limited via the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#limits">LIMITS</A> parameter.
+SPECIFYING THE <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A> OF THE OUTPUT IMAGE:
+
+The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">size</A> of the output image is specified either by entering the number of
+lines and samples in the VICAR <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">size</A> field, or by specifying a magnification
+or compression factor via the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">ZOOM</A>, <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#lzoom">LZOOM</A>, or <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#szoom">SZOOM</A> parameters:
+
+Ex:  Enlarging a 3x3 image to a 9x9 image can be achieved in the
+     following equivalent ways:
+		<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A>  A  B  SIZE=(1,1,9,9)
+        or      <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A>  A  B  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#nl">NL</A>=9  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#ns">NS</A>=9
+	or	<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A>  A  B  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">ZOOM</A>=3
+        or      <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A>  A  B  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#lzoom">LZOOM</A>=3  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#szoom">SZOOM</A>=3
+
+If the output image <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">size</A> is specified by entering the number of lines and
+samples, then the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">ZOOM</A> factor is determined by computing the ratio between
+the output and input picture dimensions.  Independent <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">ZOOM</A> factors are
+computed in the line and sample dimensions, and may result in a change in
+the image aspect ratio:
+
+	z1=NLO/NLI		z2=NSO/NSI
+
+where the input image <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">size</A> is NLI x NSI and the output image size is NLO x NSO.
+The computations are performed in floating point, so that the output picture
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">size</A> is not necessarily a multiple of the input picture size (i.e. z1 and
+z2 are floating-point numbers).
+
+The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">ZOOM</A> factors may be specified via the ZOOM parameter,
+		    <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">ZOOM</A>=z
+where z1=z2=z, or independently via the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#lzoom">LZOOM</A> and <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#szoom">SZOOM</A> parameters:
+		<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#lzoom">LZOOM</A>=z1  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#szoom">SZOOM</A>=z2
+
+When the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">zoom</A> factor is an integer, it is identical in function to the ZOOM
+option in programs VIDS or IDX.  If z is positive, the input picture <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">size</A>
+is multiplied by z.  If z is negative, the picture <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">size</A> is divided by -z.
+Note that z=-2 is equivalent to z=0.5.
+
+Specification of a <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">zoom</A> factor overrides the corresponding <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#nl">NL</A> and/or <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#ns">NS</A> values
+in the VICAR <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A> field.  If a <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">zoom</A> factor is not specified the output picture
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">size</A> defaults to the corresponding <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#nl">NL</A> and/or <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#ns">NS</A> value in the SIZE field.
+
+IMAGE MAGNIFICATION:
+
+The following example illustrates how image magnification is treated. Let
+the input picture A be a 3x3 image as follows:
+
+			       2  5  8
+			A  =   5  8 11
+			       8 11 14
+
+The statement
+		<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A>  A  B  SIZE=(1,1,9,9)  '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#noin">NOIN</A>
+	or	<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A>  A  B  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">ZOOM</A>=3  '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#noin">NOIN</A>
+
+will produce a 9x9 output image B by replicating each input sample into a
+3x3 pixel <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#area">area</A>:
+
+		       2  2  2  5  5  5  8  8  8
+		       2  2  2  5  5  5  8  8  8
+		       2  2  2  5  5  5  8  8  8
+		       5  5  5  8  8  8 11 11 11
+		B  =   5  5  5  8  8  8 11 11 11
+		       5  5  5  8  8  8 11 11 11
+		       8  8  8 11 11 11 14 14 14
+		       8  8  8 11 11 11 14 14 14
+		       8  8  8 11 11 11 14 14 14
+The statement
+		<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A>  A  B  SIZE=(1,1,9,9)  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">ZOOM</A>=3
+
+will produce a 9x9 output image by interpolating between the four nearest
+neighbors and extrapolating around the picture borders.
+
+		       0  1  2  3  4  5  6  7  8
+		       1  2  3  4  5  6  7  8  9
+		       2  3  4  5  6  7  8  9 10
+		       3  4  5  6  7  8  9 10 11
+		B  =   4  5  6  7  8  9 10 11 12
+		       5  6  7  8  9 10 11 12 13
+		       6  7  8  9 10 11 12 13 14
+		       7  8  9 10 11 12 13 14 15
+		       8  9 10 11 12 13 14 15 16
+
+As in the no-interpolation case above, each input sample has been "blown up"
+to fill a 3x3 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#area">area</A>.  However, because interpolation is performed, the input
+sample values equal the output sample values only at the geometric centers
+of these 3x3 areas.
+
+Note that the magnified image output by <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A> differs slightly from what one
+might obtain using GEOM, MGEOM, or GEOMA. The user may find it instructive
+to attempt to achieve an identical result as the example above by using GEOM
+or GEOMA.
+
+IMAGE COMPRESSION:
+
+Image compression is treated as the functional inverse of image magnification.
+Unless the keyword '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#noin">NOIN</A> is specified, the compression is performed via <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#area">area</A>
+averaging.  To illustrate, let picture B be the 9x9 image of our previous
+example:
+
+		       0  1  2  3  4  5  6  7  8
+		       1  2  3  4  5  6  7  8  9
+		       2  3  4  5  6  7  8  9 10
+		       3  4  5  6  7  8  9 10 11
+		B  =   4  5  6  7  8  9 10 11 12
+		       5  6  7  8  9 10 11 12 13
+		       6  7  8  9 10 11 12 13 14
+		       7  8  9 10 11 12 13 14 15
+		       8  9 10 11 12 13 14 15 16
+The statement:
+		<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A>  B  C  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">ZOOM</A>=-3
+
+will cause each output pixel to be computed by averaging a 3x3 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#area">area</A> of
+the input image.  For example, output pixel (1,1) = (0+1+2+1+2+3+2+3+4)/9
+The resulting output image C will be identical to our original input image A:
+
+			       2  5  8
+			C  =   5  8 11
+			       8 11 14
+
+The <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#area">area</A> averaging operation is extended to non-itegral <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">zoom</A> factors by
+assigning fractional weights to samples around the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#area">area</A> margins, and unit
+weights to interior samples. The output sample is then the weighted samples
+divided by the sum of their weights.
+If the keyword '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#noin">NOIN</A> is specified,
+
+		<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A>  IPIC  OPIC  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">ZOOM</A>=-N  '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#noin">NOIN</A>
+
+then no pixel interpolation is performed.  The output image is generated
+by selecting every Nth image line from IPIC, and every Nth pixel of each of
+these lines, begining with pixel (1,1).  Note that when the output picture
+is several times smaller than the input picture, most of the samples in the
+input image are ignored in the generation of the output image.
+
+  To illustrate, let picture B be
+the 9x9 image of our previous example:
+
+		       0  1  2  3  4  5  6  7  8
+		       1  2  3  4  5  6  7  8  9
+		       2  3  4  5  6  7  8  9 10
+		       3  4  5  6  7  8  9 10 11
+		B  =   4  5  6  7  8  9 10 11 12
+		       5  6  7  8  9 10 11 12 13
+		       6  7  8  9 10 11 12 13 14
+		       7  8  9 10 11 12 13 14 15
+		       8  9 10 11 12 13 14 15 16
+
+The statements:
+		<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A>  B  C  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">ZOOM</A>=-3  '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#noin">NOIN</A>
+		<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A>  B  D  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">ZOOM</A>=-3  '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#noin">NOIN</A>  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#area">AREA</A>=(2,2,8,8)
+
+will generate 3x3 output images C and D of the form:
+
+		0  3  6		       2  5  8
+	 C  =	3  6  9		D  =   5  8 11
+		6  9 12		       8 11 14
+
+Note the use of the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#area">AREA</A> parameter to begin the resampling at a point other
+than pixel (1,1).
+
+The input image may be compressed by a non-integral <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">zoom</A> factor r:
+
+		<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A>  IPIC  OPIC  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">ZOOM</A>=r  '<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#noin">NOIN</A>
+
+where r is a floating point number between 0 and 1.  Each output sample is
+generated by determining where it comes from in the input image and selecting
+the sample closest to this point.
+
+<A NAME="examples">EXAMPLES:</A>
+
+Let the input image be a 100 x 100 byte picture. The following equivalent
+statements will magnify the input image by a factor of 2.5:
+
+		<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A>  A  B  SIZE=(1,1,250,250)
+		<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A>  A  B  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">ZOOM</A>=2.5
+
+To blow up a 50x50 <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#area">area</A> from the center of the picture by a factor of 4:
+
+		<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A>  A  B  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">ZOOM</A>=4  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#area">AREA</A>=(26,26,50,50)
+
+To average all the lines of an image together, use
+
+		<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A>  A  B  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#nl">NL</A>=1
+
+The following equivalent statements magnify the line direction by 2 and
+shrinks the sample direction by 2:
+
+		<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A>  A  B  SIZE=(1,1,200,50)
+		<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">SIZE</A>  A  B  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#lzoom">LZOOM</A>=2  <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#szoom">SZOOM</A>=-2
+
+PROGRAM RESTRICTIONS:
+
+Both IPIC and OPIC may be up to 70,000 pixels in width (sample <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">size</A>) and of
+arbitrary length (line or vertical dimension).
+
+The input image may be on tape or disk.  However, the output image must be on
+random-access disk storage.
+
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#inp"><H3>INP</H3></A>
+Input image.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#out"><H3>OUT</H3></A>
+Output image.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size"><H3>SIZE</H3></A>
+Output picture <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#size">size</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#nl"><H3>NL</H3></A>
+Output number of lines
+picture.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#ns"><H3>NS</H3></A>
+Output number of samples
+picture.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#oform"><H3>OFORM</H3></A>
+Output data format.
+Valid keywords are BYTE, HALF,
+FULL, or REAL.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#area"><H3>AREA</H3></A>
+Input image <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#area">area</A> to be SIZEd
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#noin"><H3>NOIN</H3></A>
+Specifies no interpolation.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom"><H3>ZOOM</H3></A>
+Specifies the <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">ZOOM</A> factor.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#lzoom"><H3>LZOOM</H3></A>
+Vertical <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">zoom</A> factor.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#szoom"><H3>SZOOM</H3></A>
+Horizontal <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#zoom">zoom</A> factor.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#scale"><H3>SCALE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#scale">Scale</A> applied to output values.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#limits"><H3>LIMITS</H3></A>
+Lower and upper <A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size_level2.html#limits">limits</A> of DN
+range.
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core490/html/vichelp/size.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

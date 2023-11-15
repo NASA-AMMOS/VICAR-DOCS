@@ -1,0 +1,173 @@
+<HTML>
+<HEAD><title>HTML Help for IBISGCP</title></HEAD>
+<BODY>
+<H1>Help for IBISGCP</H1>
+<pre>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#purpose">PURPOSE</A>:
+
+IBISGCP outputs Ground-Control Points to an IBIS file for use in registering
+the elements of a mosaic.  IBISGCP is a multimission <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#program">program</A> and can be used
+process images from Cassini, Galileo, Voyager, and Viking Orbiter.
+
+EXECUTION:
+	   IBISGCP  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#inp">inp</A>=nav  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#out">out</A>=gcp  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#project">project</A>=GLL  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#id">id</A>=(5,8)
+or
+	   IBISGCP  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#out">out</A>=gcp  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#project">project</A>=GLL  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#id">id</A>=(5,8)
+              <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#target">target</A>=EARTH  <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#camera">camera</A>=(1,1)  	      <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#scet">scet</A>=(1990,345,14,6,22,0,  		    1990,345,22,16,780,0)
+where
+	nav is an input IBIS SEDR file containing navigation data for each
+	    image in a mosaic (see <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#program">program</A> IBISNAV),
+	gcp is an output file containing the ground-control points from
+	    one or more reference images in the mosaic.
+	<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#project">project</A> is CASSI, GLL, VGR-1, VGR-2, or VIKOR,
+	<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#id">id</A> is a list of frame sequence numbers corresponding to the position
+	    of each reference image in the IBIS SEDR file.
+
+If the IBIS SEDR file is not input, the navigation data will be retrieved via
+the MIPS SPICE server.  This requires that the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#target">target</A> be specified, and that
+each reference image be identified by <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#camera">camera</A> serial number and spacecraft-event
+time (see <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#target">TARGET</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#camera">CAMERA</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#scet">SCET</A> parameters).
+
+OPERATION:
+
+IBISGCP outputs ground-control points for use in registering the elements of a
+mosaic.  For Voyager refer to procedure MANUAL2.COM.  For Galileo refer to
+procedure MANUAL3.COM.  Note that both of these procedures are currently
+unported (and therefore available only via the Harvest CM system).
+
+Ground-control points are points on a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#target">target</A> body whose latitude-longitude
+coordinates are known.  IBISGCP creates psuedo ground-control points by
+assuming that the navigation data for each of the reference images is perfect
+(i.e. contains no errors).  The reference images are normally images which
+have been previously navigated to improve their <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#camera">camera</A> pointing knowledge.
+Images with visible limbs are usually used as reference images since these may
+be navigated by fitting the limb (see programs FARENC and NAV).
+
+The reference images are specified in one of two ways:
+
+1: by inputing an IBIS SEDR file and specifying the frame sequence number
+   of each reference image within this file (see <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#id">ID</A> parameter).
+2: by specifying their <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#camera">camera</A> IDs and spacecraft-event times (see CAMERA and
+   <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#scet">SCET</A> paramters).
+
+   navigation data via the SPICE server.
+
+Method #1 is normally used.  In this mode, IBISNAV is first run to create the
+IBIS SEDR file.  This file will contain the navigation data for all frames
+comprising the mosaic.
+
+If method #2 is used, IBISGCP retrieves the navigation data for each reference
+image via the MIPS SPICE server.  This requires that the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#target">target</A>-body name
+be specified (see <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#target">TARGET</A> parameter).  Moreover, the spacecraft-event time and
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#camera">camera</A> serial number for each reference image must be specified (see <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#scet">SCET</A> and
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#camera">CAMERA</A> parameters).  For unknown reasons, the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#id">ID</A> parameter is also required,
+even though the corresponding IBIS SEDR file may not even exist.
+
+For either method, the spacecraft <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#id">ID</A> must be specified (see MISSION parameter).
+
+Ground-control points are selected in each reference image so that they form
+a grid pattern over the image (see <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#linc">LINC</A> and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#sinc">SINC</A> parameters).  The line-sample
+coordinates of each grid point is converted to latitude-longitude coordinates.
+If the point is not on the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#target">target</A> body, it is skipped.
+
+All points from the same reference image are equally precise.  The actual
+precision is solely determined by the accuracy of the navigation source.
+
+The ground-control points are output to an IBIS file suitable for input to
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#program">program</A> OMC or OMCOR2.  The IBIS file has 5 "columns" and N "rows", where N is
+the number of ground-control points.  The columns are:
+
+	1	frame sequence number (from <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#id">ID</A> parameter)
+	2	line coordinate
+	3	sample coordinate
+	4	latitude coordinate
+	5	longitude coordinate
+
+GEOMETRIC DISTORTIONS:
+
+For Voyager and Viking Orbiter, the reference images are assumed to be
+geometrically corrected.  Thus, the line-sample coordinates for the ground
+control points are assumed to be in <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#object">object</A> space.
+
+For all later missions (Cassini, Galileo), the reference images are assumed
+to be geometricall uncorrected.  Thus, the line-sample coordinates for the
+ground control points are assumed to be in image space.
+
+These assumptions effect the resulting latitude-longitude computations.  The
+keyword '<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#object">OBJECT</A> may be used to specify an object-space output.  Note that it
+is not possible to image-space coordinates for Voyager or Viking Orbiter since
+the reseau locations are unknown.
+
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#program">PROGRAM</A> HISTORY:
+
+Written by:         C. AVIS, 2/89
+<A NAME="CogProg">Current Cognizant Programmer:  Gary Yagi, Jan 31, 2003</A>
+Revisions:
+
+When      Who  What
+--------- ---  ---------------------------------------------------------------
+Jan 31 03 GMY  Fixed Linux compile errors.  Updated to support Cassini.
+	       Fixed Voyager to reflect use of SPICE instead of SEDR.
+	       Major revision of documentation.
+Dec 09 96 SMC  * Modified for summation mode support                 (FR89818)
+               * Parameter PLANET is changed to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#target">TARGET</A>
+               * Modified to call GETSPICE3 instead of GETSPICE          (DFR)
+               * Discovered that MSEDR did not correctly assign the OM and
+                 RS to DATA buffer, fixed.                               (DFR)
+               * Discovered that subroutine FROMEULER is incorrect, the one
+                 from MOSPLOT is copied and tested.                      (DFR)
+               * Discovered that the CONVEV DATA buffer is not complete if
+                 the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#program">program</A> is given an IBISNAV file, fixed.            (DFR)
+	
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#out"><H3>OUT</H3></A>
+String
+Name of IBIS ground control file
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#project"><H3>PROJECT</H3></A>
+name of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#project">project</A>
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#object"><H3>OBJECT</H3></A>
+Causes output ground-control
+points to be in <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#object">object</A> space.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#camera"><H3>CAMERA</H3></A>
+Integer 
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#camera">Camera</A> serial numbers for
+each reference image. 
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#scet"><H3>SCET</H3></A>
+The spacecraft event time 
+for each reference image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#id"><H3>ID</H3></A>
+Required Real
+IBISNAV frame sequence 
+number for each reference image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#ckname"><H3>CKNAME</H3></A>
+Optional sring
+SPICE C-kernal name
+String 4 characters.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#target"><H3>TARGET</H3></A>
+Optional sring
+String
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#target">Target</A> name
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#linc"><H3>LINC</H3></A>
+Optional Integer
+Line spacing between ground 
+control points.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp_level2.html#sinc"><H3>SINC</H3></A>
+Optional Integer
+Sample spacing between ground 
+control points.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/ibisgcp.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

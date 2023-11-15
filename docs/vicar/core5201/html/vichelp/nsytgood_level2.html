@@ -1,0 +1,243 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for NSYTGOOD</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood.html">NSYTGOOD</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+Input files contain a goodness <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#band">band</A> which indicates whether the product
+meets thresholds.  Up to 5 inputs are supported, although this is arbitrary
+and easily increased if needed.  List file inputs are not supported.
+
+If an input file is "--", it is ignored.  This allows the same slots to
+be re-used in different scenarios.  For example, on InSight the SEIS goodness
+file has two roughness inputs, but HP3 has only one.  Supplying -- for the
+second input for HP3 allows the 3rd input to be tilt in most cases, meaning
+the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#single_bad">SINGLE_BAD</A> values don't have to change per instrument.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+Output goodness file.  The values in this file are controlled by the
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#good_value">GOOD_VALUE</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#single_bad">SINGLE_BAD</A>, <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#multi_bad">MULTI_BAD</A>, and <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#mask_bad">MASK_BAD</A> parameters.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mask"><H3>MASK</H3></A><pre>
+Optional <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#mask">mask</A> file.  If the mask file is present, anything outside the mask
+is marked bad.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="band"><H3>BAND</H3></A><pre>
+Specifies the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#band">band</A> in each input that contains the goodness map.  If there
+are fewer entries than files, the last entry in <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#band">BAND</A> is used for all remaining
+files.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="thresh"><H3>THRESH</H3></A><pre>
+Specifies the threshold value for "good" status for each input.  Values
+greater than or equal to the threshold are considered good.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mask_band"><H3>MASK_BAND</H3></A><pre>
+Specifies the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#band">band</A> in the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#mask">mask</A> file to be used.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mask_thresh"><H3>MASK_THRESH</H3></A><pre>
+Specifies the threshold for the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#mask">mask</A> <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#band">band</A>.  Values greater than or equal to
+the threshold are considered good (unmasked).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="good_value"><H3>GOOD_VALUE</H3></A><pre>
+Specifies the value to use in the output file to indicate the value is good.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="single_bad"><H3>SINGLE_BAD</H3></A><pre>
+Specifies the value to use in the output file if a single value is bad.
+If there are fewer entries than files, the last entry in <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#single_bad">SINGLE_BAD</A> is used
+for all remaining files.
+
+Note that multiple inputs can use the same <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#single_bad">SINGLE_BAD</A> value, but if more than
+one of these are bad, it reverts to a multi-bad situation.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="multi_bad"><H3>MULTI_BAD</H3></A><pre>
+Specifies the value to use in the output file to indicate more than one
+input was bad.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="mask_bad"><H3>MASK_BAD</H3></A><pre>
+Specifies the value to use in the output file to indicate the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#mask">mask</A> was bad.
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="config_path"><H3>CONFIG_PATH</H3></A><pre>
+A colon-separated list of directories in which to look for configuration
+and calibration files.  Environment variables are allowed in the list
+(and may themselves contain colon-separated lists).  The directories are
+searched in order for each config/cal file when it is loaded.  This allows
+multiple projects to be supported simultaneously, and allows the user to
+override any given config/cal file.  Note that the directory structure below
+the directories specified in this path must match what the project expects.
+For example, Mars 98 expects flat fields to be in a subdirectory named
+"flat_fields" while Mars Pathfinder expects them to be directly in the
+directory specified by the path (i.e. no intermediate subdirectories).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="point_method"><H3>POINT_METHOD</H3></A><pre>
+Specifies a mission-specific pointing method to use.  Normally this
+parameter is not used, in which case the "default" pointing methods
+are used.  Some missions may have special, or alternate, pointing
+methods available, which are indicated by this string (for example,
+backlash models, using arm joint angles instead of x/y/z/az/el, etc).
+A substring search is used, so multiple methods (where that makes sense)
+can be specified by separating the keywords with commas.
+
+Note that nav files created using one pointing method will most likely
+not be compatible with a mosaic created using a different pointing method.
+
+The methods available vary per mission, but some methods available at
+the time of this writing are:
+
+BACKLASH : Mars 98 SSI only.  Selects a backlash pointing model,
+which adjusts the telemetered azimuth and elevation values based on
+knowledge of the camera's mechanical backlash and the direction the
+motor was travelling when the image was taken.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="data_set_name"><H3>DATA_SET_NAME</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#data_set_name">DATA_SET_NAME</A> typically identifies the instrument that acquired the
+data, the target of that instrument, and the processing level of the data.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#data_set_name">DATA_SET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="data_set_id"><H3>DATA_SET_ID</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#data_set_id">DATA_SET_ID</A> value for a given data set or product is constructed
+according to flight project naming conventions.  In most cases the
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#data_set_id">DATA_SET_ID</A> is an abbreviation of the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#data_set_name">DATA_SET_NAME</A>.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#data_set_id">DATA_SET_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="release_id"><H3>RELEASE_ID</H3></A><pre>
+When a data set is released incrementally, such as every three months during
+a mission, the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#release_id">RELEASE_ID</A> is updated each time part of the data set is released.
+For each mission(or host id if multiple spacecrafts), the first release of a data
+set should have a value of "0001".
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#release_id">RELEASE_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="product_id"><H3>PRODUCT_ID</H3></A><pre>
+Specifies a permanent, unique identifier assigned to a data product by
+its producer. Most commonly, it is the filename minus the extension.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#product_id">PRODUCT_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="producer_id"><H3>PRODUCER_ID</H3></A><pre>
+Specifies the unique identifier of an entity associated with the
+production of a data set. This value is copied to the output label,
+property IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#producer_id">PRODUCER_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="producer_inst"><H3>PRODUCER_INST</H3></A><pre>
+Specifies the identity of a university, research center, NASA center or other
+institution associated with the production of a data set.
+This value is copied to the output label, property IDENTIFICATION, keyword
+PRODUCER_INSTITUTION_NAME.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="target_name"><H3>TARGET_NAME</H3></A><pre>
+Specifies a target.  The target may be a planet, satellite, ring, region, feature,
+asteroid or comet.  This value is copied to the output label, property
+IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#target_name">TARGET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="target_type"><H3>TARGET_TYPE</H3></A><pre>
+Specifies the type of a named target. This value is copied to the output
+label, property IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/nsytgood_level2.html#target_name">TARGET_NAME</A>.
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

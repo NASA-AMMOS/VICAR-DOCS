@@ -1,0 +1,216 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for GEOMV</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv.html">GEOMV</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+Input file name.  This parameter is input as:
+     <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#inp">INP</A>=innam
+where "innam" is the input file name.
+
+The second file, if given, is an IBIS file containing a trans-
+formation grid in four columns specified by the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#cols">COLS</A> parameter.
+This allows large grids, say 500 x 500 or 1000 x 1000.
+
+The third file, if given, is a VICAR image containing a GeoTIFF
+label.  In this case, the output image is assumed to have the
+same coordinates as the GeoTIFF labelled image except for the
+translation produced by the (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#sl">sl</A>,<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#ss">ss</A>) coordinates.  This translation
+is put into the GeoTIFF coordinate information and the GeoTIFF
+label is added to the output.  For an illustration of Automatic
+GeoTIFF labelling, see the two PDF's included in the geomv.com
+file named gtwarp.pdf and tstgtwarp.pdf.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+Output and intermediate file names. This parameter is input as:
+     <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#out">OUT</A>=outnam
+where:
+"outnam" is the output file name, and
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="size"><H3>SIZE</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#size">size</A> field is specified with four arguments,
+     <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#size">SIZE</A>=(a,b,c,d)
+where:
+a is the starting line number of the output picture.
+b is the starting sample of the output picture.
+c is the number of lines, and
+d is the number of samples
+For example, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#size">SIZE</A>=(1,1,40,50)
+would create an output picture of <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#size">size</A> 40 lines by 50 bytes.
+The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#size">size</A> field can be thought of as a window relative to the output
+grid.  The first two values offset the window down and to the right
+causing the features in the image to move up and to the left.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="sl"><H3>SL</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#sl">SL</A> can be used to specify the starting line of the output picture.
+This is actually a coordinate relative to the output grid, therefore,
+it offsets the output picture by (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#sl">SL</A> - 1.)  The default for SL is 1.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ss"><H3>SS</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#ss">SS</A> can be used to specify the starting sample of the output picture.
+This is actually a coordinate relative to the output grid, therefore,
+it offsets the output picture by (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#ss">SS</A> - 1.)  The default for SS is 1.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nl"><H3>NL</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#nl">NL</A> can be used in conjunction with <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#ns">NS</A> in place of the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#size">SIZE</A>
+parameter to specify the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#size">size</A> of the output picture.  It simply
+represents the number of lines for output.
+* See restrictions for more information
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ns"><H3>NS</H3></A><pre>
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#ns">NS</A> can be used in conjunction with <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#nl">NL</A> in place of the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#size">SIZE</A>
+parameter to specify the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#size">size</A> of the output picture.  It simply
+represents the number of samples for output.
+* See restrictions for more information
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="interp"><H3>INTERP</H3></A><pre>
+This parameter has four valid keyword values: NOIN, BILIN,
+CUBCONV, and CUBSPLIN
+
+NOIN means no interpolation.   The default method (used when neither
+keyword is specified) for computing the
+DN values of the output picture is to use a bi-linear interpolation
+on the four nearest neighbors in the input picture.  With NOIN, the
+value of the nearest point is simply used.
+For example, say a point in the output picture was determined
+to have come from point (R,P) in the input picture.  Since R and P
+are real values, we must somehow calculate a DN value for that
+point.  Take IR and IP as the truncated values.  We then have
+          VAL1                                 VAL2
+           *                                    *
+         (IR,IP)                              (IR,IP+1)
+                     POINT
+                       *
+                     (R,P)
+          VAL3                                 VAL4
+           *                                    *
+         (IR+1,IP)                           (IR+1,IP+1)
+Here, POINT is the result of a bilinear interpolation using
+VAL1, VAL2, VAL3, and VAL4.
+If NOIN is specified, then POINT would be VAL1, the nearest
+neighbor.
+
+CUBCONV:  (reference Goshtasby on the web)
+CUBSPLIN: (reference Goshtasby on the web)
+
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#znoin">ZNOIN</A> specifies that an interpolation is done except
+when one or more of the points used has a value equal to zero. 
+In that case the nearest neighbor method is used.
+This allows preparation of sharp edges (no interpolation rolloff)
+for mosaicking.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="format"><H3>FORMAT</H3></A><pre>
+The format is obtained from the input image label. 
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nah"><H3>NAH</H3></A><pre>
+the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#nah">nah</A> is number of grid cells horizontally, the number of tiepoints 
+across is one larger (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#nah">nah</A>+1).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nav"><H3>NAV</H3></A><pre>
+the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#nav">nav</A> is number of grid cells vertically, the number of tiepoints
+vertically is one larger (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#nav">nav</A>+1).
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="cols"><H3>COLS</H3></A><pre>
+    <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#cols">COLS</A>=(C1,C2,C3,C4)   Columns in the IBIS tabular file that
+			 contain the tiepoints.  C1 has new line,
+			 C2 has new sample, C3 has old line, and
+			 C4 has old sample.  This parameter is used
+			 only if the IBIS file input is given.  The
+			 defaults are (1,2,3,4) and they are automat-
+			 ically given if a TIECONV type program is 
+			 used.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="tiepoint"><H3>TIEPOINT</H3></A><pre>
+There are four real numbers for each <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#tiepoint">tiepoint</A> , the first two are the
+line-sample coordinate in the output, the second two are the line-sample
+coordinate in the input which is mapped to the point in the output.  There
+must be (<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#nah">nah</A>+1)*(<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#nav">nav</A>+1) tiepoints (quadruple)s aligned in a perfectly
+horizontal and vertical grid.  THE OUTPUT GRID MUST ALSO BE UNIFORMLY
+SPACED IN EACH DIRECTION.  THE SPACING VERTICALLY DOES NOT HAVE TO
+EQUAL THE SPACING HORIZONTALLY THOUGH (MORE RESTRICTIVE THAN LGEOM).
+ON THE OTHER HAND, THE OUTPUT GRID VALUES CAN BE FRACTIONAL (LGEOM
+REQUIRES WHOLE NUMBERS).  THESE REQUIREMENTS ARE EASY TO MEET IF THE
+GRID IS GENERATED MATHEMATICALLY OR IF A PROGRAM SUCH AS TIECONV IS USED.
+
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="parms"><H3>PARMS</H3></A><pre>
+A parameter data set containing the geom parameters.  This file should
+have been written by a program which uses the XVP routines for writing
+parameter data sets.  This is the most common means by which the parameters
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#nah">NAH</A>, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#nav">NAV</A>, and <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#tiepoint">TIEPOINT</A> are passed.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="tmpfile"><H3>TMPFILE</H3></A><pre>
+If the warp area of the input image is larger than <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#vmemsize">VMEMSIZE</A>, the program
+shifts into a "strip processing" mode using the filename given by parameter
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#tmpfile">TMPFILE</A> followed by a sequence of digits to create one file for each strip.
+Then all of the strips are concatenated to give the final output.  Each piece
+of each strip is designed to fit within the user provided or defaulted virtual
+memory <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#size">size</A>.  Do not use a link for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#tmpfile">TMPFILE</A>.  Instead, you can use a path/filename
+for the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#tmpfile">TMPFILE</A>.  This is because multiple files will be created with TMPFILE as a
+root.  You must delete the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/geomv_level2.html#tmpfile">TMPFILE</A> files after the run.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

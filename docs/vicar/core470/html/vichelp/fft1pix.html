@@ -1,0 +1,122 @@
+<HTML>
+<HEAD><title>HTML Help for FFT1PIX</title></HEAD>
+<BODY>
+<H1>Help for FFT1PIX</H1>
+<pre>
+ FFT1PIX  is  a  VICAR application program which works in conjunction
+ with  FFT1  to  allow  the user to display and/or modify the Fourier
+ transform  using  existing VICAR programs.  The procedure is similar
+ to  that  used  in  FFT2,  FFTPIC,  and  TPIKMASK  but  without  the
+ restriction  that  terms  of  the transform be either set to zero or
+ left  unchanged.   In  the forward mode, the input to fft1pix is the
+ complex Fourier transform from FFT1.  The output can be an amplitude
+ picture  and/or a phase picture of the transform.  Those can then be
+ modified to the users needs and re-inputed to fft1pix in the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#reverse">reverse</A>
+ mode.   The  Fourier transform is then modified in accordance to the
+ changes made to the amplitude and/or phase pictures.
+ Let
+
+ z(k) = a(k) + ib(k) 
+ 
+ be  the  k'th  term  of  the  Fourier  series  of a given line.  The
+ amplitude   of   this   term   is   |z|   and  the  phase  angle  is
+ atan(b(k)/a(k)).   Then  the  DN of the k'th sample in the amplitude
+ picture equals is p*|z|, where p is a scaling factor.
+
+ If  the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#log">log</A> option is used, DN = p*LOG(|z|).  p is determined by the
+ normalization  options  used.  Similarly the DN of the phase picture
+ is given by:
+
+ DN = q * (phase angle) + s
+
+ where q and s are scaling factors.  If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#nosign">NOSIGN</A> is requested,
+
+ DN = q * |phase angle| + s.
+
+ If  requested, then the amplitude and phase pictures are written <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#out">out</A>
+ on  the primary and secondary output data sets.  In addition, a page
+ <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#plot">plot</A> of the amplitudes may be printed on the line printer, providing
+ a  means  of accurately locating noise spikes in the transform.  The
+ user  may  now  modify the amplitude or phase picture using existing
+ VICAR programs.  For example, Noise spikes may be QSAR'ed <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#out">out</A> of the
+ amplitude picture.
+
+ The  modified  amplitude  and  phase  pictures are now re-input into
+ fft1pix  in  the  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#reverse">reverse</A>  mode.   The  complex*8 transform data set
+ remains  as  the  primary  input, the modified amplitude picture the
+ secondary input, and the modified phase picture the third input.  If
+ the amplitude or phase picture was not modified, then it need not be
+ re-input  to  fft1pix.   Each  term  of  the  original  transform is
+ compared  to  the  corresponding  term of the modified amplitude and
+ phase  pictures; if the amplitude differs, the term is recomputed to
+ match  that of the amplitude picture with phase angle preserved.  If
+ the  phase  angle  differs  from  the  phase  picture,  the  term is
+ recomputed  to match the new phase angle, amplitude preserved.  Thus
+ the  user  has complete control over each term of the transform.  If
+ <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#conj">CONJ</A>  is not specified in the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#reverse">reverse</A> mode, the complex conjugate of
+ a  term  is  automatically  modified  in the identical manner to its
+ conjugate  term.   The output is a complex*8 data set containing the
+ Fourier  transform  after  modifications  have  been made to it.  If
+ requested,  a page <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#plot">plot</A> is made of the transform after modification.
+
+ The modified transform is now ready to be input into FFT1 in inverse
+ mode to produce the resulting image.
+
+ WRITTEN BY : 			JOHN ADDINGTON
+<A NAME="CogProg"> COGNIZANT PROGRAMMER : 	FLORANCE MOSS</A>
+ REVISION : 			04 JAN 1993
+ CONVERTED TO VAX    BY:  	F. F. Moss,    20 JAN 1984
+ CONVERTED TO VICAR2 BY:  	D. F. Stanfill,   JUN 1987
+ PORTED BY:			J. F. McNeill, 04 JAN 1993
+
+				J. F. McNeill, 22 JUL 1994
+				Corrected printing of integer
+				within PPLOT subroutine.
+				(FR 85096)
+
+ TIMING : Average CPU time used on VAX 8650 = 00:00:02.41.
+	  Computed from TSTFFT1PIX.PDF for ported version 04 JAN 1993. 
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#inp"><H3>INP</H3></A>
+1-3 input data set(s)
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#out"><H3>OUT</H3></A>
+0-2 Output data set(s)
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#type"><H3>TYPE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#type">Type</A> of output picture
+(AMPL or PHASE)
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#log"><H3>LOG</H3></A>
+Output is a logarithm
+of amplitude picture
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#spike"><H3>SPIKE</H3></A>
+Scale the amplitude picture to 
+this <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#spike">spike</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#normal"><H3>NORMAL</H3></A>
+Normalize the amplitude picture 
+to the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#spike">spike</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#nosign"><H3>NOSIGN</H3></A>
+Suppress the sign of the output 
+phase picture
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#conj"><H3>CONJ</H3></A>
+Outputs include the complex 
+conjugate
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#plot"><H3>PLOT</H3></A>
+Produce an amplitude page <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#plot">plot</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#avg"><H3>AVG</H3></A>
+Page <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#plot">plot</A> lines are averaged 
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#pspike"><H3>PSPIKE</H3></A>
+Normalize the page <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#plot">plot</A> to the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#spike">spike</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#freq"><H3>FREQ</H3></A>
+Use 'FREQUENCY' as page <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#plot">plot</A> x-axis 
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#reverse"><H3>REVERSE</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#reverse">Reverse</A> mode
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#dc"><H3>DC</H3></A>
+Increase <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#dc">DC</A> term of each line 
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#gain"><H3>GAIN</H3></A>
+REAL -  a <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix_level2.html#gain">gain</A> factor is applied to each line
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/fft1pix.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

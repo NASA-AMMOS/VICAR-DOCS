@@ -1,0 +1,242 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for LAB2TCL</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/lab2tcl.html">LAB2TCL</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+    This parameter is used to specify a labeled VICAR image to examine.
+
+
+    Type:	string, 80 characters
+    Count:	1
+    Valid:	any
+    Default:	none
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="v1"><H3>V1</H3></A><pre>
+    The purpose of "lab2tcl" is to transfer label information into a TCL
+    variable; the Vn parameters are used to specify the variable's name.
+    If the specified keyword is found in the image's label, then the
+    variable is set to the keyword's associated value; if the keyword is
+    not found, then the variable is undefined. 
+
+    Label values are typed: integer, real, or string. "lab2tcl" returns
+    the value using the value type; the variable should be declared to
+    be of the same type as the expected value. See either this program's
+    EXECUTION section or program label-add for a description of how
+
+    Parameter names "V1", "V2", etc., may be omitted from the calling 
+    line. You cannot skip a parameter in the sequence, for example:
+	V1=a V2=b V4=c
+    This usage will lead to an error.
+
+    The number of specified keywords determines how many variables are
+    set. In the example:
+	procedure
+	local a integer
+	local b integer
+	local c integer
+	local d integer
+	body
+	! Create an image and add some info to it
+	    gen tempimage
+	    label-add tempimage items="a=7 b=14 c=1987 d=3098470"
+	! Read the information
+	    lab2tcl  INP=tempimage  V1=a V2=b V3=c V4=d  KEYWORD=(a,b)
+	    write "&a/&b"
+	    write "&c  (&d)"
+	end-proc
+    only the variables for parameters V1 and V2 are set; c and d are
+    undefined.
+
+
+    Example:
+	Look for keywords a, b, c, d, e, f, & g (the "lab2tcl" produces 
+	the same result):
+	    procedure
+	    local a integer
+	    local b string
+	    local c string
+	    local d integer
+	    local e real
+	    local f integer
+	    local g real
+	    refgbl $prompt
+	    body
+	    ! Create an image and add some info to it
+		gen tempimage
+		label-add tempimage   		    items="a=1,b='ABC',c='DEF',d=44,e=42.319,f=312,g=5.2e4"
+		label-add tempimage items="prompt='Test'"
+	    ! Read the information
+		lab2tcl INP=tempimage V1=a V2=b V3=c V4=d V5=e V6=f V7=g   		    V8=$prompt  KEYWORD=(a,b,c,d,e,f,g,prompt)
+		write "a=&a, b=&b, c=&c, d=&d, e=&e,"
+		write "f=&f, g=&g"
+		lab2tcl tempimage  a b c d e f g  KEYWORD=(a,b,c,d,e,f,g)
+		write "a=&a, b=&b, c=&c, d=&d, e=&e,"
+		write "f=&f, g=&g"
+	    end-proc
+
+
+    Type:	name
+    Count:	1
+    Valid:	any
+    Default:	none
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="v2"><H3>V2</H3></A><pre>
+    See parameter V1 for more information.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="v3"><H3>V3</H3></A><pre>
+    See parameter V1 for more information.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="v4"><H3>V4</H3></A><pre>
+    See parameter V1 for more information.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="v5"><H3>V5</H3></A><pre>
+    See parameter V1 for more information.
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="keyword"><H3>KEYWORD</H3></A><pre>
+    Label information is stored in (keyword,value) pairs. This parameter
+    is used to enter the names of the keywords of interest. Keywords are 
+    stored in uppercase characters, so upper or lower case characters
+    can be used.
+
+    Examples:
+	Look for keyword "acreage" (the "lab2tcl" produces the same
+	result):
+	    procedure
+	    local acres real
+	    body
+	    ! Create an image and add some info to it
+		gen tempimage
+		label-add tempimage items="acreage=367483.3"
+	    ! Read the information
+		lab2tcl INP=tempimage V1=acres KEYWORD=acreage
+		write "Acres = &acres"
+		lab2tcl INP=tempimage V1=acres KEYWORD=Acreage
+		write "Acres = &acres"
+		lab2tcl INP=tempimage V1=acres KEYWORD=ACREAGE
+		write "Acres = &acres"
+	    end-proc
+
+
+    Type:	string, 8 characters
+    Count:	1 to 20
+    Valid:	any, including empty string ("")
+    Default:	none
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="type"><H3>TYPE</H3></A><pre>
+    A label has at least two categories of information: SYSTEM and
+    HISTORY. The SYSTEM category contains keywords such as:
+	Integer-valued		String-valued
+	name	example		name	example
+	---------------		---------------
+	LBLSIZE    234		FORMAT	'BYTE'
+	BUFSIZ	  2000		TYPE	'IMAGE'
+	DIM	     3		ORG	'BSQ'
+	EOL	     1
+	RECSIZE	    13
+	NL	     8
+	NS	    13
+	N1	    13
+	N2	     8
+	N3	     0
+	N4	     0
+	NBB	     0
+	NLB	     0
+
+    while the HISTORY category contains keywords entered by tasks as well
+    as the label-add program. "lab2tcl" will look in only one category or
+    in both categories; this switch permits you to specify lab2tcl's actions.
+
+    Examples:
+	Using HISTORY category only (the "lab2tcl" produces the same
+	result):
+	    procedure
+	    local acres real
+	    body
+	    ! Create an image and add some info to it
+		gen tempimage
+		label-add tempimage items="acreage=+33.289e9"
+	    ! Read the information
+		lab2tcl INP=tempimage V1=acres KEYWORD=acreage
+		write "Acres = &acres"
+		lab2tcl INP=tempimage V1=acres KEYWORD=acreage 'HISTORY
+		write "Acres = &acres"
+		lab2tcl INP=tempimage V1=acres KEYWORD=acreage TYPE=HISTORY
+		write "Acres = &acres"
+		lab2tcl INP=tempimage V1=acres KEYWORD=acreage TYPE=history
+		write "Acres = &acres"
+	    end-proc
+
+	Using SYSTEM category only (the "lab2tcl" produces the same
+	result):
+	    procedure
+	    local numlines integer
+	    body
+	    ! Create an image, then read some of its info
+		gen tempimage
+		lab2tcl INP=tempimage V1=numlines KEYWORD=nl 'SYSTEM
+		write "image contains &numlines lines"
+		lab2tcl INP=tempimage V1=numlines KEYWORD=nl TYPE=SYSTEM
+		write "image contains &numlines lines"
+		lab2tcl INP=tempimage V1=numlines KEYWORD=nl TYPE=system
+		write "image contains &numlines lines"
+	    end-proc
+
+	Using first SYSTEM then HISTORY categories (the first two "lab2tcl"
+	uses happen to produce the same result as the HISTORY only example,
+	while the third use would be the same as the SYSTEM only example):
+	    procedure
+	    local acres real
+	    local numlines integer
+	    body
+	    ! Create an image and add some info to it
+		gen tempimage
+		label-add tempimage items="acreage=-748.32"
+	    ! Read the information
+		lab2tcl INP=tempimage V1=acres KEYWORD=acreage 'ALL
+		write "Acres = &acres"
+		lab2tcl INP=tempimage V1=acres KEYWORD=acreage 'all
+		write "Acres = &acres"
+		lab2tcl INP=tempimage V1=numlines KEYWORD=nl 'ALL
+		write "image contains &numlines lines"
+	    end-proc
+
+
+    Type:	keyword
+    Count:	1
+    Valid:	SYSTEM, HISTORY, ALL
+    Default:	HISTORY
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

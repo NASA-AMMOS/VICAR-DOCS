@@ -1,0 +1,129 @@
+<HTML>
+<HEAD><title>HTML Help for MOORE</title></HEAD>
+<BODY>
+<H1>Help for MOORE</H1>
+<pre>
+PURPOSE
+
+     moore grows the non-zero areas of an image in all directions
+     an amount set by the parameter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore_level2.html#dmax">dmax</A>.  a special case is
+     available that can grow different borders of the non-zero
+     areas by different amounts (depending on the initial border
+     pixel values).
+     
+     The basic case grows an area of non-zero pixels by layering
+     on 1 pixels, then 2 pixels, etc, for example:
+     
+                999999
+                999
+                99999
+                9
+                
+     becomes 
+                111111 
+               19999991
+               1999111 
+               1999991
+               191111 
+                1 
+     becomes 
+                222222  
+               21111112 
+              2199999912
+              219991112 
+              219999912 
+              21911112 
+               212222  
+                2                etc.
+     
+     The initial values of 9 can be any value greater than 0.
+     
+     The process stops when the value in the parameter <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore_level2.html#dmax">DMAX</A> is
+     reached.  The term "distance" treats diagonal distance as the
+     sum of horizontal and vertical distance.  Mathematically,
+     this is the L1 norm or "staircase" distance, which is a distance
+     function (satisfies the triangle inequality).
+     
+     The normal case grows equally at all edges, considering all
+     non-zero values to be like the 9's in the above diagram.  The
+     keyword <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore_level2.html#edgeval">EDGEVAL</A> causes the program to treat all non-zero values
+     as an already calculated distance.  So, if one of the edge pixels
+     is already a 2, then it does not grow a 1 but will start growing
+     neighbors at 3.  This can be used to grow different edges at
+     different distances.  Keep in mind that the minimum "growth"
+     number now becomes 2.
+     
+     The keyword '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore_level2.html#outone">OUTONE</A> will output all of the non-zero input
+     values as a one (but not the Moore values).
+     
+     The keyword '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore_level2.html#growone">GROWONE</A> will output all of the Moore distance
+     values as a one (but not the non-zero input values).  This 
+     is useful perhaps for identifying the Moore distance areas
+     with a unique value (have all input pixels &gt1 and do not
+     use '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore_level2.html#edgeval">EDGEVAL</A>).
+     
+     The use of '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore_level2.html#outone">OUTONE</A> and '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore_level2.html#growone">GROWONE</A> together will produce an
+     image that is all 0's and 1's (a binary mask).
+     
+     Logically, there are eight possible cases using the three
+     keywords '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore_level2.html#edgeval">EDGEVAL</A>, '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore_level2.html#outone">OUTONE</A> and '<A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore_level2.html#growone">GROWONE</A>.
+TAE COMMAND LINE FORMAT
+
+     moore <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore_level2.html#inp">INP</A>=PIC <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore_level2.html#out">OUT</A>=OUTPIC <A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore_level2.html#dmax">DMAX</A>=n PARMS
+
+     where
+
+     PIC                 is an image.
+     OUTPIC              is  a copy of PIC with non-zero areas
+                         grown by a distance of n
+     n                   is a distance in pixels
+                         'OUTONE and 'GROWONE.
+
+OPERATION
+The program reads DMAX lines of the input, applying the Moore
+algorithm as lines are read.  The DMAX lines are on a rolling
+barrel buffer, so that when the next line is read, the oldest
+line is written to output, then dropped.
+
+TIMING
+
+About twice as slow as an image copy.  This program is WAY, WAY
+FASTER than using a convolution filter (such as VICAR BOXFLT)
+followed by F2.
+
+RESTRICTIONS
+
+
+WRITTEN BY:                   Al Zobrist         31 JUL 00
+<A NAME="CogProg">COGNIZANT PROGRAMMER:         B. McGuffie</A>
+REVISIONS:
+  2008-01-02 WLB Switched to USES_ANSI_C AND LIB_CARTO; misc cleanup.
+  2015-12-09 WLB Migrated to MIPL.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore_level2.html#inp"><H3>INP</H3></A>
+Input image
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore_level2.html#out"><H3>OUT</H3></A>
+Output image
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore_level2.html#dmax"><H3>DMAX</H3></A>
+How far to grow the non-zero
+areas
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore_level2.html#edgeval"><H3>EDGEVAL</H3></A>
+Keyword to treat all non-zero
+input pixels as an already
+calculated distance
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore_level2.html#outone"><H3>OUTONE</H3></A>
+Keyword to convert all non-zero
+input pixels to the value one
+in the output
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore_level2.html#growone"><H3>GROWONE</H3></A>
+Keyword to convert all Moore
+distance pixels to the value
+one in the output
+.END
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core460/html/vichelp/moore.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

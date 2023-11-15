@@ -1,0 +1,120 @@
+<HTML>
+<HEAD><title>HTML Help for RPC_FIT</title></HEAD>
+<BODY>
+<H1>Help for RPC_FIT</H1>
+<pre>
+PURPOSE
+   This takes an image and RPC coefficients that map project that image.
+   The data is then matched against a reference image, and the results of
+   that match are used to improve the RPC coefficients.
+
+   The changed RPC coefficients are updated into the input file.
+
+CALL
+    rpc_fit <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit_level2.html#inp">INP</A> REF_IMAGE DEM DATUM (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit_level2.html#maxdiff">MAXDIFF</A>) (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit_level2.html#rpc_lnum_fit">RPC_LNUM_FIT</A>)          (<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit_level2.html#rpc_snum_fit">RPC_SNUM_FIT</A>)
+  WHERE:
+     <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit_level2.html#inp">INP</A>             1) is the input data set (must have RPC metadata)
+                     2) is the ground truth image (must have map projection 
+                     metadata)  
+                     3) is the DEM (must have map projection metadata)
+                     4) is the land/water mask.
+     <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit_level2.html#maxdiff">MAXDIFF</A>         optional maximum difference between initial warped 
+                     <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit_level2.html#inp">INP</A> and REF_IMAGE, in meters (default 1000 m)
+     <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit_level2.html#rpc_lnum_fit">RPC_LNUM_FIT</A>    optional line numerator RPC parameters to fit in range
+                     0 to 19 (i.e., zero based) (default constant term (0) and
+                     height term 3)
+     <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit_level2.html#rpc_snum_fit">RPC_SNUM_FIT</A>    optional sample numerator RPC parameters to fit in range
+                     0 to 19 (i.e., zero based) (default constant term (0) and
+                     height term 3)
+
+OPERATION
+
+This does image matching between a <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit_level2.html#inp">INP</A> and a REF_IMAGE, 
+and adjusts the initial RPC coefficients read from the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit_level2.html#inp">INP</A>
+to give a better match between this map projected imagery and the REF_IMAGE.
+
+This is done in two steps. First we do a coarse fit to get the
+map projected roughly right, and then we do a finer adjustment to
+give a better fit.
+
+The first step is the coarse fit. Since an RPC is usually based on
+navigation data only, without and ground control points, it can
+give relatively large errors. We do a coarse shift to the RPC to
+reduce the errors enough that we can do a finer fit. 
+
+We first average the image and the Ref_img. We average so that we
+are coarse enough that the given image matching search window size
+will contain errors up to <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit_level2.html#maxdiff">MAXDIFF</A> meters.
+For example, with a 1000 m Max_diff, a search window of
+15, and 5 m Ref_img, we would average by a factor of 14
+(5 m x 14 factor x 15 search window = 1050 m error, allowing us to
+find 1000 m differences).
+
+We use a Forstner feature detector to determine where to match, starting
+with a regular grid of points and then shifting to interest points. 
+We then match at these features between the reference and map projected 
+images using a cross correlation matcher.
+
+We update the LINE_OFFSET and SAMPLE_OFFSET of the RPC only in the
+first phase, reducing the difference between the map projected image
+and the REF_IMAGE.
+
+We repeat the coarse fit until the remaining differences between
+the map projected data and the REF_IMAGE fall within matching search
+window at full resolution.
+
+We follow this with a fine fit. We again use the Forstner feature
+detector to determine where to match. We then match at these features
+between the reference and map projected images, but this time using a
+combination of a cross correlation matcher followed by a least squares
+matcher to get subpixel accuracy.
+
+We fit for the RPC parameters given by the user.
+
+This fine matching step is repeated until the change in average
+difference from one step to the next is less than a tolerance (5%
+change).
+
+Restrictions
+------------
+
+The <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit_level2.html#inp">INP</A> must have an RPC label (in the GeoTIFF property label for 
+VICAR, at present NITF must be logged with VEXTRACT).
+
+The REF_IMAGE, DEM and LANDWATER mask need to have map projection metadata
+(i.e. the GeoTIFF labels for VICAR format).
+
+The vertical datum for the RPC and the DEM MUST MATCH.  In all forseeable
+cases these data will be WGS84 (a spheroid).
+
+
+Original Programmer: Mike Smyth, 4 Mar, 2008
+<A NAME="CogProg">Current Cognizant Programmer: Mike Smyth</A>
+
+REVISIONS
+2022-08-10 B. Crocco open source afids (untested)
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit_level2.html#inp"><H3>INP</H3></A>
+The image to be map projected
+(updated)
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit_level2.html#ref_image"><H3>REF_IMAGE</H3></A>
+The reference image that supplies
+ground truth.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit_level2.html#dem"><H3>DEM</H3></A>
+The Digital Elevation Model (DEM)
+to be used the the RPC.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit_level2.html#landwater"><H3>LANDWATER</H3></A>
+The land/water mask to use.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit_level2.html#maxdiff"><H3>MAXDIFF</H3></A>
+Maximum difference between initial warp of <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit_level2.html#inp">INP</A> and REF_IMAGE, in meters.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit_level2.html#rpc_lnum_fit"><H3>RPC_LNUM_FIT</H3></A>
+RPC Line Numerator parameters to fit for.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit_level2.html#rpc_snum_fit"><H3>RPC_SNUM_FIT</H3></A>
+RPC Sample Numerator parameters to fit for.
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/rpc_fit.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

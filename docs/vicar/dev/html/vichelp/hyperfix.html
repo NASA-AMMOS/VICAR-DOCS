@@ -1,0 +1,63 @@
+<HTML>
+<HEAD><title>HTML Help for HYPERFIX</title></HEAD>
+<BODY>
+<H1>Help for HYPERFIX</H1>
+<pre>
+PURPOSE:
+ 
+   HYPERFIX is a VICAR procedure to correct for the misregistration of
+the SWIR bands in HYPERION image data. It assumes that all SWIR channels
+(Channels 71 - 242) are misregistered 1.0 pixel to the right, and the up-down
+misregistration varies in evenly spaced increments from 0.5 pixels down for
+Channel 71, to 1.0 pixels up for Channel 242.
+ 
+EXECUTION:
+ 
+   The following is the execution statement format for HYPERFIX:
+ 
+		HYPERFIX INP OUT PARAMS
+ 
+   where INP, OUT, and PARAMS are parameters discussed in their respective
+parameter sections. 
+OPERATION:
+ 
+   HYPERFIX copies the input file into the output file, then for each of
+Bands 71 through 242, it creates a rectification image using GEN and TRAN,
+performs a registration using TGEOM2, and replaces that band into the output 
+file, using INSERT3D.
+
+   The user may process a subset of the image in the line direction, by
+using the SL and NL parameters.  The last sample (256) is removed from
+the output image, since there are no corresponding pixels to this sample in
+the SWIR bands.  Otherwise, no subsetting is permitted in the sample direction.
+
+   Since INSERT3D requires the input file to be in BSQ format, the input
+to HYPERFIX must also be in BSQ format.
+<A NAME="examples">EXAMPLES:</A>
+ 
+1) HYPERFIX INP OUT
+ 
+2) HYPERFIX INP OUT SL=101 NL=500
+ 
+ 
+WRITTEN BY:  Ron Alley     6 February 2002
+ 
+<A NAME="CogProg">COGNIZANT PROGRAMMER:  same</A>
+ 
+REVISION: NEW
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hyperfix_level2.html#inp"><H3>INP</H3></A>
+input dataset name (BSQ format)
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hyperfix_level2.html#out"><H3>OUT</H3></A>
+output dataset name
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hyperfix_level2.html#sl"><H3>SL</H3></A>
+first line of input to be used
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hyperfix_level2.html#nl"><H3>NL</H3></A>
+# of lines of input to be used
+(Default is entire input image)
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hyperfix.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/hyperfix.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

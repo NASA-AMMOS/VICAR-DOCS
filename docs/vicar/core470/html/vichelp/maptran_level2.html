@@ -1,0 +1,170 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for MAPTRAN</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran.html">MAPTRAN</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+STRING-input datasets.
+First input:
+  The picture to be projected and placed into the output.
+  This picture must have map projection labels compatible with those
+  created by MAP3.
+Second input:
+  If the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#mosaic">MOSAIC</A> keyword is used then:
+  This picture is used for its label,sizefield, and contents.
+  The label defines the output projection type.
+  The output will be a <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#mosaic">mosaic</A> of this file AND the projected first input.
+  otherwise:
+  This picture is used merely for its label and for the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#nl">NL</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#ns">NS</A> values.
+  The image itself is ignored. The label defines the output projection type.
+  This picture must have map projection labels compatible with those
+  created by MAP3.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+STRING-output dataset.
+This is the projected version of the first input file. Its projection 
+label will be copied from the second input file.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nl"><H3>NL</H3></A><pre>
+Output picture number of lines. If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#nl">NL</A> is not specified it defaults to
+the size of the second input file.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="ns"><H3>NS</H3></A><pre>
+Output picture number of samples. If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#ns">NS</A> is not specified it defaults to
+the size of the second input file.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nb"><H3>NB</H3></A><pre>
+Output picture number of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#bands">bands</A>. If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#nb">NB</A> is not specified it defaults to
+the size of the first input file.  (Note that this differs from the
+defaults for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#nl">NL</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#ns">NS</A>!)
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="bands"><H3>BANDS</H3></A><pre>
+Output picture starting band & number of <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#bands">bands</A>. The default is to use
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#nb">NB</A> of the first input file.  
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="inc"><H3>INC</H3></A><pre>
+Grid spacing in pixels for the output file. 
+A fine grid is overlayed on the output file and the exact mapping is 
+computed at each grid intersection. Pixels within the grid are 
+interpolated. <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#inc">INC</A> specifies the smallest grid desired. If INC is too
+small MAPTRAN will increase it until the grid can reside in memory.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="range"><H3>RANGE</H3></A><pre>
+In the case where individual pixels are being projected using the 
+precise mapping projection equations (versus polynomial mapping)
+the on-planet corners of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#inc">INC</A> by INC area will fall either on or
+off the input block of data lines. In case the points fall more than
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#range">RANGE</A> pixels from the data block then this <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#inc">INC</A> by INC area is bypassed
+on the first pass through the input image. We hope to save time by
+avoiding needless computations for pixels mapping outside the
+input data block. If a second pass is needed this restriction is
+lifted.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="thresh"><H3>THRESH</H3></A><pre>
+Used only in the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#mosaic">MOSAIC</A> mode.
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#thresh">Thresh</A> specifies the dn value above which the projected image has
+precedence over the second input file during mosaicking of the two files.
+Default is zero, ie: any projected dn which is zero or less will be
+ignored in favor of the dn in input number 2.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="dninter"><H3>DNINTER</H3></A><pre>
+Specifies a DN threshold used only in interpolation mode. If, when
+interpolating a dn value in the input file, one or more of the four
+neighbors is less than or equal to <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#dninter">DNINTER</A> it will not be used
+in the interpolation.
+Several combinations of input dn values can occur.
+Cases:
+If 4 input neighbors are &gt <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#dninter">dninter</A> then bilinear interpolation is done.
+If 3 input neighbors are &gt <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#dninter">dninter</A> the fourth is extrapolated and then
+   interpolation is done.
+If 2 input neighbors are &gt <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#dninter">dninter</A> the output pixel is determined from
+   a linear weighting of the 2 good pixels.
+If 1 input neighbor is &gt <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#dninter">dninter</A> it is copied to the output.
+If all the input neighbors are &lt= <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#dninter">dninter</A> the output is determined from
+   the nearest neighbor.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nointerp"><H3>NOINTERP</H3></A><pre>
+Specifies that no interpolation between pixels is desired.  
+The output pixel will come from the nearest neighbor in the input.
+Default is to interpolate.
+See <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#dninter">DNINTER</A> keyword for interpolation modes.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="code"><H3>CODE</H3></A><pre>
+This is a number that is used by Maptran to mark the location of output 
+pixels whose DN values have not yet been determined. The default is -99999. 
+If you have input DN's that happen to have this value (in the first input 
+file) they will be reset to one dn higher. Thus -99999 would become -99998.
+(Obviously, this could only happen if the input file were in REAL format.)
+It is assumed that this change is insignificant, but if it should be, then
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#code">CODE</A> should be set to some number outside of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#range">range</A> of the input data.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nocheck"><H3>NOCHECK</H3></A><pre>
+Normally Maptran checks for wraparound in the sample direction for three
+projections. These are: Mercator, Normal Cylindrical, and Simple Cylindrical.
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/maptran_level2.html#nocheck">Nocheck</A> deactivates this checking.
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

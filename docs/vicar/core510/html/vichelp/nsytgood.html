@@ -1,0 +1,167 @@
+<HTML>
+<HEAD><title>HTML Help for NSYTGOOD</title></HEAD>
+<BODY>
+<H1>Help for NSYTGOOD</H1>
+<pre>
+PURPOSE:
+
+The NSYTGOOD program generates an overall goodness product by looking at
+the goodness bands of multiple other products (such as tilt and roughness).
+
+Note that this program is not really InSight specific; it is flexible and
+configurable enough to be used anywhere there are multiple status bands.
+
+EXECUTION:
+
+for seis:
+nsytgood \( rus ruw tfs tfw tds\) gus <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#mask">mask</A>=wss
+
+for hp3:
+nsytgood \( ruh -- tfh\) guh <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#mask">mask</A>=wsh
+
+where ruh/rus/ruw come from NSYTROUGH, tfh/tfs/tfw/tds come from NSYTTILT,
+and wss/wsh come from NSYTWKSP.
+
+METHOD:
+
+The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#band">BAND</A> parameter specifies which band contains the goodness map for each
+input product (default 1).  For each pixel, NSYTGOOD looks at the goodness
+value for each product, and compares to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#thresh">THRESH</A> (default 5).  If the value
+is &gt= <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#thresh">THRESH</A>, it is good.  If all of the input products are good, the output
+is set to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#good_value">GOOD_VALUE</A> (default 5).  If one of them is bad, the corresponding
+item is pulled from the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#single_bad">SINGLE_BAD</A> parameter, and that value is put in the
+output.  If more than one of them are bad, the output is set to the value
+in <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#multi_bad">MULTI_BAD</A>.
+
+If the optional <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#mask">MASK</A> file is given, the MASK file is also consulted.  If the
+value in <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#mask">MASK</A> is &lt <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#mask_thresh">MASK_THRESH</A>, the pixel is outside of the mask and is marked
+bad using <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#mask_bad">MASK_BAD</A> (0), regardless of the status of the inputs.
+
+If an input file is "--" then that slot is skipped, which allows the same
+per-<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#band">band</A> parameter defaults to be used for multiple cases (e.g. InSight
+SEIS vs HP3).
+
+For InSight, the default parameters produce the following for SEIS (given
+the inputs shown at the top of this help):
+
+0 = no data or outside <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#mask">mask</A>
+1 = multiple inputs are bad
+2 = roughness of either seis or wts is bad
+3 = tilt of either seis or wts is bad
+4 = delta-tilt between seis and wts is bad
+5 = all good
+
+and the following for HP3:
+
+0 = no data or outside <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#mask">mask</A>
+1 = multiple inputs are bad
+2 = roughness is bad
+3 = tilt is bad
+4 = n/a
+5 = all good
+
+Note:  multiple inputs can use the same <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#single_bad">single_bad</A> value, but if more than
+one are bad it goes to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#multi_bad">multi_bad</A>.
+
+
+HISTORY:
+  2015-09    rgd - Initial version
+  2016-01    rgd - Wrote help
+  2019-12-23 wlb - IDS-7926 - initialized some variables; cleaned up -Wall warnings;
+                   added unit test.
+                   Note '<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#mask">mask</A>.SimpleImage&ltdouble&gt::_line_stride' may be used uninitialized
+
+<A NAME="CogProg">COGNIZANT PROGRAMMER: B. Deen</A>
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#inp"><H3>INP</H3></A>
+Input files.
+List file not supported.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#out"><H3>OUT</H3></A>
+Output file.
+Must be 1 filename.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#mask"><H3>MASK</H3></A>
+Optional input <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#mask">mask</A> file.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#band"><H3>BAND</H3></A>
+Goodness <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#band">band</A> in each input.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#thresh"><H3>THRESH</H3></A>
+Goodness threshold for each input.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#mask_band"><H3>MASK_BAND</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#band">Band</A> to use for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#mask">mask</A> input.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#mask_thresh"><H3>MASK_THRESH</H3></A>
+Goodness threshold for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#mask">mask</A> input.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#good_value"><H3>GOOD_VALUE</H3></A>
+Output value for good status.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#single_bad"><H3>SINGLE_BAD</H3></A>
+Output value for a single input
+being bad.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#multi_bad"><H3>MULTI_BAD</H3></A>
+Output value for multiple
+inputs being bad.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#mask_bad"><H3>MASK_BAD</H3></A>
+Output value for <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#mask">mask</A> input
+being bad.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#config_path"><H3>CONFIG_PATH</H3></A>
+Path used to find
+configuration/calibration
+files.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#point_method"><H3>POINT_METHOD</H3></A>
+Specifies a mission-
+specific pointing
+method to use
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#data_set_name"><H3>DATA_SET_NAME</H3></A>
+Specifies the full name given
+to a data set or a data product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#data_set_id"><H3>DATA_SET_ID</H3></A>
+Specifies a unique alphanumeric
+identifier for a data set or data
+product.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#release_id"><H3>RELEASE_ID</H3></A>
+Specifies the unique identifier
+associated with the release to the
+public of all or part of a data set.
+The release number is associated with
+the data set, not the mission.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#product_id"><H3>PRODUCT_ID</H3></A>
+Specifies a permanent, unique
+identifier assigned to a data
+product by its producer.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#producer_id"><H3>PRODUCER_ID</H3></A>
+Specifies the unique identifier
+of an entity associated with the
+production a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#producer_inst"><H3>PRODUCER_INST</H3></A>
+Specifies the full name of the
+identity of an entity associated
+with the production of a data set.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#target_name"><H3>TARGET_NAME</H3></A>
+Specifies a target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood_level2.html#target_type"><H3>TARGET_TYPE</H3></A>
+Specifies the type of a named target.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/nsytgood.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

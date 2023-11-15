@@ -1,0 +1,278 @@
+<HTML>
+<HEAD><title>HTML Help for PLOTINT</title></HEAD>
+<BODY>
+<H1>Help for PLOTINT</H1>
+<pre>
+PURPOSE
+
+     PLOTINT plots data contained in columns of an IBIS interface file
+    using the gnuplot plotting package.
+
+OPERATION
+    
+    PLOTINT allows columns of an IBIS interface to be plotted. Either lines
+or symbols may be plotted, along with annotations using the gnuplot plotting
+package. Plots may be displayed on the desktop or as an encapsulated
+postscript file.
+
+
+PARAMETERS
+
+    INPUT is the name of the ibis interface (tabular) File containing the
+    columns to be plotted.
+
+    <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#plotout">PLOTOUT</A> is the name of the output plot 
+
+    The column number of independent data is <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#xcol">XCOL</A> and the column(s) of dependent
+    data are in <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#ycol">YCOL</A>. Up to 20 dependent columns are allowed.    
+
+    <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#ycolstr">YCOLSTR</A> are the names of the dependent columns. Up to 20.
+
+    The parameter <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#control">CONTROL</A> points to a column used to identify a specific line in the
+    IBIS file. If the number in the column is only 1 then all columns are the same
+    line. 1's, 2's, 3's etc. refer to different lines.  Must have the
+    same entry for all of the rows that are to be on one plot.
+
+    <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#xlen">XLEN</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#ylen">YLEN</A> are the axes lengths in inches.
+
+    <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#xlabel">XLABEL</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#ylabel">YLABEL</A> are the labels for their respective axes.
+
+    <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#title">TITLE</A> is the Title to be placed on the graph.
+
+    <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#labelsiz">LABELSIZ</A> is the font size for the text on the plot in points. Default=10
+  
+    <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#freq">FREQ</A> specifies the frequency of the points to be plotted. If 2 then
+    every other point is plotted. You do not have to enter a <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#freq">freq</A> value
+    for each line. If you have 3 lines and enter <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#freq">freq</A>=2, then it is understood
+    that the other two lines will have a <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#freq">freq</A> of 1. 
+    Default is to plot each point (1). 
+
+    The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#symtype">SYMTYPE</A> parameter specifies what type of plotting is done for 
+    each dependent variable:  
+    1 for symbols only, 
+    2 for both symbols and points,
+    3 for lines only.  
+
+    <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#xrange">XRANGE</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#yrange">YRANGE</A> are the max and min values to plot on their respective
+    axes.
+    
+    Up to 3 comments (<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#comment1">COMMENT1</A>,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#comment2">COMMENT2</A>,<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#comment3">COMMENT3</A>) can be placed on graph. They
+    will be on right side of graph.
+PLOT OUTPUTS
+
+    The other type of output come from the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#plotout">PLOTOUT</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#plotfmt">PLOTFMT</A> parameters.
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#plotout">PLOTOUT</A> allows the user to display data from 5 areas on the CCD on an x,y
+plot using the gnuplot package after exiting the program. PLOT produces
+a file of gnuplot commands contained in a file having a .gpi file extension.
+Another file with an .asc extension is create containing columns of data
+that are displayed by the gpi file.
+
+   The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#plotfmt">PLOTFMT</A> parameter allows the user to generate a postscript file of
+the output for use in documentation by choosing <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#plotfmt">PLOTFMT</A>=EPS. The default
+is to generate a gnuplot interactive display.
+
+
+  PLOT NAMING CONVENTIONS
+
+  The user should enter only the parent file name without an extension
+  for the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#plotout">PLOTOUT</A> parameter.  The program will supply the extensions.
+
+  For example, if the user has an input file of indata.dat and  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#plotout">PLOTOUT</A>=outplot
+  then for the interactive plot the following files are produced:
+
+     outplot.gpi
+     outplot.asc
+
+  The first file is the gnuplot instruction file and the second is the
+  data file used by gnuplot. 
+
+  If the user wanted an encapsulate postscript file with <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#plotfmt">PLOTFMT</A>=eps
+  then the following files are produced:
+
+     outplot.eps.gpi
+     outplot.asc
+
+  Remember entering the following command gives the eps file, outplot.eps
+
+  ush gnuplot outplot.eps.gpi
+
+  If you move the gpi file to another directory, you must also move the
+  input data file, indata.dat.asc to the same directory.
+
+  Note that the gpi file produced by this program has the name of the
+  input file embedded in the plot command inside the gpi file, e.g..
+
+  plot  'outplot.asc' u  1: 9 t .......
+
+
+
+USING GNUPLOT
+
+
+  INTERACTIVE:
+
+    This program uses the gnuplot package for its plots. Gnuplot is a
+  separate package from Vicar and is not actually invoked inside this
+  program.  Instead this program creates a template of gnuplot commands
+  which are written out as a separate file. The plot is then viewed after
+  exiting this program. The file has the extension .gpi. You view
+  the plot by issuing the following command in the vicar shell.
+
+  ush gnuplot output.gpi
+
+  or external to vicar as
+
+  gnuplot output.gpi
+
+    After viewing the data, you close the plot by clicking the mouse anywhere
+  except on the top bar of the plot. Clicking on the top bar allows you
+  to move the plot to any convenient place on the terminal screen.  (While
+  the plot is displayed you cannot enter any commands to the vicar shell).
+
+  The data to be plotted by gnuplot is read from a separate file, created
+  by this program, which contains columns of data in ascii text.
+  File naming conventions are discussed in the OUTPUT section, but in this
+  case that file extension will be .asc.
+
+  It is possible to keep the plot alive for comparison purposes by issuing
+  the following command.
+
+  ush gnuplot --persist output.gpi
+
+  (You will be able to enter commamds to the vicar shell after clicking on
+  the mouse on the plot).
+
+  Note: This program creates 5 output plots per run. You bring up each plot
+  panel sequentially. You close each plot by clicking the mouse on any
+  portion of the plot.
+
+
+  HARDCOPY:
+
+  This program also allows you to create a hardcopy encapsulated postscript
+  plot suitable for publications. This file can be viewed with ghostscript
+  or gimp. The encapsulated postscript file is not created by this program
+  by by the gnuplot program from a gpi file made especially for this purpose.
+  this file has the extension, eps.gpi. You create the hardcopy plot via
+  the following command
+
+  ush gnuplot output.eps.gpi
+
+  This creates the eps file output.eps. You can view this file by
+
+  ush gimp output.eps
+
+    DEVELOPER Note:
+
+    This program used to link to the XRT plot library -lxrt. Calls to
+  that library were mitigated through a Calcomp conversion library,
+  xrtps located in the p2 subroutine library. With the conversion to
+  gnuplot, neither of these packages are used.
+
+<A NAME="examples">EXAMPLES </A>
+
+
+     PLOTINT <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#inp">INP</A>=TRANS.INT <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#xcol">XCOL</A>=1 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#ycol">YCOL</A>=(3,4) <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#control">CONTROL</A>=6   	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#ycolstr">YCOLSTR</A> = ("AVERAGE POPULATION X1000","AIRLINE FLIGHTS")  	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#xlabel">XLABEL</A> = "DISTANCE BETWEEN CITIES"  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#ylabel">YLABEL</A> = "THOUSANDS"   	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#title">TITLE</A> = "GRAVITY TRANSPORTATION MODELS"            <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#xlen">XLEN</A>=9.0 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#ylen">YLEN</A>=7.5  SYMTYP=(1,1) 
+
+     PLOTINT <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#inp">INP</A>=FUNCTION.INT <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#xcol">XCOL</A>=2 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#ycol">YCOL</A>=3 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#control">CONTROL</A>=1  	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#xlabel">XLABEL</A> = "X-AXIS"  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#ylabel">YLABEL</A> = "Y-AXIS"  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#title">TITLE</A> = "HYPERBOLA"  	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#xlen">XLEN</A>=6.0 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#ylen">YLEN</A>=3.0 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#freq">FREQ</A>=4 <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#symtype">SYMTYPE</A>=2   	<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#xrange">XRANGE</A>=(-7.5,7.5) <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#yrange">YRANGE</A>=(0,100)  
+
+    <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#inp">INP</A> specifies the input interface file that contains the data to be 
+plotted.  The column number of independent data is <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#xcol">XCOL</A> and the column(s)
+of dependent data are in <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#ycol">YCOL</A>.  The <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#control">control</A> column (CONTROL) must have the
+same entry for all of the rows that are to be on one plot.  The axis lengths
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#xlen">XLEN</A> and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#ylen">YLEN</A> are in inches.  
+
+
+RESTRICTIONS
+
+     The  <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#control">control</A> column must not specify more than 400 sets 
+     (each set plotted on a different page).  Maximum number 
+     of columns is 20.  All plotted texts must be shorter
+     than 60 characters.
+
+WRITTEN BY:                     B. Gokhman    25AUG1981
+<A NAME="CogProg">COGNIZANT PROGRAMMER:           R. Bambery</A>
+REVISIONS:
+  1985-11    Frank Evans for F77 CALCOMP, general modernization
+  1987-09    EJB for multiple plots as per <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#control">control</A> column on specified output devices
+  1995-12    BAM mstp porting
+  1997-01    PXA converted calcomp calls to xrtps calls and rewrote plot procedures
+  2006-08    LWK fixed bug (Linux only) when <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#ycolstr">YCOLSTR</A> defaulted;
+                 added NODISP and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#plotout">PLOTOUT</A> parameters to support
+                 output to file instead of display (no code needed
+                 for NODISP as it is parsed by xrtps routines)
+  2011-06-20 R. Bambery - Modified to use freeware gnuplot plotting package
+  2011-09-20 R. Bambery - Fixed buf that overwrote clen in subroutine FINDCO
+  2011-09-21 R. Bambery - Set <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#yrange">yrange</A> up to f9.2 from f7.2 and <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#xrange">xrange</A> from f9.2 from f7.2
+  2012-07-03 R. Bambery - renamed to plotint2 for delivery to MIPL
+                which still uses XRT/Graph package, removed debug
+                statements, Removed &lttab&gt in front of continuation
+                lines to make backward compatible with
+                32-bit Linux gfortran 4.2.1, otherwise
+                compatible 64-bit Linux gfortran 4.6.3
+  2012-10-21 R. Bambery - renamed back to plotint. in agreement
+                with Lucas Kamp of mipl. The XRT graph package
+                is to be removed from mipl. XRT was never used by
+                cartlab.
+  2012-12-09 R. Bambery - removed bad statement, and properly
+                initialized some variables
+  2013-02-12 R. Bambery - fixed <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#plotfmt">PLOTFMT</A> logic, documentation, test
+  2013-07-10 R. Bambery - change .asc filename to <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#plotout">plotout</A>
+                fix format when large plots created. test script
+  2013-07-12 R. Bambery - Create ascii file for .gpi file.
+                Previously used ibis2asc to create the data for gnuplot
+  2013-08-13 R. Bambery - Adjusted eps format to more readable fonts
+                Remove vestiges of debug statements
+  2013-09-05 R. Bambery - Fixed code that did not set <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#xrange">xrange</A> properly
+                when writing out eps gpi files. Fixed <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#freq">freq</A> array so
+                values will never be 0. Fixed logic for plot ranges
+                that are defaulted vs. inputs
+  2013-09-06 R. Bambery - Added <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#comment1">COMMENT1</A>, <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#comment2">COMMENT2</A>, <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#comment3">COMMENT3</A> parameters
+  2015-08-19 W. Bunch - Fixed end of line encoding so linux and sun
+                will yield same output.
+      
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#inp"><H3>INP</H3></A>
+Input interface file
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#plotout"><H3>PLOTOUT</H3></A>
+Name of output files 
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#xcol"><H3>XCOL</H3></A>
+Column of independent variable
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#ycol"><H3>YCOL</H3></A>
+Columns of dependent variables
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#control"><H3>CONTROL</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#control">Control</A> column
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#xlen"><H3>XLEN</H3></A>
+Length of X-axis in inches
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#ylen"><H3>YLEN</H3></A>
+Length of Y-axis in inches
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#ycolstr"><H3>YCOLSTR</H3></A>
+Names of dependent variables
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#xlabel"><H3>XLABEL</H3></A>
+String for X-axis
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#ylabel"><H3>YLABEL</H3></A>
+String for Y-axis
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#title"><H3>TITLE</H3></A>
+String of text of the <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#title">title</A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#freq"><H3>FREQ</H3></A>
+Frequency of plotted symbol
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#symtype"><H3>SYMTYPE</H3></A>
+Type of data line:
+  (lines,symbols and lines)
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#xrange"><H3>XRANGE</H3></A>
+Range for X-variable
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#yrange"><H3>YRANGE</H3></A>
+Range for Y-variable
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#comment1"><H3>COMMENT1</H3></A>
+Up to 60 chars, on right
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#comment2"><H3>COMMENT2</H3></A>
+Up to 60 chars, on right
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint_level2.html#comment3"><H3>COMMENT3</H3></A>
+Up to 60 chars, on right
+
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/plotint.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

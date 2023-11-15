@@ -1,0 +1,331 @@
+<HTML>
+<HEAD><title>HTML Help for PTP</title></HEAD>
+<BODY>
+<H1>Help for PTP</H1>
+<pre>
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#purpose">PURPOSE</A>
+
+PTP is a VICAR applications <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#program">program</A> which projects an image of a planet or
+satellite so that the resulting image is that of the planet as seen from a
+different perspective.  PTP's primary application is to register color triplets
+in cases where the time between frames is large enough that noticeable changes
+in perspective occur as a result of planet rotation and spacecraft motion.
+
+EXECUTION:
+
+     PTP  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#inp">INP</A>=PIC  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#out">OUT</A>=OPIC  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ref">REF</A>=RPIC
+where 
+   PIC  is the input image to be projected (byte or halfword), and
+   OPIC is the output image
+   <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ref">REF</A>  is the reference image,
+
+PIC may be from any mission for which navigation data is available via the
+MIPS SPICE server.  If PIC is from Voyager or an earlier mission, it must be a
+geometrically corrected image.  If PIC is from Galileo or a later mission, it
+must be a raw (uncorrected) image.  OPIC will be output in the same data format
+as PIC.
+
+In cases where the reference image is not available, it may be replaced by
+supplying the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#program">program</A> with enough information to identify it to the SPICE
+server:
+
+   PTP  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#inp">INP</A>=PIC  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#out">OUT</A>=OPIC  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rscet">RSCET</A>=(yr,day,month,hr,min,sec,msec)            <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rcam">RCAM</A>=n  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#target">TARGET</A>=aaaaaaa
+where
+   <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rscet">RSCET</A> is the SpaceCraft Event Time of the reference image,
+   <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rcam">RCAM</A> is the camera serial number of the reference image, and
+   <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#target">TARGET</A> is the target name.
+
+Note that the input and reference images may be from different missions.  I.e.,
+it is possible to project a Cassini image to the same scale and orientation as
+a Voyager image (for comparison).
+
+OPERATION
+
+Before running PTP, the input and reference images should be navigated to
+correct the camera pointing (see programs NAV, NAV2, FARENC, MANMATCH,
+and AUTOMATCH).
+
+PTP reads the VICAR labels of the input and reference images (see <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#inp">INP</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ref">REF</A>
+parameters) to identify the project, camera ID, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#target">target</A> ID, and Spacecraft-Event
+Time.  Note that the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#target">target</A> is not available in the Voyager label and must be
+supplied via the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#target">TARGET</A> parameter.
+
+PTP retrieves the navigation data for the input and reference images from the
+MIPS SPICE server using SCET, camera, and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#target">target</A> to access the appropriate data.
+If the reference image is not available, it may be replaced by identifying it
+via the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rscet">RSCET</A>, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rcam">RCAM</A>, and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#target">TARGET</A> parameters.
+
+The camera pointing retrieved from SPICE may be overridden by supplying the
+planet center via the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#pc">PC</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rpc">RPC</A> parameters.
+
+PTP uses a triaxial ellipsoid model of the planet, defined by three <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#radii">radii</A>
+(equatorial long axis, equatorial short axis, and polar).  The values are
+obtained via a call to subroutine PBDATA.  This may be overridden by using the
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#radii">RADII</A> parameter.
+
+The <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rot">ROT</A> parameter may be used to change the rotation rate or the planet.
+
+GENERATING THE OUTPUT PROJECTION:
+
+PTP projects the image by performing a geometric transformation similar to that
+in MAP3.  If the keyword <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#exact">EXACT</A> is specified, the projection is computed exactly
+at every pixel.  Otherwise, the projection is calculated on a grid of tiepoints,
+and bilinear interpolation is used to compute the projection at intermediate
+points.
+
+The initial grid spacing is 32 x 32 pixels.  In areas of the image where this
+interpolation generates errors larger than 1/2 pixel (e.g. near the limb), the
+grid spacing is reduced in successive steps (16x16, 8x8, 4x4) until a 1/2 pixel
+accuracy is achieved.
+
+In general, an output pixel will not project onto an input pixel, but will
+project to a point between four input pixels.  The output sample value is
+computed via bilinear interpolation over the these four pixels:
+
+        DN = DN1 + (DN2-DN1)*ds + (DN1-DN2-DN3+DN4)*dl
+
+If the '<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#include">INCLUDE</A> keyword is specified, all output pixels not on the planet are
+generated by offsetting the sky background of the input image by a constant
+(the difference between the planet centers).  No perspective geometry is used,
+and the planet ring system is treated as though no rotation has occured.
+Also, there will be areas of the planet visible from the perspective of the
+output image but not visible in the input image (e.g. the area may have rotated
+behind the planet).  These areas are generated by using the corresponding
+points in front of the planet.  Note that this is a "cludgy" solution.
+Beware of odd side effects if the rotation is large.
+
+If <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#include">INCLUDE</A> is not specified, the sky background is deleted (output
+as 0 dn's).
+
+PARAMETERS FOR RETRIEVING CAMERA POINTING FROM SPICE:
+
+The following parameters permit the user to retrieve a specific instance of
+camera pointing from the SPICE kernels (only <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ckname">CKNAME</A> is applicable for Voyager):
+
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#spicemode">SPICEMODE</A> specifies whether SPICE data is retrieved from LOCAL kernels or
+or via the REMOTE SPICE server.  If defaulted, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#spicemode">SPICEMODE</A> is set to the value
+of the environmental variable DEFAULTSPICE.
+
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ckname">CKNAME</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ckid">CKID</A> are alternative ways to specify the C kernel to be used.  For
+example, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ckname">CKNAME</A>=FARE or <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ckid">CKID</A>=M904 specifies that MIPS_FARENC.CK is to be used.
+When specified, the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ckid">CKID</A> parameter overrides the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ckname">CKNAME</A> parameter.  If the
+camera pointing data is not found in the requested C kernel, the other C kernels
+are searched.
+
+Within a given C kernel, there may be a number of different versions of camera
+pointing for a given image.  The segment identifier for each version contains
+provenance information identifying the creator of the pointing data.  One or
+more of the following parameters may be used to retrieve a specific instance of
+camera pointing based upon this provenance information:
+
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#cdate">CDATE</A> specifies the date and time the camera pointing was created.
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#reqnum">REQNUM</A> identifies the request number associated with the camera pointing.
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#purpose">PURPOSE</A> identifies the purpose for creating the camera pointing.
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#program">PROGRAM</A> identifies the program which created the camera pointing.
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#spkid">SPKID</A> identifies the SP-kernel used to create the camera pointing.
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#userid">USERID</A> identifies the user who created the camera pointing.
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#groupid">GROUPID</A> identifies the group which created the camera pointing.
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#institute">INSTITUTE</A> identifies the facility which created the camera pointing.
+
+A complete list of CK and SPK IDs are located in the ASCII file assigned the
+logical name (or environmental variable) KERNELDB.
+
+The above parameters are optional, and if defaulted (or if no data is found for
+the requested version), the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#program">program</A> will attempt to locate the "best" data
+available for the given image.  See the level 2 help (via the TAE tutor mode)
+for further details.
+
+Examples:  'LOCAL <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ckname">CKNAME</A>=NAIF specifies that SPICE data be retrieved from
+          local kernels using camera pointing from predicts or AACS telemetry.
+
+           'REMOTE <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ckname">CKNAME</A>=FARE <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#institute">INSTITUTE</A>=MIPS <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#spkid">SPKID</A>=N015 <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#userid">USERID</A>=ADC retrieves
+          the camera pointing created by Amy Culver at MIPS using the SP kernel
+          GLL_LONG_2.BSP from file MIPS_FARENC.CK via the SPICE server.  (whew!)
+
+It takes longer to search for SPICE data on the basis of provenance
+information.  If all provenance parameters are specified, for example, the
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#program">program</A> first searches through all the C kernels for an <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#exact">exact</A> match.  If no
+match is found, the search is relaxed by removing the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#cdate">CDATE</A> criteria.  If no
+match is found, the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#reqnum">REQNUM</A> criteria is removed.  Etc.
+
+<A NAME="examples">EXAMPLES</A>
+
+   (1)  PTP <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#inp">INP</A>=1550856.IMG  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#out">OUT</A>=OUT.IMG <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ref">REF</A>=1550854.IMG <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#target">TARGET</A>=GANYMEDE
+
+        The input image (1550856.IMG) is projected to the same perspective as
+        the reference image (1550854.IMG).  The output image is <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#out">OUT</A>.IMG.
+        Since these are Voyager images, the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#target">target</A> must be specified.
+
+   (2)  PTP <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#inp">INP</A>=1550856.IMG <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#out">OUT</A>=OUT.IMG <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rscet">RSCET</A>=(1996,223,14,59,58,123)              <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rcam">RCAM</A>=2  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#target">TARGET</A>=GANYMEDE
+
+        In lieu of the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ref">REF</A> parameter, the reference image is identified by
+        time (<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rscet">RSCET</A>) and camera ID.
+
+   (3)  ptp <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#inp">INP</A>=n1354897340.1  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#out">OUT</A>=cassini.img  <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ref">REF</A>=f1634146.img <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#target">TARGET</A>=JUPITER
+
+	The input is a Cassini image of Jupiter while the reference image is
+	a Voyager image taken at approximately the same longitude.  Since the
+	reference image is in object space, the output image will be in object
+	space, even though the input image is in image space.
+
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#program">PROGRAM</A> HISTORY
+
+ORIGINAL PROGRAMMER: Gary Yagi, January 4, 1986
+<A NAME="CogProg">CURRENT COGNIZANT PROGRAMMER: Gary Yagi</A>
+REVISION:
+ 29 Dec 11  LWK  Added call to init_spice, which is required for the new PBDATA.
+ 27 Feb 03  GMY  Upgraded to support Cassini.  Updated to reference SPICE
+		 instead of SEDR for Voyager.  Delete RFRAME parameter.
+		 Fix bug introduced in Y2000 date checking by initializing
+		 ERT in label buffer.  Add <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rmission">RMISSION</A> parameter.  Fix time
+		 calculation in GET_TIME.
+		 Use tri-axial ellipsoid model (replace RADIUS, RE,RP paramters
+		 by <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#radii">RADII</A> parameter.
+ 29 Jul 02  LWK  AR-AR-107379.  Cleaned up help text; also replaced SEARCV3
+		 call (obsolete) with MP and SEARC_DISTOR.
+ 18 May 98  RRP  AR-9064. The icam2 check should be for camera number 1 and
+                 2 and not 0 and 1.
+ 08 Aug 97  RRP  Added support for input image being Summastion Mode and
+                 Reference being Full frame or vise-versa. (FR 89270)
+ 08 Oct 96  GMY  Implemented Flagstaff tiepoint algorithm (dynamically adjust-
+                 able grid spacing).  Added SSI geometric correction (FR 89818)
+ 27 Aug 96  SMC  ...Added Support for GLL Summation Mode processing (DFR)
+ 10 Jul 96  SMC  ...Added old parameters <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rscet">RSCET</A>, RFRAME, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rcam">RCAM</A> back in, use
+                    <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#target">TARGET</A> to replace PLANET, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ckname">CKNAME</A> to replace SEDRSRC
+ 10 Jun 96  SMC  ...Consolidated Voyager processing method to be same as that
+                    of the Gailileo's, so both will call getspice2.  At this
+                    stage, getspice2 will call getspice if it detects Voyager
+                    images.  Took <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#out">out</A> parameters <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rscet">RSCET</A>, RFRAME, <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rcam">RCAM</A>, PLANET,
+                    SEDRSRC
+ 24 May 96  SMC  ...Added REMOTE Spice function for Gailileo image processing
+ 23 Aug 95  NDR  ...Ported to Unix
+ 1  Jun 90  JJL  ...Converted to GLL
+ 1  Jan 91  JJL  ...Halfword arithmetic throughout.
+ 20 Aug 89  GMY  ...Fix bug in <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rot">ROT</A> parameter
+ 17 Aug 89  GMY  ...Add check to insure input is byte image
+ 20 Jan 86  GMY  ...Add PLANET & <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rot">ROT</A> parameters
+ 16 May 88  GMY  ...Incorporate 'SEDRSRC keyword
+ 26 Jul 89  GMY  ...Make <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#pc">PC</A> and <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rpc">RPC</A> parameters optional
+ 04 Jan 86  GMY  ...Original <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#program">Program</A>.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#inp"><H3>INP</H3></A>
+Input image (byte or halfword)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#out"><H3>OUT</H3></A>
+Output image (byte or halfword, 
+depending on <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#inp">INP</A>)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#size"><H3>SIZE</H3></A>
+Vicar <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#size">size</A> field for the output 
+image (optional)
+(<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ss">SS</A>,NLO,NSO)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#sl"><H3>SL</H3></A>
+INTEGER - Input starting
+ line (ignored)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ss"><H3>SS</H3></A>
+INTEGER - Input starting
+ sample (ignored)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ref"><H3>REF</H3></A>
+STRING - File Name
+Reference image file containing 
+the desired projection 
+attributes
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rscet"><H3>RSCET</H3></A>
+6 INTEGERS
+Reference SCET information 
+required for GLL project if <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ref">REF</A> 
+is not specified
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rcam"><H3>RCAM</H3></A>
+INTEGER - Camera Number
+Reference camera, required if 
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ref">REF</A> is not specified
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rmission"><H3>RMISSION</H3></A>
+OPTIONAL KEYWORD
+Spacecraft ID of reference image
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#radii"><H3>RADII</H3></A>
+REAL - three <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#radii">radii</A> (km) of <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#target">target</A>
+ body (optional)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rot"><H3>ROT</H3></A>
+REAL - <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#target">Target</A> body rotation
+ rate (deg/day) (optional)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#pc"><H3>PC</H3></A>
+REAL - Planet-center of input
+ image (line,sample) (optional)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#rpc"><H3>RPC</H3></A>
+REAL - Planet center of 
+reference image (line,sample) 
+(optional)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#include"><H3>INCLUDE</H3></A>
+KEYWORD - <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#include">Include</A> sky
+ background (optional)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#exact"><H3>EXACT</H3></A>
+KEYWORD - compute the projection
+using the <A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#exact">exact</A> equations at 
+each pixel (rather than via 
+interpolation).
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#spicemode"><H3>SPICEMODE</H3></A>
+Optional keyword
+Location of SPICE kernels
+(LOCAL or REMOTE, no effect on 
+VGR data as of (6/12/96))
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#target"><H3>TARGET</H3></A>
+Optional 12-char string
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#target">Target</A> name (planet,
+  satellite, or asteroid)
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ckname"><H3>CKNAME</H3></A>
+Optional 4-char string
+C-kernel name
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#ckid"><H3>CKID</H3></A>
+Optional 4-char string
+C-kernel ID
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#userid"><H3>USERID</H3></A>
+Optional 3-char string
+User who created camera pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#groupid"><H3>GROUPID</H3></A>
+Optional 3-char string
+Group which created camera 
+pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#institute"><H3>INSTITUTE</H3></A>
+Optional 4-char string
+Facility which created camera 
+pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#purpose"><H3>PURPOSE</H3></A>
+Optional 4-char string
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#purpose">Purpose</A> for camera pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#program"><H3>PROGRAM</H3></A>
+Optional 6-char string
+<A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#program">Program</A> which created camera 
+pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#spkid"><H3>SPKID</H3></A>
+Optional 4-char string
+SP kernel for created camera 
+pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#reqnum"><H3>REQNUM</H3></A>
+Optional 4-char string
+IPL request number for created 
+camera pointing
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp_level2.html#cdate"><H3>CDATE</H3></A>
+Optional 12-char string
+Date and time camera pointing 
+was created
+
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core480/html/vichelp/ptp.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

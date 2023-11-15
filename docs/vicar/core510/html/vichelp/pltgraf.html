@@ -1,0 +1,460 @@
+<HTML>
+<HEAD><title>HTML Help for PLTGRAF</title></HEAD>
+<BODY>
+<H1>Help for PLTGRAF</H1>
+<pre>
+PURPOSE
+    "PLTGRAF" plots an IBIS graphics file inside a labeled  box.  
+
+
+
+OPERATION
+
+    PLRTGRAF plots whatever information is given in an IBIS-1 graphics file.
+    If a 3-D object is described in the graphics file, its viewpoint is
+    in whatever perspective that the vertices are given. Thus, if the
+    true 3-D is hidden by looking at an elev of 0 and Azimuth of 180, then
+    the depth perception is lost.
+
+    If a different perspective is desired then that graphics-1 file perspective
+    can be changed by the program PERSPEC and the results from that transformation
+    can be plotted by PLTGRAF.
+
+    The window size and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> size can be selected or  automatic window sizing
+    invoked.  Graphics outside of  the window are clipped.  Three
+    dimensional graphics-1  files can also be plotted.  The format of the
+    data in the file can be specified (XY or YX), and the direction of the
+    axes on the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> can be chosen.   
+
+    "PLTGRAF" can also <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> attribute information such as text and numbers 
+    from an (optional) IBIS interface file.  
+
+EXECUTION
+If the display parameters are set to defaults,
+
+	pltgraf INP=file.gra
+
+will <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> the graphics file "pltgraf"
+
+Display parameters:
+                                title
+            3.0 +--------|--------|--------|--------|
+                |                                   |
+            2.0 +                                      y-axis anno.  |                                   |
+            1.0 +                                                    |                                   |
+            0.0 +--------|--------|--------|--------|
+               0.0      1.0      2.0      3.0      4.0
+                            x-axis anno.      comment
+
+  text labeling data (default for each is no text):
+    title="title"		Title (above data)
+    xlabel="x-axis anno."	X-axis annotation (below data)
+    ylabel="y-axis anno."	Y-axis annotation (to left of data)
+    comment="comment"		Comment text (below data, right justified)
+    'date			Date, in the form "day-mon-da, year",
+                                prepended to comment text (comment not
+				necessary to get date) (DATE parameter)
+
+  box and numbers bordering data (MODE parameter; default is 'axis):
+    'axis			Draw box, tick marks, and numbers
+    'noaxis			Draw box only
+    'nobox			No border around data
+
+  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> size (defaults shown):
+    xlen=4.0			Width of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> in inches, not counting text 
+				and numbers outside of box
+    ylen=3.0			Height of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> in inches, not counting text 
+				and numbers outside of box
+
+  window into data (default for each is to use min. & max. of data):
+    xrange=(lower_x,upper_x)	Only points with x values in the range
+				    lower_x &lt= x <= upper_x
+				are displayed.
+    yrange=(lower_y,upper_y)	Only points with y values in the range
+				    lower_y &lt= y <= upper_y
+				are displayed.
+    zrange=(lower_z,upper_z)	Only points with z values in the range
+				    lower_z &lt= z <= upper_z
+				are displayed.
+
+  data format (defaults shown):
+    dataform="YX"		Data in file is in (y,x) or (y,x,z) format.
+				"XY" indicates (x,y) or (x,y,z) format.
+    dim=2			Number of dimensions for each data point--here,
+				2d. dim=3 indicates 3d.
+    direct="BR"			Direction of increasing x and y values--here,
+				from top to bottom for y and from left to right
+				for x. Other directions are "TR", "TL", "BL".
+
+  control of final pen position (default shown):
+    'curr			At the end of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A>, the cursor is positioned
+				at the origin of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> just finished. 'next
+				positions the cursor 1 inch to the right of the 
+				<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A>. (FINALPOS parameter)
+
+  special annotation--only used if an interface file is supplied as the 
+  second file in the INP parameter (defaults shown):
+    datacols=3			A list of 1 to 6 numbers indicating the 
+				columns in the interface file that contain
+				text and/or numbers to be plotted.
+    format="REAL,HALF,ASCI,     The format of the input data to be displayed.
+           etc"	                One format for each column. The first two
+                                formats must be present and represent the
+                                format of the x and y value columns.  The
+                                next two columns, if present, represent the
+                                angle and size of the text.  Column 5 may 
+                                be either a number to display or text columns
+                                to display. A maximum of 20 characters 
+                                (5 columns can be displayed).  The user may 
+                                optionally <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> both text and a value at an
+                                x,y location.                 
+    xcol=1			The number of the column that contains
+				x-coordinate of the left edge of the text
+				and/or numbers (before rotation).
+    ycol=2			The number of the column that contains
+				y-coordinate of the bottom edge of the text
+				and/or numbers (before rotation).
+    tsize=.15			Default text size if heighcol is defaulted.
+    heighcol=1			The number of the column that contains the
+				height for the text and/or numbers. If the
+				default is taken, then a height of tsize is
+				used for all rows in the interface file.
+    anglecol=1			The number of the column that contains the
+				CCW rotation angle--in degrees from horizontal--
+				for the text and/or numbers. If the default is
+				taken, then an angle of 0.0 degrees is used
+				for all rows in the interface file.
+IBIS GRAPHICS-1 FILES
+
+    IBIS graphics-1 files are a way to store 2-dimensional or 3-dimensional
+polygonal objects in a file. The file contains a list of the successive vertices
+of the polygons. When the list contains a line of all zeroes then it terminates
+that face of the polygon. In the view of a drawing program it would be a
+"pen-up" command. 
+
+    With the advent of the IBIS-2 format graphics-1 files are deprecated.
+In the new IBIS-2 format graphics-1 can replace that format via an index
+column. In the IBIS-2 context each row is associated with a single vertex,
+and the row order in a column determines the sequence of plotting the
+vertices. A pen-up type command would involve a change of the value in
+the index column. 
+
+
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">PLOT</A> OUTPUTS
+
+    The other type of output come from the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">PLOT</A> and <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plotfmt">PLOTFMT</A> parameters.
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">PLOT</A> allows the user to display data from 5 areas on the CCD on an x,y
+<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> using the gnuplot package after exiting the program. PLOT produces
+a file of gnuplot commands contained in a file having a .gpi file extension.
+Another file with an .asc extension is create containing columns of data
+that are displayed by the gpi file.
+
+   The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plotfmt">PLOTFMT</A> parameter allows the user to generate a postscript file of
+the output for use in documentation by choosing <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plotfmt">PLOTFMT</A>=EPS. The default
+is to generate a gnuplot interactive display.
+
+
+  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">PLOT</A> NAMING CONVENTIONS
+
+  The user should enter only the parent file name without an extension
+  for the PLOTOUT parameter.  The program will supply the extensions.
+
+  For example, if the user has an input file of indata.dat and  PLOTOUT=outplot
+  then for the interactive <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> the following files are produced:
+
+     outplot.gpi
+     indata.dat.asc
+
+  The first file is the gnuplot instruction file and the second is the
+  data file used by gnuplot.
+
+  If the user wanted an encapsulate postscript file with <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plotfmt">PLOTFMT</A>=eps
+  then the following files are produced:
+
+     outplot.eps.gpi
+     indata.dat.asc
+
+  Remember entering the following command gives the eps file, outplot.eps
+
+  ush gnuplot outplot.eps.gpi
+
+  If you move the gpi file to another directory, you must also move the
+  input data file, indata.dat.asc to the same directory.
+
+  Note that the gpi file produced by this program has the name of the
+  input file embedded in the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> command inside the gpi file, e.g..
+
+  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A>  'indata.dat.asc' u  1: 9 t .......
+
+USING GNUPLOT
+
+
+  INTERACTIVE:
+
+    This program uses the gnuplot package for its plots. Gnuplot is a
+  separate package from Vicar and is not actually invoked inside this
+  program.  Instead this program creates a template of gnuplot commands
+  which are written out as a separate file. The <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> is then viewed after
+  exiting this program. The file has the extension .gpi. You view
+  the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> by issuing the following command in the vicar shell.
+
+  ush gnuplot output.gpi
+
+  or external to vicar as
+
+  gnuplot output.gpi
+
+    After viewing the data, you close the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> by clicking the mouse anywhere
+  except on the top bar of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A>. Clicking on the top bar allows you
+  to move the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> to any convenient place on the terminal screen.  (While
+  the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> is displayed you cannot enter any commands to the vicar shell).
+
+  The data to be plotted by gnuplot is read from a separate file, created
+  by this program, which contains columns of data in ascii text.
+  File naming conventions are discussed in the OUTPUT section, but in this
+  case that file extension will be .asc.
+
+  It is possible to keep the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> alive for comparison purposes by issuing
+  the following command.
+  ush gnuplot --persist output.gpi
+  (You will be able to enter commamds to the vicar shell after clicking on
+  the mouse on the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A>).
+
+  Note: This program creates multiple output plots per run. You bring up each <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A>
+  panel sequentially. You close each <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> by clicking the mouse on any
+  portion of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A>.
+
+
+  HARDCOPY:
+
+  This program also allows you to create a hardcopy encapsulated postscript
+  <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> suitable for publications. This file can be viewed with ghostscript
+  or gimp. The encapsulated postscript file is not created by this program
+  by by the gnuplot program from a gpi file made especially for this purpose.
+  this file has the extension, eps.gpi. You create the hardcopy <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> via
+  the following command
+
+  ush gnuplot output.eps.gpi
+
+  This creates the eps file output.eps. You can view this file by
+
+  ush gimp output.eps
+
+    DEVELOPER Note:
+
+    This program used to link to the XRT <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> library -lxrt. Calls to
+  that library were mitigated through a Calcomp conversion library,
+  xrtps located in the p2 subroutine library. With the conversion to
+  gnuplot, neither of these packages are used.
+
+<A NAME="examples">EXAMPLES</A>
+
+    pltgraf INP=FILE.GRA  TITLE="Map of an Unknown Land"           XLEN=10  YLEN=5.0   	XRANGE=(-120,-115)  YRANGE=(34,36)   	XLABEL="LONGITUDE" YLABEL="LATITUDE"  DIRECT="TR" 
+
+In this example the data window is (-120,-115) in longitude and (34,36) in
+latitude, and the size of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> is 10 by 5 inches. The direction of the axes
+is set to top-right since this is a latitude-longitude <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A>. 
+
+
+    pltgraf  FILE.GRA  XLEN=7 YLEN=3.5 'NOAXIS TITLE="Another Map"  	XLABEL="south" 'DATE
+
+In this example, the data window is found from the extent of the data so that
+the whole file is displayed. Because of the 'NOAXIS keyword, a box is drawn
+around the data but the axes are not labeled with numbers and no tick marks
+are drawn. A title and the x-axis annotation are displayed; today's date is
+drawn in the lower right corner of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A>.
+
+
+    pltgraf  THREE.GRA  DIM=3  XRANGE=(1000,1400) YRANGE=(600,900)  	ZRANGE=(0,10000)
+
+This example demonstrates how to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> 3-D graphics files. The first two
+dimensions are treated identically as with 2-D graphics files.
+
+
+    ibis-gen LINES NC=3 NR=8 'IBIS-1 'ROW DATACOL=(1,2,3) DATA=(  	 1,  1,  1,	 2,  2,  2,	 3,  3,  3,	 4,  4,  4,
+	 5,  5,  5,	 6,  6,  6,	 7,  7,  7,	 8,  8,  8)
+    pltgraf LINES DIM=3 'NOAXIS XLEN=8 YLEN=8 'DATE COMMENT=" test"  	ZRANGE=(1,7)
+
+In this <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A>, a box will be drawn around the data and the comment
+"WED SEP 17, 1987 test" (current date) will be drawn in the lower right
+corner of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> just outside of the box. The last line segment,
+(7,7) to (8,8), will not be drawn, however, because the second point's z
+value--8--is outside of ZRANGE.
+
+
+Optional Interface File Examples:
+
+    pltgraf (<A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">PLOT</A>.GRA,TEXT.INT) XCOL=1 YCOL=3 DATACOLS=(5,6,7,8)  	FORMAT=("REAL","REAL","HALF","ASCI",'ASCI','ASCI')          HEIGHCOL=10 ANGLECOL=11 'NOBOX  	COMMENT="Test annotation"
+
+This example shows the use of an interface file to <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> annotation. First, the
+data in the first file will get plotted; no box, tick marks, axes number 
+labels, axes annotation, or title will be plotted ('NOBOX + omission of
+XLABEL, YLABEL, & TITLE). A comment will be drawn in the lower right corner
+of the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A>.
+
+Next, the annotation from the interface file will be plotted.  The position of
+the text to be plotted is in columns specified by XCOL and YCOL (these
+positions are scaled to fit the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> in the same way that data points are
+scaled). The DATACOLS specifies the interface columns that hold the text and
+numbers to be plotted.  The data in the columns is specified with the 
+FORMAT parameter. For this example, the first two columns (1,3) are real 
+numbers and contain the x and y location at which the following datacols will
+be plotted.  Column 5 contains a half word value to plotted at x,y and columns
+6,7,8 contain associated text to be plotted at the same location.
+
+RESTRICTIONS
+ 
+ 1. Plotted text must not be longer than 60 characters.
+ 2. Interface file text may not be longer than 20 characters.
+
+WRITTEN BY:                     Frank Evans
+<A NAME="CogProg">COGNIZANT PROGRAMMER:           Barbara McGuffie</A>
+
+REVISIONS:                       
+
+    Feb     1986 Frank Evans   - Put in calls to standard IBIS
+                                 graphics-1 file subroutines.
+                                 Added 3-D option.
+    Mar     1986 Frank Evans   - Allowed different coordinate systems
+                                 Modified 3-D option.
+    Jun     1986 Frank Evans   - Added interface attribute file
+    Jan     1987 Frank Evans   - Added dataform parameter
+    Jun     1987  Michael Tschudi Used call to SETGR to avoid opening graphics
+                                  file twice (done to reset file to its first
+                                  coordinate)
+    Sep 17, 1987 Michael Tschudi 1. add PEN param
+                                 2. add ZTOPEN param
+                                 3. add COMMENT param
+                                 4. add DATE param
+                                 5. add FINALPOS param
+                                 6. add NOBOX to the MODE param
+                                 7. change formula for centering title from
+                                        xlen/2.-0.25*.67*(slength(title)/2.+2)
+                                    to
+                                        (xlen-0.2490*slength(title))/2.0
+                                 8. if xlabel specified along with 'NOAXIS or
+                                    'NOBOX, then it is displayed without axis 
+                                    numbers; same for ylabel
+                                 9. change pen number calculation for scaled z
+                                    from
+                                        pen = int(z)
+                                    to
+                                        pen = nint(z)
+                                    to avoid round-off error
+                                10. fixed ZRANGE so that the range is checked
+                                11. set <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> to draw in same location 
+                                    regardless of MODE switch value
+                                12. fixed default FORMAT value
+    Feb 23, 1990 Howard Frieden Check that interface file annotation is within
+                                the <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> area.  Also, center the annotation
+                                and add TSIZE parameter.
+    Jul 10, 1996 A. Scop (CRI) - Made portable for UNIX
+    May  1, 1998 BAM           - Corrected subroutine PLOTTEXT 
+                           which had not been ported properly.
+    Feb 13, 2013 R. J. Bambery - Converted to gnuplot and 
+                                gfortran 4.6.3 64-bit compatiability
+    Feb 20, 2013 R. J. Bambery - Updated test and documentation
+    Mar 15, 2013 R. J. Bambery - remove all debugging statements,
+                                dataform is default=XY not YX
+    Jul 07, 2013 R. J. Bambery - Renamed table file and fixed logic
+                                in XY vs YX and TR, BR, TL, BL
+                                (capitalization)  and ranges in gpi files
+    Jul 13, 2013 R. J. Bambery - Adjusted eps format to more readable fonts
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#inp"><H3>INP</H3></A>
+ 1. Input IBIS graphics-1 file
+ 2. Optional interface file with
+    special annotation
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot"><H3>PLOT</H3></A>
+ STRING-OPTIONAL
+ Turns on <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">PLOT</A>.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plotfmt"><H3>PLOTFMT</H3></A>
+ Output <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> format
+ GNUPLOT or EPS
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#title"><H3>TITLE</H3></A>
+String for title
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#xlabel"><H3>XLABEL</H3></A>
+String for x-axis annotation
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#ylabel"><H3>YLABEL</H3></A>
+String for y-axis annotation
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#comment"><H3>COMMENT</H3></A>
+String for lower-right corner
+annotation
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#date"><H3>DATE</H3></A>
+Switch indicating that the curr.
+date should be prepended to 
+COMMENT ('DATE) or not ('NODATE)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#mode"><H3>MODE</H3></A>
+Switch indicating level of 
+border detail around data:
+  'AXIS: box, ticks, numbers
+  'NOAXIS: box only
+  'NOBOX: nothing
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#xlen"><H3>XLEN</H3></A>
+Length of x-axis in inches
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#ylen"><H3>YLEN</H3></A>
+Length of y-axis in inches
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#xrange"><H3>XRANGE</H3></A>
+Range for x-variable
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#yrange"><H3>YRANGE</H3></A>
+Range for y-variable
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#zrange"><H3>ZRANGE</H3></A>
+Range for z-variable
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#dataform"><H3>DATAFORM</H3></A>
+File format:  XY, YX.
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#dim"><H3>DIM</H3></A>
+Dimension of graphics
+file (2 or 3)
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#direct"><H3>DIRECT</H3></A>
+Increasing direction for axes:
+  TR for top right
+  BR for bottom right
+  TL for top left
+  BL for bottom left
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#finalpos"><H3>FINALPOS</H3></A>
+Position for pen following <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A>:
+  'CURR: at origin of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> (for
+    overprinting)
+  'NEXT: to right of <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A> (for
+    adjacent <A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#plot">plot</A>)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#datacols"><H3>DATACOLS</H3></A>
+Columns (up to 10) that hold the
+text or numbers to be plotted
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#format"><H3>FORMAT</H3></A>
+String containing IBIS FORMAT
+statement to use to format the 
+data columns (parentheses req'd)
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#xcol"><H3>XCOL</H3></A>
+Column number that holds left-
+edge x coords for text/numbers
+(before rotation)
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#ycol"><H3>YCOL</H3></A>
+Column number that holds bottom-
+edge y coords for text/numbers
+(before rotation)
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#tsize"><H3>TSIZE</H3></A>
+Text size in inches when 
+HEIGHCOLis defaulted. 
+Default is .15 
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#heighcol"><H3>HEIGHCOL</H3></A>
+Column number that holds the
+height of the text in inches.
+(Default yields TSIZE inches)
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf_level2.html#anglecol"><H3>ANGLECOL</H3></A>
+Column number that holds the
+angle of the text in degrees.
+(Default yields 0 degrees)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core510/html/vichelp/pltgraf.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

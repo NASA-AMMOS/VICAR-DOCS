@@ -1,0 +1,87 @@
+<HTML>
+<HEAD><title>HTML Help for DVECTOR</title></HEAD>
+<BODY>
+<H1>Help for DVECTOR</H1>
+<pre>
+    dvector can draw any number of vectors on a picture of any size.
+Vectors are drawn from the left tiepoint location towards the right
+tiepoint location. The left coordinate will have a 3 by 3 pixel cross
+at that location. The right coordinate will be at the vector tip IF
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/dvector_level2.html#exag">EXAG</A> is defaulted to 1.0. Otherwise the vector will fall short or
+cross over the right point.
+    Vectors come from the second (and beyond) input files in mark
+format. They are essentially tiepoints in the order:
+left_line, left_sample, right_line, right_sample.
+    Internal image storage is as integer*2 so real images will
+be rounded.
+    Dvector uses a storage buffer of 500000 integers. It will process
+all the vectors for each image buffer, making as many passes as
+required to process the entire input taken 500000 pixels at a time.
+    Up to 100 mark files can be input to DVECTOR. An X will be drawn
+at the base of the vector for only the first mark files vectors.
+All mark files must be identical in size and number of tiepoints.
+
+If <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/dvector_level2.html#dn">DN</A> is negative:
+1. Vectors are drawn on an image of zero <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/dvector_level2.html#dn">dn</A>.
+2. Vectors are written from 1 to 255 <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/dvector_level2.html#dn">dn</A> representing angles from 0
+   to 360 degrees.
+3. No X is drawn at the vector base.
+
+
+Example:
+       dvector in,points <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/dvector_level2.html#out">out</A> parameters
+  where: IN is an input image to superimpose vectors upon.
+         POINTS is a MARK file containing the vectors to draw.
+          Mark files contain 512 byte records of real*4 data.
+          Coordinates are stored in groups of 4 words in the
+          order left_line,left_sample,right_line,right_sample...
+         <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/dvector_level2.html#out">OUT</A> is a copy of IN with superimposed vectors.
+
+<A NAME="examples">EXAMPLE:</A>
+  (one mark file)
+      tracker a,c t
+      dvector a,t b
+  (two mark files)
+      tracker2 c,d,t tt
+      dvector a,t,tt b
+
+HISTORY
+
+Written By: J Lorre			    1 AUGUST 1978
+<A NAME="CogProg">Cognizant Programmer: J Lorre</A>
+REVISIONS:
+03 Oct 94 CRI Made portable for UNIX ... Jim Turner (CRI)
+29 Aug 01 GMY Fixed bug to allow use of all 500,000 bytes of buffer allocated.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/dvector_level2.html#inp"><H3>INP</H3></A>
+Two inputs minimum.
+#1 is the left image
+#2 is the MARK file.
+#3-#101 optional
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/dvector_level2.html#out"><H3>OUT</H3></A>
+Image with superimposed
+vectors.
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/dvector_level2.html#exag"><H3>EXAG</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/dvector_level2.html#exag">Exag</A> is a real number 
+which exaggerates the 
+vector length.
+Default is <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/dvector_level2.html#exag">exag</A>=1.0
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/dvector_level2.html#dn"><H3>DN</H3></A>
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/dvector_level2.html#dn">DN</A> is an integer which 
+sets the <A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/dvector_level2.html#dn">DN</A> intensity 
+value of the
+vectors. 
+Default is n=255
+(see special case if
+<A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/dvector_level2.html#dn">dn</A> is negative)
+
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/dvector.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core5201/html/vichelp/dvector.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

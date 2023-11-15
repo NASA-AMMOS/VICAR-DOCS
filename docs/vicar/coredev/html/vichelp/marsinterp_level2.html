@@ -1,0 +1,456 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for MARSINTERP</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp.html">MARSINTERP</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+Input files contain the XYZ coordinates. If three filenames are given,
+they all should be single <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#band">band</A> files each containing X, Y and Z values
+in that order.  If only one filename is given, it should be a 3-<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#band">band</A>
+file with bands in (X,Y,Z) order.
+
+The input files are in REAL (float) format.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="out"><H3>OUT</H3></A><pre>
+Output files containing the UVW unit vector components.
+
+If three filenames are given, three separate 1-<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#band">band</A> files will be created,
+one each for U (X), V (Y), and W (Z) components.  If only one filename is
+given, a single 3-<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#band">band</A> file will be created, with bands in (U,V,W) order.
+
+The output files are in REAL (float) format.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="separation"><H3>SEPARATION</H3></A><pre>
+Specifies the maximum distance in meters between the point of interest
+and the points to use in the plane fit.  This can be useful e.g. to reject
+points in the background at the edge of an object.
+
+A negative value indicates no limit.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="error"><H3>ERROR</H3></A><pre>
+Specifies the maximum plane fit error in meters.  If the error is bigger
+than this, points are rejected (see the REJECT parameter) until the error
+is acceptable, or too few points are left.  The plane fit error is the
+average distance from the points to the computed plane.
+
+A negative value indicates no limit.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="min_points"><H3>MIN_POINTS</H3></A><pre>
+Specifies the minimum number of points to be used in the plane fit.
+If not enough points can be found, no normal is computed for the point.
+At least 3 points are required, but 6 or more is recommended.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="radius"><H3>RADIUS</H3></A><pre>
+The number of pixels to consider around the pixel of interest.  Despite
+the name, this is a square area (not circular).  For example, a radius
+of 2 would yield a 5x5 window.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="reject"><H3>REJECT</H3></A><pre>
+If the plane fit error exceeds ERROR, then individual points with a plane
+fit error greater than the REJECT ratio times the average error are rejected.
+This continues until the average error meets the ERROR criteria, or until
+too few points are left to do a fit.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="x_center"><H3>X_CENTER</H3></A><pre>
+Center of bounding box (in XYZ space).  Points lying outside the box will not
+have normals computed for them.  This is used to limit computation to e.g.
+the IDD workspace for MER.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="y_center"><H3>Y_CENTER</H3></A><pre>
+Center of bounding box (in XYZ space).  Points lying outside the box will not
+have normals computed for them.  This is used to limit computation to e.g.
+the IDD workspace for MER.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="box_radius"><H3>BOX_RADIUS</H3></A><pre>
+Half-width of bounding box.  Points more than this distance away from
+X/Y_CENTER in either height or width will not be computed (note, it is a
+square box, not a circle).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="flip_thresh"><H3>FLIP_THRESH</H3></A><pre>
+A threshold to apply to the W (Z) component of the normal.  If the component
+is larger than the threshold, then the negation of the vector is returned.
+This reduces the flipping problem at the expense of not being able to properly
+detect nearly horizontal overhangs.  Since such overhangs are exceedingly
+rare, the threshold test is usually a good thing.  Note that any value &gt 1.0
+will disable the threshold (this is the default).  A reasonable value might
+be 0.8, which corresponds to arccos(.8) ~= 37 degrees.  Thus, overhangs less
+than 37 degrees from horizontal will be reported inverted.
+
+See also FLIP_DIST.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="flip_dist"><H3>FLIP_DIST</H3></A><pre>
+Specifies the minimum distance at which to flip signs.  Any pixel closer
+to the camera than this will not be inverted.  This is because the flipping
+problem usually happens in the distance, and having a cutoff allows for
+nearby overhangs.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="config_path"><H3>CONFIG_PATH</H3></A><pre>
+A colon-separated list of directories in which to look for configuration
+and calibration files.  Environment variables are allowed in the list
+(and may themselves contain colon-separated lists).  The directories are
+searched in order for each config/cal file when it is loaded.  This allows
+multiple projects to be supported simultaneously, and allows the user to
+override any given config/cal file.  Note that the directory structure below
+the directories specified in this path must match what the project expects.
+For example, Mars 98 expects flat fields to be in a subdirectory named
+"flat_fields" while Mars Pathfinder expects them to be directly in the
+directory specified by the path (i.e. no intermediate subdirectories).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="point_method"><H3>POINT_METHOD</H3></A><pre>
+Specifies a mission-specific pointing <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#method">method</A> to use.  Normally this
+parameter is not used, in which case the "default" pointing methods
+are used.  Some missions may have special, or alternate, pointing
+methods available, which are indicated by this string (for example,
+backlash models, using arm joint angles instead of x/y/z/az/el, etc).
+A substring search is used, so multiple methods (where that makes sense)
+can be specified by separating the keywords with commas.
+
+Note that nav files created using one pointing <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#method">method</A> will most likely
+not be compatible with a mosaic created using a different pointing <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#method">method</A>.
+
+The methods available vary per mission, but some methods available at
+the time of this writing are:
+
+BACKLASH : Mars 98 SSI only.  Selects a backlash pointing model,
+which adjusts the telemetered azimuth and elevation values based on
+knowledge of the camera's mechanical backlash and the direction the
+motor was travelling when the image was taken.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="nosite"><H3>NOSITE</H3></A><pre>
+Disables all label-derived parameters to the Site mechanism which underlies
+coordinate systems.  This forces all sites to be identical, with all rotations
+and offsets set the same.  In the case of MPF or Mars 98, this disables
+the lander quaternion and offset (sets them to identity and 0, respectively).
+This option should not be used with images taken from different vantage
+points (e.g. the spacecraft moved, or mixing a lander and a rover) or
+invalid results will be obtained.  The use of this option invalidates the
+Fixed coordinate frame; any values reported in the Fixed frame will not
+correctly reflect the orientation of the lander/rover.
+
+Obviously, this option should be rarely used; it is intended for when the
+image labels defining the site are invalid or inconsistent.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="data_set_name"><H3>DATA_SET_NAME</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#data_set_name">DATA_SET_NAME</A> typically identifies the instrument that acquired the
+data, the target of that instrument, and the processing level of the data.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#data_set_name">DATA_SET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="data_set_id"><H3>DATA_SET_ID</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#data_set_id">DATA_SET_ID</A> value for a given data set or product is constructed
+according to flight project naming conventions.  In most cases the
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#data_set_id">DATA_SET_ID</A> is an abbreviation of the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#data_set_name">DATA_SET_NAME</A>.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#data_set_id">DATA_SET_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="release_id"><H3>RELEASE_ID</H3></A><pre>
+When a data set is released incrementally, such as every three months during
+a mission, the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#release_id">RELEASE_ID</A> is updated each time part of the data set is released.
+For each mission(or host id if multiple spacecrafts), the first release of a data
+set should have a value of "0001".
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#release_id">RELEASE_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="product_id"><H3>PRODUCT_ID</H3></A><pre>
+Specifies a permanent, unique identifier assigned to a data product by
+its producer. Most commonly, it is the filename minus the extension.
+This value is copied to the output label, property IDENTIFICATION,
+keyword <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#product_id">PRODUCT_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="producer_id"><H3>PRODUCER_ID</H3></A><pre>
+Specifies the unique identifier of an entity associated with the
+production of a data set. This value is copied to the output label,
+property IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#producer_id">PRODUCER_ID</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="producer_inst"><H3>PRODUCER_INST</H3></A><pre>
+Specifies the identity of a university, research center, NASA center or other
+institution associated with the production of a data set.
+This value is copied to the output label, property IDENTIFICATION, keyword
+PRODUCER_INSTITUTION_NAME.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="target_name"><H3>TARGET_NAME</H3></A><pre>
+Specifies a target.  The target may be a planet, satelite, ring, region, feature,
+asteroid or comet.  This value is copied to the output label, property
+IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#target_name">TARGET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="target_type"><H3>TARGET_TYPE</H3></A><pre>
+Specifies the type of a named target. This value is copied to the output
+label, property IDENTIFICATION, keyword <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#target_name">TARGET_NAME</A>.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="rsf"><H3>RSF</H3></A><pre>
+Rover State File.  This is a list of filenames to load containing
+Rover State information.  These files contain position and orientation
+information for a rover (or other mobile spacecraft) at various sites.
+They are in XML format.  See the "Rover Motion Counter (RMC) Master File SIS"
+for details on these files.
+
+Rover State Files have a priority order.  The files listed first have
+the highest priority.
+
+Environment variables may be used in the list.
+
+For MER, if a directory is specified, then that directory is searched for
+RMC Master files and any found are loaded.  The directory structure and
+filename convention is covered in the RMC SIS.  The directory specified
+is the one containing "master", so if &ltdir&gt is the name specified in the
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#rsf">RSF</A> parameter, the following files will be searched for:
+
+&ltdir&gt/master/<mission>_Master.svf
+&ltdir&gt/master/<mission>_Site_<n>_Master.rvf
+
+The name of each file loaded is printed to the stdout log for reference.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="debug_rsf"><H3>DEBUG_RSF</H3></A><pre>
+If enabled, this causes the internal database of RMC locations to be
+printed <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#out">out</A> to the stdout log.  This is after the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#rsf">RSF</A> files have been
+loaded and the coordinate systems read from the input label(s).
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord"><H3>COORD</H3></A><pre>
+The coordinate system to use for the output UVW vectors.  The interpretation
+of the values is dependent on the mission.  Some representative missions are
+listed here:
+
+Fixed - The Fixed frame.  This is the ultimate reference frame
+    (see also <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#fixed_site">FIXED_SITE</A> for rover missions).
+Instrument - (default) The "natural" frame for the instrument 
+    (of the first input image).  MPF: Lander or Rover; M98: MVACS; MER: Rover.
+Site - A major Site frame.  For rover missions, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#coord_index">COORD_INDEX</A> specifies which
+    Site frame to use.  Non-rover missions treat this as Fixed.
+Rover - An instance of the Rover frame.  For rover missions, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#coord_index">COORD_INDEX</A>
+    specifies which instance of the rover frame to use.  Non-rover mission
+    use the spacecraft frame (e.g. Lander for M98).  For MSL, this is the
+    Rover Nav frame.
+Local_Level - An instance of a Local Level frame.  This is typically
+    coincident with the Rover frame (in XYZ) but oriented toward North
+    like the Site and Fixed frames.  For MER, this is an instance of a
+    Drive index move.
+RMECH - for MSL, this is the Rover Mechanical frame.  It should not normally
+    be used except for testing.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="coord_index"><H3>COORD_INDEX</H3></A><pre>
+The index specifies which instance of a coordinate system to use.  It is
+currently applicable only to rover-based missions, but could have other
+uses.  The index is equivalent to the Rover Motion Counter (RMC) for MER
+and FIDO.
+
+For MER/FIDO, there are many Site frames.  Each is numbered with a single
+index.  For Site Frames, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#coord_index">coord_index</A> specifies which to use.  Likewise,
+there are many Local_Level and Rover frames, corresponding to values of
+the RMC.  The multiple instances of this frame are selected by <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#coord_index">COORD_INDEX</A>.
+
+Generally <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#coord_index">COORD_INDEX</A> defaults sensibly so you don't usually need to
+specify it.  It will default to the instance used by the first input.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="fixed_site"><H3>FIXED_SITE</H3></A><pre>
+Specifies which major Site is the "Fixed" Site for this run.
+
+Historically, MPF and M98 had a single "Surface Fixed" frame which never
+moved, and which all other coordinate system frames were referenced to.
+With the advent of long-range rovers (such as MER and FIDO), that became
+insufficient.  The rover traverses far enough that errors in knowledge of
+coordinate system offset and orientation become unacceptable.
+
+For this reason, a system of major Sites was introduced.  Periodically
+during the mission, a Site frame is declared.  This then becomes the
+reference frame for all activities until the next Site is declared.
+References are kept local, and errors don't propogate across Sites.
+
+However, if images from more than one Site are combined together, the
+Site's must be placed relative to each other.  Therefore a single reference
+frame is still needed to combine different sites.
+
+The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#fixed_site">FIXED_SITE</A> parameter controls which of the major Site frames is
+the reference ("fixed") site for this program run.  This fixed frame
+can vary in different program runs, but is constant throughout one
+execution.
+
+If not specified, <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#fixed_site">FIXED_SITE</A> defaults to the minimum Site number (i.e.
+lowest numbered, or earliest chronologically) used in all input images.
+Normally this default is sufficient; rarely must <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#fixed_site">FIXED_SITE</A> be specified.
+
+One or more Rover State Files must usually be specified in order to combine
+image from more than one Site.  These describe the relationship between
+sites.  See the <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#rsf">RSF</A> parameter.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="solution_id"><H3>SOLUTION_ID</H3></A><pre>
+Specifies which solution ID to use when specifying the coordinate system.
+
+There are potentially many different definitions for the same coordinate
+system.  These are identified via a unique Solution ID.  If this parameter
+is given, only the specified solution's definition is searched for.  Without
+it, the "best" available solution is chosen.
+
+It is extremely rare that this parameter should be needed.  The default
+will be sufficient in almost every case.
+
+Note that the current MER implementation requires that a value for <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#coord_index">COORD_INDEX</A>
+also be provided, in order for this parameter to take effect.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="method"><H3>METHOD</H3></A><pre>
+The <A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#method">method</A> to use for interpolation. Some available methods are listed here:
+
+LINEAR - (default) The interpolation will be linear.
+NATGRID - Interpolation using NCAR Graphics NATGRID function. 
+    This performs natural neighboring interpolation.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="extrapolate"><H3>EXTRAPOLATE</H3></A><pre>
+Specifies if extrapolation should be done.
+
+NOEXTRAPOLATE - (default)Extrapolation will not be performed.
+<A HREF="/VICAR-DOCS/vicar/coredev/html/vichelp/marsinterp_level2.html#extrapolate">EXTRAPOLATE</A> - Extrapolation will be performed.
+
+<p>
+<p></pre>
+
+</BODY>
+</HTML>

@@ -1,0 +1,209 @@
+<HTML>
+<HEAD><title>HTML Help for MEM</title></HEAD>
+<BODY>
+<H1>Help for MEM</H1>
+<pre>
+
+PURPOSE
+
+MEM performs a non-linear restoration (deconvolution) using the Maximum 
+Entropy Method.  Deconvolution is the process of undoing convolution:  
+given a degraded image that results from an image being convolved with a 
+known point spread function (PSF) and having noise added, find the original 
+image.  There are, in general, many solutions to the deconvolution problem;  
+of these MEM selects the solution having the greatest entropy:
+
+	H = Sum over all pixels ( -b*log(b/m) )
+
+where b is the pixel brightness and m is the default image.
+
+
+
+EXECUTION
+
+Normally use:
+MEM  (DEGRADED.IMG,PSF.IMG)  MEM.IMG  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#rmserror">RMSERROR</A>=? 
+
+Using more parameters:
+MEM  (DEGRADED.IMG,PSF.IMG,DEFAULT.IMG)  MEM.IMG  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#rmserror">RMSERROR</A>=?   				<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#maxiter">MAXITER</A>=?  <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#maxcrit">MAXCRIT</A>=?
+
+
+The images can be in any non-complex format;  the output image has
+the same format as the degraded image.  Be sure that the maximum in the
+degraded image is quite a bit less than the maximum pixel value, so
+that the output image won't have to be clipped.  The degraded image should
+be nearly all positive (because the output maximum entropy image is totally
+positive), and the background level should be close to  zero.  A sub-image 
+of the degraded image can be used by specifying the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#size">SIZE</A> or (<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#sl">SL</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#ss">SS</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#nl">NL</A>,<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#ns">NS</A>) 
+parameters.  The image <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#size">size</A> must be less than or equal to 4096 in both 
+dimensions.
+
+
+The point spread function (PSF) is the image that the degraded image 
+has been convolved with.  In some cases it will be known exactly; in
+others it must be estimated.  If the degraded image contains point sources
+(stars) then one of these can be used for the PSF.  Use COPY to cutout the 
+point source.  A lot of noise on the point source image will cause problems 
+since it will not then be the true PSF.  In this case a model image can be 
+made using SPOT or F2 to approximate the PSF.  If there are no point sources 
+then an edge can sometimes be used to estimate the PSF.  If the degradation 
+is known (or hypothesized) to be a linear smear at constant velocity then 
+the PSF is a line;  look at the FFT of the degraded image in order figure <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#out">out</A>
+the length and direction of the line.  MEM normalizes the volume of the PSF 
+to unity so its height is unimportant.  The center of the PSF should be near 
+the center of the PSF image.
+
+Usually the default image can be left <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#out">out</A>.  In some cases better results
+may be obtained by using a default image that represent apriori information
+about what the image should look like.  For example, the maximum entropy
+method may work better on planets if an image containing a disk of the 
+correct <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#size">size</A> and position is used as the default.
+
+
+The <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#rmserror">RMSERROR</A> parameter gives the amount of noise in the data.  This can be 
+estimated from the standard deviation of a blank part of the image (use
+standard deviation from HIST).  Specifying too large a number will lead to 
+an overly smooth image.  Too small a number will prevent convergence.  If 
+the PSF is inexact or the problem too difficult the desired RMS error maybe
+unobtainable.  In these cases use a higher value for RMS error.  If you can't
+estimate <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#rmserror">RMSERROR</A> then run MEM with some low value, and then use the RMS error 
+that is obtained when MEM starts to slow down.
+
+The <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#maxiter">MAXITER</A> parameter is the maximum number of iterations the program will do.
+If the solution is reached sooner MEM will stop before doing that number of
+iterations.  Typically around 10 iterations are required.  More difficult 
+problems and higher signal-to-noise cases will take more iterations.  Easy
+problems can often be done in about 5 iterations.  There is little to be 
+gained from doing more than about 30 to 40 iterations.
+
+The <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#maxcrit">MAXCRIT</A> parameter specifies the maximum allowed solution criterion.  The
+solution criterion is a measure of how close to the maximum entropy solution
+the image is for the particular RMS error it is currently at.  Values near
+zero indicate that it is at a solution; values near one indicate problems.
+The default value for <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#maxcrit">MAXCRIT</A> can nearly always be used.
+
+The MEM program can be restarted using a previous image by specifying the
+'<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#restart">RESTART</A> keyword.  The previous (and output) image is specified in the
+output image slot.  The parameters and/or images can be changed when restarting
+so that adjustments can be made along the way.
+
+
+OPERATION
+
+The MEM program starts with the default image and changes the image each
+iteration to better fit the data.  If no image is specified the default 
+image is a constant equal to the average pixel value in the input image.
+The algorithm maximizes the entropy with the constraint of the data by
+using the method of Lagrange multipliers.  The algorithm uses a gradient 
+search method where the gradient direction is modified by an approximation
+to the second derivative.  At each iteration the image should be at the 
+maximum entropy solution for the particular RMS error that is has.
+The program stops (converges) if the RMS error is within ten percent of
+the desired error and the solution criterion is less than ten percent
+greater than the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#maxcrit">MAXCRIT</A> parameter.  This algorithm is a modification
+of the one described in the first reference (Cornwell and Evans).
+
+MEM performs convolutions using either FFT's or directly, depending on the
+<A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#size">size</A> of the PSF.  If the PSF is larger than 16 in either direction then the
+FFT's are used.  The <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#size">size</A> of the FFT is the power of two that is larger than 
+the input image <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#size">size</A> plus the size of the PSF image.  Thus it saves CPU time 
+if this slightly less than a power of two rather than slightly more.  If the
+convolutions are being performed directly then the PSF should be as small as
+possible in order to save CPU time.  MEM creates a bunch of scratch file 
+images of real format with the file name MEMn , where n is a digit from 1 to 7.
+If the FFT's are being used seven scratch files are created, otherwise five 
+are used.  The two FFT scratch files are the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#size">size</A> of the FFT, and other five 
+are the <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#size">size</A> of the output image.  If there is a crash or if you stop the 
+program, the latest MEM image is in the scratch file MEM7 .  Most of the CPU
+time is spent in the two convolutions that are performed for each iteration.  
+
+
+THEORY
+
+The entropy measure has its background in statistical and information
+theoretical arguments, but these are not widely accepted.  Pragmatically,
+the entropy can be thought of as a non-linear measure of distance from
+the default image, which measures the lack of dispersion in pixel values.
+MEM finds the image that has the maximum entropy while still fitting the
+data to within a specified RMS error.  The RMS error is the root mean
+square of the difference between the degraded input image and the MEM image
+convolved with the PSF.  This formulation assumes that the noise has 
+a gaussian distribution and is added in the image domain after the convolution.
+
+The purpose of maximizing entropy is to try to recover some of information 
+lost in the degradation process.  The information the entropy puts in
+is not necessarily correct for all applications.  The method tends to
+produce images with enhanced gaussian peaks on a flat zero background level.
+Maximum entropy works better if the image fits this picture, and it can do
+poorly if the image is a lot different.  For example, it will put oscillations 
+in high flat plateaus.  Another important property is that the resolution 
+varies depending on the signal to noise ratio, with greater resolution on 
+brighter features.  Maximum entropy forces the image to be positive and 
+slightly biased.  These properties are a result of maximizing the entropy 
+with the constraint of the data, and are not caused by the particular 
+algorithm that performs the maximization.  For more information on the 
+properties of maximum entropy images and the technique in general see 
+the second reference.
+
+The maximum entropy method restoration can be used for resolution enhancement
+and for deblurring.  The resolution cannot be increased very much, however,
+without introducing artifacts, because some information is permanently lost.
+The method performs better on deblurring problems.  Often maximum entropy
+will perform much better than linear methods (such as RESTORW), but sometimes
+the linear methods can do better.  In general, maximum entropy will excel
+(compared to linear methods) in cases of low signal-to-noise.
+
+
+
+REFERENCES
+
+    Cornwell, T. J. and Evans, K. F., 1985.  "A New Simple Maximum Entropy
+Deconvolution Algorithm",  Astronomy and Astrophysics, 143:77-83.
+
+    Narayan, R. and Nityananda, R., 1986.  "Maximum Entropy Image Restoration
+in Astronomy",  Annual Reviews of Astronomy and Astrophysics.
+
+
+
+
+
+<A NAME="CogProg">Cognizant Programmer:  L.W.Kamp</A>
+
+Original Programmer:  K. F. Evans	January 1986
+
+
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#inp"><H3>INP</H3></A>
+1. The degraded image
+2. The point spread (PSF) image
+3. The default image
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#out"><H3>OUT</H3></A>
+The output MEM image
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#size"><H3>SIZE</H3></A>
+The standard Vicar <A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#size">size</A> field
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#sl"><H3>SL</H3></A>
+The starting line
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#ss"><H3>SS</H3></A>
+The starting sample
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#nl"><H3>NL</H3></A>
+The number of lines
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#ns"><H3>NS</H3></A>
+The number of samples
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#rmserror"><H3>RMSERROR</H3></A>
+The RMS error to fit to -
+the noise level in the data
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#maxiter"><H3>MAXITER</H3></A>
+The maximum number of iterations
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#maxcrit"><H3>MAXCRIT</H3></A>
+The maximum allowed solution
+criterion.  Use default.
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem_level2.html#restart"><H3>RESTART</H3></A>
+Use if restarting MEM
+
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/core500/html/vichelp/mem.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

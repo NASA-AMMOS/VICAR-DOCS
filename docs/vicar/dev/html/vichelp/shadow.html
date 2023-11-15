@@ -1,0 +1,178 @@
+<HTML>
+<HEAD><title>HTML Help for SHADOW</title></HEAD>
+<BODY>
+<H1>Help for SHADOW</H1>
+<pre>
+PURPOSE:
+
+Shadow enhancement for non-uniform illumination images. The program
+will brighten the shadows, and preserve details of the image. The program
+is implemented based on retinex theory. For detailed algorithm, please 
+see METHOD section. 
+
+The program currently supports only grayscale format. The input images
+to the program must be 1-<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#band">band</A> in HALF format.
+
+EXECUTION:
+The program provides adaptive or global <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A> brightness correction modes.
+Adaptive <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A> brightness correction mode will brighten shadows automatically
+based on input image statistics. Global <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A> brightness correction mode
+uses a constant <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A> value. Depending on the constant gamma value, global
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A> correction may brighten shadow more, but it may also over brighten
+the non-shadow areas.
+
+  1) SHADOW <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#inp">INP</A>=input.img <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#out">OUT</A>=output.img
+The above command will enable adaptive <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A> brightness correction mode.
+The program will brighten shadows more than it will brighten non-shadow 
+areas.
+
+  2) SHADOW <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#inp">INP</A>=input.img <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#out">OUT</A>=output.img <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">GAMMA</A>=0.5
+The above command will enable global <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A> brightness correciton mode. 
+In general cases, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A> needs to be in range of 0 to 1 (exclude 0 and 1).
+Using global <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A> correction mode, the non-shadow areas may be over
+brightened. 
+
+METHOD:
+The SHADOW program consists of the following steps:
+  
+  1) Decompose input image into illumination image and reflectance image
+     based on retinex theory.
+  2) <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">Gamma</A> brightness correction on illumination image.
+  3) Contrast enhancement on illumination image using probability density 
+     function.
+  4) Combine illumination image and reflectance image to generate the 
+     final output.
+
+Retinex theory in short indicates that scenes presented to a digital camera
+or human eye can be decomposed into illumination and reflectance components.
+In this program, the illumination image is estimated using Gaussian kernel 
+convolves with the input image. 
+
+Estimate illumination image using Gaussian kernel sometimes causes 
+problems including halo artifacts around big edges. In order to suppress
+the halo artifacts, a weighted map is computed based on the following
+equations:
+
+    high_freq_image(x,y) = |input_image(x,y) - illumination_image(x,y)|
+    weight_map(x,y) = convolution(high_freq_image(x,y), gaussian_kernel(x,y))
+    
+x and y are line and samp in the images respectively. Next, the weight map 
+is used as in the equation below to compute the modified illumination image. 
+The halo atrifacts in the original illumination image will be removed from 
+this step.
+
+    mod_illu_image(x,y) = weight_map(x,y) * input_image(x,y) + (1 - weight_map(x,y)) * illumination_image(x,y)
+
+x and y are line and samp in the images respectively, and weight_map(x,y) 
+was normalized to [0, 1]. The reflectance image is then decomposed using 
+the modified illumination image based on the equation below.
+
+    reflectance_image(x,y) = input_image(x,y) / mod_illu_image(x,y)
+
+The reflectance image contains high frequency information, which in other 
+words, it contains detailed information of the input image.
+    
+Apply <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A> correction to the modified illumination image. The program
+provides two modes of <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A> correction: (1) global gamma correction, 
+(2) adaptive <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A> correction. Gamma correction is defined by the equation
+below:
+
+    result(x,y) = input(x,y)^<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A>(x,y).
+
+input(x,y) should be normalized to [0, 1] prior to the computation. If 
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A>(x,y) is smaller than 1, then result(x,y) will be brighter than
+input(x,y). If <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A>(x,y) is larger than 1, then result(x,y) will be
+darker than input(x,y).
+
+In global <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A> correction mode, gamma(x,y) will be set to a user defined
+constant value. In order to brighten the image, <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A> value needs to be
+in range of 0 to 1 (exculde 0 and 1). The smaller the <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A> value, the 
+brighter the result will be. 
+
+In adaptive <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A> correction mode, gamma(x,y) will be a function defined
+by the equation below:
+
+                  2 * mod_illu_image(x,y) + 1
+    <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A>(x,y) = -----------------------------
+                    2 + mod_illu_image(x,y)
+
+The adaptive <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A> correction mode will brighten the dark areas more than
+it brightens the areas that are already bright enough to see the details.
+Adaptive <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A> correction mode is enabled by default. If the parameter
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">GAMMA</A> is defined, the program will switch to global gamma correction mode.
+
+Note that in the following steps, histogram will be modified for the purpose 
+of enhancing contrast, so the brightness of the result from this step won't 
+be directly reflected in the final resultant image. 
+
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">Gamma</A> correction usually decreases the contrast of the image, so at this 
+step a probablity density function based adjustment will be performed to
+enhance the contrast of the image. Firstly, the histogram of modified 
+illumination image is computed, then the histogram is used to compute the 
+probability density function. Secondly, in order to remove the spikes of the 
+computed probability density function, the moving average of the probability 
+density function is computed. Next, the final cumulative density function
+(CDF) is computed based on the despiked probability density function. Finally,
+the contrast enhancement mapping curve is defined by the equation below:
+
+     mapping_curve(l) = round_off(l_max * CDF(l) + 0.5)
+
+where l_max is the maximum intensity value in the input image, and l belongs
+to the range of [0, l_max - 1]. Once the mapping_curve is obtained, it is
+used to generate final illumination image.
+
+    final_illu_image(x,y) = mapping_curve(gamma_illu_image(x,y))
+
+Where gamma_illu_image is the illumination image after <A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">gamma</A> correction. The
+final illumination image reflects the enhancement both in brightness and 
+contrast, and it preserves the naturalness of the input image because the
+shape of the new histogram is similar with the original histogram.
+
+The final step of this program is to combine the final illumination image
+with the reflectance image.
+
+    final_image(x,y) = reflectance_image(x,y) * final_illu_image(x,y)
+
+
+REFERENCE:
+1. Efficient naturalness restoration for non-uniform illumination images.
+   Authors: Yonghun Shin, Soowoong Jeong, Sangkeun Lee.
+2. A Histogram Modification Framework and Its Application for Image
+   Contrast Enhancement.
+   Authors: Tarik Arici, Salih Dikbas, Yucel Altunbasak.
+
+HISTORY:
+2016-05-04 Steven Lu Initial gammacorrection by Steven Lu.
+<A NAME="CogProg">COGNIZANT PROGRAMMER: Steven Lu</A>
+
+REVISIONS:
+  2019-08-06 Walt Bunch - IDS-7923 - Replaced sprintf calls, added enable-log to tst.pdf.
+
+</pre>
+<hr>
+<H2>PARAMETERS:</H2>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#inp"><H3>INP</H3></A>
+Input image. 
+ 
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#out"><H3>OUT</H3></A>
+Output image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#sigma"><H3>SIGMA</H3></A>
+Gaussian kernel standard deviation.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#ksize"><H3>KSIZE</H3></A>
+Gaussian kernel size.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma"><H3>GAMMA</H3></A>
+<A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#gamma">Gamma</A> value for performing global gamma correction.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#out_illufnl"><H3>OUT_ILLUFNL</H3></A>
+Optional output for final illumination image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow_level2.html#out_reflectance"><H3>OUT_REFLECTANCE</H3></A>
+Optional output for reflectance image.
+
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow.html#examples"><H4>See Examples:</H4></A>
+<HR><A HREF="/VICAR-DOCS/vicar/dev/html/vichelp/shadow.html#CogProg"><H4>Cognizant Programmer:</H4></A>
+</BODY>
+</HTML>

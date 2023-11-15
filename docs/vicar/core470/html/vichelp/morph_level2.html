@@ -1,0 +1,94 @@
+<HTML>
+<HEAD><title>HTML Level 2 Help for MORPH</title></HEAD>
+<BODY>
+<H1>Level 2 Help for <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/morph.html">MORPH</A></H1>
+<A NAME="inp"><H3>INP</H3></A>
+<pre>
+There are three input files.
+File#1: This is the left or first input image given to
+        program TRACKER or TRACKER2. 
+File#2: This is the right or second input image given to
+        program TRACKER. 
+File#3: This is the MARK file written by program TRACKER.
+        It is 'REAL' format with 512 byte records containing
+        pairs of tiepoints in the order:
+        left_line,left_samp,right_line,right_samp.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="frames"><H3>FRAMES</H3></A><pre>
+The number of output images produced. Outputs are the same size
+as inputs. output morphs are spaced equally between the two input
+images. Thus if there were 3 output images then they would be spaced
+at 1/4, 1/2, and 3/4 of the way between the two input images.
+The format of the output is the same as the input.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="start"><H3>START</H3></A><pre>
+The starting number of the first output frame. Normally you would
+not specify <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/morph_level2.html#start">START</A> and it would default to 1.  In the event that the
+program were aborted in mid run you could restart it where you left off
+by setting <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/morph_level2.html#start">START</A>=n where n was the output frame number which was the
+first missing output frame (missing because the job was cancelled).
+Thus if 5 outputs were desired and only two were created then you
+could restart the job USING IDENTICAL PARAMETERS AS BEFORE but
+adding <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/morph_level2.html#start">START</A>=3.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="name"><H3>NAME</H3></A><pre>
+The prefix for the output file names.
+If you specify <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/morph_level2.html#name">name</A>=abc and if <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/morph_level2.html#frames">frames</A>=3 for example then the three
+output files will be called (in order left to right):
+abc1.img abc2.img and abc3.img  .
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="inc"><H3>INC</H3></A><pre>
+The grid interval in pixels in the output image. At each grid intersection
+a polynomial is fit to the nearest 4 tiepoints to perform a geom mapping
+from the morph to the first and second input images. 
+One tiepoint is selected from each of the 4 quadrants. <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/morph_level2.html#inc">INC</A> should be
+less than the tiepoint grid spacing but not much less than half of it
+for efficiency .
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="npts"><H3>NPTS</H3></A><pre>
+Number of  points used at each grid intersection to fit a surface
+linking the morph to the left and right images geometrically.
+The range is 4 to 20.  If <A HREF="/VICAR-DOCS/vicar/core470/html/vichelp/morph_level2.html#npts">npts</A>=4 then an exact fit is made and no
+extrapolation beyond the point array is permitted. Lerger values
+permit a least squares fit with inverse distance weighting and
+supports extrapolation.
+
+<p>
+<p></pre>
+
+
+<hr>
+<A NAME="leftonly"><H3>LEFTONLY</H3></A><pre>
+Only use left image to compute the output images. This converts the program 
+into a geom operation in which the left image is moved towards the right image.
+The right input image is ignored.
+<p>
+<p></pre>
+
+</BODY>
+</HTML>
